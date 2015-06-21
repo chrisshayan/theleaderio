@@ -16,7 +16,16 @@ Router.route('/pageTwo', function () {
     this.render('pageTwo');
 });
 
+//
+// Landing page
+//
+
+Router.route('/landing', function () {
+    this.render('landing');
+    this.layout('blankLayout')
+});
+
 Router.route('/', function () {
-    Router.go('pageOne');
+    Router.go('landing');
 });
 
