@@ -1,31 +1,85 @@
+var redirectToDashboard = function() {
+    if(Meteor.userId()) {
+        Router.go('dashboard');
+        this.next();
+    } else {
+        this.next();
+    }
+};
+
 Router.configure({
     layoutTemplate: 'mainLayout',
-    notFoundTemplate: 'notFound'
-
+    notFoundTemplate: 'notFound',
+    loadingTemplate: 'waveLoading'
 });
 
-//
-// Example pages routes
-//
 
-Router.route('/pageOne', function () {
-    this.render('pageOne');
+/**
+ * Check if user is login
+ */
+Router.onBeforeAction(function () {
+    if (!Meteor.userId() || Meteor.loggingIn()) {
+        this.redirect('login')
+    } else {
+        this.next();
+    }
+}, {
+    except: ['landing', 'login', 'register']
 });
 
-Router.route('/pageTwo', function () {
-    this.render('pageTwo');
-});
+/**
+ * redirect to dashboard after login
+ */
+Router.onBeforeAction(redirectToDashboard, {only: ['login', 'register', 'landing']});
 
 //
 // Landing page
 //
 
-Router.route('/landing', function () {
-    this.render('landing');
-    this.layout('blankLayout')
+Router.route('/', {
+    name: "landing",
+    action: function () {
+        this.layout('blankLayout')
+        this.render('landing');
+    }
 });
 
-Router.route('/', function () {
-    Router.go('landing');
+Router.route('/register', {
+    name: "register",
+    action: function () {
+        this.layout('blankLayout')
+        this.render('register');
+    }
+});
+
+Router.route('/login', {
+    name: "login",
+    action: function () {
+        this.layout('blankLayout')
+        this.render('login');
+    }
+});
+
+Router.route('/logout', {
+    name: "logout",
+    action: function () {
+        Meteor.logout();
+    }
+});
+
+Router.route('/dashboard', {
+    name: "dashboard",
+    fastRender: true,
+    action: function () {
+        this.render('dashboard');
+    }
+});
+
+Router.route('/measure', {
+    name: "measure",
+    fastRender: true,
+    action: function () {
+        this.render('measure');
+    }
 });
 
