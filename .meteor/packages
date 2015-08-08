@@ -17,3 +17,5 @@ accounts-base
 accounts-password
 meteorhacks:fast-render
 momentjs:moment
+aldeed:collection2
+aldeed:autoform

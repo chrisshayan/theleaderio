@@ -83,3 +83,19 @@ Router.route('/measure', {
     }
 });
 
+Router.route('/employees', {
+    name: "employees",
+    fastRender: true,
+    action: function () {
+        this.render('employees');
+    }
+});
+
+Router.route('/kudobox', {
+    name: "kudobox",
+    fastRender: true,
+    action: function () {
+        this.render('kudobox');
+    }
+});
+
