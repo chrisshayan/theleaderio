@@ -1,0 +1,14 @@
+{
+    "IZTOKEN_SECRET": "thisisprivatekeyphrase",
+    "private": {
+        "smtp": {
+            "username": "mrphu3074@gmail.com",
+            "password": "s5UL9fyP5IoJJ_2lRG2XOg",
+            "server": "smtp.mandrillapp.com",
+            "port": 587
+        }
+    },
+    "public": {
+
+    }
+}

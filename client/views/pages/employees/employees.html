@@ -1,2 +1,17 @@
 <template name="employees">
+	{{> pageHeading title='Employees'}}
+	<div class="wrapper wrapper-content" style="background: #fff;margin: 20px 0">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="employee-actions clearfix" style="margin: 0 0 20px 0">
+					<a href="{{pathFor 'addEmployee'}}" class="btn btn-primary pull-right" style="margin-left:10px;">Add&nbsp;<i class="fa fa-user-plus"></i></a>
+					
+					<a href="{{pathFor 'importEmployees'}}" class="btn btn-info pull-right" style="margin-left:10px;">Import&nbsp;<i class="fa fa-cloud-download"></i></a>
+
+					<button class="btn btn-success pull-right send-access-links" >Send access links&nbsp;<i class="fa fa-share-alt"></i></button>
+				</div>
+				{{> tabular table=TabularTables.Employees class="table table-striped table-bordered table-condensed"}}
+			</div>
+		</div>
+	</div>
 </template>

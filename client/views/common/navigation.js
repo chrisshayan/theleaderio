@@ -7,6 +7,10 @@ Template.navigation.rendered = function(){
 
 Template.navigation.helpers({
     name: function () {
-        return Meteor.user().profile.name;
+    	if(Meteor.userId())
+        	return Meteor.user().profile.name;
+        if(Session.get("currentEmployee"))
+        	return Session.get("currentEmployee").name;
+        return false;
     }
 });
