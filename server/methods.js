@@ -15,13 +15,7 @@ apis.grantEmployeeAccessToken = function() {
 	var currentUser = Meteor.user();
 	var employees = Collections.Employees.find({createdBy: this.userId}).fetch();
 	_.each(employees, function(employee) {
-		var payload = {
-			_id: employee._id,
-			name: employee.name,
-			email: employee.email,
-			leaderId: currentUser._id
-		}
-		var token = IZToken.generate(payload, 24*60*60);
+		var token = IZToken.generate(employee, 24*60*60);
 		if(!token) return;
 		var link = Meteor.absoluteUrl("verify-invitation/" + token);
 
@@ -51,6 +45,21 @@ apis.verifyLinkInvitation = function(token) {
 		result.data = IZToken.getData(token);
 	}
 	return result;
+}
+
+apis.submitSurvey = function(survey, token) {
+	check(survey, Object);
+	check(token, String);
+
+	var result = IZToken.verify(token);
+	if(result.success) {
+		survey.employee = IZToken.getData(token);
+		delete survey.employee['leaderId'];
+		console.log(survey)
+		return Collections.Surveys.insert(survey);
+	} else {
+		return false;
+	}
 }
 
 Meteor.methods(apis);

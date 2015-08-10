@@ -1,0 +1,33 @@
+<template name="survey">
+    <div class="wrapper wrap-content">
+        <div class="row" style="padding-bottom: 60px">
+            <div class="col-sm-8 col-sm-offset-2">
+                {{> quickForm schema="Schemas.Survey" id="insertSurveyForm"}}
+            </div>
+        </div>
+    </div>
+</template>
+<template name="survey1">
+    <div class="row">
+        {{#each points}} {{> surveyPoint}} {{/each}}
+    </div>
+    <div class="row" style="padding-bottom: 60px">
+        <div class="col-sm-12">
+            <button class="btn btn-block btn-success done-survey">Done</button>
+        </div>
+    </div>
+</template>
+<template name="surveyPoint">
+    <div class="col-sm-4">
+        <div class="widget navy-bg p-lg text-center">
+            <div class="m-b-md">
+                <i class="fa {{icon}} fa-5x"></i>
+                <h1 class="m-xs">
+            		{{> starsRating id=type class='survey-point' mutable=true size=40}}
+        		</h1>
+                <h3 class="font-bold no-margins">{{ label }}</h3>
+                <small>{{ description }}</small>
+            </div>
+        </div>
+    </div>
+</template>
