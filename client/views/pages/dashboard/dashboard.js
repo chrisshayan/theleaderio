@@ -70,3 +70,30 @@ Template.dashboard.destroyed = function(){
     // Remove extra view class
     $('body').removeClass('light-navbar');
 };
+
+
+
+
+Template.points.onCreated(function() {
+    var instance = Template.instance();
+    instance.points = new ReactiveDict();
+    Meteor.call('avgPoints', Meteor.userId(), function(err, data) {
+        if(err) throw err;
+        if(data) {
+            _.each(data, function(val, key) {
+                if(key == "_id") return;
+                instance.points.set(key, val);
+            })
+            
+        }
+    })
+});
+
+Template.points.helpers({
+    avgPoint: function(type) {
+        var instance = Template.instance();
+        
+        var data = instance.points.get(type);
+        return data ? data.toFixed(1) : 0;
+    }
+});

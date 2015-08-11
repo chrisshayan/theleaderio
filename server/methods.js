@@ -47,19 +47,45 @@ apis.verifyLinkInvitation = function(token) {
 	return result;
 }
 
-apis.submitSurvey = function(survey, token) {
-	check(survey, Object);
-	check(token, String);
+apis.submitSurvey = function(data) {
+	check(data, {
+		survey: Object,
+		token: String
+	});
 
-	var result = IZToken.verify(token);
+	var result = IZToken.verify(data.token);
 	if(result.success) {
-		survey.employee = IZToken.getData(token);
-		delete survey.employee['leaderId'];
-		console.log(survey)
-		return Collections.Surveys.insert(survey);
-	} else {
-		return false;
+		data.survey.employee = IZToken.getData(data.token);
+		return Collections.Surveys.insert(data.survey);
 	}
+	return false;
+}
+
+apis.avgPoints = function(userId) {
+	var data = Collections.Surveys.aggregate(
+	   [
+	   	{$match : {"employee.createdBy": userId}},
+	     {
+	       $group:
+	         {
+	           _id: "$employee.createdBy",
+	            goalRating: {$avg: "$goalRating"},
+	            meetingRating: {$avg: "$meetingRating"},
+	            groundRulesRating: {$avg: "$groundRulesRating"},
+	            communicationRating: {$avg: "$communicationRating"},
+	            leadershipRating: {$avg: "$leadershipRating"},
+	            workloadRating: {$avg: "$workloadRating"},
+	            energyRating: {$avg: "$energyRating"},
+	            stressRating: {$avg: "$stressRating"},
+	            decisionRating: {$avg: "$decisionRating"},
+	            respectRating: {$avg: "$respectRating"},
+	            conflictRating: {$avg: "$conflictRating"}
+	         }
+	     }
+	   ]
+	);
+	if(data.length <= 0) return false;
+	return data[0];
 }
 
 Meteor.methods(apis);
