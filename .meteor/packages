@@ -20,8 +20,6 @@ momentjs:moment
 aldeed:collection2
 aldeed:autoform
 useraccounts:bootstrap
-accounts-facebook
-accounts-google
 accounts-ui
 service-configuration
 alanning:roles
