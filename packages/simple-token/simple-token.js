@@ -19,12 +19,17 @@ IZToken.generate = function(data, duration) {
 	check(data, Match.Any);
 	check(duration, Number);
 	var secret = getSecretKey();
+	var createdDate = new Date();
+	if(!data.hasOwnProperty("createdDate"))
+		data['createdDate'] = createdDate;
+
 	var token = {
 		data: jwt.encode(data, secret),
-		createdDate: new Date(),
+		createdDate: createdDate,
 		duration: duration
 	};
-	IZToken.Collection.insert(token);
+
+	var id = IZToken.Collection.insert(token);
 	return token.data;
 }
 
@@ -36,7 +41,7 @@ IZToken.verify = function(data) {
 		code: 2,
 		msg: "Access token not found"
 	};
-	var token = IZToken.Collection.findOne({data: data});
+	var token = IZToken.Collection.findOne({data: data}, {sort: {createdDate: -1}});
 	if(token) {
 		var expiredDate = moment(token.createdDate).add(token.duration,'second');
 		if(expiredDate.valueOf() < Date.now()) {

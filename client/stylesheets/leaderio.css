@@ -14,3 +14,12 @@
 	top: 0 !important;
 	left: 0 !important;
 }
+
+.feedback-input {
+	height: 40px;
+	resize: none;
+}
+
+.feedback .input-group-btn{
+	vertical-align: top;
+}

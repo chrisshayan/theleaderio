@@ -88,4 +88,54 @@ apis.avgPoints = function(userId) {
 	return data[0];
 }
 
+apis.avgPointsWithToken = function(token) {
+	check(token, String);
+	var checkToken = IZToken.verify(token);
+	if(!checkToken.success)
+		return new Meteor.Error(403, "You don't have permission to access this page");
+	var employee = IZToken.getData(token);
+	var data = Collections.Surveys.aggregate(
+	   [
+	   	{$match : {"employee.createdBy": employee.createdBy}},
+	     {
+	       $group:
+	         {
+	           _id: "$employee.createdBy",
+	            goalRating: {$avg: "$goalRating"},
+	            meetingRating: {$avg: "$meetingRating"},
+	            groundRulesRating: {$avg: "$groundRulesRating"},
+	            communicationRating: {$avg: "$communicationRating"},
+	            leadershipRating: {$avg: "$leadershipRating"},
+	            workloadRating: {$avg: "$workloadRating"},
+	            energyRating: {$avg: "$energyRating"},
+	            stressRating: {$avg: "$stressRating"},
+	            decisionRating: {$avg: "$decisionRating"},
+	            respectRating: {$avg: "$respectRating"},
+	            conflictRating: {$avg: "$conflictRating"}
+	         }
+	     }
+	   ]
+	);
+	if(data.length <= 0) return false;
+	return data[0];
+}
+
+apis.addFeedback = function(data) {
+	check(data, {
+		type: String,
+		content: String,
+		token: String
+	});
+	var checkToken = IZToken.verify(data.token);
+	if(!checkToken.success)
+		return new Meteor.Error(403, "You don't have permission to access this page");
+	var employee = IZToken.getData(data.token);
+	return Collections.Feedbacks.insert({
+		type: data.type,
+		content: data.content,
+		leaderId: employee.createdBy,
+		createdAt: new Date()
+	});
+}
+
 Meteor.methods(apis);
