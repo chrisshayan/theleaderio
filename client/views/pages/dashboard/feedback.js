@@ -57,7 +57,7 @@ Template.feedbackType.helpers({
             sort: {
                 createdAt: -1
             }
-        }
+        };
         return Collections.Feedbacks.find({type: instance.data.type}, opt);
     },
     isLoadmoreAbility: function () {

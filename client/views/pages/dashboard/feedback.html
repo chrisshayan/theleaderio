@@ -1,55 +1,35 @@
 <template name="feedback">
-    <div class="row">
-        <div class="ibox-content m-b-sm border-bottom">
-            <div class="p-xs">
-                <div class="pull-left m-r-md">
-                    <i class="fa fa-comments-o text-navy mid-icon"></i>
-                </div>
-                <h2>Feedback</h2>
-                <span>Feel free to choose topic you're interested in.</span>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-lg-4">
-            {{> feedbackType type="positive" label="Positive" element="success"}}
-        </div>
-        <div class="col-lg-4">
-            {{> feedbackType type="neutral" label="Neutral" element="info"}}
-        </div>
-        <div class="col-lg-4">
-            {{> feedbackType type="negative" label="Negative" element="warning"}}
-        </div>
-    </div>
+    {{>feeds}}
 </template>
 
 <template name="feedbackType">
-<div class="ibox feedback">
-    <div class="ibox-content">
-        <h3>{{ this.label }}</h3>
-        {{#if allowSendFeedback}}
-        <div class="input-group">
-            <textarea placeholder="Add feedback... " class="input input-sm form-control feedback-input" data-feedback="{{this.type}}"></textarea>
+    <div class="ibox feedback">
+        <div class="ibox-content">
+            <h3>{{ this.label }}</h3>
+            {{#if allowSendFeedback}}
+                <div class="input-group">
+                    <textarea placeholder="Add feedback... " class="input input-sm form-control feedback-input"
+                              data-feedback="{{this.type}}"></textarea>
             <span class="input-group-btn">
-                <button type="button" class="btn btn-sm btn-white send-feedback"> <i class="fa fa-plus"></i> Add</button>
+                <button type="button" class="btn btn-sm btn-white send-feedback"><i class="fa fa-plus"></i> Add</button>
             </span>
+                </div>
+            {{/if}}
+            <hr>
+            <ul class="sortable-list connectList agile-list">
+                {{#each items}}
+                    {{> feedbackItem}}
+                {{/each}}
+            </ul>
+            {{#if isLoadmoreAbility}}
+                <button class="btn btn-white btn-sm btn-block load-more">load more</button>
+            {{/if}}
         </div>
-        {{/if}}
-        <hr>
-        <ul class="sortable-list connectList agile-list">
-            {{#each items}}
-            	{{> feedbackItem}}
-            {{/each}}
-        </ul>
-        {{#if isLoadmoreAbility}}
-        <button class="btn btn-white btn-sm btn-block load-more">load more</button>
-        {{/if}}
     </div>
-</div>
 </template>
 
 <template name="feedbackItem">
-	<li class="{{elementLabel}}-element">
+    <li class="{{elementLabel}}-element">
         {{ content }}
         <div class="agile-detail">
             <i class="fa fa-clock-o"></i> {{timeago}}

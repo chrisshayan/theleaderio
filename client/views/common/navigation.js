@@ -7,7 +7,7 @@ Template.navigation.rendered = function(){
 
 Template.navigation.helpers({
     name: function () {
-    	if(Meteor.userId())
+    	if(Meteor.userId() && Meteor.user())
         	return Meteor.user().profile.name;
         if(Session.get("currentEmployee"))
         	return Session.get("currentEmployee").name;

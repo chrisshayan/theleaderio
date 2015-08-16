@@ -36,6 +36,8 @@ useraccounts:iron-routing
 meteorhacks:ssr
 yogiben:autoform-modals
 socialize:user-model
+socialize:commentable
+socialize:feed
 natestrauser:select2
 aldeed:autoform-select2
 zimme:select2-bootstrap3-css
