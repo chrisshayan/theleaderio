@@ -1,9 +1,0 @@
-<template name="employee">
-    {{> pageHeading title=this.title category="Employees"}}
-    {{> quickForm collection="Collections.Employees" doc=this.doc id="employeeForm" type=this.type}}
-</template>
-
-<template name="employeeActions">
-    <a href="{{pathFor 'updateEmployee'}}" class="btn btn-xs btn-primary edit"><i class="fa fa-edit"></i></a>
-    <button type="button" class="btn btn-xs btn-danger remove"><i class="fa fa-trash"></i></button>
-</template>

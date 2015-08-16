@@ -27,7 +27,6 @@ email
 matb33:collection-hooks
 aldeed:tabular
 kevohagan:sweetalert
-bjwiley2:api-tokens
 izzilab:simple-token
 reactive-dict
 meteorhacks:aggregate
@@ -36,3 +35,10 @@ useraccounts:iron-routing
 meteorhacks:ssr
 yogiben:autoform-modals
 socialize:user-model
+natestrauser:select2
+aldeed:autoform-select2
+zimme:select2-bootstrap3-css
+yogiben:autoform-file
+cfs:standard-packages
+cfs:gridfs
+todda00:friendly-slugs

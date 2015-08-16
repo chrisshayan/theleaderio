@@ -4,7 +4,7 @@ Template.leaderRequestActions.events({
 		Meteor.call('sendLeaderInvitation', this._id, function(err, result) {
 			if(err) throw err;
 			if(result) {
-				console.log("done");
+				toastr.success("success", "Send invitation");
 			}
 		});
 	}

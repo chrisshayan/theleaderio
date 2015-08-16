@@ -4,6 +4,10 @@ Meteor.publish('employeeDetails', function (_id) {
     return Collections.Employees.find({_id: _id}, {limit: 1});
 });
 
+Meteor.publish("industries", function() {
+    return Collections.Industries.find();
+});
+
 Meteor.publish("feedbacks", function (token, type, limit) {
     if (token) {
         check(token, Match.Any);
@@ -19,7 +23,6 @@ Meteor.publish("feedbacks", function (token, type, limit) {
         if (!this.userId) return false;
         var base = 5;
         var leaderId = null;
-        console.log('a', this.userId);
         if (this.userId) {
             leaderId = this.userId;
         } else {
