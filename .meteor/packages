@@ -28,6 +28,7 @@ matb33:collection-hooks
 aldeed:tabular
 kevohagan:sweetalert
 izzilab:simple-token
+reactive-var
 reactive-dict
 meteorhacks:aggregate
 copleykj:jquery-autosize
@@ -42,3 +43,4 @@ yogiben:autoform-file
 cfs:standard-packages
 cfs:gridfs
 todda00:friendly-slugs
+reywood:publish-composite

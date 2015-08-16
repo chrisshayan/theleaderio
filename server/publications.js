@@ -1,7 +1,25 @@
-Meteor.publish('employeeDetails', function (_id) {
-    check(_id, String);
-    if (!this.userId) return new Meteor.Error(403, 'User not login');
-    return Collections.Employees.find({_id: _id}, {limit: 1});
+Meteor.publishComposite('employeeDashboard', function() {
+    if(!this.userId) return [];
+    var currentUser = Meteor.users.findOne({_id: this.userId});
+    if(!currentUser || !currentUser.isEmployee()) return [];
+    return {
+        find: function(){
+            return Collections.Relationships.find({type: 1, elseId: this.userId});
+        },
+        children: [
+            {
+                find: function(relationship){
+                    var opt = {
+                        fields: {
+                            _id: 1,
+                            profile: 1
+                        }
+                    }
+                    return Meteor.users.find({_id: relationship.userId}, opt);
+                }
+            }
+        ]
+    }
 });
 
 Meteor.publish("industries", function() {

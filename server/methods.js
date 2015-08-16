@@ -34,9 +34,11 @@ apis.submitSurvey = function (data) {
 }
 
 apis.avgPoints = function (userId) {
+    if(!userId)
+        userId = this.userId;
     var data = Collections.Surveys.aggregate(
         [
-            {$match: {"employee.createdBy": userId}},
+            {$match: {leaderId: userId}},
             {
                 $group: {
                     _id: "$employee.createdBy",
