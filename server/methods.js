@@ -19,23 +19,24 @@ apis.grantEmployeeAccessToken = function () {
         if (!token) return;
         var link = Meteor.absoluteUrl("verify-invitation/" + token);
 
-        var fromEmail = false;
-        if (currentUser.emails)
+    var fromEmail = false;
+        if(currentUser.emails)
             fromEmail = currentUser.emails[0].address;
-        else if (currentUser.services.facebook.email)
+        else if(currentUser.services.facebook.email)
             fromEmail = currentUser.services.facebook.email;
-        else if (currentUser.services.google.email)
+        else if(currentUser.services.google.email)
             fromEmail = currentUser.services.google.email;
-        if (!fromEmail) return;
-
+        if(!fromEmail) return;
+        var params = {leaderName: currentUser.profile.name, employeeName: employee.name, confirmLink: link};
+        var html = Utils.compileServerTemplate("employeeInvitationEmail", 'mailtemplates/employee-invitation-email.html', params)
         var mail = {
             from: currentUser.profile.name + " <" + fromEmail + ">",
             to: employee.email,
             subject: currentUser.profile.name + " from teamleader.io need your survey",
-            text: link
-        };
+            html: html
+        }
         Email.send(mail);
-    });
+    }); 
 }
 
 apis.verifyLinkInvitation = function (token) {
@@ -134,6 +135,41 @@ apis.addFeedback = function (data) {
         leaderId: employee.createdBy,
         createdAt: new Date()
     });
+}
+checkIsAdmin = function(userId) {
+	if(!userId) return false;
+	return Roles.userIsInRole(userId, [ROLE.ADMIN]);
+}
+//====================================================//
+apis.sendLeaderInvitation = function(requestId) {
+	if(!checkIsAdmin(this.userId)) return new Meteor.Error(403, "You don't have permission");	
+	check(requestId, String);
+	try {
+		var self = this;
+		var request = Collections.LeaderRequests.findOne({_id: requestId});
+		if(!request) return false;
+		Meteor.defer(function() {
+			var token = IZToken.generate(request, 24*60*60);
+			if(!token) return;
+			var currentUser = Meteor.users.findOne({_id: self.userId});
+
+			var link = Meteor.absoluteUrl("signup-leader/" + token);
+			var params = {leaderName: request.firstName, signupLink: link};
+			var html = Utils.compileServerTemplate("employeeInvitationEmail", 'mailtemplates/employee-invitation-email.html', params)
+			var mail = {
+				from: currentUser.defaultEmail(),
+				to: request.email,
+				subject: "Signup leader",
+				html: html
+			}
+			Email.send(mail);
+			Collections.LeaderRequests.update({_id: requestId},{$set: {status: 2}});
+		});
+	} catch (e) {
+		console.log(e);
+		return false;
+	}
+	return true;
 }
 
 Meteor.methods(apis);

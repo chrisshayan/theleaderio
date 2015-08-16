@@ -33,3 +33,6 @@ reactive-dict
 meteorhacks:aggregate
 copleykj:jquery-autosize
 useraccounts:iron-routing
+meteorhacks:ssr
+yogiben:autoform-modals
+socialize:user-model
