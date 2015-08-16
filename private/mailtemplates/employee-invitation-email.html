@@ -1,5 +1,11 @@
-<template name="employeeInvitationEmail">
-    <style>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>{{leaderName}} has invited you to help him to improve his leadership</title>
+
+        <style>
         /* -------------------------------------
     GLOBAL
     A very basic CSS reset
@@ -266,14 +272,10 @@
         }
 
     </style>
-    <html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <meta name="viewport" content="width=device-width" />
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>{{leaderName}} has invited you to help him to improve his leadership</title>
-    </head>
-    <body>
 
+</head>
+
+<body>
     <table class="body-wrap">
         <tr>
             <td></td>
@@ -282,7 +284,7 @@
                     <table class="main" width="100%" cellpadding="0" cellspacing="0">
                         <tr>
                             <td class="content-wrap">
-                                <table  cellpadding="0" cellspacing="0">
+                                <table cellpadding="0" cellspacing="0">
                                     <tr>
                                         <td>
                                         </td>
@@ -304,7 +306,7 @@
                                     </tr>
                                     <tr>
                                         <td class="content-block aligncenter">
-                                            <a href="#" class="btn-primary">Confirm email address</a>
+                                            <a href="{{confirmationUrl}}" class="btn-primary">Confirm email address</a>
                                         </td>
                                     </tr>
                                 </table>
@@ -317,13 +319,12 @@
                                 <td class="aligncenter content-block"> <a href="http://wwww.theleader.io#">theLeader.io</a> .</td>
                             </tr>
                         </table>
-                    </div></div>
+                    </div>
+                </div>
             </td>
             <td></td>
         </tr>
     </table>
+</body>
 
-    </body>
-    </html>
-
-</template>
+</html>
