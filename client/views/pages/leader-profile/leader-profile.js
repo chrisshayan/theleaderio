@@ -1,15 +1,18 @@
-// AutoForm.hooks({
-//     sendFeedbackForm: {
-//         onSuccess: function() {
-//             AutoForm.resetForm("sendFeedbackForm")
-//         }
-//     },
-//     takeSurveyForm: {
-//         onSuccess: function() {
-//             AutoForm.resetForm("takeSurveyForm")
-//         }
-//     },
-// });
+ AutoForm.hooks({
+     sendFeedbackForm: {
+         onSuccess: function() {
+             //AutoForm.resetForm("sendFeedbackForm")
+             Router.go('dashboard');
+             toastr.success("Send feedback successful");
+         }
+     },
+     takeSurveyForm: {
+         onSuccess: function() {
+             Router.go('dashboard');
+             toastr.success("Send survey successful");
+         }
+     },
+ });
 
 Template.leaderProfile.onCreated(function() {
 	var instance = Template.instance();

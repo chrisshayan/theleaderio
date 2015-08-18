@@ -43,7 +43,7 @@
                     </div>
                 </div>
                 <div class="col-md-8">
-                    {{> feeds}}
+                    {{> feedbackHistory}}
                 </div>
             </div>
         </div>
@@ -74,7 +74,7 @@
                     <div class="modal-body">
                         {{> afQuickField name='content'}}
                         {{> afQuickField name='point'}}
-
+                        {{> afQuickField name='isAnonymous'}}
                     </div>
                     <div class="modal-footer">
                         <a href="{{pathFor 'dashboard'}}" class="btn btn-default">Close</a>
@@ -95,11 +95,33 @@
                         <h4 class="modal-title" id="takeSurveyLabel">Send feedback</h4>
                     </div>
                     <div class="modal-body">
-
+                        <fieldset style="width:90%;margin: 0 auto;">
+                            {{> afQuickField name='goalRating' }}
+                            <div class="hr-line-dashed"></div>
+                            {{> afQuickField name='meetingRating' }}
+                            <div class="hr-line-dashed"></div>
+                            {{> afQuickField name='groundRulesRating' }}
+                            <div class="hr-line-dashed"></div>
+                            {{> afQuickField name='communicationRating' }}
+                            <div class="hr-line-dashed"></div>
+                            {{> afQuickField name='leadershipRating' }}
+                            <div class="hr-line-dashed"></div>
+                            {{> afQuickField name='workloadRating' }}
+                            <div class="hr-line-dashed"></div>
+                            {{> afQuickField name='energyRating' }}
+                            <div class="hr-line-dashed"></div>
+                            {{> afQuickField name='stressRating' }}
+                            <div class="hr-line-dashed"></div>
+                            {{> afQuickField name='decisionRating' }}
+                            <div class="hr-line-dashed"></div>
+                            {{> afQuickField name='respectRating' }}
+                            <div class="hr-line-dashed"></div>
+                            {{> afQuickField name='conflictRating' }}
+                        </fieldset>
                     </div>
                     <div class="modal-footer">
                         <a href="{{pathFor 'dashboard'}}" class="btn btn-default">Close</a>
-                        <button type="button" class="btn btn-primary">Send</button>
+                        <button type="submit" class="btn btn-primary">Send</button>
                     </div>
                 {{/autoForm}}
             </div>

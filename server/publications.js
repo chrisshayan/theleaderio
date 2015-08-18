@@ -26,28 +26,10 @@ Meteor.publish("industries", function() {
     return Collections.Industries.find();
 });
 
-Meteor.publish("feedbacks", function (token, type, limit) {
-    if (token) {
-        check(token, Match.Any);
-        check(type, String);
-        check(limit, Number);
-        var checkToken = IZToken.verify(token);
-        if (!checkToken.success)
-            return new Meteor.Error(403, "You don't have permission to access this page");
-        var employee = IZToken.getData(token);
-        leaderId = employee.createdBy;
-    }
-    else {
-        if (!this.userId) return false;
-        var base = 5;
-        var leaderId = null;
-        if (this.userId) {
-            leaderId = this.userId;
-        } else {
-            return new Meteor.Error(403, "You don't have permission to access this page");
-        }
-    }
-
+Meteor.publish("feedbacks", function (leaderId, limit) {
+    check(leaderId, String);
+    check(limit, Number);
+    var base = 10;
     limit += base;
-    return Collections.Feedbacks.find({type: type, leaderId: leaderId}, {sort: {createdAt: -1}, limit: limit});
+    return Collections.Feedbacks.find({leaderId: leaderId}, {sort: {createdAt: -1}, limit: limit});
 });
