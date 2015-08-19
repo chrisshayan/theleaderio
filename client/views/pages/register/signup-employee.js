@@ -7,7 +7,6 @@ AutoForm.hooks({
                 if (err) throw err;
                 if (userId) {
                     Meteor.loginWithPassword({id: userId}, doc.password);
-                    self.done();
                 }
             });
             

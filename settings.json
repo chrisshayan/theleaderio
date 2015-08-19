@@ -1,5 +1,5 @@
 {
-    "IZTOKEN_SECRET": "thisisprivatekeyphrase",
+    "IZTOKEN_SECRET": "youcannotaccess",
     "private": {
         "smtp": {
             "username": "mrphu3074@gmail.com",

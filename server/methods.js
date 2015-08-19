@@ -236,7 +236,6 @@ apis.signupEmployee = function(data, token) {
         email: Match.Optional(String)
     });
     check(token, String);
-    
     try {
         var checkToken = IZToken.verify(token);
         if (!checkToken.success)
