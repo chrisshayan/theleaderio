@@ -23,3 +23,22 @@
 .feedback .input-group-btn{
 	vertical-align: top;
 }
+
+#side-menu li a i {
+    margin-right: 6px;
+    display: block;
+    text-align: center;
+    font-size: 24px;
+}
+
+#side-menu li a span {
+    margin-right: 6px;
+    display: block;
+    text-align: center;
+    font-size: 14px;
+    font-weight: lighter;
+}
+
+body.mini-navbar #side-menu li a span {
+    display: none;
+}

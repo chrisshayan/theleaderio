@@ -113,6 +113,7 @@ softwarerero:accounts-t9n@1.0.9
 spacebars@1.0.6
 spacebars-compiler@1.0.6
 srp@1.0.3
+stevezhu:lodash@3.10.1
 templating@1.1.1
 tmeasday:publish-with-relations@0.2.0
 todda00:friendly-slugs@0.3.4

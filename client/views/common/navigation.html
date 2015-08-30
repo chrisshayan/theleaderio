@@ -39,13 +39,18 @@
                 <li class="{{isActiveRoute regex='measure'}}">
                     <a href="{{pathFor route='measure'}}">
                         <i class="fa fa-info"></i>
-                        <span class="nav-label">Measure Leadership</span> </a>
+                        <span class="nav-label">Leadership</span> </a>
                 </li>
                 <li class="{{isActiveRoute regex='employees'}}">
                     <a href="{{pathFor route='employees'}}">
                         <i class="fa fa-users"></i>
-                        <span class="nav-label">Manage Employees</span> </a>
+                        <span class="nav-label">Employees</span> </a>
                 </li>
+                    <li class="{{isActiveRoute regex='explore'}}">
+                        <a href="{{pathFor route='explore'}}">
+                            <i class="fa fa-compass"></i>
+                            <span class="nav-label">Explore</span> </a>
+                    </li>
                 {{/if}}
             </ul>
 

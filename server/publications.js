@@ -1,14 +1,14 @@
-Meteor.publishComposite('employeeDashboard', function() {
-    if(!this.userId) return [];
+Meteor.publishComposite('employeeDashboard', function () {
+    if (!this.userId) return [];
     var currentUser = Meteor.users.findOne({_id: this.userId});
-    if(!currentUser || !currentUser.isEmployee()) return [];
+    if (!currentUser || !currentUser.isEmployee()) return [];
     return {
-        find: function(){
+        find: function () {
             return Collections.Relationships.find({type: 1, elseId: this.userId});
         },
         children: [
             {
-                find: function(relationship){
+                find: function (relationship) {
                     var opt = {
                         fields: {
                             _id: 1,
@@ -22,14 +22,28 @@ Meteor.publishComposite('employeeDashboard', function() {
     }
 });
 
-Meteor.publish("industries", function() {
+Meteor.publish("industries", function () {
     return Collections.Industries.find();
 });
 
-Meteor.publish("feedbacks", function (leaderId, limit) {
-    check(leaderId, String);
-    check(limit, Number);
-    var base = 10;
-    limit += base;
-    return Collections.Feedbacks.find({leaderId: leaderId}, {sort: {createdAt: -1}, limit: limit});
+Meteor.publishComposite("feedbacks", function (leaderId, limit) {
+    return {
+        find: function () {
+            check(leaderId, String);
+            check(limit, Number);
+            var base = 10;
+            limit += base;
+            return Collections.Feedbacks.find({leaderId: leaderId}, {
+                sort: {createdAt: -1}, limit: limit
+            });
+        },
+        children: [
+            {
+                find: function (feedback) {
+                    if (feedback.isAnonymous) return null;
+                    return Meteor.users.find({_id: feedback.createdBy});
+                }
+            }
+        ]
+    };
 });
