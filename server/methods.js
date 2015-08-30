@@ -315,15 +315,29 @@ apis.pointsLastSixMonths = function () {
             }
         }
     ]);
+
     var report = [];
-    _.each(result, function (m) {
+    var now = moment(new Date());
+    report.push({
+        time: now.format("YYYYMM"),
+        year: now.format("YYYY"),
+        month: now.format("MM"),
+        score: 0
+    });
+
+    _.each(_.range(1,6), function(m) {
+        var d = now.clone().subtract(m, 'month');
+
+        var score = _.findWhere(result, {year: m.year, month: m.month});
+
         report.push({
-            time: m._id.year + m._id.month,
-            year: m._id.year,
-            month: m._id.month,
-            score: m.score.toFixed(2),
+            time: d.format("YYYYMM"),
+            year: d.format("YYYY"),
+            month: d.format("MM"),
+            score: score ? score.score : 0
         });
     });
+
     report = _.sortByOrder(report, ['time'], ['asc']);
     return report;
 };

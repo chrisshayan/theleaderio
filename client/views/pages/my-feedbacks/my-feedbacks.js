@@ -6,7 +6,7 @@ Template.myFeedbacks.onCreated(function () {
     Session.setDefault('feedbackSelected', null);
     var instance = Template.instance();
     instance.autorun(function () {
-        if(Session.equals('feedbackLoading', false)) {
+        if (Session.equals('feedbackLoading', false)) {
             Session.set('feedbackLoadingMore', true);
         }
         var sub = self.subscribe('feedbacks', Meteor.userId(), Session.get("feedbackLimit"));
@@ -22,8 +22,12 @@ Template.myFeedbacks.onCreated(function () {
 Template.myFeedbacks.helpers({
     isReady: function () {
         return !Session.get("feedbackLoading");
+    },
+
+    noFeedback: function () {
+        return Collections.Feedbacks.find({leaderId: Meteor.userId()}).count() <= 0;
     }
-})
+});
 
 Template.feedbacks.rendered = function () {
 
@@ -78,7 +82,7 @@ Template.feedbacks.helpers({
         return total > Session.get('feedbackLimit');
     },
 
-    isLoadingMore: function() {
+    isLoadingMore: function () {
         return Session.get('feedbackLoadingMore');
     }
 });
@@ -139,21 +143,23 @@ Template.myFeedbackItem.events({
 Template.feedbackContent.helpers({
     content: function () {
         var feedback = Session.get("feedbackSelected");
-        return feedback.content || "";
+        return feedback ? feedback.content : "";
     },
 
     showPoint: function () {
         var feedback = Session.get("feedbackSelected");
-        return feedback.point != 0;
+        return feedback && feedback.point != 0;
     },
 
     pointText: function () {
         var feedback = Session.get("feedbackSelected");
+        if (!feedback) return "";
         return (feedback.point > 0) ? "+" + feedback.point : feedback.point;
     },
 
     pointLabel: function () {
         var feedback = Session.get("feedbackSelected");
+        if (!feedback) return "";
         if (feedback.point > 0) {
             return " label-primary ";
         } else {
@@ -163,10 +169,12 @@ Template.feedbackContent.helpers({
 
     timeago: function () {
         var feedback = Session.get("feedbackSelected");
+        if (!feedback) return "";
         return moment(feedback.createdAt).fromNow();
     },
     name: function () {
         var feedback = Session.get("feedbackSelected");
+        if (!feedback) return "";
         if (feedback.isAnonymous) return "Anonymous";
         var employee = Meteor.users.findOne({_id: feedback.createdBy});
         if (!employee) return "";

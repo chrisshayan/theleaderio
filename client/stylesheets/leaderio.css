@@ -295,3 +295,11 @@ button.loadmore {
 .post-details .post-title {
     bottom: -55px !important;
 }
+
+.feedback-empty {
+    width: 90%;
+    border: 2px dashed #DDD;
+    margin: 20px auto;
+    padding: 40px 0;
+    text-align: center;
+}

@@ -4,7 +4,11 @@
     {{> pageHeading title='Feedbacks' category='app' }}
 
     {{#if isReady}}
-        {{> feedbacks}}
+        {{#if noFeedback}}
+            {{> FeedbackEmpty}}
+        {{else}}
+            {{> feedbacks}}
+        {{/if}}
     {{else}}
         {{> waveLoading}}
     {{/if}}
@@ -82,4 +86,10 @@
     </div>
     <h2></h2>
     <p>{{content}}</p>
+</template>
+
+<template name="FeedbackEmpty">
+    <div class="feedback-empty">
+        <h2>There is no feedback!</h2>
+    </div>
 </template>
