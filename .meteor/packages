@@ -47,3 +47,5 @@ cfs:gridfs
 todda00:friendly-slugs
 reywood:publish-composite
 stevezhu:lodash@3.10.1
+ajduke:bootstrap-tagsinput
+yasaricli:slugify

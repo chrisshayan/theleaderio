@@ -1,0 +1,32 @@
+<template name="Post">
+    <div class="wrapper-content post-details">
+        <div class="publish-post">
+            <div class="post">
+                <header>
+                    <div class="post-picture">
+
+                        <div class="upload-zone">
+                            <img src="{{postPicture}}" alt=""/>
+                        </div>
+
+                    </div>
+                    <div class="post-avatar">
+                        <img src="/img/a1.jpg" alt=""/>
+                    </div>
+
+                    <div class="post-title">{{post.title}}</div>
+                </header>
+                <div class="post-editor">
+                    <div class="post-content">
+                        {{{post.content}}}
+                    </div>
+                </div>
+                <div class="post-tags">
+                    {{#each post.tags}}
+                        <span class="label label-default">{{this}}</span>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

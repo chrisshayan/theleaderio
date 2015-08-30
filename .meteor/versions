@@ -2,6 +2,7 @@ accounts-base@1.2.0
 accounts-password@1.1.1
 accounts-ui@1.1.5
 accounts-ui-unstyled@1.1.7
+ajduke:bootstrap-tagsinput@0.7.0
 alanning:roles@1.2.13
 aldeed:autoform@5.4.0
 aldeed:autoform-select2@2.0.2
@@ -127,6 +128,7 @@ useraccounts:core@1.12.1
 useraccounts:iron-routing@1.12.1
 webapp@1.2.0
 webapp-hashing@1.0.3
+yasaricli:slugify@0.0.7
 yogiben:autoform-file@0.2.7
 yogiben:autoform-modals@0.3.6
 zimme:active-route@2.0.4_1

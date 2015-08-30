@@ -1,0 +1,18 @@
+<template name="feedbackCounter">
+    <ul class="stat-list m-t-lg">
+        <li>
+            <h2 class="no-margins">{{positive}}</h2>
+            <small>Total Positive Comments</small>
+            <div class="progress progress-mini">
+                <div class="progress-bar progress-bar-success" style="width: {{positivePercent}}%;"></div>
+            </div>
+        </li>
+        <li>
+            <h2 class="no-margins ">{{negative}}</h2>
+            <small>Total Negative Comments</small>
+            <div class="progress progress-mini">
+                <div class="progress-bar progress-bar-danger" style="width: {{negativePercent}}%;"></div>
+            </div>
+        </li>
+    </ul>
+</template>

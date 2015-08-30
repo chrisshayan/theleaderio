@@ -7,7 +7,7 @@ Template.feedbackHistory.onCreated(function () {
         var leaderId = Meteor.user().leader()._id;
         if(leaderId) {
             var limit = instance.limit.get();
-            self.sub = self.subscribe("feedbacks", leaderId, limit)
+            self.sub = self.subscribe("employeeFeedbacks", leaderId, limit)
         }
     });
 

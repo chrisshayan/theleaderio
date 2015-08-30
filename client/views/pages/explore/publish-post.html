@@ -1,0 +1,47 @@
+<template name="PublishPost">
+    <div class="wrapper-content">
+        <div class="publish-post">
+            <div class="post-publish-buttons">
+                <button class="btn btn-primary publish" ><i class="fa fa-paper-plane"></i>&nbsp;
+                    Publish
+                </button>
+            </div>
+            <div class="post">
+                <header>
+                    <div class="post-picture">
+
+                        <div class="upload-zone">
+                            {{#if postPicture}}
+                                <img src="{{postPicture}}" alt=""/>
+                            {{else}}
+                                <h1><i class="fa fa-picture-o"></i></h1>
+                                <h3>Add a image</h3>
+                            {{/if}}
+                            <input type="file" id="post-picture"/>
+                        </div>
+
+                    </div>
+                    <div class="post-avatar">
+                        <img src="/img/a1.jpg" alt=""/>
+                    </div>
+                    {{#if postTitleErrors}}
+                        <p class="text-danger" style="margin-left: 120px;">{{postTitleErrors}}</p>
+                    {{/if}}
+                    <div class="post-title" contentEditable=true placeholder="Write your headline"></div>
+                </header>
+                <div class="post-editor">
+                    <div class="post-content">
+                        {{#if postContentErrors}}
+                            <p class="text-danger">{{postContentErrors}}</p>
+                        {{/if}}
+                        <textarea name="" id="post-content" cols="30" rows="10"></textarea>
+                    </div>
+                </div>
+                <div class="post-tags">
+                    <span class="fa fa-tag"></span>
+                    <select id="post-tags-input" multiple placeholder="Add tags so it's easier for people to find your post..."> </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

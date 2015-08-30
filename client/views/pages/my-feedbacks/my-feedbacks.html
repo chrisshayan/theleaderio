@@ -3,10 +3,10 @@
     <!-- Page heading -->
     {{> pageHeading title='Feedbacks' category='app' }}
 
-    {{#if Template.subscriptionsReady}}
+    {{#if isReady}}
         {{> feedbacks}}
     {{else}}
-        <h1>Loading</h1>
+        {{> waveLoading}}
     {{/if}}
 </template>
 
@@ -20,8 +20,12 @@
                         {{> myFeedbackItem }}
                     {{/each}}
                 </ul>
-                {{#if hasMore}}
-                    <button class="btn btn-block loadmore">Load more</button>
+                {{#if isLoadingMore}}
+                    {{> waveLoading}}
+                {{else}}
+                    {{#if hasMore}}
+                        <button class="btn btn-block loadmore">Load more</button>
+                    {{/if}}
                 {{/if}}
             </div>
         </div>

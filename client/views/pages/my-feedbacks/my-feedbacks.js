@@ -1,16 +1,29 @@
 Template.myFeedbacks.onCreated(function () {
     var self = this;
+    Session.setDefault('feedbackLoading', true);
+    Session.setDefault('feedbackLoadingMore', false);
     Session.setDefault('feedbackLimit', 10);
     Session.setDefault('feedbackSelected', null);
     var instance = Template.instance();
     instance.autorun(function () {
+        if(Session.equals('feedbackLoading', false)) {
+            Session.set('feedbackLoadingMore', true);
+        }
         var sub = self.subscribe('feedbacks', Meteor.userId(), Session.get("feedbackLimit"));
         if (sub.ready()) {
             var feedback = Collections.Feedbacks.findOne({leaderId: Meteor.userId()}, {sort: {createdAt: -1}});
+            Session.set("feedbackLoading", false);
+            Session.set('feedbackLoadingMore', false);
             Session.set("feedbackSelected", feedback);
         }
     });
 });
+
+Template.myFeedbacks.helpers({
+    isReady: function () {
+        return !Session.get("feedbackLoading");
+    }
+})
 
 Template.feedbacks.rendered = function () {
 
@@ -59,11 +72,15 @@ Template.feedbacks.helpers({
             }
         });
     },
+
     hasMore: function () {
         var total = Collections.Feedbacks.find({leaderId: Meteor.userId()}).count();
         return total > Session.get('feedbackLimit');
-    }
+    },
 
+    isLoadingMore: function() {
+        return Session.get('feedbackLoadingMore');
+    }
 });
 
 
