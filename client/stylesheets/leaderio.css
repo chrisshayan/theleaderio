@@ -144,10 +144,6 @@ body.mini-navbar #side-menu li a span {
     font-weight: lighter;
 }
 
-.post-content * {
-    font-family: sans-serif;
-}
-
 .post-content p {
     font-family: sans-serif;
     font-size: 1.2em;

@@ -83,7 +83,9 @@ Meteor.publishComposite("postDetails", function (_id) {
 Meteor.publishComposite("explore", function () {
     return {
         find: function () {
-            return Collections.Posts.find({}, {
+            return Collections.Posts.find({
+                createdBy: this.userId
+            }, {
                 sort: {
                     createdAt: -1
                 }
