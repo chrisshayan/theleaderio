@@ -1,33 +1,45 @@
- AutoForm.hooks({
-     sendFeedbackForm: {
-         onSuccess: function() {
-             //AutoForm.resetForm("sendFeedbackForm")
-             Router.go('dashboard');
-             toastr.success("Send feedback successful");
-         }
-     },
-     takeSurveyForm: {
-         onSuccess: function() {
-             Router.go('dashboard');
-             toastr.success("Send survey successful");
-         }
-     },
- });
+AutoForm.hooks({
+    sendFeedbackForm: {
+        onSuccess: function () {
+            //AutoForm.resetForm("sendFeedbackForm")
+            Router.go('dashboard');
+            toastr.success("Send feedback successful");
 
-Template.leaderProfile.onCreated(function() {
-	var instance = Template.instance();
+            analytics.track('Send feedback', {
+                category: 'Employee:' + Meteor.userId(),
+                label: 'Leader:' + Meteor.user().leader()._id
+            });
+        }
+    },
+    takeSurveyForm: {
+        onSuccess: function () {
+            Router.go('dashboard');
+            toastr.success("Send survey successful");
+
+
+            analytics.track('Do survey', {
+                category: 'Employee:' + Meteor.userId(),
+                label: 'Leader:' + Meteor.user().leader()._id
+            });
+
+        }
+    }
+});
+
+Template.leaderProfile.onCreated(function () {
+    var instance = Template.instance();
     instance.isLoading = new ReactiveVar(true);
-	instance.action = new ReactiveVar("");
+    instance.action = new ReactiveVar("");
 
-	instance.autorun(function() {
-		instance.sub = Meteor.subscribe("employeeDashboard", {
-            onReady: function() {
+    instance.autorun(function () {
+        instance.sub = Meteor.subscribe("employeeDashboard", {
+            onReady: function () {
                 instance.isLoading.set(false);
             }
         });
 
         var params = Router.current().params;
-        if(params.query.hasOwnProperty("action")) {
+        if (params.query.hasOwnProperty("action")) {
             var action = params.query.action.toLowerCase();
             instance.action.set(action);
         } else {
@@ -35,21 +47,21 @@ Template.leaderProfile.onCreated(function() {
             $('.modal-backdrop').remove();
             instance.action.set("");
         }
-	});
+    });
 });
 
-Template.leaderProfile.onDestroyed(function() {
+Template.leaderProfile.onDestroyed(function () {
     var instance = Template.instance();
     instance.sub.stop();
 });
 
 
-Template.leaderProfile.rendered = function(){
+Template.leaderProfile.rendered = function () {
 
     // Set options for peity charts
-    $(".line").peity("line",{
+    $(".line").peity("line", {
         fill: '#1ab394',
-        stroke:'#169c81'
+        stroke: '#169c81'
     })
 
     $(".bar").peity("bar", {
@@ -59,29 +71,27 @@ Template.leaderProfile.rendered = function(){
 };
 
 Template.leaderProfile.helpers({
-    isLoading: function() {
+    isLoading: function () {
         return Template.instance().isLoading.get();
     },
-    leader: function() {
+    leader: function () {
         return Meteor.user().leader();
     },
 
-    isAction: function(action) {
+    isAction: function (action) {
         return Template.instance().action.get() == action;
     }
 });
 
 
-
-
-Template.sendFeedbackModal.onRendered(function() {
+Template.sendFeedbackModal.onRendered(function () {
     $("#sendFeedbackModal").modal("show");
     $("#sendFeedbackModal").on('hidden.bs.modal', function () {
         $(this).data('bs.modal', null);
     });
 });
 
-Template.takeSurveyModal.onRendered(function() {
+Template.takeSurveyModal.onRendered(function () {
     $("#takeSurveyModal").modal("show");
     $('.i-checks').iCheck({
         checkboxClass: 'icheckbox_square-green',
