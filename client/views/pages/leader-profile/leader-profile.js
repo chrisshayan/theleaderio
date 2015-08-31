@@ -5,7 +5,7 @@ AutoForm.hooks({
             Router.go('dashboard');
             toastr.success("Send feedback successful");
 
-            analytics.track('Send feedback', {
+            analytics.track('Send Feedback', {
                 category: 'Employee:' + Meteor.userId(),
                 label: 'Leader:' + Meteor.user().leader()._id
             });
@@ -17,7 +17,7 @@ AutoForm.hooks({
             toastr.success("Send survey successful");
 
 
-            analytics.track('Do survey', {
+            analytics.track('Do Survey', {
                 category: 'Employee:' + Meteor.userId(),
                 label: 'Leader:' + Meteor.user().leader()._id
             });

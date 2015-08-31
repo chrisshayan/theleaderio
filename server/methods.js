@@ -325,7 +325,7 @@ apis.pointsLastSixMonths = function () {
         score: 0
     });
 
-    _.each(_.range(1,6), function(m) {
+    _.each(_.range(1, 6), function (m) {
         var d = now.clone().subtract(m, 'month');
 
         var score = _.findWhere(result, {year: m.year, month: m.month});
@@ -342,8 +342,8 @@ apis.pointsLastSixMonths = function () {
     return report;
 };
 
-apis.publishPost = function(data) {
-    if(!this.userId) return false;
+apis.publishPost = function (data) {
+    if (!this.userId) return false;
     this.unblock();
     check(data, {
         title: String,
@@ -364,11 +364,11 @@ apis.publishPost = function(data) {
     });
 
 
-    if(postId) {
-        Meteor.defer(function() {
-            if(postId && data.picture) {
+    if (postId) {
+        Meteor.defer(function () {
+            if (postId && data.picture) {
                 Collections.Images.insert(data.picture, function (err, fileObj) {
-                    if(err) throw err;
+                    if (err) throw err;
                     Collections.Posts.update({_id: postId}, {$set: {picture: fileObj._id}});
                 });
             }
