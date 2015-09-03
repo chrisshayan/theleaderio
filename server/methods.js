@@ -316,25 +316,25 @@ apis.pointsLastSixMonths = function () {
         }
     ]);
 
+
+
     var report = [];
     var now = moment(new Date());
-    report.push({
-        time: now.format("YYYYMM"),
-        year: now.format("YYYY"),
-        month: now.format("MM"),
-        score: 0
-    });
-
-    _.each(_.range(1, 6), function (m) {
+    _.each(_.range(0, 6), function (m) {
         var d = now.clone().subtract(m, 'month');
-
-        var score = _.findWhere(result, {year: m.year, month: m.month});
-
+        var year = d.format("YYYY");
+        var month = d.format("MM");
+        var score = 0;
+        _.each(result, function(r) {
+             if(r._id.year == parseInt(year) && r._id.month == parseInt(month)) {
+                 score = r.score;
+             }
+        });
         report.push({
             time: d.format("YYYYMM"),
-            year: d.format("YYYY"),
-            month: d.format("MM"),
-            score: score ? score.score : 0
+            year: year,
+            month: month,
+            score: score
         });
     });
 

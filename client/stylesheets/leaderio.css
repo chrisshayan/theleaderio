@@ -303,3 +303,7 @@ button.loadmore {
     padding: 40px 0;
     text-align: center;
 }
+
+.survey-point {
+    margin: 10px auto;
+}

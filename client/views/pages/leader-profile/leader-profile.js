@@ -12,6 +12,9 @@ AutoForm.hooks({
         }
     },
     takeSurveyForm: {
+        onError: function(a,b,c) {
+            console.log(a, b, c);
+        },
         onSuccess: function () {
             Router.go('dashboard');
             toastr.success("Send survey successful");
