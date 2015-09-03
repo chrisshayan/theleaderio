@@ -130,7 +130,7 @@ apis.sendLeaderInvitation = function (requestId) {
             var token = IZToken.generate(invitee, 24 * 60 * 60);
             if (!token) return;
             var inviter = Meteor.users.findOne({_id: self.userId});
-            var leaderName = inviter.profile.firstName;
+            var leaderName = inviter.profile.firstName + " " + inviter.profile.lastName;
             var inviteeName = invitee.firstName;
             var link = Meteor.absoluteUrl("signup-leader/" + token);
             var params = {leaderName: leaderName, invitee: inviteeName, confirmationUrl: link};
