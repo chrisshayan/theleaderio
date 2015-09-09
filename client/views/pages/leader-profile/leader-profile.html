@@ -98,213 +98,67 @@
 
 <template name="surveySlider">
     <div class="container-slider">
-        {{#autoForm collection="Collections.Surveys" id="takeSurveyForm" type="insert"}}
-            <section class="slider">
-                <div class="slide slide--current" data-content="content-1">
-                    <div class="slide__mover">
-                        <div class="zoomer flex-center">
-                            <div class="preview">
-                                <i class="flaticon-goal5"></i>
-
-                                <h1>Goals and Purpose</h1>
-                            </div>
-                        </div>
-                    </div>
-                    <h2 class="slide__title">
-                        Does Leader set goals generally?
-                        <div class="clear survey-point">
-                            {{> afQuickField name='goalRating' }}
-                        </div>
-                    </h2>
-                </div>
-                <div class="slide" data-content="content-2">
-                    <div class="slide__mover">
-                        <div class="zoomer flex-center">
-                            <div class="preview">
-                                <i class="flaticon-businessman"></i>
-
-                                <h1>Meetings</h1>
-                            </div>
-                        </div>
-                    </div>
-                    <h2 class="slide__title">
-                        Does Leader handle/define meetings properly?
-                        <div class="clear survey-point">
-                            {{> afQuickField name='meetingRating' }}
-                        </div>
-                    </h2>
-                </div>
-                <div class="slide" data-content="content-3">
-                    <div class="slide__mover">
-                        <div class="zoomer flex-center">
-                            <div class="preview">
-                                <i class="flaticon-rule3"></i>
-
-                                <h1>Ground rules and norms</h1>
-                            </div>
-                        </div>
-                    </div>
-                    <h2 class="slide__title">
-                        Does Leader set Ground rules and norms?
-                        <div class="clear survey-point">
-                            {{> afQuickField name='groundRulesRating' }}
-                        </div>
-                    </h2>
-                </div>
-                <div class="slide" data-content="content-4">
-                    <div class="slide__mover">
-                        <div class="zoomer flex-center">
-                            <div class="preview">
-                                <i class="flaticon-two210"></i>
-
-                                <h1>Communication</h1>
-                            </div>
-                        </div>
-                    </div>
-                    <h2 class="slide__title">
-                        Does Leader communicate properly?
-                        <div class="clear survey-point">
-                            {{> afQuickField name='communicationRating' }}
-                        </div>
-                    </h2>
-                </div>
-                <div class="slide" data-content="content-5">
-                    <div class="slide__mover">
-                        <div class="zoomer flex-center">
-                            <div class="preview">
-                                <i class="flaticon-tie13"></i>
-
-                                <h1>Leadership</h1>
-                            </div>
-                        </div>
-                    </div>
-                    <h2 class="slide__title">
-                        Does Leader lead properly?
-                        <div class="clear survey-point">
-                            {{> afQuickField name='leadershipRating' }}
-                        </div>
-                    </h2>
-                </div>
-                <div class="slide" data-content="content-6">
-                    <div class="slide__mover">
-                        <div class="zoomer flex-center">
-                            <div class="preview">
-                                <i class="flaticon-working2"></i>
-
-                                <h1>Workload/ Distribution of work</h1>
-                            </div>
-                        </div>
-                    </div>
-                    <h2 class="slide__title">
-                        Does Leader help on workload and fair distribution of work?
-                        <div class="clear survey-point">
-                            {{> afQuickField name='workloadRating' }}
-                        </div>
-                    </h2>
-                </div>
-                <div class="slide" data-content="content-7">
-                    <div class="slide__mover">
-                        <div class="zoomer flex-center">
-                            <div class="preview">
-                                <i class="flaticon-energy28"></i>
-
-                                <h1>Energy/Commitment Level</h1>
-                            </div>
-                        </div>
-                    </div>
-                    <h2 class="slide__title">
-                        Does Leader committed to work and is he passionate about it?
-                        <div class="clear survey-point">
-                            {{> afQuickField name='energyRating' }}
-                        </div>
-                    </h2>
-                </div>
-                <div class="slide" data-content="content-8">
-                    <div class="slide__mover">
-                        <div class="zoomer flex-center">
-                            <div class="preview">
-                                <i class="flaticon-women47"></i>
-
-                                <h1>Management of Stress</h1>
-                            </div>
-                        </div>
-                    </div>
-                    <h2 class="slide__title">
-                        Is Leader handling the stress as a facade?
-                        <div class="clear survey-point">
-                            {{> afQuickField name='stressRating' }}
-                        </div>
-                    </h2>
-                </div>
-                <div class="slide" data-content="content-9">
-                    <div class="slide__mover">
-                        <div class="zoomer flex-center">
-                            <div class="preview">
-                                <i class="flaticon-hammers4"></i>
-
-                                <h1>Decision Making</h1>
-                            </div>
-                        </div>
-                    </div>
-                    <h2 class="slide__title">
-                        Is Leader able to make decision in a fair way?
-                        <div class="clear survey-point">
-                            {{> afQuickField name='decisionRating' }}
-                        </div>
-                    </h2>
-                </div>
-                <div class="slide" data-content="content-10">
-                    <div class="slide__mover">
-                        <div class="zoomer flex-center">
-                            <div class="preview">
-                                <i class="flaticon-job16"></i>
-
-                                <h1>Respect for differences/diversity</h1>
-                            </div>
-                        </div>
-                    </div>
-                    <h2 class="slide__title">
-                        Does he respect to differences and diversity?
-                        <div class="clear survey-point">
-                            {{> afQuickField name='respectRating' }}
-                        </div>
-                    </h2>
-                </div>
-                <div class="slide" data-content="content-11">
-                    <div class="slide__mover">
-                        <div class="zoomer flex-center">
-                            <div class="preview">
-                                <i class="flaticon-puzzle-piece1"></i>
-
-                                <h1>Management of conflict</h1>
-                            </div>
-                        </div>
-                    </div>
-                    <h2 class="slide__title">
-                        Does Leader handle the conflicts properly?
-                        <div class="clear survey-point">
-                            {{> afQuickField name='conflictRating' }}
-                        </div>
-                    </h2>
-                </div>
-                <nav class="slider__nav">
+        <section class="slider">
+            {{#each questions}}
+                {{> slideSurvey}}
+            {{/each}}
+            <nav class="slider__nav">
                 <span class="button button--nav-prev">
                     <i class="fa fa-arrow-left"></i>
                 </span>
-                    <strong><span class="current-slide">1</span>/11</strong>
+                <strong><span class="current-slide">1</span>/11</strong>
                 <span class="button button--nav-next">
                     <i class="fa fa-arrow-right"></i>
                 </span>
-                </nav>
-            </section>
-            <!-- /slider-->
-            <div class="content" style="display: none">
-                <button class="button--close"></button>
-            </div>
-            <div class="modal-footer">
-                <a href="{{pathFor 'dashboard'}}" class="btn btn-default">Close</a>
-                <button type="submit" class="btn btn-primary">Send</button>
-            </div>
-        {{/autoForm}}
+            </nav>
+        </section>
+        <!-- /slider-->
+        <div class="content" style="display: none">
+            <button class="button--close"></button>
+        </div>
+        <div class="modal-footer">
+            <a href="{{pathFor 'dashboard'}}" class="btn btn-default">Close</a>
+            <button type="submit" class="btn btn-primary">Send</button>
+        </div>
     </div>
+</template>
+
+<template name="slideSurvey">
+    <div class="slide {{slideClass}}" data-content="content-{{index}}">
+        <div class="slide__mover">
+            <div class="zoomer flex-center">
+                <div class="preview">
+                    <i class="{{questionIcon}}"></i>
+
+                    <h1>{{title}}</h1>
+                </div>
+            </div>
+        </div>
+        <h2 class="slide__title">
+            {{question}}
+            <div class="clear survey-point">
+                {{> ratingSurveys type=type }}
+            </div>
+        </h2>
+    </div>
+</template>
+
+
+<template name="ratingSurveys">
+    <div class="form-group" data-required="true">
+        <div class="af-radio-group">
+            {{#each range}}
+                {{> ratingItem}}
+            {{/each}}
+
+        </div>
+    </div>
+</template>
+
+
+<template name="ratingItem">
+    <div class="iradio radio-inline fix-indent">
+        <input type="radio" value="{{this}}" name="{{../type}}" id="{{../type}}-{{this}}">
+    </div>
+    <label for="{{../type}}">{{this}}</label>
 </template>

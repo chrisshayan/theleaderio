@@ -1,3 +1,111 @@
+function pointRange(start, end) {
+    var result = [];
+    if (end < start) return result;
+
+    var length = end - start + 1;
+    while (length) {
+        result.push(start);
+        start++;
+        length--;
+    }
+    return result;
+}
+
+var START = 1;
+var END = 5;
+
+var QUESTIONS = [
+    {
+        index: 0,
+        title: 'Goals and Purpose',
+        question: 'Does Leader set goals generally?',
+        type: 'goalRating',
+        slideClass: 'slide--current',
+        questionIcon: 'flaticon-goal5'
+    },
+    {
+        index: 1,
+        title: 'Meetings',
+        question: 'Does Leader handle/define meetings properly?',
+        type: 'meetingRating',
+        slideClass: '',
+        questionIcon: 'flaticon-businessman'
+    },
+    {
+        index: 2,
+        title: 'Ground rules and norms',
+        question: 'Does Leader set Ground rules and norms?',
+        type: 'groundRulesRating',
+        slideClass: '',
+        questionIcon: 'flaticon-rule3'
+    },
+    {
+        index: 3,
+        title: 'Communication',
+        question: 'Does Leader communicate properly?',
+        type: 'communicationRating',
+        slideClass: '',
+        questionIcon: 'flaticon-two210'
+    },
+    {
+        index: 4,
+        title: 'Leadership',
+        question: 'Does Leader lead properly?',
+        type: 'leadershipRating',
+        slideClass: '',
+        questionIcon: 'flaticon-tie13'
+    },
+    {
+        index: 5,
+        title: 'Workload/ Distribution of work',
+        question: 'Does Leader help on workload and fair distribution of work?',
+        type: 'workloadRating',
+        slideClass: '',
+        questionIcon: 'flaticon-working2'
+    },
+    {
+        index: 6,
+        title: 'Energy/Commitment Level',
+        question: 'Does Leader committed to work and is he passionate about it?',
+        type: 'energyRating',
+        slideClass: '',
+        questionIcon: 'flaticon-energy28'
+    },
+    {
+        index: 7,
+        title: 'Management of Stress',
+        question: 'Is Leader handling the stress as a facade?',
+        type: 'stressRating',
+        slideClass: '',
+        questionIcon: 'flaticon-women47'
+    },
+    {
+        index: 8,
+        title: 'Decision Making',
+        question: 'Is Leader able to make decision in a fair way?',
+        type: 'decisionRating',
+        slideClass: '',
+        questionIcon: 'flaticon-hammers4'
+    },
+    {
+        index: 9,
+        title: 'Respect for differences/diversity',
+        question: 'Does he respect to differences and diversity?',
+        type: 'respectRating',
+        slideClass: '',
+        questionIcon: 'flaticon-job16'
+    },
+    {
+        index: 10,
+        title: 'Management of conflict',
+        question: 'Does Leader handle the conflicts properly?',
+        type: 'conflictRating',
+        slideClass: '',
+        questionIcon: 'flaticon-puzzle-piece1'
+    }
+
+];
+
 AutoForm.hooks({
     sendFeedbackForm: {
         onSuccess: function () {
@@ -12,7 +120,7 @@ AutoForm.hooks({
         }
     },
     takeSurveyForm: {
-        onError: function(a,b,c) {
+        onError: function (a, b, c) {
             console.log(a, b, c);
         },
         onSuccess: function () {
@@ -94,10 +202,40 @@ Template.sendFeedbackModal.onRendered(function () {
     });
 });
 
+Template.surveySlider.onCreated(function () {
+    //this.questions = questions;
+});
+
+Template.surveySlider.helpers({
+    questions: function () {
+        return QUESTIONS;
+    }
+});
+
+Template.surveySlider.events({});
+
 Template.takeSurveyModal.onRendered(function () {
     $("#takeSurveyModal").modal("show");
-    $('.i-checks').iCheck({
+
+    $('input').iCheck({
         checkboxClass: 'icheckbox_square-green',
         radioClass: 'iradio_square-green'
     });
 });
+
+Template.ratingSurveys.helpers({
+    range: function () {
+        return pointRange(START, END);
+    }
+});
+
+Template.ratingSurveys.events({
+    'ifChecked input': function () {
+        $('.button--nav-next .fa-arrow-right').trigger('click');
+    }
+});
+
+
+
+
+

@@ -2,26 +2,26 @@ Session.set("surveyCompleted", false);
 
 AutoForm.hooks({
     insertSurveyForm: {
-        onSubmit: function(doc) {
+        onSubmit: function (doc) {
             var token = Router.current().params.token;
             if (!token) return false;
             Meteor.call('submitSurvey', {
                 survey: doc,
                 token: token
-            }, function(err, result) {
+            }, function (err, result) {
                 if (err) throw err;
 
                 if (result) {
                     AutoForm.resetForm("insertSurveyForm");
                     Session.set("surveyCompleted", true);
                 }
-            })
+            });
             return false;
         }
     }
 });
 
-Template.survey.onRendered(function() {
+Template.survey.onRendered(function () {
     $('.i-checks').iCheck({
         checkboxClass: 'icheckbox_square-green',
         radioClass: 'iradio_square-green'
@@ -29,17 +29,17 @@ Template.survey.onRendered(function() {
 });
 
 Template.survey.helpers({
-    isCompleted: function() {
+    isCompleted: function () {
         return Session.get("surveyCompleted");
     },
-    leaderDashboardUrl: function() {
-    	var token = Router.current().params.token;
-    	return Router.url('dashboardForEmployee', {token: token});
+    leaderDashboardUrl: function () {
+        var token = Router.current().params.token;
+        return Router.url('dashboardForEmployee', {token: token});
     }
 })
 
 
-Template.surveySlider.onRendered(function() {
+Template.surveySlider.onRendered(function () {
     $("#takeSurveyModal").modal("show");
     //$('.i-checks').iCheck({
     //    checkboxClass: 'icheckbox_square-green',
@@ -56,26 +56,35 @@ Template.surveySlider.onRendered(function() {
      * Copyright 2015, Codrops
      * http://www.codrops.com
      */
-    ;(function(window) {
+    ;
+    (function (window) {
 
         'use strict';
 
         var bodyEl = document.body,
             docElem = window.document.documentElement,
-            support = { transitions: Modernizr.csstransitions },
+            support = {transitions: Modernizr.csstransitions},
         // transition end event name
-            transEndEventNames = { 'WebkitTransition': 'webkitTransitionEnd', 'MozTransition': 'transitionend', 'OTransition': 'oTransitionEnd', 'msTransition': 'MSTransitionEnd', 'transition': 'transitionend' },
-            transEndEventName = transEndEventNames[ Modernizr.prefixed( 'transition' ) ],
-            onEndTransition = function( el, callback ) {
-                var onEndCallbackFn = function( ev ) {
-                    if( support.transitions ) {
-                        if( ev.target != this ) return;
-                        this.removeEventListener( transEndEventName, onEndCallbackFn );
+            transEndEventNames = {
+                'WebkitTransition': 'webkitTransitionEnd',
+                'MozTransition': 'transitionend',
+                'OTransition': 'oTransitionEnd',
+                'msTransition': 'MSTransitionEnd',
+                'transition': 'transitionend'
+            },
+            transEndEventName = transEndEventNames[Modernizr.prefixed('transition')],
+            onEndTransition = function (el, callback) {
+                var onEndCallbackFn = function (ev) {
+                    if (support.transitions) {
+                        if (ev.target != this) return;
+                        this.removeEventListener(transEndEventName, onEndCallbackFn);
                     }
-                    if( callback && typeof callback === 'function' ) { callback.call(this); }
+                    if (callback && typeof callback === 'function') {
+                        callback.call(this);
+                    }
                 };
-                if( support.transitions ) {
-                    el.addEventListener( transEndEventName, onEndCallbackFn );
+                if (support.transitions) {
+                    el.addEventListener(transEndEventName, onEndCallbackFn);
                 }
                 else {
                     onEndCallbackFn();
@@ -108,16 +117,24 @@ Template.surveySlider.onRendered(function() {
             bodyScale = isFirefox ? false : 3;
 
         // some helper functions:
-        function scrollX() { return window.pageXOffset || docElem.scrollLeft; }
-        function scrollY() { return window.pageYOffset || docElem.scrollTop; }
+        function scrollX() {
+            return window.pageXOffset || docElem.scrollLeft;
+        }
+
+        function scrollY() {
+            return window.pageYOffset || docElem.scrollTop;
+        }
+
         // from http://www.sberry.me/articles/javascript-event-throttling-debouncing
         function throttle(fn, delay) {
             var allowSample = true;
 
-            return function(e) {
+            return function (e) {
                 if (allowSample) {
                     allowSample = false;
-                    setTimeout(function() { allowSample = true; }, delay);
+                    setTimeout(function () {
+                        allowSample = true;
+                    }, delay);
                     fn(e);
                 }
             };
@@ -130,25 +147,29 @@ Template.surveySlider.onRendered(function() {
         // event binding
         function initEvents() {
             // navigation
-            navRightCtrl.addEventListener('click', function() { navigate('right'); });
-            navLeftCtrl.addEventListener('click', function() { navigate('left'); });
+            navRightCtrl.addEventListener('click', function () {
+                navigate('right');
+            });
+            navLeftCtrl.addEventListener('click', function () {
+                navigate('left');
+            });
 
             // window resize
-            window.addEventListener('resize', throttle(function(ev) {
+            window.addEventListener('resize', throttle(function (ev) {
                 // reset window sizes
                 win = {width: window.innerWidth, height: window.innerHeight};
 
                 // reset transforms for the items (slider items)
-                items.forEach(function(item, pos) {
-                    if( pos === current ) return;
+                items.forEach(function (item, pos) {
+                    if (pos === current) return;
                     var el = item.querySelector('.slide__mover');
-                    dynamics.css(el, { translateX: el.offsetWidth });
+                    dynamics.css(el, {translateX: el.offsetWidth});
                 });
             }, 10));
 
             // keyboard navigation events
-            document.addEventListener( 'keydown', function( ev ) {
-                if( isOpen ) return;
+            document.addEventListener('keydown', function (ev) {
+                if (isOpen) return;
                 var keyCode = ev.keyCode || ev.which;
                 switch (keyCode) {
                     case 37:
@@ -158,12 +179,12 @@ Template.surveySlider.onRendered(function() {
                         navigate('right');
                         break;
                 }
-            } );
+            });
         }
 
         // opens one item
         function openItem(item) {
-            if( isOpen ) return;
+            if (isOpen) return;
             isOpen = true;
 
             // the element that will be transformed
@@ -175,15 +196,15 @@ Template.surveySlider.onRendered(function() {
             // apply transforms
             applyTransforms(zoomer);
             // also scale the body so it looks the camera moves to the item.
-            if( bodyScale ) {
-                dynamics.animate(bodyEl, { scale: bodyScale }, { type: dynamics.easeInOut, duration: 500 });
+            if (bodyScale) {
+                dynamics.animate(bodyEl, {scale: bodyScale}, {type: dynamics.easeInOut, duration: 500});
             }
             // after the transition is finished:
-            onEndTransition(zoomer, function() {
+            onEndTransition(zoomer, function () {
                 // reset body transform
-                if( bodyScale ) {
+                if (bodyScale) {
                     dynamics.stop(bodyEl);
-                    dynamics.css(bodyEl, { scale: 1 });
+                    dynamics.css(bodyEl, {scale: 1});
 
                     // fix for safari (allowing fixed children to keep position)
                     bodyEl.style.WebkitTransform = 'none';
@@ -213,7 +234,7 @@ Template.surveySlider.onRendered(function() {
             classie.remove(contentItem, 'content__item--current');
             classie.remove(bodyEl, 'noscroll');
 
-            if( bodyScale ) {
+            if (bodyScale) {
                 // reset fix for safari (allowing fixed children to keep position)
                 bodyEl.style.WebkitTransform = '';
                 bodyEl.style.transform = '';
@@ -225,7 +246,7 @@ Template.surveySlider.onRendered(function() {
             /* fix for safari flickering */
 
             // wait for the inner content to finish the transition
-            onEndTransition(contentItem, function(ev) {
+            onEndTransition(contentItem, function (ev) {
                 classie.remove(this, 'content__item--reset');
 
                 // reset scrolling permission
@@ -241,16 +262,16 @@ Template.surveySlider.onRendered(function() {
                 applyTransforms(zoomer);
 
                 // animate/scale down the item
-                setTimeout(function() {
+                setTimeout(function () {
                     classie.remove(zoomer, 'zoomer--notrans');
                     classie.remove(zoomer, 'zoomer--active');
                     zoomer.style.WebkitTransform = 'translate3d(0,0,0) scale3d(1,1,1)';
                     zoomer.style.transform = 'translate3d(0,0,0) scale3d(1,1,1)';
                 }, 25);
 
-                if( bodyScale ) {
-                    dynamics.css(bodyEl, { scale: bodyScale });
-                    dynamics.animate(bodyEl, { scale: 1 }, {
+                if (bodyScale) {
+                    dynamics.css(bodyEl, {scale: bodyScale});
+                    dynamics.animate(bodyEl, {scale: 1}, {
                         type: dynamics.easeInOut,
                         duration: 500
                     });
@@ -266,15 +287,15 @@ Template.surveySlider.onRendered(function() {
             var zoomerArea = el.querySelector('.zoomer__area'),
                 zoomerAreaSize = {width: zoomerArea.offsetWidth, height: zoomerArea.offsetHeight},
                 zoomerOffset = zoomerArea.getBoundingClientRect(),
-                scaleVal = zoomerAreaSize.width/zoomerAreaSize.height < win.width/win.height ? win.width/zoomerAreaSize.width : win.height/zoomerAreaSize.height;
+                scaleVal = zoomerAreaSize.width / zoomerAreaSize.height < win.width / win.height ? win.width / zoomerAreaSize.width : win.height / zoomerAreaSize.height;
 
-            if( bodyScale && !nobodyscale ) {
+            if (bodyScale && !nobodyscale) {
                 scaleVal /= bodyScale;
             }
 
             // apply transform
-            el.style.WebkitTransform = 'translate3d(' + Number(win.width/2 - (zoomerOffset.left+zoomerAreaSize.width/2)) + 'px,' + Number(win.height/2 - (zoomerOffset.top+zoomerAreaSize.height/2)) + 'px,0) scale3d(' + scaleVal + ',' + scaleVal + ',1)';
-            el.style.transform = 'translate3d(' + Number(win.width/2 - (zoomerOffset.left+zoomerAreaSize.width/2)) + 'px,' + Number(win.height/2 - (zoomerOffset.top+zoomerAreaSize.height/2)) + 'px,0) scale3d(' + scaleVal + ',' + scaleVal + ',1)';
+            el.style.WebkitTransform = 'translate3d(' + Number(win.width / 2 - (zoomerOffset.left + zoomerAreaSize.width / 2)) + 'px,' + Number(win.height / 2 - (zoomerOffset.top + zoomerAreaSize.height / 2)) + 'px,0) scale3d(' + scaleVal + ',' + scaleVal + ',1)';
+            el.style.transform = 'translate3d(' + Number(win.width / 2 - (zoomerOffset.left + zoomerAreaSize.width / 2)) + 'px,' + Number(win.height / 2 - (zoomerOffset.top + zoomerAreaSize.height / 2)) + 'px,0) scale3d(' + scaleVal + ',' + scaleVal + ',1)';
         }
 
         // navigate the slider
@@ -283,12 +304,15 @@ Template.surveySlider.onRendered(function() {
                 currentEl = itemCurrent.querySelector('.slide__mover'),
                 currentTitleEl = itemCurrent.querySelector('.slide__title');
 
+
             // update new current value
-            if( dir === 'right' ) {
-                current = current < itemsTotal-1 ? current + 1 : 0;
+            if (dir === 'right') {
+                if (current >= itemsTotal - 1) return false;
+                current = current < itemsTotal - 1 ? current + 1 : 0;
             }
             else {
-                current = current > 0 ? current - 1 : itemsTotal-1;
+                if (current <= 0) return false;
+                current = current > 0 ? current - 1 : itemsTotal - 1;
             }
 
             var itemNext = items[current],
@@ -296,52 +320,62 @@ Template.surveySlider.onRendered(function() {
                 nextTitleEl = itemNext.querySelector('.slide__title');
 
             // animate the current element out
-            dynamics.animate(currentEl, { opacity: 0, translateX: dir === 'right' ? -1*currentEl.offsetWidth/2 : currentEl.offsetWidth/2, rotateZ: dir === 'right' ? -10 : 10 }, {
+            dynamics.animate(currentEl, {
+                opacity: 0,
+                translateX: dir === 'right' ? -1 * currentEl.offsetWidth / 2 : currentEl.offsetWidth / 2,
+                rotateZ: dir === 'right' ? -10 : 10
+            }, {
                 type: dynamics.spring,
-                duration: 2000,
+                duration: 1500,
                 friction: 600,
-                complete: function() {
-                    dynamics.css(itemCurrent, { opacity: 0, visibility: 'hidden' });
+                complete: function () {
+                    dynamics.css(itemCurrent, {opacity: 0, visibility: 'hidden'});
                 }
             });
 
             // animate the current title out
-            dynamics.animate(currentTitleEl, { translateX: dir === 'right' ? -250 : 250, opacity: 0 }, {
+            dynamics.animate(currentTitleEl, {translateX: dir === 'right' ? -250 : 250, opacity: 0}, {
                 type: dynamics.bezier,
-                points: [{"x":0,"y":0,"cp":[{"x":0.2,"y":1}]},{"x":1,"y":1,"cp":[{"x":0.3,"y":1}]}],
+                points: [{"x": 0, "y": 0, "cp": [{"x": 0.2, "y": 1}]}, {"x": 1, "y": 1, "cp": [{"x": 0.3, "y": 1}]}],
                 duration: 450
             });
 
             // set the right properties for the next element to come in
-            dynamics.css(itemNext, { opacity: 1, visibility: 'visible' });
-            dynamics.css(nextEl, { opacity: 0, translateX: dir === 'right' ? nextEl.offsetWidth/2 : -1*nextEl.offsetWidth/2, rotateZ: dir === 'right' ? 10 : -10 });
+            dynamics.css(itemNext, {opacity: 1, visibility: 'visible'});
+            dynamics.css(nextEl, {
+                opacity: 0,
+                translateX: dir === 'right' ? nextEl.offsetWidth / 2 : -1 * nextEl.offsetWidth / 2,
+                rotateZ: dir === 'right' ? 10 : -10
+            });
 
             // animate the next element in
-            dynamics.animate(nextEl, { opacity: 1, translateX: 0 }, {
+            dynamics.animate(nextEl, {opacity: 1, translateX: 0}, {
                 type: dynamics.spring,
-                duration: 2000,
+                duration: 1500,
                 friction: 600,
-                complete: function() {
-                    items.forEach(function(item) { classie.remove(item, 'slide--current'); });
+                complete: function () {
+                    items.forEach(function (item) {
+                        classie.remove(item, 'slide--current');
+                    });
                     classie.add(itemNext, 'slide--current');
                 }
             });
 
             // set the right properties for the next title to come in
-            dynamics.css(nextTitleEl, { translateX: dir === 'right' ? 250 : -250, opacity: 0 });
+            dynamics.css(nextTitleEl, {translateX: dir === 'right' ? 250 : -250, opacity: 0});
             // animate the next title in
-            dynamics.animate(nextTitleEl, { translateX: 0, opacity: 1 }, {
+            dynamics.animate(nextTitleEl, {translateX: 0, opacity: 1}, {
                 type: dynamics.bezier,
-                points: [{"x":0,"y":0,"cp":[{"x":0.2,"y":1}]},{"x":1,"y":1,"cp":[{"x":0.3,"y":1}]}],
+                points: [{"x": 0, "y": 0, "cp": [{"x": 0.2, "y": 1}]}, {"x": 1, "y": 1, "cp": [{"x": 0.3, "y": 1}]}],
                 duration: 650
             });
 
-            $(".current-slide").html(current+1);
+            $(".current-slide").html(current + 1);
         }
 
         // disallow scrolling (on the scrollContainer)
         function noscroll() {
-            if(!lockScroll) {
+            if (!lockScroll) {
                 lockScroll = true;
                 xscroll = scrollContainer.scrollLeft;
                 yscroll = scrollContainer.scrollTop;
