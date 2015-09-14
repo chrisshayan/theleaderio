@@ -412,7 +412,7 @@ apis.getAdminReport = function() {
     result.survey = Collections.Surveys.find().count();
 
     result.feedback.negative = Collections.Feedbacks.find({point: {$lte: 0}}).count();
-    result.feedback.positive = Collections.Feedbacks.find({point: {gt: 0}}).count();
+    result.feedback.positive = Collections.Feedbacks.find({point: {$gt: 0}}).count();
 
     result.industries = Collections.Industries.find().map(function(industry) {
         var count = Meteor.users.find({'profile.industries': industry._id}).count();
