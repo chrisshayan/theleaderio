@@ -19,6 +19,6 @@ Template.adminReport.helpers({
     industries: function() {
         var data = Template.instance().report.get();
         if(!data) return [];
-        return _.sortBy(data.industries, ['count', 'desc']);
+        return _.sortByOrder(data.industries, ['count', 'desc']);
     }
 });
