@@ -380,7 +380,7 @@ apis.publishPost = function (data) {
 };
 
 apis.getAdminReport = function() {
-    if(!this.userId && !checkIsAdmin(this.userId)) return false;
+    if(!this.userId || !checkIsAdmin(this.userId)) return false;
     this.unblock();
     var result = {
         request: {
