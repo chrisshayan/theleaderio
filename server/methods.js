@@ -379,4 +379,49 @@ apis.publishPost = function (data) {
     return false;
 };
 
+apis.getAdminReport = function() {
+    if(!this.userId && !checkIsAdmin(this.userId)) return false;
+    this.unblock();
+    var result = {
+        request: {
+            all: 0,
+            noInvite: 0,
+            invited: 0,
+            connected: 0
+        },
+        user: {
+            leader: 0,
+            employee: 0
+        },
+        survey: 0,
+        feedback: {
+            negative: 0,
+            positive: 0
+        },
+        industries: []
+    };
+
+    result.request.all = Collections.LeaderRequests.find().count();
+    result.request.noInvite = Collections.LeaderRequests.find({status: 1}).count();
+    result.request.invited = Collections.LeaderRequests.find({status: 2}).count();
+    result.request.connected = Collections.LeaderRequests.find({status: 3}).count();
+
+    result.user.leader = Meteor.users.find({roles: 'leader'}).count();
+    result.user.employee = Meteor.users.find({roles: 'employee'}).count();
+
+    result.survey = Collections.Surveys.find().count();
+
+    result.feedback.negative = Collections.Feedbacks.find({point: {$lte: 0}}).count();
+    result.feedback.positive = Collections.Feedbacks.find({point: {gt: 0}}).count();
+
+    result.industries = Collections.Industries.find().map(function(industry) {
+        var count = Meteor.users.find({'profile.industries': industry._id}).count();
+        return {
+            name: industry.name,
+            count: count
+        }
+    });
+    return result;
+}
+
 Meteor.methods(apis);
