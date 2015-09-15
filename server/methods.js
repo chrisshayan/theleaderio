@@ -432,7 +432,7 @@ apis.addEmployees = function(employees) {
 
     _.each(employees, function(e) {
         if(e.email.length <= 0) return;
-        var isExists = Collections.EmployeeRequests.findOne({email: e.email});
+        var isExists = Collections.EmployeeRequests.findOne({email: e.email, createdBy: self.userId});
         if(!isExists) {
             var employee = {
                 firstName: e.firstName,
