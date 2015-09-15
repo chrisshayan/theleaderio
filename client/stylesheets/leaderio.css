@@ -307,3 +307,24 @@ button.loadmore {
 .survey-point {
     margin: 10px auto;
 }
+
+.import-employees {
+    padding: 20px 20%;
+    border: 2px dashed #ddd;
+    text-align: center;
+}
+
+.import-employees-btn {
+    cursor: pointer;
+    position: relative;
+}
+.import-employees-btn input[type="file"]{
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}

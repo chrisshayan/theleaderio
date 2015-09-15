@@ -422,6 +422,30 @@ apis.getAdminReport = function() {
         }
     });
     return result;
+};
+
+apis.addEmployees = function(employees) {
+    var self = this;
+    if(!this.userId || !checkIsLeader(this.userId)) return false;
+    check(employees, [Object]);
+    this.unblock();
+
+    _.each(employees, function(e) {
+        if(e.email.length <= 0) return;
+        var isExists = Collections.EmployeeRequests.findOne({email: e.email});
+        if(!isExists) {
+            var employee = {
+                firstName: e.firstName,
+                lastName: e.lastName,
+                email: e.email,
+                status: 1,
+                createdAt: new Date(),
+                createdBy: self.userId
+            }
+            Collections.EmployeeRequests.insert(employee);
+        }
+    });
+    return true;
 }
 
 Meteor.methods(apis);

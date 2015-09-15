@@ -4,9 +4,10 @@
 		<div class="row">
 			<div class="col-sm-12">
 				<div class="employee-actions clearfix" style="margin: 0 0 20px 0">
-					{{#afModal class="btn btn-primary pull-right" collection="Collections.EmployeeRequests" operation="insert"}}
-                            <i class="fa fa-plus"></i>&nbsp;Add employee
-                        {{/afModal}}
+                    <a href="{{pathFor 'addEmployees'}}" class="btn btn-primary pull-right">
+                        <i class="fa fa-plus"></i>
+                        Add employee
+                    </a>
 
 					<button class="btn btn-success pull-right send-access-links" style="margin: 0 5px" >Send invitations&nbsp;<i class="fa fa-share-alt"></i></button>
 				</div>
@@ -16,7 +17,6 @@
 		</div>
 	</div>
 </template>
-
 
 <template name="employeeRequestActions">
     {{#if isStatus 1}}
