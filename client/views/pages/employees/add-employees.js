@@ -105,7 +105,7 @@ Template.addEmployees.events({
     },
     'submit #add-employees-form': function(e) {
         var employees = AddEmployeesCollection.find({order: {$lt: 10000}});
-        if(employees.count() > 1) {
+        if(employees.count() > 0) {
             Meteor.call('addEmployees', employees.fetch(), function(err, result) {
                 if(err) throw err;
                 if(result) {
