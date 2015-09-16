@@ -97,6 +97,7 @@
 </template>
 
 <template name="surveySlider">
+{{#autoForm collection="Collections.Surveys" id="takeSurveyForm" type="insert"}}
     <div class="container-slider">
         <section class="slider">
             {{#each questions}}
@@ -121,6 +122,7 @@
             <button type="submit" class="btn btn-primary">Send</button>
         </div>
     </div>
+{{/autoForm}}
 </template>
 
 <template name="slideSurvey">
@@ -137,7 +139,7 @@
         <h2 class="slide__title">
             {{question}}
             <div class="clear survey-point">
-                {{> ratingSurveys type=type }}
+                {{> afQuickField name=type}}
             </div>
         </h2>
     </div>

@@ -221,17 +221,15 @@ Template.takeSurveyModal.onRendered(function () {
         checkboxClass: 'icheckbox_square-green',
         radioClass: 'iradio_square-green'
     });
+
+    $('input').on('ifChecked', function() {
+        $('.button--nav-next .fa-arrow-right').trigger('click');
+    })
 });
 
 Template.ratingSurveys.helpers({
     range: function () {
         return pointRange(START, END);
-    }
-});
-
-Template.ratingSurveys.events({
-    'ifChecked input': function () {
-        $('.button--nav-next .fa-arrow-right').trigger('click');
     }
 });
 
