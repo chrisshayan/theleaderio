@@ -38,13 +38,11 @@ Template.mainLayout.rendered = function(){
 
     // FIXED-SIDEBAR
     // Uncomment this if you want to have fixed left navigation
-/*
-     $('body').addClass('fixed-sidebar');
-     $('.sidebar-collapse').slimScroll({
-         height: '100%',
-         railOpacity: 0.9
-     });
-*/
+    // $('body').addClass('fixed-sidebar');
+    // $('.sidebar-collapse').slimScroll({
+    //     height: '100%',
+    //     railOpacity: 0.9
+    // });
 
     // BOXED LAYOUT
     // Uncomment this if you want to have boxed layout

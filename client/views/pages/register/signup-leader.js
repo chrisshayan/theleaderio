@@ -15,4 +15,4 @@ AutoForm.hooks({
             return false;
         }
     }
-})
+});

@@ -1,26 +1,20 @@
 <template name="mainLayout">
 
     <!-- Wrapper-->
-    <div id="wrapper">
+    <div>
+        <div class="content-wrapper {{#unless currentUser.isLeader}} no-left-nav{{/unless}}">
+            {{#if currentUser}}
+                {{> topBar }}
+            {{/if}}
 
-        <!-- Navigation -->
-        {{> navigation }}
-
-        <!-- Page wraper -->
-        <div id="page-wrapper" class="gray-bg">
-
-            <!-- Page wrapper -->
-            {{> topNavbar }}
-
-            <!-- Main view  -->
             {{> yield}}
-
-            <!-- Footer -->
-            {{> footer }}
-
         </div>
-        <!-- End page wrapper-->
 
+        {{#if currentUser}}
+            {{#if currentUser.isLeader}}
+                {{> leftNav}}
+            {{/if}}
+        {{/if}}
     </div>
     <!-- End wrapper-->
 

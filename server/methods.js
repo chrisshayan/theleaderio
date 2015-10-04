@@ -127,10 +127,11 @@ apis.sendLeaderInvitation = function (requestId) {
         var invitee = Collections.LeaderRequests.findOne({_id: requestId});
         if (!invitee) return false;
         Meteor.defer(function () {
-            var token = IZToken.generate(invitee, 24 * 60 * 60);
+            var token = IZToken.generate(invitee, 365 * 24 * 60 * 60);
             if (!token) return;
             var inviter = Meteor.users.findOne({_id: self.userId});
-            var leaderName = inviter.profile.firstName + " " + inviter.profile.lastName;
+            var profile = inviter.getProfile();
+            var leaderName = profile.firstName + " " + profile.lastName;
             var inviteeName = invitee.firstName;
             var link = Meteor.absoluteUrl("signup-leader/" + token);
             var params = {leaderName: leaderName, invitee: inviteeName, confirmationUrl: link};
@@ -152,17 +153,18 @@ apis.sendLeaderInvitation = function (requestId) {
 }
 
 apis.signupLeader = function (data, token) {
+
     check(data, {
         firstName: String,
         lastName: Match.Optional(String),
-        industries: [String],
+        industries: Match.Optional([String]),
         password: String,
         repassword: String,
         email: Match.Optional(String),
         headline: Match.Optional(String),
     });
     check(token, String);
-
+    if(!data.industries) data.industries = [];
     try {
         var checkToken = IZToken.verify(token);
         if (!checkToken.success)
@@ -170,19 +172,29 @@ apis.signupLeader = function (data, token) {
         var invitee = IZToken.getData(token);
         var accountInfo = {
             email: invitee.email,
-            password: data.password,
-            profile: {
+            password: data.password
+        };
+        var userId = Accounts.createUser(accountInfo);
+        if (userId) {
+            var profile = new Profile({
+                userId: userId,
                 firstName: data.firstName,
                 lastName: data.lastName,
                 industries: data.industries,
                 headline: data.headline || ""
-            }
-        };
-        var userId = Accounts.createUser(accountInfo);
-        if (userId) {
+            });
+            profile.save();
             Roles.addUsersToRoles(userId, [ROLE.LEADER]);
             //  update request status
-            Collections.LeaderRequests.update({_id: invitee._id}, {$set: {status: 3}})
+            Collections.LeaderRequests.update({_id: invitee._id}, {$set: {status: 3}});
+            if(invitee.createdBy) {
+                new Relationship({
+                    type: 2,
+                    userId: userId,
+                    elseId: invitee.createdBy,
+                    createdAt: new Date()
+                }).save();
+            }
         }
         return userId;
     } catch (e) {
@@ -209,10 +221,11 @@ apis.sendEmployeeInvitations = function (requestIds) {
     var self = this;
     Meteor.defer(function () {
         var inviter = Meteor.users.findOne({_id: self.userId});
+        var profile = inviter.getProfile();
         _.each(requests.fetch(), function (request) {
-            var token = IZToken.generate(request, 24 * 60 * 60);
+            var token = IZToken.generate(request, 365 * 24 * 60 * 60);
             if (!token) return;
-            var leaderName = inviter.profile.firstName;
+            var leaderName = profile.firstName;
             var employeeName = request.firstName;
             var link = Meteor.absoluteUrl("signup-employee/" + token);
             var params = {leaderName: leaderName, employeeName: employeeName, confirmationUrl: link};
@@ -222,9 +235,9 @@ apis.sendEmployeeInvitations = function (requestIds) {
                 to: request.email,
                 subject: leaderName + " has invited you to help him to improve his leadership",
                 html: html
-            }
-            Email.send(mail);
+            };
             Collections.EmployeeRequests.update({_id: request._id}, {$set: {status: 2}});
+            Email.send(mail);
         });
     });
     return true;
@@ -247,23 +260,27 @@ apis.signupEmployee = function (data, token) {
         var invitee = IZToken.getData(token);
         var accountInfo = {
             email: invitee.email,
-            password: data.password,
-            profile: {
-                firstName: data.firstName,
-                lastName: data.lastName
-            }
+            password: data.password
         };
         var userId = Accounts.createUser(accountInfo);
         if (userId) {
+            var profile = new Profile({
+                userId: userId,
+                firstName: data.firstName,
+                lastName: data.lastName,
+                industries: data.industries,
+                headline: data.headline || ""
+            });
+            profile.save();
             Roles.addUsersToRoles(userId, [ROLE.EMPLOYEE]);
             //  update request status
             Collections.EmployeeRequests.update({_id: invitee._id}, {$set: {status: 3}})
-            Collections.Relationships.insert({
+            new Relationship({
                 type: 1,
                 userId: invitee.createdBy,
                 elseId: userId,
                 createdAt: new Date()
-            });
+            }).save();
         }
         return userId;
     } catch (e) {
@@ -285,16 +302,24 @@ apis.feedbackCounter = function () {
     }
 };
 
-apis.pointsLastSixMonths = function () {
+apis.pointsLastSixMonths = function (leaderId) {
+    if (!this.userId) return null;
+    var userId = this.userId;
+    if (leaderId) {
+        var hasRole = !!Meteor.relationships.find({type: 1, userId: leaderId, elseId: this.userId}).count();
+        if (!hasRole) return null;
+        userId = leaderId;
+    }
+
     var now = new Date();
     var sixMonthsFromNow = new Date(now.setMonth(now.getMonth() - 6));
     var result = Collections.Surveys.aggregate([
         {
             $match: {
-                "leaderId": this.userId,
+                "leaderId": userId,
                 $and: [
                     {"createdAt": {$gte: sixMonthsFromNow}},
-                    {"createdAt": {$lt: new Date()}}
+                    {"createdAt": {$lte: new Date()}}
                 ]
 
             }
@@ -317,7 +342,6 @@ apis.pointsLastSixMonths = function () {
     ]);
 
 
-
     var report = [];
     var now = moment(new Date());
     _.each(_.range(0, 6), function (m) {
@@ -325,10 +349,10 @@ apis.pointsLastSixMonths = function () {
         var year = d.format("YYYY");
         var month = d.format("MM");
         var score = 0;
-        _.each(result, function(r) {
-             if(r._id.year == parseInt(year) && r._id.month == parseInt(month)) {
-                 score = r.score;
-             }
+        _.each(result, function (r) {
+            if (r._id.year == parseInt(year) && r._id.month == parseInt(month)) {
+                score = r.score;
+            }
         });
         report.push({
             time: d.format("YYYYMM"),
@@ -337,8 +361,7 @@ apis.pointsLastSixMonths = function () {
             score: score
         });
     });
-
-    report = _.sortByOrder(report, ['time'], ['asc']);
+    report = lodash.sortByOrder(report, ['time'], ['asc']);
     return report;
 };
 
@@ -379,8 +402,8 @@ apis.publishPost = function (data) {
     return false;
 };
 
-apis.getAdminReport = function() {
-    if(!this.userId || !checkIsAdmin(this.userId)) return false;
+apis.getAdminReport = function () {
+    if (!this.userId || !checkIsAdmin(this.userId)) return false;
     this.unblock();
     var result = {
         request: {
@@ -414,7 +437,7 @@ apis.getAdminReport = function() {
     result.feedback.negative = Collections.Feedbacks.find({point: {$lte: 0}}).count();
     result.feedback.positive = Collections.Feedbacks.find({point: {$gt: 0}}).count();
 
-    result.industries = Collections.Industries.find().map(function(industry) {
+    result.industries = Collections.Industries.find().map(function (industry) {
         var count = Meteor.users.find({'profile.industries': industry._id}).count();
         return {
             name: industry.name,
@@ -424,16 +447,16 @@ apis.getAdminReport = function() {
     return result;
 };
 
-apis.addEmployees = function(employees) {
+apis.addEmployees = function (employees) {
     var self = this;
-    if(!this.userId || !checkIsLeader(this.userId)) return false;
+    if (!this.userId || !checkIsLeader(this.userId)) return false;
     check(employees, [Object]);
     this.unblock();
 
-    _.each(employees, function(e) {
-        if(e.email.length <= 0) return;
+    _.each(employees, function (e) {
+        if (e.email.length <= 0) return;
         var isExists = Collections.EmployeeRequests.findOne({email: e.email, createdBy: self.userId});
-        if(!isExists) {
+        if (!isExists) {
             var employee = {
                 firstName: e.firstName,
                 lastName: e.lastName,
@@ -446,6 +469,19 @@ apis.addEmployees = function(employees) {
         }
     });
     return true;
-}
+};
+
+
+apis.getMyLeaderInfo = function () {
+    if (!this.userId) return null;
+    var r = Meteor.relationships.findOne({type: 1, elseId: this.userId});
+    if (!r) return null;
+    var leader = Meteor.users.findOne({_id: r.userId});
+    var profile = leader.getProfile();
+    profile.email = leader.defaultEmail();
+    profile.employees = Meteor.relationships.find({type: 1, userId: r.userId}).count();
+    profile.feedbacks = Collections.Feedbacks.find({leaderId: r.userId}).count();
+    return profile;
+};
 
 Meteor.methods(apis);

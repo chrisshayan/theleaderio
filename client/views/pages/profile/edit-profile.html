@@ -1,0 +1,32 @@
+<template name="editProfile">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="page-header clear">
+                <h2>Edit profile</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            {{#autoForm collection="Meteor.profiles" id="editProfileForm" type="update" doc=this}}
+
+                {{> afQuickField name="picture"}}
+
+                {{> afQuickField name="firstName"}}
+
+                {{> afQuickField name="lastName"}}
+
+                {{> afQuickField name="headline"}}
+
+                {{#if currentUser.isLeader}}
+                    {{> afQuickField name="industries"}}
+                {{/if}}
+
+                {{> afQuickField name="bio"}}
+
+                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;Submit</button>
+            {{/autoForm}}
+        </div>
+    </div>
+</template>

@@ -1,84 +1,81 @@
-/**
- * Created by HungNguyen on 8/16/15.
- */
+BlazeComponent.extendComponent({
+    onCreated: function () {
+        var self = this;
+        this.props = new ReactiveDict({});
+        this.props.set('isLoading', false);
+        this.props.set('inc', 10);
+        this.props.set('limit', 10);
+        this.props.set('isHasMore', false);
 
-Template.feeds.onCreated(function () {
-    var instance = Template.instance();
-    //instance.props = new ReactiveDict();
-    instance.subs = [];
-    this.user = Meteor.user();
-    instance.autorun(function () {
-        var sub = instance.subscribe('posts');
-        instance.subs.push(sub);
-    });
-});
+        var userId = Meteor.userId();
 
-
-Template.feeds.onRendered(function () {
-
-});
-
-
-Template.feeds.onDestroyed(function () {
-    _.each(Template.instance().subs, function (sub) {
-        sub.stop();
-    });
-});
-
-Template.feeds.helpers({
-    'feeds': function () {
-        return [];
+        this.autorun(function () {
+            self.props.set('isLoading', true);
+            var sub = FeedCache.subscribe('feeds', self.option());
+            if (sub.ready()) {
+                self.props.set('isLoading', false);
+                var filter = {
+                    followers: userId
+                };
+                if (Meteor.feeds.find(filter).count() > self.props.get('limit')) {
+                    self.props.set('isHasMore', true);
+                } else {
+                    self.props.set('isHasMore', false);
+                }
+            }
+        });
     },
-    posts: function () {
-        var query = {};
-        var options = {limit: 10, skip: 0, sort: {date: -1}};
 
-        return Meteor.posts.find(query, options);
+    option: function () {
+        return {
+            limit: this.props.get('limit'),
+            sort: {
+                createdAt: -1
+            }
+        }
     },
-    hasLeader: function () {
-        return Meteor.user().leader();
-    }
+    /**
+     * BINDING EVENTS
+     */
+    events: function () {
+        return [{
+            'click .load-more': this.loadMore
+        }];
+    },
 
-});
-
-
-Template.feeds.events({
-    'submit #feedback': function (e) {
+    loadMore: function (e) {
         e.preventDefault();
+        var inc = this.props.get('inc');
+        var limit = this.props.get('limit');
+        this.props.set('limit', limit + inc);
+    },
+
+    isLoading: function() {
+        return this.props.get('isLoading');
+    },
+
+    feeds: function () {
         var user = Meteor.user();
-        console.log('submit');
-        var content = e.target.feedContent.value;
-        console.log(content);
-        var posts = new Post({body: content});
+        return user ? user.feeds(this.option()) : [];
+    },
 
-        console.log('poster', posts.poster);
-        if (user.leader())
-            posts.userId = user.leader()._id;
-
-        posts.save();
-
-        e.target.feedContent.value = '';
+    isHasMore: function () {
+        return this.props.get('isHasMore');
     }
-});
 
+}).register('Feeds');
 
-//Template feedItem
+BlazeComponent.extendComponent({
+    onCreated: function () {
 
-Template.feedItem.onCreated(function () {
+    },
 
-});
+    /**
+     * BINDING EVENTS
+     */
+    events: function () {
+        return [{
 
-
-Template.feedItem.onRendered(function () {
-
-});
-
-
-Template.feedItem.onDestroyed(function () {
-
-});
-
-Template.feedItem.helpers({});
-
-
-Template.feedItem.events({});
+        }];
+    }
+}).register('FeedItem');

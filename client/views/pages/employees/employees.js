@@ -1,51 +1,59 @@
-Template.employees.events({
-    'click .send-access-links': function () {
-        Meteor.call('sendEmployeeInvitations', function (err, result) {
-            if (err) {
-                analytics.track('Send Invitation Failed', {
-                    category: 'Leader:' + Meteor.userId(),
-                    label: 'Employee:All'
-                });
-                throw err;
-            }
-            if (result) {
-                toastr.success("success", "Send invitation");
-                analytics.track('Send All Invitation Success', {
-                    category: 'Leader:' + Meteor.userId(),
-                    label: 'Employee:All'
-                });
-            }
-        });
-        swal("Sent!", "We sent invitations to employees", "success")
-    }
-});
-
-
-Template.employeeRequestActions.events({
-    'click .send-invite': function (e) {
-        e.preventDefault();
+BlazeComponent.extendComponent({
+    onCreated: function () {
         var self = this;
+        this.props = new ReactiveDict({});
+        this.props.set('isReady', false);
+        this.props.set('inc', 10);
+        this.props.set('limit', 10);
+        this.props.set('isHasMore', false);
 
-        Meteor.call('sendEmployeeInvitations', [this._id], function (err, result) {
-            if (err) {
-                analytics.track('Send Invitation Failed', {
-                    category: 'Leader:' + Meteor.userId(),
-                    label: 'Employee:' + self._id
-                });
-                throw err;
-            }
-            if (result) {
-                toastr.success("success", "Send invitation");
-                analytics.track('Send Invitation Success', {
-                    category: 'Leader:' + Meteor.userId(),
-                    label: 'Employee:' + self._id
-                });
+        var userId = Meteor.userId();
+
+        this.autorun(function () {
+            var sub = self.subscribe('employees', self.option());
+            if (sub.ready()) {
+                self.props.set('isReady', true);
+                var filter = {
+                    type: 1,
+                    userId: userId
+                };
+                if (Meteor.relationships.find(filter).count() > self.props.get('limit')) {
+                    self.props.set('isHasMore', true);
+                } else {
+                    self.props.set('isHasMore', false);
+                }
             }
         });
+    },
+
+    option: function () {
+        return {
+            limit: this.props.get('limit')
+        }
+    },
+    /**
+     * BINDING EVENTS
+     */
+    events: function () {
+        return [{
+            'click .load-more': this.loadMore
+        }];
+    },
+
+    loadMore: function (e) {
+        e.preventDefault();
+        var inc = this.props.get('inc');
+        var limit = this.props.get('limit');
+        this.props.set('limit', limit + inc);
+    },
+
+    employees: function () {
+        var leader = Meteor.user();
+        return leader ? leader.employees(this.option()) : [];
+    },
+
+    isHasMore: function () {
+        return this.props.get('isHasMore');
     }
-});
-Template.employeeRequestActions.helpers({
-    isStatus: function (status) {
-        return this.status === status;
-    }
-});
+
+}).register('Employees');

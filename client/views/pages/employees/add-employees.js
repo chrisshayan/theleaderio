@@ -103,12 +103,12 @@ Template.addEmployees.events({
             reader.readAsText(file);
         }
     },
-    'submit #add-employees-form': function(e) {
+    'submit #add-employees-form': function (e) {
         var employees = AddEmployeesCollection.find({order: {$lt: 10000}});
-        if(employees.count() > 0) {
-            Meteor.call('addEmployees', employees.fetch(), function(err, result) {
-                if(err) throw err;
-                if(result) {
+        if (employees.count() > 0) {
+            Meteor.call('addEmployees', employees.fetch(), function (err, result) {
+                if (err) throw err;
+                if (result) {
                     Router.go("employees");
                 }
             })
@@ -126,13 +126,19 @@ Template.addEmployeeForm.helpers({
 
 Template.addEmployeeForm.events({
     'keyup .first-name,.last-name,.email ': function (e, tmpl) {
-        var firstName = tmpl.find('.first-name').value;
-        var lastName = tmpl.find('.last-name').value;
-        var email = tmpl.find('.email').value;
-        updateEmployee(this, firstName, lastName, email);
+        if (e.which != 13) {
+            var firstName = tmpl.find('.first-name').value;
+            var lastName = tmpl.find('.last-name').value;
+            var email = tmpl.find('.email').value;
+            updateEmployee(this, firstName, lastName, email);
+        } else {
+            return false;
+        }
+        e.preventDefault();
     },
     'click .remove': function (e, tmpl) {
-        AddEmployeesCollection.remove({_id: this._id});
-
+        e.preventDefault();
+        if (e.offsetX > 0 && e.offsetY)
+            AddEmployeesCollection.remove({_id: this._id});
     }
 });

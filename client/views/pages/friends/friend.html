@@ -1,0 +1,21 @@
+<template name="Friend">
+    <div class="col-lg-6">
+        <div class="contact-box">
+            <div class="row">
+                <div class="col-md-2 col-sm-2 col-xs-4">
+                    <div class="text-center">
+                        {{> Avatar userId=userId size='medium' }}
+                    </div>
+                </div>
+                <div class="col-md-10 col-xs-8">
+                    <h3><strong>{{name}}</strong></h3>
+                    {{#if headline}}
+                    <div><i class="fa fa-briefcase"></i> {{headline}}</div>
+                    {{/if}}
+                    <div><i class="fa fa-envelope"></i> {{email}}</div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+</template>
