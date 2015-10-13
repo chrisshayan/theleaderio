@@ -1,12 +1,17 @@
 <template name="FriendsPage">
+    {{> autoformModals}}
     <div class="row">
         <div class="col-sm-12">
             <div class="page-header clear">
                 <div class="pull-right header-actions">
-                    {{#afModal buttonContent='Send' class="btn btn-primary pull-right" collection="Collections.LeaderRequests" operation="insert"}}
-                        <i class="fa fa-user-plus"></i>&nbsp;Invite leader
-                    {{/afModal}}
-                    {{> autoformModals}}
+                    {{#if isAllowInvite}}
+                        {{#afModal buttonContent='Send' class="btn btn-primary pull-right" collection="Collections.LeaderRequests" operation="insert"}}
+                            <i class="fa fa-user-plus"></i>&nbsp;Invite leader
+                        {{/afModal}}
+                    {{/if}}
+                    <p class="text-muted text-right">
+                        ({{totalInvitation}}/3) friends
+                    </p>
                 </div>
                 <h2>Friends</h2>
             </div>
@@ -59,14 +64,7 @@
 </template>
 
 <template name="leaderRequestActions">
-    {{#if isStatus 1}}
-        <button class="btn btn-primary btn-xs send-invite"><i class="fa fa-envelope-o"></i>&nbsp;invite</button>
-    {{/if}}
     {{#if isStatus 2}}
         <button class="btn btn-primary btn-xs send-invite"><i class="fa fa-envelope-o"></i>&nbsp;re-invite</button>
     {{/if}}
-    {{#afModal class="btn btn-primary btn-xs" collection="Collections.LeaderRequests" operation="update" doc=_id}}<i
-            class="fa fa-edit"></i>{{/afModal}}
-    {{#afModal class="btn btn-danger btn-xs" collection="Collections.LeaderRequests" operation="remove" doc=_id}}<i
-            class="fa fa-trash"></i>{{/afModal}}
 </template>

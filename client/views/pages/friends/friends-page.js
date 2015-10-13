@@ -7,6 +7,14 @@ Template.FriendsPage.helpers({
         var result = Meteor.relationships.find({type: 2}).count() > 0;
         result |= Collections.LeaderRequests.find().count() > 0;
         return result;
+    },
+
+    totalInvitation: function() {
+        return Collections.LeaderRequests.find().count();
+    },
+
+    isAllowInvite: function() {
+        return Collections.LeaderRequests.find().count() < 3;
     }
 });
 

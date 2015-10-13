@@ -46,6 +46,13 @@
                         <span>Statistics</span>
                     </a>
                 </li>
+
+                <li class="{{isActiveRoute regex='requests'}}">
+                    <a href="{{ pathFor 'requests' }}">
+                        <i class="fa fa-ticket"></i>
+                        <span>Requests</span>
+                    </a>
+                </li>
             {{/if}}
         </ul>
     </nav>

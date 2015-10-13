@@ -169,11 +169,6 @@ Router.route('/dashboard', {
             this.render('dashboard');
         else
             this.render('EmployeeDashboard');
-
-        if (user.isAdmin()) {
-            this.layout("blankLayout");
-            this.render('admin');
-        }
     }
 });
 
@@ -205,4 +200,17 @@ Router.route("/take-survey", {
 });
 
 
-
+Router.route('/requests', {
+    name: "requests",
+    fastRender: true,
+    action: function () {
+        this.render('RequestsInvitePage');
+    }
+});
+Router.route('/statistics', {
+    name: "statistics",
+    fastRender: true,
+    action: function () {
+        this.render('statistics');
+    }
+});
