@@ -484,4 +484,20 @@ apis.getMyLeaderInfo = function () {
     return profile;
 };
 
+apis.generateLinkInvitation = function(requestId) {
+    if(this.userId) {
+        check(requestId, String);
+        this.unblock();
+        var user = Meteor.users.findOne({_id: this.userId});
+        if(user.isAdmin()) {
+            var request = Collections.LeaderRequests.findOne({_id: requestId});
+            if(request) {
+                var token = IZToken.generate(request, 365 * 24 * 60 * 60);
+                return Meteor.absoluteUrl("signup-leader/" + token);
+            }
+        }
+    }
+    return '';
+};
+
 Meteor.methods(apis);

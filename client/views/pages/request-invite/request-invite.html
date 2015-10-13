@@ -19,6 +19,9 @@
 </template>
 
 <template name="adminRequestActions">
+    {{#unless isStatus 3}}
+        <button class="btn btn-primary btn-xs generate-link">Generate link</button>
+    {{/unless}}
     {{#if isStatus 1}}
         <button class="btn btn-primary btn-xs send-invite"><i class="fa fa-envelope-o"></i>&nbsp;invite</button>
     {{/if}}

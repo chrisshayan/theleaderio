@@ -11,6 +11,14 @@ Template.adminRequestActions.events({
                 })
             }
         });
+    },
+
+    'click .generate-link': function(e) {
+        e.preventDefault();
+        Meteor.call('generateLinkInvitation', this._id, function(err, link) {
+            if(err) throw err;
+            prompt('Please copy invitation link', link);
+        });
     }
 });
 Template.adminRequestActions.helpers({
