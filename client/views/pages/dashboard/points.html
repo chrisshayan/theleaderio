@@ -4,11 +4,13 @@
            <div class="col-md-2 col-sm-4 dashboard-point">
                <div class="ibox float-e-margins">
                    <div class="ibox-title">
-                       <span class="label label-success pull-right">+5%</span>
+                       {{#if inc 'overall'}}
+                           <span class="label {{incLabel 'overall'}} pull-right">{{inc 'overall'}}%</span>
+                       {{/if}}
                        <h5>Overall</h5>
                    </div>
                    <div class="ibox-content">
-                       <h1 class="no-margins">{{ avgOverall }}</h1>
+                       <h1 class="no-margins">{{ avgPoint 'overall' }}</h1>
                        <div class="stat-percent font-bold text-success">3 <i class="fa fa-bolt"></i></div>
                        <small>Average Point</small>
                    </div>
@@ -17,7 +19,9 @@
            <div class="col-md-2 col-sm-4 dashboard-point">
                <div class="ibox float-e-margins">
                    <div class="ibox-title">
-                       <span class="label label-danger pull-right">-15%</span>
+                        {{#if inc 'goalRating'}}
+                            <span class="label {{incLabel 'goalRating'}} pull-right">{{inc 'goalRating'}}%</span>
+                        {{/if}}
                        <h5>Purpose</h5>
                    </div>
                    <div class="ibox-content">
@@ -30,7 +34,9 @@
            <div class="col-md-2 col-sm-4 dashboard-point">
                <div class="ibox float-e-margins">
                    <div class="ibox-title">
-                       <span class="label label-warning pull-right">0%</span>
+                       {{#if inc 'meetingRating'}}
+                           <span class="label {{incLabel 'meetingRating'}} pull-right">{{inc 'meetingRating'}}%</span>
+                       {{/if}}
                        <h5>Meetings</h5>
                    </div>
                    <div class="ibox-content">
@@ -43,7 +49,9 @@
            <div class="col-md-2 col-sm-4 dashboard-point">
                <div class="ibox float-e-margins">
                    <div class="ibox-title">
-                       <span class="label label-success pull-right">+3%</span>
+                       {{#if inc 'groundRulesRating'}}
+                           <span class="label {{incLabel 'groundRulesRating'}} pull-right">{{inc 'groundRulesRating'}}%</span>
+                       {{/if}}
                        <h5>Rules</h5>
                    </div>
                    <div class="ibox-content">
@@ -56,6 +64,9 @@
            <div class="col-md-2 col-sm-4 dashboard-point">
                <div class="ibox float-e-margins">
                    <div class="ibox-title">
+                       {{#if inc 'communicationRating'}}
+                           <span class="label {{incLabel 'communicationRating'}} pull-right">{{inc 'communicationRating'}}%</span>
+                       {{/if}}
                        <h5>Communication</h5>
                    </div>
                    <div class="ibox-content">
@@ -68,7 +79,9 @@
            <div class="col-md-2 col-sm-4 dashboard-point">
                <div class="ibox float-e-margins">
                    <div class="ibox-title">
-                       <span class="label label-success pull-right">+5%</span>
+                       {{#if inc 'leadershipRating'}}
+                           <span class="label {{incLabel 'leadershipRating'}} pull-right">{{inc 'leadershipRating'}}%</span>
+                       {{/if}}
                        <h5>Leadership</h5>
                    </div>
                    <div class="ibox-content">
@@ -83,7 +96,9 @@
            <div class="col-md-2 col-sm-4 dashboard-point">
                <div class="ibox float-e-margins">
                    <div class="ibox-title">
-                       <span class="label label-success pull-right">+5%</span>
+                       {{#if inc 'workloadRating'}}
+                           <span class="label {{incLabel 'workloadRating'}} pull-right">{{inc 'workloadRating'}}%</span>
+                       {{/if}}
                        <h5>Workload</h5>
                    </div>
                    <div class="ibox-content">
@@ -96,7 +111,9 @@
            <div class="col-md-2 col-sm-4 dashboard-point">
                <div class="ibox float-e-margins">
                    <div class="ibox-title">
-                       <span class="label label-success pull-right">+5%</span>
+                       {{#if inc 'energyRating'}}
+                           <span class="label {{incLabel 'energyRating'}} pull-right">{{inc 'energyRating'}}%</span>
+                       {{/if}}
                        <h5>Energy</h5>
                    </div>
                    <div class="ibox-content">
@@ -109,7 +126,9 @@
            <div class="col-md-2 col-sm-4 dashboard-point">
                <div class="ibox float-e-margins">
                    <div class="ibox-title">
-                       <span class="label label-success pull-right">+5%</span>
+                       {{#if inc 'stressRating'}}
+                           <span class="label {{incLabel 'stressRating'}} pull-right">{{inc 'stressRating'}}%</span>
+                       {{/if}}
                        <h5>Stress</h5>
                    </div>
                    <div class="ibox-content">
@@ -122,7 +141,9 @@
            <div class="col-md-2 col-sm-4 dashboard-point">
                <div class="ibox float-e-margins">
                    <div class="ibox-title">
-                       <span class="label label-success pull-right">+5%</span>
+                       {{#if inc 'decisionRating'}}
+                           <span class="label {{incLabel 'decisionRating'}} pull-right">{{inc 'decisionRating'}}%</span>
+                       {{/if}}
                        <h5>Decision</h5>
                    </div>
                    <div class="ibox-content">
@@ -135,7 +156,9 @@
            <div class="col-md-2 col-sm-4 dashboard-point">
                <div class="ibox float-e-margins">
                    <div class="ibox-title">
-                       <span class="label label-success pull-right">+5%</span>
+                       {{#if inc 'respectRating'}}
+                           <span class="label {{incLabel 'respectRating'}} pull-right">{{inc 'respectRating'}}%</span>
+                       {{/if}}
                        <h5>Respect</h5>
                    </div>
                    <div class="ibox-content">
@@ -148,7 +171,9 @@
            <div class="col-md-2 col-sm-4 dashboard-point">
                <div class="ibox float-e-margins">
                    <div class="ibox-title">
-                       <span class="label label-success pull-right">+5%</span>
+                       {{#if inc 'conflictRating'}}
+                           <span class="label {{incLabel 'conflictRating'}} pull-right">{{inc 'conflictRating'}}%</span>
+                       {{/if}}
                        <h5>Conflict</h5>
                    </div>
                    <div class="ibox-content">

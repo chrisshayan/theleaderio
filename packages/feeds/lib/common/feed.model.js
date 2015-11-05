@@ -71,7 +71,7 @@ Feed.prototype.senderId = function() {
 
 Feed.prototype.receiver = function () {
     if(this.isSelf()) {
-        var profile = Meteor.profiles.findOne({userId: this.createdBy});
+        var profile = Meteor.profiles.findOne({userId: this.data.leaderId});
         return profile && [profile.firstName, profile.lastName].join(' ');
     } else {
         switch (this.type) {
@@ -82,12 +82,16 @@ Feed.prototype.receiver = function () {
                 return profile && [profile.firstName, profile.lastName].join(' ');
                 break;
             case 2:
-                var profile = Meteor.profiles.findOne({userId: this.data.leaderId});
-
+                var survey = Collections.Surveys.findOne({_id: this.data.typeId});
+                if(survey) {
+                    var profile = Meteor.profiles.findOne({userId: survey.createdBy});
+                    if(profile)
+                        return profile && [profile.firstName, profile.lastName].join(' ');
+                }
                 break;
         }
     }
-    return profile && [profile.firstName, profile.lastName].join(' ');
+    return '';
 };
 
 Feed.prototype.content = function () {

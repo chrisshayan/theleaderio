@@ -131,7 +131,14 @@ Meteor.publish('reports', function (filter, option) {
         if (!user.isLeader()) return null;
     } else {
         var isRelated = Meteor.relationships.find({type: 1, userId: leaderId, elseId: this.userId}).count();
-        if(!isRelated) return null;
+        if (!isRelated) return null;
     }
     return Collections.SurveyStatistics.find(filter, option);
+});
+
+Meteor.publish('points', function () {
+    if (!this.userId) return null;
+    var user = Meteor.users.findOne({_id: this.userId});
+    if (!user.isLeader()) return null;
+    return Collections.SurveyStatistics.find({leaderId: this.userId}, {limit: 2, sort: {year: -1, month: -1}});
 });

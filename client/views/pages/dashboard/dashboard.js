@@ -1,15 +1,13 @@
+Template.dashboard.onCreated(function() {
+   //Meteor.call('', function(err, result) {
+   //    if(err) throw err;
+   //    console.log(result);
+   //});
+});
+
 Template.dashboard.rendered = function(){
-
-
     // Set white background color for top navbar
     $('body').addClass('light-navbar');
-
-    //
-    //
-    //
-    //$("span.pie").peity("pie", {
-    //    fill: ['#1ab394', '#d7d7d7', '#ffffff']
-    //})
 };
 
 Template.dashboard.destroyed = function(){

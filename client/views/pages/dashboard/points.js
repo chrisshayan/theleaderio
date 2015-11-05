@@ -1,41 +1,55 @@
-
-Template.points.onCreated(function() {
+Template.points.onCreated(function () {
     var instance = Template.instance();
-    instance.points = new ReactiveDict();
-    var methodName = "avgPoints";
-    var leaderId = Meteor.userId();
-    if(Router.current().params.token) {
-        methodName = "avgPointsWithToken";
-        leaderId = Router.current().params.token;
-    }
-    Meteor.call(methodName, leaderId, function(err, data) {
-        if(err) throw err;
-        if(data) {
-            _.each(data, function(val, key) {
-                if(key == "_id") return;
-                instance.points.set(key, val);
-            })
-            
-        }
-    })
+
+    var now = moment(new Date());
+    var lastMonth = now.clone();
+    lastMonth.subtract(1, 'month');
+
+    instance.currentMonth = function () {
+        var filter = {
+            leaderId: Meteor.userId(),
+            year: now.year(),
+            month: now.month() + 1
+        };
+        return Collections.SurveyStatistics.findOne(filter);
+    };
+    instance.lastMonth = function () {
+        var filter = {
+            leaderId: Meteor.userId(),
+            year: lastMonth.year(),
+            month: lastMonth.month() + 1
+        };
+        return Collections.SurveyStatistics.findOne(filter);
+    };
+
+    Meteor.subscribe('points');
 });
 
 Template.points.helpers({
-    avgPoint: function(type) {
-        var instance = Template.instance();
-        
-        var data = instance.points.get(type);
+    avgPoint: function (type) {
+        var currentMonth = Template.instance().currentMonth();
+        if (!currentMonth) return '-';
+        var data = currentMonth[type];
         return data ? data.toFixed(1) : 0;
     },
 
-    avgOverall: function() {
-        var points = 0;
-        var instance = Template.instance();
-        if(!instance.points.get("goalRating")) return 0;
+    inc: function (type) {
+        var currentMonth = Template.instance().currentMonth();
+        var lastMonth = Template.instance().lastMonth();
+        if (!currentMonth || !lastMonth) return null;
+        var i = ((currentMonth[type] - lastMonth[type]) * 100) / lastMonth[type];
+        i = i.toFixed(1);
+        if(i > 0) return '+' + i;
+        else if(i < 0) return i;
+        return null;
+    },
 
-        _.each(instance.points.keys, function(val, key) {
-            points = points + parseFloat(instance.points.get(key));
-        }); 
-        return (points/_.keys(instance.points.keys).length).toFixed(1); 
+    incLabel: function (type) {
+        var currentMonth = Template.instance().currentMonth();
+        var lastMonth = Template.instance().lastMonth();
+        if (!currentMonth || !lastMonth) return null;
+        var i = ((currentMonth[type] - lastMonth[type]) * 100) / lastMonth[type];
+        if(i > 0) return ' label-success ';
+        return ' label-danger ';
     }
 });
