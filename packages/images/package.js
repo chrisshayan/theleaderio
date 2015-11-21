@@ -18,8 +18,8 @@ Package.onUse(function (api) {
     ]);
 
     api.imply([
-        'cfs:standard-packages',
-        'cfs:gridfs',
+        'cfs:standard-packages@0.5.9',
+        'cfs:gridfs@0.0.33',
         'cfs:autoform'
     ]);
 
