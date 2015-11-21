@@ -29,13 +29,9 @@ Profile.appendSchema({
 
     picture: {
         type: String,
-        optional: true,
         autoform: {
             afFieldInput: {
-                type: 'fileUpload',
-                collection: 'images',
-                accept: 'image/*',
-                label: 'Choose your photo'
+                type: 'cloudinary'
             }
         }
     },

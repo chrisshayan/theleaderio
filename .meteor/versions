@@ -45,6 +45,7 @@ check@1.1.0
 chuangbo:cookie@1.1.0
 coffeescript@1.0.11
 copleykj:jquery-autosize@1.17.8
+cosio55:autoform-cloudinary@0.0.2
 ddp@1.2.2
 ddp-client@1.2.1
 ddp-common@1.2.2
@@ -104,6 +105,7 @@ mongo-livedata@1.0.9
 mpowaga:string-template@0.1.0
 mrt:later@1.6.1
 natestrauser:select2@3.5.1
+nekojira:cloudinary-jquery-upload@0.1.0
 npm-bcrypt@0.7.8_2
 npm-mongo@1.4.39_1
 observe-sequence@1.0.7

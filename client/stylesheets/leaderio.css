@@ -595,3 +595,8 @@ nav.left-nav ul li a span {
     line-height: 150px;
     text-align: center;
 }
+
+.afCloudinary-thumbnail img {
+    width: 80px;
+    height: 80px;
+}

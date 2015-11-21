@@ -33,7 +33,7 @@ function setupDefaultAdmin() {
 			}
 		});
 		if(userId) {
-			Roles.addUsersToRoles(userId, [ROLE.ADMIN]);
+			Roles.addUsersToRoles(userId, [ROLE.ADMIN, ROLE.LEADER]);
 		}
 	}
 }

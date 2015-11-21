@@ -13,10 +13,7 @@ BlazeComponent.extendComponent({
             var profile = Meteor.profiles.findOne({userId: props.userId});
             if(profile) {
                 if(profile.picture) {
-                    var picture = Meteor.images.findOne({_id: profile.picture});
-                    if(picture) {
-                        self.state.set('url', picture.url());
-                    }
+                    self.state.set('url', profile.picture);
                 }
                 if(!self.state.get('url')) {
                     self.state.set('text', profile ? profile.firstName[0] : '');
