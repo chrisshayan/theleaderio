@@ -1,0 +1,22 @@
+{
+  "appName": "theLeader.io",
+  "email": {
+    "smtp": {
+      "username": "username",
+      "password": "password",
+      "server": "smtp.domain.com",
+      "port": 587
+    },
+    "emails": {
+      "no-reply": "theLeader <no-reply@theleader.io>"
+    }
+  },
+  "public": {
+    "analyticsSettings": {
+      "Google Analytics": {
+        "trackingId": ""
+      }
+    }
+  },
+  "migration": "latest"
+}

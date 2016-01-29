@@ -2,7 +2,7 @@
 *.iml
 .meteor/local
 settings/*
-settings.json
+settings_dev.json
 
 .DS_Store
 /dev_bundle
