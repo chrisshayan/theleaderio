@@ -1,0 +1,1 @@
+Meteor.TheLeader = new LCore();
