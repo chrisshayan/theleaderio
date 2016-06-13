@@ -27,15 +27,6 @@ Profile.appendSchema({
         }
     },
 
-    picture: {
-        type: String,
-        autoform: {
-            afFieldInput: {
-                type: 'cloudinary'
-            }
-        }
-    },
-
     industries: {
         type: [String],
         optional: true,

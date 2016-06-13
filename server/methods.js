@@ -228,6 +228,7 @@ apis.sendEmployeeInvitations = function (requestIds) {
             var leaderName = profile.firstName;
             var employeeName = request.firstName;
             var link = Meteor.absoluteUrl("signup-employee/" + token);
+            console.log(link)
             var params = {leaderName: leaderName, employeeName: employeeName, confirmationUrl: link};
             var html = Utils.compileServerTemplate("employeeInvitationEmail", 'mailtemplates/employee-invitation-email.html', params)
             var mail = {

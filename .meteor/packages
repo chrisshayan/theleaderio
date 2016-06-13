@@ -17,8 +17,8 @@ email
 iron:router
 twbs:bootstrap
 fortawesome:fontawesome
-zimme:iron-router-active
-okgrow:router-autoscroll
+#zimme:iron-router-active
+#okgrow:router-autoscroll
 
 meteorhacks:fast-render
 momentjs:moment
@@ -78,3 +78,4 @@ check
 
 
 cosio55:autoform-cloudinary
+zimme:active-route
