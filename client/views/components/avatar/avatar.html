@@ -1,7 +1,0 @@
-<template name="Avatar">
-    {{#if isPicture}}
-        <img src="{{state.get 'url'}}" class="user-picture {{this.size}}  {{this.style}}" alt=""/>
-    {{else}}
-        <span class="user-picture-text {{this.size}} {{this.style}}">{{state.get 'text'}}</span>
-    {{/if}}
-</template>
