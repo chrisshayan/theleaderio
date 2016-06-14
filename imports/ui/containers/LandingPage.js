@@ -5,7 +5,7 @@ import React, {Component} from 'react';
 import { Industries } from '/imports/api/industries';
 import * as Actions from '/imports/api/industries/methods';
 
-// import views
+// import .views
 import AddIndustry from '/imports/ui/components/AddIndustry';
 
 class LandingPage extends Component {
