@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 
@@ -30,8 +31,7 @@ export const insert = new ValidatedMethod({
     }
   }).validator(),
   run(userProfile) {
-    // console.log(userProfile);
+    // console.log(Profiles);
     return Profiles.insert(userProfile);
   }
-
 });

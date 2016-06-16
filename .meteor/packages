@@ -19,13 +19,13 @@ less
 fortawesome:fontawesome@4.5.0
 
 # Data
-aldeed:simple-schema@1.5.3
-aldeed:collection2@2.9.1
-mdg:validated-method@1.1.0
+aldeed:simple-schema
+aldeed:collection2
+mdg:validated-method
 mdg:validation-error@0.5.1
 
 # Routing
-kadira:flow-router@2.12.1
+kadira:flow-router
 
 # production
 standard-minifier-js
@@ -35,4 +35,4 @@ dburles:collection-helpers@1.0.4
 
 
 insecure
-react-meteor-data@0.2.9
+react-meteor-data
