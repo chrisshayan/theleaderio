@@ -3,10 +3,19 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import ProfilesCollection from './collection';
 
 /**
- * Define Collection
+ * Constant
+ */
+export const STATUS_ACTIVE = 'ACTIVE';
+export const STATUS_DEACTIVE = 'DEACTIVE';
+
+/**
+ * Collection
  */
 export const Profiles = new ProfilesCollection('profiles');
 
+/**
+ * Schema
+ */
 Profiles.schema = new SimpleSchema({
   userId: {
     type: String
@@ -21,7 +30,8 @@ Profiles.schema = new SimpleSchema({
     type: String
   },
   industries: {
-    type: [String]
+    type: [String],
+    optional: true
   },
   status: {
     type: String
