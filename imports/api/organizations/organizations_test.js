@@ -1,4 +1,4 @@
-import { company, image } from 'faker';
+import { company, image, helpers, address } from 'faker';
 import _ from 'lodash';
 import { Meteor } from 'meteor/meteor';
 
@@ -35,6 +35,33 @@ import * as Actions from '/imports/api/organizations/methods';
       name: company.companyName()
     };
     Actions.updateName.call(org, (error) => {
+      if(error)
+        console.log('Fail: ' + error);
+      else
+        console.log('Pass');
+    });
+
+    // Organizations: Test - Method Update Address
+    console.log('Organizations: Test - Method Update Address');
+    const orgAddress = helpers.createCard().address;
+    org = {
+      _id: randomOrg._id,
+      address: {
+        zipCode: orgAddress.zipcode,
+        countryCode: address.countryCode(),
+        country: orgAddress.country,
+        city: orgAddress.city,
+        district: address.county(),
+        streetName: orgAddress.streetA,
+        streetAddress: address.streetAddress(),
+        secondaryAddress: address.secondaryAddress(),
+        geo: {
+          latitude: orgAddress.geo.lat,
+          longitude: orgAddress.geo.lng
+        }
+      }
+    };
+    Actions.updateAddress.call(org, (error) => {
       if(error)
         console.log('Fail: ' + error);
       else

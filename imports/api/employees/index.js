@@ -1,6 +1,6 @@
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 
-import ProfilesCollection from './collection';
+import EmployeesCollection from './collection';
 
 /**
  * Constant
@@ -11,16 +11,13 @@ export const STATUS_DEACTIVE = 'DEACTIVE';
 /**
  * Collection
  */
-export const Profiles = new ProfilesCollection('profiles');
+export const Employees = new EmployeesCollection('employees');
 
 /**
  * Schema
  */
-Profiles.schema = new SimpleSchema({
-  userId: {
-    type: String
-  },
-  alias: {
+Employees.schema = new SimpleSchema({
+  email: {
     type: String
   },
   firstName: {
@@ -36,7 +33,8 @@ Profiles.schema = new SimpleSchema({
     optional: true
   },
   status: {
-    type: String
+    type: String,
+    allowedValues: [ STATUS_ACTIVE, STATUS_DEACTIVE ]
   },
   imageUrl: {
     type: String,
@@ -81,11 +79,7 @@ Profiles.schema = new SimpleSchema({
   "address.geo.longitude": {
     type: String,
     optional: true
-  },
-  phoneNumber: {
-    type: String,
-    optional: true
   }
 });
 
-Profiles.attachSchema(Profiles.schema);
+Employees.attachSchema(Employees.schema);

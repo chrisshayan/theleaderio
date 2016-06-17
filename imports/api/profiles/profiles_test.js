@@ -1,4 +1,4 @@
-import { name, internet, image } from 'faker';
+import { name, internet, image, address, helpers } from 'faker';
 import _ from 'lodash';
 import { Meteor } from 'meteor/meteor';
 
@@ -37,6 +37,33 @@ import * as Actions from '/imports/api/profiles/methods';
       lastName: name.lastName()
     };
     Actions.updateName.call(userProfile, (error) => {
+      if(error)
+        console.log('Fail: ' + error);
+      else
+        console.log('Pass');
+    });
+
+    // Profiles: Test - Method Update Address
+    console.log('Profiles: Test - Method Update Address');
+    const userAddress = helpers.createCard().address;
+    userProfile = {
+      userId: randomUser.userId,
+      address: {
+        zipCode: userAddress.zipcode,
+        countryCode: address.countryCode(),
+        country: userAddress.country,
+        city: userAddress.city,
+        district: address.county(),
+        streetName: userAddress.streetA,
+        streetAddress: address.streetAddress(),
+        secondaryAddress: address.secondaryAddress(),
+        geo: {
+          latitude: userAddress.geo.lat,
+          longitude: userAddress.geo.lng
+        }
+      }
+    };
+    Actions.updateAddress.call(userProfile, (error) => {
       if(error)
         console.log('Fail: ' + error);
       else

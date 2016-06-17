@@ -36,15 +36,43 @@ Organizations.schema = new SimpleSchema({
     type: String,
     optional: true
   },
-  zipCode: {
-    type: Number,
-    optional: true
-  },
-  country: {
+  "address.zipCode": {
     type: String,
     optional: true
   },
-  city: {
+  "address.countryCode": {
+    type: String,
+    optional: true
+  },
+  "address.country": {
+    type: String,
+    optional: true
+  },
+  "address.city": {
+    type: String,
+    optional: true
+  },
+  "address.district": {
+    type: String,
+    optional: true
+  },
+  "address.streetName": {
+    type: String,
+    optional: true
+  },
+  "address.streetAddress": {
+    type: String,
+    optional: true
+  },
+  "address.secondaryAddress": {
+    type: String,
+    optional: true
+  },
+  "address.geo.latitude": {
+    type: String,
+    optional: true
+  },
+  "address.geo.longitude": {
     type: String,
     optional: true
   }

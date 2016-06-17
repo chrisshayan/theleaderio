@@ -3,42 +3,41 @@ import { Mongo } from 'meteor/mongo';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 
-import { Organizations, STATUS_ACTIVE, STATUS_DEACTIVE } from './index';
+import { Employees, STATUS_ACTIVE, STATUS_DEACTIVE } from './index';
 import { IDValidator } from '/imports/utils';
 
 /**
- * CUD Organizations (Create, Update, Deactivate)
+ * CUD Employees (Create, Update, Deactivate)
  * Methods:
  * # validateOrg
  * # insert
  * # updateName
- * # updateDescription
  * # updateAddress
  * # updateImageUrl
  * # updateStatus
  */
- // validate Organization
-export const validateOrg = new ValidatedMethod({
-  name: 'organizations.validateOrg',
+ // validate Employee
+export const validateEmployee = new ValidatedMethod({
+  name: 'employees.validateEmployee',
   validate: new SimpleSchema({
     ...IDValidator
   }).validator(),
-  run(org) {
-    const docsNumber = Organizations.find({ _id: org._id }).count();
+  run(employee) {
+    const docsNumber = Employees.find({ _id: employee._id }).count();
     if(!docsNumber) {
-      return 0; // Invalid Organization
+      return 0; // Invalid Employee
     } else {
-      return 1; // Valid Organization
+      return 1; // Valid Employee
     }
   }
 });
 
-// Create Organization
-// with basics information: name, status
+// Create Employee
+// with basics information: email, status
 export const insert = new ValidatedMethod({
-  name: 'organizations.insert',
+  name: 'employees.insert',
   validate: new SimpleSchema({
-    name: {
+    email: {
       type: String
     },
     status: {
@@ -46,33 +45,36 @@ export const insert = new ValidatedMethod({
       allowedValues: [ STATUS_ACTIVE, STATUS_DEACTIVE ]
     }
   }).validator(),
-  run(org) {
-    return Organizations.insert(org);
+  run(employee) {
+    return Employees.insert(employee);
   }
 });
 
-// Update Organization Name
+// Update Employee Name
 export const updateName = new ValidatedMethod({
-  name: 'organizations.updateName',
+  name: 'employees.updateName',
   validate: new SimpleSchema({
     ...IDValidator,
-    name: {
+    firstName: {
+      type: String
+    },
+    lastName: {
       type: String
     }
   }).validator(),
-  run(org) {
-    if(!validateOrg.call({_id: org._id})) {
-      throw new Meteor.Error(400, 'Invalid Organization');
+  run(employee) {
+    if(!validateEmployee.call({_id: employee._id})) {
+      throw new Meteor.Error(400, 'Invalid Employee');
     } else {
-      return Organizations.update({ _id: org._id }, {
-        $set: { name: org.name }});
+      return Employees.update({ _id: employee._id }, {
+        $set: { firstName: employee.firstName, lastName: employee.lastName }});
     }
   }
 });
 
 // Update address
 export const updateAddress = new ValidatedMethod({
-  name: 'organizations.updateAddress',
+  name: 'employees.updateAddress',
   validate: new SimpleSchema({
     ...IDValidator,
     "address.zipCode": {
@@ -116,57 +118,38 @@ export const updateAddress = new ValidatedMethod({
       optional: true
     }
   }).validator(),
-  run(org) {
-    if(!validateOrg.call({_id: org._id})) {
+  run(employee) {
+    if(!validateEmployee.call({_id: employee._id})) {
       throw new Meteor.Error(400, 'Invalid User');
     } else {
-      return Organizations.update({ _id: org._id }, {
-        $set: { address: org.address }});
+      return Employees.update({ _id: employee._id }, {
+        $set: { address: employee.address }});
     }
   }
 });
 
-// Update Organization ImageUrl
+// Update Employee ImageUrl
 export const updateImageUrl = new ValidatedMethod({
-  name: 'organizations.updateImageUrl',
+  name: 'employees.updateImageUrl',
   validate: new SimpleSchema({
     ...IDValidator,
     imageUrl: {
       type: String
     }
   }).validator(),
-  run(org) {
-    if(!validateOrg.call({_id: org._id})) {
-      throw new Meteor.Error(400, 'Invalid Organization');
+  run(employee) {
+    if(!validateEmployee.call({_id: employee._id})) {
+      throw new Meteor.Error(400, 'Invalid Employee');
     } else {
-      return Organizations.update({ _id: org._id }, {
-        $set: { imageUrl: org.imageUrl }});
+      return Employees.update({ _id: employee._id }, {
+        $set: { imageUrl: employee.imageUrl }});
     }
   }
 });
 
-// Update Organization Description
-export const updateDescription = new ValidatedMethod({
-  name: 'organizations.updateDescription',
-  validate: new SimpleSchema({
-    ...IDValidator,
-    description: {
-      type: String
-    }
-  }).validator(),
-  run(org) {
-    if(!validateOrg.call({_id: org._id})) {
-      throw new Meteor.Error(400, 'Invalid Organization');
-    } else {
-      return Organizations.update({ _id: org._id }, {
-        $set: { description: org.description }});
-    }
-  }
-});
-
-// Update Organization Status ( Activate or Deactivate)
+// Update Employee Status ( Activate or Deactivate)
 export const updateStatus = new ValidatedMethod({
-  name: 'organizations.updateStatus',
+  name: 'employees.updateStatus',
   validate: new SimpleSchema({
     ...IDValidator,
     status: {
@@ -174,12 +157,12 @@ export const updateStatus = new ValidatedMethod({
       allowedValues: [  STATUS_ACTIVE, STATUS_DEACTIVE ]
     }
   }).validator(),
-  run(org) {
-    if(!validateOrg.call({_id: org._id})) {
-      throw new Meteor.Error(400, 'Invalid Organization');
+  run(employee) {
+    if(!validateEmployee.call({_id: employee._id})) {
+      throw new Meteor.Error(400, 'Invalid Employee');
     } else {
-      return Organizations.update({ _id: org._id }, {
-        $set: { status: org.status }});
+      return Employees.update({ _id: employee._id }, {
+        $set: { status: employee.status }});
     }
   }
 });

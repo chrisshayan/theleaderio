@@ -13,6 +13,7 @@ import { IDValidator } from '/imports/utils';
  * # insert
  * # updateName
  * # updateIndustries
+ * # updateAddress
  * # updateImageUrl
  * # updateStatus
  */
@@ -99,6 +100,64 @@ export const updateIndustries = new ValidatedMethod({
     } else {
       return Profiles.update({ userId: userProfile.userId }, {
         $set: { industries: userProfile.industries }});
+    }
+  }
+});
+
+// Update address
+export const updateAddress = new ValidatedMethod({
+  name: 'profiles.updateAddress',
+  validate: new SimpleSchema({
+    userId: {
+      type: String
+    },
+    "address.zipCode": {
+      type: String,
+      optional: true
+    },
+    "address.countryCode": {
+      type: String,
+      optional: true
+    },
+    "address.country": {
+      type: String,
+      optional: true
+    },
+    "address.city": {
+      type: String,
+      optional: true
+    },
+    "address.district": {
+      type: String,
+      optional: true
+    },
+    "address.streetName": {
+      type: String,
+      optional: true
+    },
+    "address.streetAddress": {
+      type: String,
+      optional: true
+    },
+    "address.secondaryAddress": {
+      type: String,
+      optional: true
+    },
+    "address.geo.latitude": {
+      type: String,
+      optional: true
+    },
+    "address.geo.longitude": {
+      type: String,
+      optional: true
+    }
+  }).validator(),
+  run(userProfile) {
+    if(!validateUser.call({userId: userProfile.userId})) {
+      throw new Meteor.Error(400, 'Invalid User');
+    } else {
+      return Profiles.update({ userId: userProfile.userId }, {
+        $set: { address: userProfile.address }});
     }
   }
 });
