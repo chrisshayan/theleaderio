@@ -1,5 +1,4 @@
-import { Meteor,  } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
+import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 
@@ -9,12 +8,12 @@ import { IDValidator } from '/imports/utils';
 /**
  * CUD Employees (Create, Update, Deactivate)
  * Methods:
- * # validateOrg
- * # insert
- * # updateName
- * # updateAddress
- * # updateImageUrl
- * # updateStatus
+ * # validateEmployee
+ * # createEmployee
+ * # editName
+ * # editAddress
+ * # editImageUrl
+ * # editStatus
  */
  // validate Employee
 export const validateEmployee = new ValidatedMethod({
@@ -34,8 +33,8 @@ export const validateEmployee = new ValidatedMethod({
 
 // Create Employee
 // with basics information: email, status
-export const insert = new ValidatedMethod({
-  name: 'employees.insert',
+export const createEmployee = new ValidatedMethod({
+  name: 'employees.createEmployee',
   validate: new SimpleSchema({
     email: {
       type: String
@@ -50,9 +49,9 @@ export const insert = new ValidatedMethod({
   }
 });
 
-// Update Employee Name
-export const updateName = new ValidatedMethod({
-  name: 'employees.updateName',
+// Edit Employee Name
+export const editName = new ValidatedMethod({
+  name: 'employees.editName',
   validate: new SimpleSchema({
     ...IDValidator,
     firstName: {
@@ -72,9 +71,9 @@ export const updateName = new ValidatedMethod({
   }
 });
 
-// Update address
-export const updateAddress = new ValidatedMethod({
-  name: 'employees.updateAddress',
+// Edit Address
+export const editAddress = new ValidatedMethod({
+  name: 'employees.editAddress',
   validate: new SimpleSchema({
     ...IDValidator,
     "address.zipCode": {
@@ -128,9 +127,9 @@ export const updateAddress = new ValidatedMethod({
   }
 });
 
-// Update Employee ImageUrl
-export const updateImageUrl = new ValidatedMethod({
-  name: 'employees.updateImageUrl',
+// Edit Employee ImageUrl
+export const editImageUrl = new ValidatedMethod({
+  name: 'employees.editImageUrl',
   validate: new SimpleSchema({
     ...IDValidator,
     imageUrl: {
@@ -147,9 +146,9 @@ export const updateImageUrl = new ValidatedMethod({
   }
 });
 
-// Update Employee Status ( Activate or Deactivate)
-export const updateStatus = new ValidatedMethod({
-  name: 'employees.updateStatus',
+// Edit Employee Status ( Activate or Deactivate)
+export const editStatus = new ValidatedMethod({
+  name: 'employees.editStatus',
   validate: new SimpleSchema({
     ...IDValidator,
     status: {

@@ -1,5 +1,4 @@
-import { Meteor,  } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
+import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 
@@ -10,12 +9,12 @@ import { IDValidator } from '/imports/utils';
  * CUD user profiles (Create, Update, Deactivate)
  * Methods:
  * # validateUser
- * # insert
- * # updateName
- * # updateIndustries
- * # updateAddress
- * # updateImageUrl
- * # updateStatus
+ * # createProfile
+ * # editName
+ * # editIndustries
+ * # editAddress
+ * # editImageUrl
+ * # editStatus
  */
 // validate user
 export const validateUser = new ValidatedMethod({
@@ -38,8 +37,8 @@ export const validateUser = new ValidatedMethod({
 
 // Create User Profile
 // with basics information: userId, alias, status
-export const insert = new ValidatedMethod({
-  name: 'profiles.insert',
+export const createProfile = new ValidatedMethod({
+  name: 'profiles.createProfile',
   validate: new SimpleSchema({
     userId: {
       type: String
@@ -58,8 +57,8 @@ export const insert = new ValidatedMethod({
 });
 
 // Update Name
-export const updateName = new ValidatedMethod({
-  name: 'profiles.updateName',
+export const editName = new ValidatedMethod({
+  name: 'profiles.editName',
   validate: new SimpleSchema({
     userId: {
       type: String
@@ -83,8 +82,8 @@ export const updateName = new ValidatedMethod({
 });
 
 // Update Industries
-export const updateIndustries = new ValidatedMethod({
-  name: 'profiles.updateIndustries',
+export const editIndustries = new ValidatedMethod({
+  name: 'profiles.editIndustries',
   validate: new SimpleSchema({
     userId: {
       type: String
@@ -105,8 +104,8 @@ export const updateIndustries = new ValidatedMethod({
 });
 
 // Update address
-export const updateAddress = new ValidatedMethod({
-  name: 'profiles.updateAddress',
+export const editAddress = new ValidatedMethod({
+  name: 'profiles.editAddress',
   validate: new SimpleSchema({
     userId: {
       type: String
@@ -163,8 +162,8 @@ export const updateAddress = new ValidatedMethod({
 });
 
 // Update imageUrl
-export const updateImageUrl = new ValidatedMethod({
-  name: 'profiles.updateImageUrl',
+export const editImageUrl = new ValidatedMethod({
+  name: 'profiles.editImageUrl',
   validate: new SimpleSchema({
     userId: {
       type: String
@@ -184,8 +183,8 @@ export const updateImageUrl = new ValidatedMethod({
 });
 
 // Update Status (Deactivate)
-export const updateStatus = new ValidatedMethod({
-  name: 'profiles.updateStatus',
+export const editStatus = new ValidatedMethod({
+  name: 'profiles.editStatus',
   validate: new SimpleSchema({
     userId: {
       type: String

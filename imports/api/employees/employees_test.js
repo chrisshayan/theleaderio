@@ -20,7 +20,7 @@ import * as Actions from '/imports/api/employees/methods';
         email: email,
         status: STATUS_ACTIVE
       }
-      Actions.insert.call(employee);
+      Actions.createEmployee.call(employee);
     });
     console.log('Employees: Created ' + numberFaker + ' fake data!');
   }
@@ -36,7 +36,7 @@ import * as Actions from '/imports/api/employees/methods';
       firstName: name.firstName(),
       lastName: name.lastName()
     };
-    Actions.updateName.call(employee, (error) => {
+    Actions.editName.call(employee, (error) => {
       if(error)
         console.log('Fail: ' + error);
       else
@@ -63,7 +63,7 @@ import * as Actions from '/imports/api/employees/methods';
         }
       }
     };
-    Actions.updateAddress.call(employee, (error) => {
+    Actions.editAddress.call(employee, (error) => {
       if(error)
         console.log('Fail: ' + error);
       else
@@ -76,7 +76,7 @@ import * as Actions from '/imports/api/employees/methods';
       _id: randomEmployee._id,
       imageUrl: image.imageUrl()
     };
-    Actions.updateImageUrl.call(employee, (error) => {
+    Actions.editImageUrl.call(employee, (error) => {
       if(error)
         console.log('Fail: ' + error);
       else
@@ -89,7 +89,7 @@ import * as Actions from '/imports/api/employees/methods';
       _id: randomEmployee._id,
       status: STATUS_DEACTIVE
     };
-    Actions.updateStatus.call(employee, (error) => {
+    Actions.editStatus.call(employee, (error) => {
       if(error)
         console.log('Fail: ' + error);
       else

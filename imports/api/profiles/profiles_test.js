@@ -20,7 +20,7 @@ import * as Actions from '/imports/api/profiles/methods';
         alias: internet.userName(),
         status: STATUS_ACTIVE
       }
-      Actions.insert.call(userProfile);
+      Actions.createProfile.call(userProfile);
     });
     console.log('Profiles: Created ' + numberFaker + ' fake data!');
   }
@@ -36,7 +36,7 @@ import * as Actions from '/imports/api/profiles/methods';
       firstName: name.firstName(),
       lastName: name.lastName()
     };
-    Actions.updateName.call(userProfile, (error) => {
+    Actions.editName.call(userProfile, (error) => {
       if(error)
         console.log('Fail: ' + error);
       else
@@ -63,7 +63,7 @@ import * as Actions from '/imports/api/profiles/methods';
         }
       }
     };
-    Actions.updateAddress.call(userProfile, (error) => {
+    Actions.editAddress.call(userProfile, (error) => {
       if(error)
         console.log('Fail: ' + error);
       else
@@ -76,7 +76,7 @@ import * as Actions from '/imports/api/profiles/methods';
       userId: randomUser.userId,
       imageUrl: image.imageUrl()
     };
-    Actions.updateImageUrl.call(userProfile, (error) => {
+    Actions.editImageUrl.call(userProfile, (error) => {
       if(error)
         console.log('Fail: ' + error);
       else
@@ -89,7 +89,7 @@ import * as Actions from '/imports/api/profiles/methods';
       userId: randomUser.userId,
       status: STATUS_DEACTIVE
     };
-    Actions.updateStatus.call(userProfile, (error) => {
+    Actions.editStatus.call(userProfile, (error) => {
       if(error)
         console.log('Fail: ' + error);
       else

@@ -19,7 +19,7 @@ import * as Actions from '/imports/api/organizations/methods';
         name: company.companyName(),
         status: STATUS_ACTIVE
       }
-      Actions.insert.call(org);
+      Actions.createOrg.call(org);
     });
     console.log('Organizations: Created ' + numberFaker + ' fake data!');
   }
@@ -34,7 +34,7 @@ import * as Actions from '/imports/api/organizations/methods';
       _id: randomOrg._id,
       name: company.companyName()
     };
-    Actions.updateName.call(org, (error) => {
+    Actions.editName.call(org, (error) => {
       if(error)
         console.log('Fail: ' + error);
       else
@@ -61,7 +61,7 @@ import * as Actions from '/imports/api/organizations/methods';
         }
       }
     };
-    Actions.updateAddress.call(org, (error) => {
+    Actions.editAddress.call(org, (error) => {
       if(error)
         console.log('Fail: ' + error);
       else
@@ -74,7 +74,7 @@ import * as Actions from '/imports/api/organizations/methods';
       _id: randomOrg._id,
       imageUrl: image.imageUrl()
     };
-    Actions.updateImageUrl.call(org, (error) => {
+    Actions.editImageUrl.call(org, (error) => {
       if(error)
         console.log('Fail: ' + error);
       else
@@ -87,7 +87,7 @@ import * as Actions from '/imports/api/organizations/methods';
       _id: randomOrg._id,
       description: company.catchPhrase()
     };
-    Actions.updateDescription.call(org, (error) => {
+    Actions.editDescription.call(org, (error) => {
       if(error)
         console.log('Fail: ' + error);
       else
@@ -100,7 +100,7 @@ import * as Actions from '/imports/api/organizations/methods';
       _id: randomOrg._id,
       status: STATUS_DEACTIVE
     };
-    Actions.updateStatus.call(org, (error) => {
+    Actions.editStatus.call(org, (error) => {
       if(error)
         console.log('Fail: ' + error);
       else

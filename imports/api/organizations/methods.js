@@ -1,5 +1,4 @@
-import { Meteor,  } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
+import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 
@@ -7,15 +6,15 @@ import { Organizations, STATUS_ACTIVE, STATUS_DEACTIVE } from './index';
 import { IDValidator } from '/imports/utils';
 
 /**
- * CUD Organizations (Create, Update, Deactivate)
+ * CUD Organizations (Create, Edit, Deactivate)
  * Methods:
  * # validateOrg
- * # insert
- * # updateName
- * # updateDescription
- * # updateAddress
- * # updateImageUrl
- * # updateStatus
+ * # createOrg
+ * # editName
+ * # editDescription
+ * # editAddress
+ * # editImageUrl
+ * # editStatus
  */
  // validate Organization
 export const validateOrg = new ValidatedMethod({
@@ -35,8 +34,8 @@ export const validateOrg = new ValidatedMethod({
 
 // Create Organization
 // with basics information: name, status
-export const insert = new ValidatedMethod({
-  name: 'organizations.insert',
+export const createOrg = new ValidatedMethod({
+  name: 'organizations.createOrg',
   validate: new SimpleSchema({
     name: {
       type: String
@@ -51,9 +50,9 @@ export const insert = new ValidatedMethod({
   }
 });
 
-// Update Organization Name
-export const updateName = new ValidatedMethod({
-  name: 'organizations.updateName',
+// Edit Organization Name
+export const editName = new ValidatedMethod({
+  name: 'organizations.editName',
   validate: new SimpleSchema({
     ...IDValidator,
     name: {
@@ -70,9 +69,9 @@ export const updateName = new ValidatedMethod({
   }
 });
 
-// Update address
-export const updateAddress = new ValidatedMethod({
-  name: 'organizations.updateAddress',
+// Edit address
+export const editAddress = new ValidatedMethod({
+  name: 'organizations.editAddress',
   validate: new SimpleSchema({
     ...IDValidator,
     "address.zipCode": {
@@ -126,9 +125,9 @@ export const updateAddress = new ValidatedMethod({
   }
 });
 
-// Update Organization ImageUrl
-export const updateImageUrl = new ValidatedMethod({
-  name: 'organizations.updateImageUrl',
+// Edit Organization ImageUrl
+export const editImageUrl = new ValidatedMethod({
+  name: 'organizations.editImageUrl',
   validate: new SimpleSchema({
     ...IDValidator,
     imageUrl: {
@@ -145,9 +144,9 @@ export const updateImageUrl = new ValidatedMethod({
   }
 });
 
-// Update Organization Description
-export const updateDescription = new ValidatedMethod({
-  name: 'organizations.updateDescription',
+// Edit Organization Description
+export const editDescription = new ValidatedMethod({
+  name: 'organizations.editDescription',
   validate: new SimpleSchema({
     ...IDValidator,
     description: {
@@ -164,9 +163,9 @@ export const updateDescription = new ValidatedMethod({
   }
 });
 
-// Update Organization Status ( Activate or Deactivate)
-export const updateStatus = new ValidatedMethod({
-  name: 'organizations.updateStatus',
+// Edit Organization Status ( Activate or Deactivate)
+export const editStatus = new ValidatedMethod({
+  name: 'organizations.editStatus',
   validate: new SimpleSchema({
     ...IDValidator,
     status: {
