@@ -28,7 +28,7 @@ Organizations.schema = new SimpleSchema({
     type: String,
     allowedValues: [ STATUS_ACTIVE, STATUS_DEACTIVE ]
   },
-  catchPhrase: {
+  description: {
     type: String,
     optional: true
   },

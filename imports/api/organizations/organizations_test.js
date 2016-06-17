@@ -54,13 +54,13 @@ import * as Actions from '/imports/api/organizations/methods';
         console.log('Pass');
     });
 
-    // Organizations: Test - Method Update CatchPhrase
-    console.log('Organizations: Test - Method Update CatchPhrase');
+    // Organizations: Test - Method Update Description
+    console.log('Organizations: Test - Method Update Description');
     org = {
       _id: randomOrg._id,
-      catchPhrase: company.catchPhrase()
+      description: company.catchPhrase()
     };
-    Actions.updateCatchPhrase.call(org, (error) => {
+    Actions.updateDescription.call(org, (error) => {
       if(error)
         console.log('Fail: ' + error);
       else

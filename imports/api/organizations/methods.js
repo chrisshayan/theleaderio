@@ -12,7 +12,7 @@ import { IDValidator } from '/imports/utils';
  * # validateOrg
  * # insert
  * # updateName
- * # updateCatchPhrase
+ * # updateDescription
  * # updateImageUrl
  * # updateStatus
  */
@@ -88,12 +88,12 @@ export const updateImageUrl = new ValidatedMethod({
   }
 });
 
-// Update Organization CatchPhrase
-export const updateCatchPhrase = new ValidatedMethod({
-  name: 'organizations.updateCatchPhrase',
+// Update Organization Description
+export const updateDescription = new ValidatedMethod({
+  name: 'organizations.updateDescription',
   validate: new SimpleSchema({
     ...IDValidator,
-    catchPhrase: {
+    description: {
       type: String
     }
   }).validator(),
@@ -102,7 +102,7 @@ export const updateCatchPhrase = new ValidatedMethod({
       throw new Meteor.Error(400, 'Invalid Organization');
     } else {
       return Organizations.update({ _id: org._id }, {
-        $set: { catchPhrase: org.catchPhrase }});
+        $set: { description: org.description }});
     }
   }
 });
