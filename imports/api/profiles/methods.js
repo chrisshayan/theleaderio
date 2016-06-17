@@ -8,25 +8,35 @@ import { IDValidator } from '/imports/utils';
 
 /**
  * CUD user profiles (Create, Update, Deactivate)
+ * Methods:
+ * # validateUser
+ * # insert
+ * # updateName
+ * # updateIndustries
+ * # updateImageUrl
+ * # updateStatus
  */
-// User validator
-export const userValidator = new ValidatedMethod({
-  name: 'profile.userValidator',
+// validate user
+export const validateUser = new ValidatedMethod({
+  name: 'profile.validateUser',
   validate: new SimpleSchema({
     // Should be ...IDValidator in real data
     userId: {
       type: String
     }
   }).validator(),
-  run(userId) {
-    const docsNumber = Profiles.find({ userId: userId }).count();
+  run(userProfile) {
+    const docsNumber = Profiles.find({ userId: userProfile.userId }).count();
     if(!docsNumber) {
-      throw new Meteor.Error(400, 'Invalid User');
+      return 0; // Invalid User
+    } else {
+      return 1; // Valid User
     }
   }
 });
 
-// Create
+// Create User Profile
+// with basics information: userId, alias, status
 export const insert = new ValidatedMethod({
   name: 'profiles.insert',
   validate: new SimpleSchema({
@@ -36,21 +46,9 @@ export const insert = new ValidatedMethod({
     alias: {
       type: String
     },
-    firstName: {
-      type: String
-    },
-    lastName: {
-      type: String
-    },
-    industries: {
-      type: [String]
-    },
     status: {
       type: String,
       allowedValues: [ STATUS_ACTIVE, STATUS_DEACTIVE ]
-    },
-    imageUrl: {
-      type: String
     }
   }).validator(),
   run(userProfile) {
@@ -73,11 +71,9 @@ export const updateName = new ValidatedMethod({
     }
   }).validator(),
   run(userProfile) {
-    const docsNumber = Profiles.find({ userId: userProfile.userId }).count();
-    if(!docsNumber) {
+    if(!validateUser.call({userId: userProfile.userId})) {
       throw new Meteor.Error(400, 'Invalid User');
-    }
-    else {
+    } else {
       return Profiles.update({ userId: userProfile.userId }, {
         $set: { firstName: userProfile.firstName, lastName: userProfile.lastName
       }});
@@ -85,7 +81,50 @@ export const updateName = new ValidatedMethod({
   }
 });
 
-// Update Status
+// Update Industries
+export const updateIndustries = new ValidatedMethod({
+  name: 'profiles.updateIndustries',
+  validate: new SimpleSchema({
+    userId: {
+      type: String
+    },
+    industries: {
+      type: [String],
+      optional: true
+    }
+  }).validator(),
+  run(userProfile) {
+    if(!validateUser.call({userId: userProfile.userId})) {
+      throw new Meteor.Error(400, 'Invalid User');
+    } else {
+      return Profiles.update({ userId: userProfile.userId }, {
+        $set: { industries: userProfile.industries }});
+    }
+  }
+});
+
+// Update imageUrl
+export const updateImageUrl = new ValidatedMethod({
+  name: 'profiles.updateImageUrl',
+  validate: new SimpleSchema({
+    userId: {
+      type: String
+    },
+    imageUrl: {
+      type: String
+    }
+  }).validator(),
+  run(userProfile) {
+    if(!validateUser.call({userId: userProfile.userId})) {
+      throw new Meteor.Error(400, 'Invalid User');
+    } else {
+      return Profiles.update({ userId: userProfile.userId }, {
+        $set: { imageUrl: userProfile.imageUrl }});
+    }
+  }
+});
+
+// Update Status (Deactivate)
 export const updateStatus = new ValidatedMethod({
   name: 'profiles.updateStatus',
   validate: new SimpleSchema({
@@ -98,12 +137,10 @@ export const updateStatus = new ValidatedMethod({
     }
   }).validator(),
   run(userProfile) {
-    const docsNumber = Profiles.find({ userId: userProfile.userId }).count();
-    if(!docsNumber) {
+    if(!validateUser.call({userId: userProfile.userId})) {
       throw new Meteor.Error(400, 'Invalid User');
-    }
-    else {
-      return Profiles.update({ userId: userProfile.userId }, { $set: { 
+    } else {
+      return Profiles.update({ userId: userProfile.userId }, { $set: {
         status: userProfile.status
       }});
     }

@@ -24,10 +24,12 @@ Profiles.schema = new SimpleSchema({
     type: String
   },
   firstName: {
-    type: String
+    type: String,
+    optional: true
   },
   lastName: {
-    type: String
+    type: String,
+    optional: true
   },
   industries: {
     type: [String],
@@ -37,7 +39,32 @@ Profiles.schema = new SimpleSchema({
     type: String
   },
   imageUrl: {
-    type: String
+    type: String,
+    optional: true
+  },
+  zipCode: {
+    type: Number,
+    optional: true
+  },
+  country: {
+    type: String,
+    optional: true
+  },
+  city: {
+    type: String,
+    optional: true
+  },
+  streetName: {
+    type: String,
+    optional: true
+  },
+  streetAddress: {
+    type: String,
+    optional: true
+  },
+  phoneNumber: {
+    type: String,
+    optional: true
   }
 });
 
