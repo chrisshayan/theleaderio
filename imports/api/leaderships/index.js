@@ -14,17 +14,17 @@ Leaderships.schema = new SimpleSchema({
   leaderId: {
     type: String
   },
-  "organizations.organizationId": {
+  "organizations.$.organizationId": {
     type: String  // _id mapped from collection organizations
   },
-  "organizations.employees": {
+  "organizations.$.employees": {
     type: [String]  // list of employeeId mapped from collection employees
   },
-  "organizations.startDate": {
+  "organizations.$.startDate": {
     type: Date,
     optional: true
   },
-  "organizations.endDate": {
+  "organizations.$.endDate": {
     type: Date,
     optional: true
   }

@@ -20,12 +20,15 @@ import { IDValidator } from '/imports/utils';
 export const validateLeadership = new ValidatedMethod({
   name: 'leaderships.validateLeadership',
   validate: new SimpleSchema({
-    ...IDValidator,
-    ...IDValidator
+    ...IDValidator, // leaderId
+    ...IDValidator // organizationId
   }).validator(),
   run(leadership) {
     const docsNumber = Leaderships.find({
-      _id: leadership._id, "organizations.organizationId": leadership.organizationId
+      leaderId: leadership.leaderId,
+      organizations: {
+        $elemMatch: { organizationId: leadership.organizationId }
+      }
     }).count();
     if(!docsNumber) {
       return 0; // Invalid Leadership
@@ -42,9 +45,12 @@ export const addOrganization = new ValidatedMethod({
     leaderId: {
       type: String
     },
-    "organizations.organizationId": {
+    organizations: {
+      type: [Object]
+    },
+    "organizations.$.organizationId": {
       type: String  // _id mapped from collection organizations
-    }
+    },
   }).validator(),
   run(leadership) {
     return Leaderships.insert(leadership);
@@ -55,7 +61,7 @@ export const addOrganization = new ValidatedMethod({
 export const addEmployee = new ValidatedMethod({
   name: 'leaderships.addEmployee',
   validate: new SimpleSchema({
-    ...IDValidator,
+    ...IDValidator, // leadershipId
     employeeId: {
       type: String  // employeeId mapped from collection employees
     }
@@ -64,13 +70,18 @@ export const addEmployee = new ValidatedMethod({
     if(!validateLeadership.call({_id: leadership._id})) {
       throw new Meteor.Error(400, 'Invalid Leadership');
     } else {
-      return Leaderships.update({ _id: leadership._id }, {
-        $push: { "organizations.employees": leadership.employeeId }});
+      return Leaderships.update({
+        leaderId: leadership.leaderId,
+        organizations: {
+          $elemMatch: { organizationId: leadership.organizationId }
+        }}, {
+          $push: { "organizations.$.employees": leadership.employeeId }
+        });
     }
   }
 });
 
-// Update address
+// Edit WorkingPeriod
 export const editWorkingPeriod = new ValidatedMethod({
   name: 'leaderships.editWorkingPeriod',
   validate: new SimpleSchema({
@@ -88,12 +99,16 @@ export const editWorkingPeriod = new ValidatedMethod({
     }
   }).validator(),
   run(leadership) {
-    if(!validateLeadership.call({_id: leadership._id, organizationId: leadership.organizationId})) {
+    if(!validateLeadership.call({leaderId: leadership.leaderId, organizationId: leadership.organizationId})) {
       throw new Meteor.Error(400, 'Invalid Leadership');
     } else {
       return Leaderships.update({
-        _id: leadership._id, "organizations.organizationId": leadership.organizationId
-      }, { $set: { address: employee.address }});
+        leaderId: leadership.leaderId,
+        organizations: {
+          $elemMatch: { organizationId: leadership.organizationId }
+        }}, {
+          $set: { address: employee.address }
+        });
     }
   }
 });
