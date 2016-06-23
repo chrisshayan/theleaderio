@@ -26,7 +26,8 @@ Organizations.schema = new SimpleSchema({
   },
   status: {
     type: String,
-    allowedValues: [ STATUS_ACTIVE, STATUS_DEACTIVE ]
+    allowedValues: [ STATUS_ACTIVE, STATUS_DEACTIVE ],
+    defaultValue: STATUS_ACTIVE
   },
   description: {
     type: String,

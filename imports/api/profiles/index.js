@@ -20,9 +20,6 @@ Profiles.schema = new SimpleSchema({
   userId: {
     type: String
   },
-  alias: {
-    type: String
-  },
   firstName: {
     type: String,
     optional: true
@@ -36,7 +33,9 @@ Profiles.schema = new SimpleSchema({
     optional: true
   },
   status: {
-    type: String
+    type: String,
+    allowedValues: [ STATUS_ACTIVE, STATUS_DEACTIVE ],
+    defaultValue: STATUS_DEACTIVE
   },
   imageUrl: {
     type: String,

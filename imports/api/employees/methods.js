@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+import _ from 'lodash';
 
 import { Employees, STATUS_ACTIVE, STATUS_DEACTIVE } from './index';
 import { IDValidator } from '/imports/utils';
@@ -8,147 +9,87 @@ import { IDValidator } from '/imports/utils';
 /**
  * CUD Employees (Create, Update, Deactivate)
  * Methods:
- * # validateEmployee
- * # createEmployee
- * # editName
- * # editAddress
- * # editImageUrl
- * # editStatus
+ * # create
+ * # edit ( email, firstName, lastName, imageUrl)
+ * # setStatus
  */
- // validate Employee
-export const validateEmployee = new ValidatedMethod({
-  name: 'employees.validateEmployee',
-  validate: new SimpleSchema({
-    ...IDValidator
-  }).validator(),
-  run(employee) {
-    const docsNumber = Employees.find({ _id: employee._id }).count();
-    if(!docsNumber) {
-      return 0; // Invalid Employee
-    } else {
-      return 1; // Valid Employee
-    }
-  }
-});
 
 // Create Employee
-// with basics information: email, status
-export const createEmployee = new ValidatedMethod({
-  name: 'employees.createEmployee',
+// with basics information: email, firstName, lastName
+export const create = new ValidatedMethod({
+  name: 'employees.create',
   validate: new SimpleSchema({
     email: {
       type: String
     },
-    status: {
-      type: String,
-      allowedValues: [ STATUS_ACTIVE, STATUS_DEACTIVE ]
-    }
-  }).validator(),
-  run(employee) {
-    return Employees.insert(employee);
-  }
-});
-
-// Edit Employee Name
-export const editName = new ValidatedMethod({
-  name: 'employees.editName',
-  validate: new SimpleSchema({
-    ...IDValidator,
     firstName: {
       type: String
     },
     lastName: {
-      type: String
-    }
-  }).validator(),
-  run(employee) {
-    if(!validateEmployee.call({_id: employee._id})) {
-      throw new Meteor.Error(400, 'Invalid Employee');
-    } else {
-      return Employees.update({ _id: employee._id }, {
-        $set: { firstName: employee.firstName, lastName: employee.lastName }});
-    }
-  }
-});
-
-// Edit Address
-export const editAddress = new ValidatedMethod({
-  name: 'employees.editAddress',
-  validate: new SimpleSchema({
-    ...IDValidator,
-    "address.zipCode": {
-      type: String,
-      optional: true
-    },
-    "address.countryCode": {
-      type: String,
-      optional: true
-    },
-    "address.country": {
-      type: String,
-      optional: true
-    },
-    "address.city": {
-      type: String,
-      optional: true
-    },
-    "address.district": {
-      type: String,
-      optional: true
-    },
-    "address.streetName": {
-      type: String,
-      optional: true
-    },
-    "address.streetAddress": {
-      type: String,
-      optional: true
-    },
-    "address.secondaryAddress": {
-      type: String,
-      optional: true
-    },
-    "address.geo.latitude": {
-      type: String,
-      optional: true
-    },
-    "address.geo.longitude": {
       type: String,
       optional: true
     }
   }).validator(),
-  run(employee) {
-    if(!validateEmployee.call({_id: employee._id})) {
-      throw new Meteor.Error(400, 'Invalid User');
-    } else {
-      return Employees.update({ _id: employee._id }, {
-        $set: { address: employee.address }});
+  run({ email, firstName, lastName }) {
+    var employee = { email, firstName };
+    if (lastName != undefined) {
+      employee['lastName'] = lastName;
     }
+    return Employees.insert(employee);
   }
 });
 
-// Edit Employee ImageUrl
-export const editImageUrl = new ValidatedMethod({
-  name: 'employees.editImageUrl',
+// Edit Employee's Email, firstName, lastName, ImageUrl
+export const edit = new ValidatedMethod({
+  name: 'employees.edit',
   validate: new SimpleSchema({
     ...IDValidator,
+    email: {
+      type: String,
+      optional: true
+    },
+    firstName: {
+      type: String,
+      optional: true
+    },
+    lastName: {
+      type: String,
+      optional: true
+    },
     imageUrl: {
-      type: String
+      type: String,
+      optional: true
     }
   }).validator(),
-  run(employee) {
-    if(!validateEmployee.call({_id: employee._id})) {
-      throw new Meteor.Error(400, 'Invalid Employee');
+  run({_id, email, firstName, lastName, imageUrl}) {
+    var selector = { _id };
+    var modifier = {};
+    if (email != undefined) {
+      modifier['email'] = email;
+    }
+    if (firstName != undefined) {
+      modifier['firstName'] = firstName;
+    }
+    if (lastName != undefined) {
+      modifier['lastName'] = lastName;
+    }
+    if (imageUrl != undefined) {
+      modifier['imageUrl'] = imageUrl;
+    }
+    var employee = Employees.findOne(selector);
+    if(!employee) {
+      throw new Meteor.Error(404, 'Employee not found');
+    } else if(!_.isEmpty(modifier)) {
+      return Employees.update(selector, {$set: modifier})
     } else {
-      return Employees.update({ _id: employee._id }, {
-        $set: { imageUrl: employee.imageUrl }});
+      return true;
     }
   }
 });
 
-// Edit Employee Status ( Activate or Deactivate)
-export const editStatus = new ValidatedMethod({
-  name: 'employees.editStatus',
+// Set Employee's Status ( Activate or Deactivate)
+export const setStatus = new ValidatedMethod({
+  name: 'employees.setStatus',
   validate: new SimpleSchema({
     ...IDValidator,
     status: {
@@ -156,12 +97,12 @@ export const editStatus = new ValidatedMethod({
       allowedValues: [  STATUS_ACTIVE, STATUS_DEACTIVE ]
     }
   }).validator(),
-  run(employee) {
-    if(!validateEmployee.call({_id: employee._id})) {
-      throw new Meteor.Error(400, 'Invalid Employee');
+  run({ _id, status }) {
+    var employee = Employees.findOne({ _id });
+    if(!employee) {
+      throw new Meteor.Error(404, 'Employee not found');
     } else {
-      return Employees.update({ _id: employee._id }, {
-        $set: { status: employee.status }});
+      return Employees.update({ _id }, { $set: { status }});
     }
   }
 });

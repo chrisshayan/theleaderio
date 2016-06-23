@@ -10,9 +10,14 @@ export const Leaderships = new LeadershipsCollection('leaderships');
 /**
  * Schema
  */
+const maxOrg = 10; // allow leader to have maximum 4 organizations only
 Leaderships.schema = new SimpleSchema({
   leaderId: {
     type: String
+  },
+  organizations: {
+    type: [Object],
+    maxCount: maxOrg  // allow leader to have only
   },
   "organizations.$.organizationId": {
     type: String  // _id mapped from collection organizations

@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+import _ from 'lodash';
 
 import { Organizations, STATUS_ACTIVE, STATUS_DEACTIVE } from './index';
 import { IDValidator } from '/imports/utils';
@@ -8,63 +9,61 @@ import { IDValidator } from '/imports/utils';
 /**
  * CUD Organizations (Create, Edit, Deactivate)
  * Methods:
- * # validateOrg
- * # createOrg
- * # editName
- * # editDescription
- * # editAddress
- * # editImageUrl
- * # editStatus
+ * # create
+ * # edit (name, description, imageUrl, address)
+ * # setStatus
  */
- // validate Organization
-export const validateOrg = new ValidatedMethod({
-  name: 'organizations.validateOrg',
-  validate: new SimpleSchema({
-    ...IDValidator
-  }).validator(),
-  run(org) {
-    const docsNumber = Organizations.find({ _id: org._id }).count();
-    if(!docsNumber) {
-      return 0; // Invalid Organization
-    } else {
-      return 1; // Valid Organization
-    }
-  }
-});
-
 // Create Organization
-// with basics information: name, status
-export const createOrg = new ValidatedMethod({
-  name: 'organizations.createOrg',
+// with basics information: name
+export const create = new ValidatedMethod({
+  name: 'organizations.create',
   validate: new SimpleSchema({
     name: {
       type: String
-    },
-    status: {
-      type: String,
-      allowedValues: [ STATUS_ACTIVE, STATUS_DEACTIVE ]
     }
   }).validator(),
-  run(org) {
-    return Organizations.insert(org);
+  run({ name }) {
+    return Organizations.insert(name);
   }
 });
 
-// Edit Organization Name
-export const editName = new ValidatedMethod({
-  name: 'organizations.editName',
+// Edit Organization's name, description, imageUrl, address
+export const edit = new ValidatedMethod({
+  name: 'organizations.edit',
   validate: new SimpleSchema({
     ...IDValidator,
     name: {
-      type: String
+      type: String,
+      optional: true
+    },
+    description: {
+      type: String,
+      optional: true
+    },
+    imageUrl: {
+      type: String,
+      optional: true
     }
   }).validator(),
-  run(org) {
-    if(!validateOrg.call({_id: org._id})) {
-      throw new Meteor.Error(400, 'Invalid Organization');
+  run({ _id, name, description, imageUrl }) {
+    var selector = { _id };
+    var modifier = {};
+    if(name != undefined) {
+      modifier['name'] = name;
+    }
+    if(name != undefined) {
+      modifier['name'] = name;
+    }
+    if(name != undefined) {
+      modifier['name'] = name;
+    }
+    var org = Organizations.findOne({ _id });
+    if(!org) {
+      throw new Meteor.Error(404, 'Organization not found');
+    } else if(!_.isEmpty(modifier)) {
+      return Organizations.update(selector, {$set: modifier})
     } else {
-      return Organizations.update({ _id: org._id }, {
-        $set: { name: org.name }});
+      return true;
     }
   }
 });
@@ -115,57 +114,20 @@ export const editAddress = new ValidatedMethod({
       optional: true
     }
   }).validator(),
-  run(org) {
-    if(!validateOrg.call({_id: org._id})) {
-      throw new Meteor.Error(400, 'Invalid User');
+  run({ _id, address }) {
+    var org = Organizations.findOne({ _id });
+    if(!org) {
+      throw new Meteor.Error(404, 'Organization not found');
     } else {
       return Organizations.update({ _id: org._id }, {
-        $set: { address: org.address }});
+        $set: { address }});
     }
   }
 });
 
-// Edit Organization ImageUrl
-export const editImageUrl = new ValidatedMethod({
-  name: 'organizations.editImageUrl',
-  validate: new SimpleSchema({
-    ...IDValidator,
-    imageUrl: {
-      type: String
-    }
-  }).validator(),
-  run(org) {
-    if(!validateOrg.call({_id: org._id})) {
-      throw new Meteor.Error(400, 'Invalid Organization');
-    } else {
-      return Organizations.update({ _id: org._id }, {
-        $set: { imageUrl: org.imageUrl }});
-    }
-  }
-});
-
-// Edit Organization Description
-export const editDescription = new ValidatedMethod({
-  name: 'organizations.editDescription',
-  validate: new SimpleSchema({
-    ...IDValidator,
-    description: {
-      type: String
-    }
-  }).validator(),
-  run(org) {
-    if(!validateOrg.call({_id: org._id})) {
-      throw new Meteor.Error(400, 'Invalid Organization');
-    } else {
-      return Organizations.update({ _id: org._id }, {
-        $set: { description: org.description }});
-    }
-  }
-});
-
-// Edit Organization Status ( Activate or Deactivate)
-export const editStatus = new ValidatedMethod({
-  name: 'organizations.editStatus',
+// Set Organization's Status ( Activate or Deactivate)
+export const setStatus = new ValidatedMethod({
+  name: 'organizations.setStatus',
   validate: new SimpleSchema({
     ...IDValidator,
     status: {
@@ -173,12 +135,13 @@ export const editStatus = new ValidatedMethod({
       allowedValues: [  STATUS_ACTIVE, STATUS_DEACTIVE ]
     }
   }).validator(),
-  run(org) {
-    if(!validateOrg.call({_id: org._id})) {
-      throw new Meteor.Error(400, 'Invalid Organization');
+  run({ _id, status }) {
+    var org = Organizations.findOne({ _id });
+    if(!org) {
+      throw new Meteor.Error(404, 'Organization not found');
     } else {
-      return Organizations.update({ _id: org._id }, {
-        $set: { status: org.status }});
+      return Organizations.update({ _id }, {
+        $set: { status }});
     }
   }
 });
