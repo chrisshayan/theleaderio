@@ -8,14 +8,20 @@ import SignUpPage from '/imports/ui/containers/SignUpPage';
 import CreateAliasPage from '/imports/ui/containers/CreateAliasPage';
 import UserHomePage from '/imports/ui/containers/UserHomePage';
 
+// FlowRouter.route('/', {
+//   name: 'landingPage',
+//   action() {
+//     mount(MainLayout, {
+//       content() {
+//         return <LandingPage />;
+//       }
+//     });
+//   }
+// });
 FlowRouter.route('/', {
   name: 'landingPage',
   action() {
-    mount(MainLayout, {
-      content() {
-        return <LandingPage />;
-      }
-    });
+    mount(LandingPage);
   }
 });
 
@@ -44,7 +50,7 @@ singupRouter.route('/alias', {
 singupRouter.route('/firstTime/:userAlias', {
   triggersEnter: [addSubdomain],
   action: function(params, queryParams) {
-    console.log("Yeah! We are on the post:", FlowRouter.current().params.userAlias);
+    throw new Error("this should not get called");
   }
 });
 
