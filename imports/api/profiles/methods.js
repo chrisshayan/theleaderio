@@ -3,7 +3,7 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import _ from 'lodash';
 
-import { Profiles, STATUS_ACTIVE, STATUS_DEACTIVE } from './index';
+import { Profiles, STATUS_ACTIVE, STATUS_INACTIVE } from './index';
 import { IDValidator } from '/imports/utils';
 
 /**
@@ -196,7 +196,7 @@ export const setStatus = new ValidatedMethod({
     }, // validate userId which is mapped with _id in collection Accounts
     status: {
       type: String,
-      allowedValues: [  STATUS_ACTIVE, STATUS_DEACTIVE ]
+      allowedValues: [  STATUS_ACTIVE, STATUS_INACTIVE ]
     }
   }).validator(),
   run(userProfile) {

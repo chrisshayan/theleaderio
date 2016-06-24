@@ -1,18 +1,21 @@
 import React, {Component} from 'react';
-import {FlowRouter} from 'meteor/kadira:flow-router';
 
-export default class InvalidUrl extends Component {
+export default class SingleInputForm extends Component {
+
   _onSubmit() {
-    this.props.onSubmit(this.props.redirectUrl);
+    const inputValue = this.refs.input.value;
+    this.props.onSubmit({ inputValue });
   }
 
   render() {
     const {
-      code = '404',
-      message = 'Page Not Found',
-      description = 'Sorry, but the page you are looking for has note been found. Try checking the URL for error, then hit the refresh button on your browser or try found something else in our app.',
-      buttonLabel = 'Come back to HomePage',
-      redirectUrl = '/',
+      logoName = 'TL+',
+      formTitle = 'Forgot password',
+      formDescription = 'Enter your email address and your password will be reset and emailed to you.',
+      inputType = 'email',
+      inputHolder = 'Email address',
+      buttonLabel = 'Send new password',
+      errors = null,
       onSubmit = () => null
     } = this.props;
 
@@ -20,14 +23,14 @@ export default class InvalidUrl extends Component {
       <div className="middle-box text-center animated fadeInDown">
         <div>
           <div>
-            <h1 className="logo-name">{ code }</h1>
+            <h1 className="logo-name">{ logoName }</h1>
           </div>
           <div className="row">
             <div className="col-md-12">
               <div className="ibox-content">
-                <h2 className="font-bold">{ message }</h2>
+                <h2 className="font-bold">{ formTitle }</h2>
                 <p>
-                  { description }
+                  { formDescription }
                 </p>
                 <div className="row">
                   <div className="col-lg-12">
@@ -35,6 +38,14 @@ export default class InvalidUrl extends Component {
                       event.preventDefault();
                       this._onSubmit();
                     }}>
+                      <div className="form-group">
+                        <input ref="input" type={ inputType } className="form-control" placeholder={ inputHolder } required=""/>
+                      </div>
+                      <div className="form-group">
+                        {!_.isEmpty(errors) && (
+                          <p className="alert-danger text-center">{errors}</p>
+                        )}
+                      </div>
                       <button type="submit" className="btn btn-primary block full-width m-b">
                         { buttonLabel } <i className="fa fa-arrow-right"></i>
                       </button>
