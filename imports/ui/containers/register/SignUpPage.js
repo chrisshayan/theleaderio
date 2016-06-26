@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import CreateUser from '../components/CreateUser';
+import CreateUser from '../../components/CreateUser';
 import * as ProfileActions from '/imports/api/profiles/methods';
 import * as TokenActions from '/imports/api/tokens/methods';
 

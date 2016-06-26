@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+// import '/client/stylesheets/globals/landing.import.less';
 
 export default class LandingPage extends Component {
 
@@ -6,30 +7,6 @@ export default class LandingPage extends Component {
 
     return (
       <div>
-        <div className="navbar-wrapper">
-          <nav className="navbar navbar-default navbar-fixed-top" role="navigation">
-            <div className="container">
-              <div className="navbar-header page-scroll">
-                <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
-                        aria-expanded="false" aria-controls="navbar">
-                  <span className="sr-only">Toggle navigation</span>
-                  <span className="icon-bar"></span>
-                  <span className="icon-bar"></span>
-                  <span className="icon-bar"></span>
-                </button>
-                <a className="navbar-brand" href="{{pathFor route='landing'}}">theLeader.io</a>
-              </div>
-              <div id="navbar" className="navbar-collapse collapse">
-                <ul className="nav navbar-nav navbar-right">
-                  <li><a className="page-scroll" href="#page-top">Home</a></li>
-                  <li><a className="page-scroll" href="#features">Features</a></li>
-                  <li><a className="page-scroll" href="#testimonials">Testimonials</a></li>
-                  <li><a className="page-scroll" href="#contact">Contact</a></li>
-                </ul>
-              </div>
-            </div>
-          </nav>
-        </div>
         <div id="inSlider" className="carousel carousel-fade" data-ride="carousel">
 
           <div className="carousel-inner" role="listbox">
@@ -44,8 +21,7 @@ export default class LandingPage extends Component {
 
                   <p>Get Insight on How Your Team Rates Your Leadership and How to Improve.</p>
 
-                  <p><a className="btn btn-lg btn-primary" href="{{pathFor 'register'}}" role="button">Try For
-                            Free!</a></p>
+                  <p><a className="btn btn-lg btn-primary" role="button">Try For Free!</a></p>
                 </div>
                 <div className="header-back two"></div>
               </div>
@@ -127,7 +103,7 @@ export default class LandingPage extends Component {
         </section>
 
 
-        <section id="testimonials" className="navy-section testimonials" >
+        <section id="testimonials" className="navy-section testimonials" style={{marginTop: 0}}>
 
           <div className="container">
             <div className="row">
@@ -152,7 +128,7 @@ export default class LandingPage extends Component {
 
         </section>
 
-        <section className="comments gray-section">
+        <section className="comments gray-section" style={{marginTop: 0}}>
           <div className="container">
             <div className="row">
               <div className="col-lg-12 text-center">
@@ -256,7 +232,7 @@ export default class LandingPage extends Component {
             </div>
             <div className="row">
               <div className="col-lg-12 text-center">
-                <a className="btn btn-lg btn-primary" href="{{pathFor 'register'}}" role="button">Try For Free!</a>
+                <a className="btn btn-lg btn-primary" role="button" href="/signup">Try For Free!</a>
 
                 <p className="m-t-sm">
                   Follow us on social platform
