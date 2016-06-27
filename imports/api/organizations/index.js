@@ -6,7 +6,7 @@ import OrganizationsCollection from './collection';
  * Constant
  */
 export const STATUS_ACTIVE = 'ACTIVE';
-export const STATUS_DEACTIVE = 'DEACTIVE';
+export const STATUS_INACTIVE = 'DEACTIVE';
 
 /**
  * Collection
@@ -26,7 +26,8 @@ Organizations.schema = new SimpleSchema({
   },
   status: {
     type: String,
-    allowedValues: [ STATUS_ACTIVE, STATUS_DEACTIVE ]
+    allowedValues: [ STATUS_ACTIVE, STATUS_INACTIVE ],
+    defaultValue: STATUS_ACTIVE
   },
   description: {
     type: String,

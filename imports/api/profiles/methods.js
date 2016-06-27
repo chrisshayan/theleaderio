@@ -1,54 +1,33 @@
 import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+import _ from 'lodash';
 
-import { Profiles, STATUS_ACTIVE, STATUS_DEACTIVE } from './index';
+import { Profiles, STATUS_ACTIVE, STATUS_INACTIVE } from './index';
 import { IDValidator } from '/imports/utils';
 
 /**
  * CUD user profiles (Create, Update, Deactivate)
  * Methods:
- * # validateUser
- * # createProfile
- * # editName
+ * # create
+ * # edit
  * # editIndustries
- * # editAddress
- * # editImageUrl
- * # editStatus
+ * # setStatus
  */
-// validate user
-export const validateUser = new ValidatedMethod({
-  name: 'profile.validateUser',
-  validate: new SimpleSchema({
-    // Should be ...IDValidator in real data
-    userId: {
-      type: String
-    }
-  }).validator(),
-  run(userProfile) {
-    const docsNumber = Profiles.find({ userId: userProfile.userId }).count();
-    if(!docsNumber) {
-      return 0; // Invalid User
-    } else {
-      return 1; // Valid User
-    }
-  }
-});
-
 // Create User Profile
-// with basics information: userId, alias, status
-export const createProfile = new ValidatedMethod({
-  name: 'profiles.createProfile',
+// with basics information: userId, firstName, lastName
+export const create = new ValidatedMethod({
+  name: 'profiles.create',
   validate: new SimpleSchema({
     userId: {
       type: String
-    },
-    alias: {
+    }, // validate userId which is mapped with _id in collection Accounts
+    firstName: {
       type: String
     },
-    status: {
+    lastName: {
       type: String,
-      allowedValues: [ STATUS_ACTIVE, STATUS_DEACTIVE ]
+      optional: true
     }
   }).validator(),
   run(userProfile) {
@@ -56,60 +35,106 @@ export const createProfile = new ValidatedMethod({
   }
 });
 
-// Update Name
-export const editName = new ValidatedMethod({
-  name: 'profiles.editName',
+// Edit User Profile's Inforamtion
+export const edit = new ValidatedMethod({
+  name: 'profiles.edit',
   validate: new SimpleSchema({
     userId: {
       type: String
-    },
+    }, // validate userId which is mapped with _id in collection Accounts
     firstName: {
-      type: String
+      type: String,
+      optional: true
     },
     lastName: {
-      type: String
-    }
-  }).validator(),
-  run(userProfile) {
-    if(!validateUser.call({userId: userProfile.userId})) {
-      throw new Meteor.Error(400, 'Invalid User');
-    } else {
-      return Profiles.update({ userId: userProfile.userId }, {
-        $set: { firstName: userProfile.firstName, lastName: userProfile.lastName
-      }});
-    }
-  }
-});
-
-// Update Industries
-export const editIndustries = new ValidatedMethod({
-  name: 'profiles.editIndustries',
-  validate: new SimpleSchema({
-    userId: {
-      type: String
+      type: String,
+      optional: true
     },
-    industries: {
-      type: [String],
+    imageUrl: {
+      type: String,
+      optional: true
+    },
+    phoneNumber: {
+      type: String,
       optional: true
     }
   }).validator(),
-  run(userProfile) {
-    if(!validateUser.call({userId: userProfile.userId})) {
-      throw new Meteor.Error(400, 'Invalid User');
+  run({ userId, firstName, lastName, imageUrl, phoneNumber }) {
+    var selector = { userId };
+    var modifier = {};
+    if(firstName != undefined) {
+      modifier['firstName'] = firstName;
+    }
+    if(lastName != undefined) {
+      modifier['lastName'] = lastName;
+    }
+    if(imageUrl != undefined) {
+      modifier['imageUrl'] = imageUrl;
+    }
+    if(phoneNumber != undefined) {
+      modifier['phoneNumber'] = phoneNumber;
+    }
+    var userProfile = Profiles.findOne(selector);
+    console.log(modifier);
+    if(!userProfile) {
+      throw new Meteor.Error(404, 'User not found');
+    } else if(!_.isEmpty(modifier)) {
+      return Profiles.update(selector, { $set: { modifier }});
     } else {
-      return Profiles.update({ userId: userProfile.userId }, {
-        $set: { industries: userProfile.industries }});
+      return true;
     }
   }
 });
 
-// Update address
-export const editAddress = new ValidatedMethod({
-  name: 'profiles.editAddress',
+// Add Industry
+export const addIndustry = new ValidatedMethod({
+  name: 'profiles.addIndustry',
   validate: new SimpleSchema({
     userId: {
       type: String
-    },
+    }, // validate userId which is mapped with _id in collection Accounts
+    industries: {
+      type: String
+    }
+  }).validator(),
+  run({ userId, industry }) {
+    var userProfile = Profiles.findOne({ userId });
+    if(!userProfile) {
+      throw new Meteor.Error(404, 'User not found');
+    } else {
+      return Profiles.update({ userId }, {
+        $push: { industries: industry }});
+    }
+  }
+});
+
+// Remove Industry
+export const removeIndustry = new ValidatedMethod({
+  name: 'profiles.removeIndustry',
+  validate: new SimpleSchema({
+    userId: {
+      type: String
+    }, // validate userId which is mapped with _id in collection Accounts
+    industries: {
+      type: String
+    }
+  }).validator(),
+  run({ userId, industry }) {
+    var userProfile = Profiles.findOne({ userId });
+    if(!userProfile) {
+      throw new Meteor.Error(404, 'User not found');
+    } else {
+      return Profiles.update({ userId }, {
+        $pull: { industries: industry }});
+    }
+  }
+});
+
+// Edit address
+export const editAddress = new ValidatedMethod({
+  name: 'profiles.editAddress',
+  validate: new SimpleSchema({
+    ...IDValidator, // validate userId which is mapped with _id in collection Accounts
     "address.zipCode": {
       type: String,
       optional: true
@@ -151,9 +176,10 @@ export const editAddress = new ValidatedMethod({
       optional: true
     }
   }).validator(),
-  run(userProfile) {
-    if(!validateUser.call({userId: userProfile.userId})) {
-      throw new Meteor.Error(400, 'Invalid User');
+  run({ userId, address }) {
+    var userProfile = Profiles.findOne({ userId });
+    if(!userProfile) {
+      throw new Meteor.Error(404, 'User not found');
     } else {
       return Profiles.update({ userId: userProfile.userId }, {
         $set: { address: userProfile.address }});
@@ -161,46 +187,24 @@ export const editAddress = new ValidatedMethod({
   }
 });
 
-// Update imageUrl
-export const editImageUrl = new ValidatedMethod({
-  name: 'profiles.editImageUrl',
+// Set Status (Activate / Deactivate)
+export const setStatus = new ValidatedMethod({
+  name: 'profiles.setStatus',
   validate: new SimpleSchema({
     userId: {
       type: String
-    },
-    imageUrl: {
-      type: String
-    }
-  }).validator(),
-  run(userProfile) {
-    if(!validateUser.call({userId: userProfile.userId})) {
-      throw new Meteor.Error(400, 'Invalid User');
-    } else {
-      return Profiles.update({ userId: userProfile.userId }, {
-        $set: { imageUrl: userProfile.imageUrl }});
-    }
-  }
-});
-
-// Update Status (Deactivate)
-export const editStatus = new ValidatedMethod({
-  name: 'profiles.editStatus',
-  validate: new SimpleSchema({
-    userId: {
-      type: String
-    },
+    }, // validate userId which is mapped with _id in collection Accounts
     status: {
       type: String,
-      allowedValues: [  STATUS_ACTIVE, STATUS_DEACTIVE ]
+      allowedValues: [  STATUS_ACTIVE, STATUS_INACTIVE ]
     }
   }).validator(),
   run(userProfile) {
-    if(!validateUser.call({userId: userProfile.userId})) {
-      throw new Meteor.Error(400, 'Invalid User');
+    var userProfile = Profiles.findOne({ userId });
+    if(!userProfile) {
+      throw new Meteor.Error(404, 'User not found');
     } else {
-      return Profiles.update({ userId: userProfile.userId }, { $set: {
-        status: userProfile.status
-      }});
+      return Profiles.update({ userId }, { $set: { status }});
     }
   }
 });

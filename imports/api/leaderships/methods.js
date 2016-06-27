@@ -16,7 +16,7 @@ import { IDValidator } from '/imports/utils';
  * # addEmployee
  * # editWorkingPeriod
  */
- // validate Leadership
+// validate Leadership
 export const validateLeadership = new ValidatedMethod({
   name: 'leaderships.validateLeadership',
   validate: new SimpleSchema({
@@ -75,8 +75,35 @@ export const addEmployee = new ValidatedMethod({
         organizations: {
           $elemMatch: { organizationId: leadership.organizationId }
         }}, {
-          $push: { "organizations.$.employees": leadership.employeeId }
-        });
+        $push: { "organizations.$.employees": leadership.employeeId }
+      });
+    }
+  }
+});
+
+// Remove Employee from Organization
+export const removeEmployee = new ValidatedMethod({
+  name: 'leaderships.removeEmployee',
+  validate: new SimpleSchema({
+    ...IDValidator, // leadershipId
+    organizationId: {
+      type: String
+    },
+    employeeId: {
+      type: String  // employeeId mapped from collection employees
+    }
+  }).validator(),
+  run(leadership) {
+    if(!validateLeadership.call({leaderId: leadership.leaderId, organizationId: leadership.organizationId})) {
+      throw new Meteor.Error(400, 'Invalid Leadership');
+    } else {
+      return Leaderships.update({
+        leaderId: leadership.leaderId,
+        organizations: {
+          $elemMatch: { organizationId: leadership.organizationId }
+        }}, {
+        $pull: { "organizations.$.employees": leadership.employeeId }
+      });
     }
   }
 });
@@ -107,8 +134,11 @@ export const editWorkingPeriod = new ValidatedMethod({
         organizations: {
           $elemMatch: { organizationId: leadership.organizationId }
         }}, {
-          $set: { address: employee.address }
-        });
+        $set: {
+          "organizations.$.startDate": leadership.startDate,
+          "organizations.$.endDate": leadership.endDate
+        }
+      });
     }
   }
 });

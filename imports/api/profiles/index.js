@@ -6,7 +6,7 @@ import ProfilesCollection from './collection';
  * Constant
  */
 export const STATUS_ACTIVE = 'ACTIVE';
-export const STATUS_DEACTIVE = 'DEACTIVE';
+export const STATUS_INACTIVE = 'INACTIVE';
 
 /**
  * Collection
@@ -18,9 +18,6 @@ export const Profiles = new ProfilesCollection('profiles');
  */
 Profiles.schema = new SimpleSchema({
   userId: {
-    type: String
-  },
-  alias: {
     type: String
   },
   firstName: {
@@ -36,7 +33,9 @@ Profiles.schema = new SimpleSchema({
     optional: true
   },
   status: {
-    type: String
+    type: String,
+    allowedValues: [ STATUS_ACTIVE, STATUS_INACTIVE ],
+    defaultValue: STATUS_INACTIVE
   },
   imageUrl: {
     type: String,

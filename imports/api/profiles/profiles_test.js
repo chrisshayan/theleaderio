@@ -2,7 +2,7 @@ import { name, internet, image, address, helpers } from 'faker';
 import _ from 'lodash';
 import { Meteor } from 'meteor/meteor';
 
-import { STATUS_ACTIVE, STATUS_DEACTIVE, Profiles } from '/imports/api/profiles';
+import { STATUS_ACTIVE, STATUS_INACTIVE, Profiles } from '/imports/api/profiles';
 import * as Actions from '/imports/api/profiles/methods';
 
 
@@ -87,7 +87,7 @@ import * as Actions from '/imports/api/profiles/methods';
     console.log('Profiles: Test - Method Update Status');
     userProfile = {
       userId: randomUser.userId,
-      status: STATUS_DEACTIVE
+      status: STATUS_INACTIVE
     };
     Actions.editStatus.call(userProfile, (error) => {
       if(error)

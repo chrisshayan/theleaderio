@@ -34,5 +34,5 @@ ddp-rate-limiter@1.0.4
 dburles:collection-helpers@1.0.4
 
 
-insecure
 react-meteor-data
+accounts-password
