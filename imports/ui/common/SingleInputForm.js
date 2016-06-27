@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 
+import Copyright from '/imports/ui/common/Copyright';
+
 export default class SingleInputForm extends Component {
 
   _onSubmit() {
@@ -55,9 +57,7 @@ export default class SingleInputForm extends Component {
               </div>
             </div>
           </div>
-          <p className="m-t text-center">
-            <small>theLeader.io, strive for great leadership &copy; 2016</small>
-          </p>
+          <Copyright />
         </div>
       </div>
     );

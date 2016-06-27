@@ -10,9 +10,10 @@ import SignUpPage from '/imports/ui/containers/register/SignUpPage';
 import CreateAliasPage from '/imports/ui/containers/register/CreateAliasPage';
 import UserHomePage from '/imports/ui/containers/UserHomePage';
 import SignInPage from '/imports/ui/containers/authentication/SignInPage';
+import ForgotPasswordPage from '/imports/ui/containers/authentication/ForgotPasswordPage';
 
 // Home route
-const homeRoute = FlowRouter.route('/', {
+export const homeRoute = FlowRouter.route('/', {
   name: 'homeRoute',
   triggersEnter: [
     () => {
@@ -37,20 +38,20 @@ const homeRoute = FlowRouter.route('/', {
   ]
 });
 
-const landingRoute = FlowRouter.route('/landing', {
+export const landingRoute = FlowRouter.route('/landing', {
   name: 'LandingPage',
   action() {
     mount(LandingPage);
   }
 });
 
-const signupRoutes = FlowRouter.group({
+export const signupRoutes = FlowRouter.group({
   prefix: '/signup',
   name: 'signup'
 });
 
 // handling /signup route
-const mainSignUp = signupRoutes.route('/', {
+export const mainSignUp = signupRoutes.route('/', {
   name: 'signUpPage',
   action() {
     mount(SignUpPage);
@@ -76,23 +77,31 @@ signupRoutes.route('/firstTime/:userAlias', {
 });
 
 
-const signinRoute = FlowRouter.route('/signin', {
+export const signinRoute = FlowRouter.route('/signin', {
   name: 'signin',
   action() {
     mount(SignInPage);
   }
 });
 
-const loggedInRoutes = FlowRouter.group({
+export const forgotpasswordRoute = FlowRouter.route('/forgotpassword', {
+  name: 'forgotpassword',
+  action() {
+    mount(ForgotPasswordPage);
+  }
+});
+
+export const loggedInRoutes = FlowRouter.group({
   name: 'loggedInRoutes'
 
 });
 
-const userHomeRoute = loggedInRoutes.route('/dashboard', {
+export const userHomeRoute = loggedInRoutes.route('/dashboard', {
   name: 'Dashboard',
   action() {
     mount(UserHomePage);
   }
 });
+
 
 FlowRouter.notFound = mount(InvalidUrlForm);

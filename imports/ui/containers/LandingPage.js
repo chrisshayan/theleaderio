@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-// import '/client/stylesheets/globals/landing.import.less';
+
+import { signinRoute, mainSignUp } from '/imports/startup/client/routes';
 
 export default class LandingPage extends Component {
 
@@ -8,26 +9,23 @@ export default class LandingPage extends Component {
     return (
       <div>
         <div id="inSlider" className="carousel carousel-fade" data-ride="carousel">
-
           <div className="carousel-inner" role="listbox">
-
             <div className="item active">
-
               <div className="container-slider">
                 <div className="carousel-caption blank">
                   <h2>Do You Strive to Be a Great Leader? <br/></h2>
-
                   <h2>Not Sure How to Improve?<br/></h2>
-
                   <p>Get Insight on How Your Team Rates Your Leadership and How to Improve.</p>
-
-                  <p><a className="btn btn-lg btn-primary" role="button">Try For Free!</a></p>
+                  <p><a className="btn btn-lg btn-primary" role="button" href={mainSignUp.path}>Try For Free!</a></p>
+                  <p className="text-muted text-center">
+                    <small>You are a leader already? </small>
+                  </p>
+                  <a className="btn btn-sm btn-white" href={signinRoute.path}>Sign in</a>
                 </div>
                 <div className="header-back two"></div>
               </div>
             </div>
           </div>
-
         </div>
 
 
@@ -35,14 +33,12 @@ export default class LandingPage extends Component {
           <div className="row">
             <div className="col-sm-6">
               <h2>Survey Your Employees</h2>
-
               <p>Create your own questions or choose from a list of questions which are already in use by others in
                     your industry.
                     Send simple, personalized surveys that get industry high response rates of 60%.</p>
             </div>
             <div className="col-sm-6">
               <h2>Measure and Track Employee Satisfaction</h2>
-
               <p>Keep track of employee satisfaction by monitoring changes from one survey period to the next.
                     See if what you are doing is improving satisfaction or having a negative impact.</p>
             </div>
@@ -54,7 +50,6 @@ export default class LandingPage extends Component {
             <div className="col-lg-12 text-center">
               <div className="navy-line"></div>
               <h1>Analytics 3.0<br/> <span className="navy"> the era of data-enriched offerings</span></h1>
-
               <p>New ways of deciding, managing, changing, innovating, improving and Leading.</p>
             </div>
           </div>
@@ -62,17 +57,13 @@ export default class LandingPage extends Component {
             <div className="col-md-3 text-center wow fadeInLeft">
               <div>
                 <i className="fa fa-frown-o features-icon"></i>
-
                 <h2>Identify Unhappy Employees</h2>
-
                 <p>By using past scores and industry data, we identify your 'at risk' employees and send you an
                         immediate email notification so you can proactively address their concerns.</p>
               </div>
               <div className="m-t-lg">
                 <i className="fa fa-bar-chart features-icon"></i>
-
                 <h2>Benchmark Against Your Industry</h2>
-
                 <p>See how your leadership stacks up against others in your industry. Benchmark your performance so
                         you can continuously improve.</p>
               </div>
@@ -83,17 +74,13 @@ export default class LandingPage extends Component {
             <div className="col-md-3 text-center wow fadeInRight">
               <div>
                 <i className="fa fa-quote-left features-icon"></i>
-
                 <h2>Get Testimonials, Display and Share Them</h2>
-
                 <p>Generate testimonials from your employees, display them using our testimonial widget and have
                         them instantly shared across LinkedIn, Facebook and Twitter.</p>
               </div>
               <div className="m-t-lg">
                 <i className="fa fa-rocket features-icon"></i>
-
                 <h2>Embedded analytics</h2>
-
                 <p>Consistent with the increased speed of data processing and analysis, our models in Analytics 3.0
                         are often embedded into operational and decision processes, dramatically increasing speed and
                         impact.</p>
@@ -104,16 +91,13 @@ export default class LandingPage extends Component {
 
 
         <section id="testimonials" className="navy-section testimonials" style={{marginTop: 0}}>
-
           <div className="container">
             <div className="row">
               <div className="col-lg-12 text-center wow zoomIn">
                 <i className="fa fa-comment big-icon"></i>
-
                 <h1>
                   What our users say
                 </h1>
-
                 <div className="testimonials-text">
                   <i>theLeader.io is so simple and easy to use, my employees just love filling it out. Now that I
                             have the majority of our employees leaving me feedback on my leadership, I feel more engaged
@@ -125,7 +109,6 @@ export default class LandingPage extends Component {
               </div>
             </div>
           </div>
-
         </section>
 
         <section className="comments gray-section" style={{marginTop: 0}}>
@@ -134,7 +117,6 @@ export default class LandingPage extends Component {
               <div className="col-lg-12 text-center">
                 <div className="navy-line"></div>
                 <h1>What our customers say</h1>
-
                 <p>Our Customers Love us.</p>
               </div>
             </div>
@@ -149,7 +131,6 @@ export default class LandingPage extends Component {
                   <a href="" className="pull-left">
                     <img alt="image" src="img/landing/avatar3.jpg"/>
                   </a>
-
                   <div className="media-body">
                     <div className="commens-name">
                       Paula Williams
@@ -158,7 +139,6 @@ export default class LandingPage extends Component {
                   </div>
                 </div>
               </div>
-
               <div className="col-lg-4">
                 <div className="bubble">
                   "Great tool to automate employees feedback process and also get insights into changes over time!
@@ -177,7 +157,6 @@ export default class LandingPage extends Component {
                   </div>
                 </div>
               </div>
-
               <div className="col-lg-4">
                 <div className="bubble">
                   "Such a great service that provides me with valuable insight into our employee satisfaction.
@@ -188,7 +167,6 @@ export default class LandingPage extends Component {
                     <img alt="image"
                          src="https://media.licdn.com/mpr/mpr/shrinknp_400_400/p/8/000/1b5/38d/0791224.jpg"/>
                   </a>
-
                   <div className="media-body">
                     <div className="commens-name">
                       Eduardo Mora
@@ -197,11 +175,8 @@ export default class LandingPage extends Component {
                   </div>
                 </div>
               </div>
-
-
             </div>
           </div>
-
         </section>
 
         <section id="contact" className="gray-section contact">
@@ -210,7 +185,6 @@ export default class LandingPage extends Component {
               <div className="col-lg-12 text-center">
                 <div className="navy-line"></div>
                 <h1>Contact Us</h1>
-
                 <p>Feel Free to contact us in case you have any question.</p>
               </div>
             </div>
@@ -232,8 +206,11 @@ export default class LandingPage extends Component {
             </div>
             <div className="row">
               <div className="col-lg-12 text-center">
-                <a className="btn btn-lg btn-primary" role="button" href="/signup">Try For Free!</a>
-
+                <a className="btn btn-lg btn-primary" role="button" href={mainSignUp.path}>Try For Free!</a>
+                <p className="text-muted text-center">
+                  <small>You are a leader already? </small>
+                </p>
+                <a className="btn btn-sm btn-white" role="button" href={signinRoute.path}>Sign in</a>
                 <p className="m-t-sm">
                   Follow us on social platform
                 </p>
