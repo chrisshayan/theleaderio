@@ -3,7 +3,7 @@ import React from 'react';
 import {mount} from 'react-mounter';
 
 import * as SubdomainActions from '/imports/utils/subdomain';
-import InvalidUrlForm from '/imports/ui/common/InfoMessageForm';
+import NoticeForm from '/imports/ui/common/NoticeForm';
 import MainLayout from '/imports/ui/layouts/MainLayout';
 import LandingPage from '/imports/ui/containers/LandingPage';
 import SignUpPage from '/imports/ui/containers/register/SignUpPage';
@@ -11,6 +11,7 @@ import CreateAliasPage from '/imports/ui/containers/register/CreateAliasPage';
 import UserHomePage from '/imports/ui/containers/UserHomePage';
 import SignInPage from '/imports/ui/containers/authentication/SignInPage';
 import PasswordPage from '/imports/ui/containers/authentication/PasswordPage';
+import Spinner from '/imports/ui/common/Spinner';
 
 
 /**
@@ -31,7 +32,7 @@ export const landingRoute = commonRoutes.route('/', {
   triggersEnter: [
     () => {
       const subdomain = SubdomainActions.getSubdomain();
-      if(subdomain !== undefined) {
+      if (subdomain !== undefined) {
         FlowRouter.go(userHomeRoute.path);
       }
     }
@@ -77,7 +78,7 @@ export const signinRoutes = FlowRouter.group({
   triggersEnter: [
     () => {
       const subdomain = SubdomainActions.getSubdomain();
-      if(subdomain === undefined) {
+      if (subdomain === undefined) {
         FlowRouter.go(signinRoute.path);
       }
     }
@@ -108,11 +109,37 @@ export const passwordRoute = signinRoutes.route('/password/:action', {
  */
 export const loggedInRoutes = FlowRouter.group({
   name: 'loggedInRoutes'
-
+  // triggersEnter: [
+  //   // Make sure user is signed in or signing in
+  //   () => {
+  //     if (Meteor.loggingIn() | Meteor.userId()) {
+  //       FlowRouter.route = FlowRouter.current();
+  //     } else {
+  //       console.log(`User not signed in yet. Redirect to sign in page now.`);
+  //       FlowRouter.go(signinRoute.path);
+  //     }
+  //   }
+  // ],
+  // Register subscription for signed in user
+  // subscriptions: function(params) {
+  //   this.register('profile', Meteor.subscribe('profiles', params.userId));
+  //
+  // }
 });
 
 export const userHomeRoute = loggedInRoutes.route('/dashboard', {
   name: 'dashboard',
+  triggersEnter: [
+    // Make sure user is signed in or signing in
+    () => {
+      if (Meteor.loggingIn() | Meteor.userId()) {
+        FlowRouter.route = FlowRouter.current();
+      } else {
+        console.log(`User not signed in yet. Redirect to sign in page now.`);
+        FlowRouter.go(signinRoute.path);
+      }
+    }
+  ],
   action() {
     mount(UserHomePage);
   }
@@ -122,4 +149,4 @@ export const userHomeRoute = loggedInRoutes.route('/dashboard', {
  * @summary Default Invalid Url Route
  * @route notFound
  */
-FlowRouter.notFound = mount(InvalidUrlForm);
+FlowRouter.notFound = mount(NoticeForm);

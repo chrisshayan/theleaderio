@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import _ from 'lodash';
 
 import SingleInputFrom from '/imports/ui/common/SingleInputForm';
-import InfoMessageForm from '/imports/ui/common/InfoMessageForm';
+import InfoMessageForm from '/imports/ui/common/NoticeForm';
 import * as UserActions from '/imports/api/users/methods';
 import * as SubdomainActins from '/imports/utils/subdomain';
 

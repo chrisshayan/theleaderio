@@ -3,7 +3,7 @@ import {FlowRouter} from 'meteor/kadira:flow-router';
 import {Meteor} from 'meteor/meteor';
 
 import SingleInputForm from '/imports/ui/common/SingleInputForm';
-import InvalidUrlForm from '/imports/ui/common/InfoMessageForm';
+import NoticeForm from '/imports/ui/common/NoticeForm';
 import * as UserActions from '/imports/api/users/methods';
 import * as TokenActions from '/imports/api/tokens/methods';
 import * as SubdomainActions from '/imports/utils/subdomain';
@@ -94,7 +94,7 @@ export default class CreateAliasPage extends Component {
       } else {
         return (
           <div>
-            <InvalidUrlForm
+            <NoticeForm
               code='404'
               message={ this.state.errors }
               description='Sorry, but the page you are looking for has note been found. Try checking the URL for error, then hit the refresh button on your browser or try found something else in our app.'
