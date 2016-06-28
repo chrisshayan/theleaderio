@@ -36,3 +36,4 @@ dburles:collection-helpers@1.0.4
 
 react-meteor-data
 accounts-password
+kadira:login-state

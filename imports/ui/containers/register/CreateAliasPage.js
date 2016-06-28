@@ -3,9 +3,11 @@ import {FlowRouter} from 'meteor/kadira:flow-router';
 import {Meteor} from 'meteor/meteor';
 
 import SingleInputForm from '/imports/ui/common/SingleInputForm';
-import InvalidUrlForm from '/imports/ui/common/InvalidUrlForm';
+import InvalidUrlForm from '/imports/ui/common/InfoMessageForm';
 import * as UserActions from '/imports/api/users/methods';
 import * as TokenActions from '/imports/api/tokens/methods';
+import * as SubdomainActions from '/imports/utils/subdomain';
+import { signinRoute } from '/imports/startup/client/routes';
 
 export default class CreateAliasPage extends Component {
   constructor() {
@@ -17,10 +19,6 @@ export default class CreateAliasPage extends Component {
     };
   }
 
-  _invalidUrlSubmit(redirectUrl) {
-    FlowRouter.go(redirectUrl);
-  }
-
   _inputSubmit({inputValue}) {
     const alias = inputValue;
     const tokenId = FlowRouter.getQueryParam("token");
@@ -29,9 +27,12 @@ export default class CreateAliasPage extends Component {
     UserActions.createAlias.call({tokenId, alias}, (error) => {
       if (_.isEmpty(error)) {
         // Redirect to user's home page
-        const setHomepageRoute = `/signup/firstTime/${alias}`;
-        // console.log(setHomepageRoute);
-        FlowRouter.go(setHomepageRoute);
+        const context = {
+          params: {
+            userAlias: alias
+          }
+        };
+        SubdomainActions.addSubdomain(context);
       } else {
         this.setState({
           errors: error.reason
@@ -99,7 +100,6 @@ export default class CreateAliasPage extends Component {
               description='Sorry, but the page you are looking for has note been found. Try checking the URL for error, then hit the refresh button on your browser or try found something else in our app.'
               buttonLabel='Come back to HomePage'
               redirectUrl='/'
-              onSubmit={ this._invalidUrlSubmit.bind(this) }
             />
           </div>
         );
