@@ -1,5 +1,6 @@
 import _ from 'lodash';
 
+const DOMAIN = 'devtheleader.io';
 
 export const getSubdomain = () => {
   var hostnameArr = document.location.hostname.split( "." );
@@ -13,9 +14,12 @@ export const getSubdomain = () => {
   }
 }
 
-export const addSubdomain = function(context) {
-  // context is the output of `FlowRouter.current()`
-  const userAlias = context.params.userAlias;
-  newUrl = `http://${userAlias}.devtheleader.io`;
+export const addSubdomain = function({ alias, route }) {
+  const newUrl = `http://${alias}.${DOMAIN}/${route}`;
+  window.location = newUrl;
+}
+
+export const removeSubdomain = function ({route}) {
+  const newUrl = `http://${DOMAIN}/${route}`;
   window.location = newUrl;
 }

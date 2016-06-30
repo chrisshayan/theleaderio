@@ -1,4 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import {ValidatedMethod} from 'meteor/mdg:validated-method';
+import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 import { Accounts } from 'meteor/accounts-base';
 import _ from 'lodash';
 
@@ -37,6 +39,38 @@ export const createAlias = new ValidatedMethod({
         }
       } else {
         throw new Meteor.Error('invalid-token', 'User token is invalid or has been used.');
+      }
+    }
+  }
+});
+
+/**
+ *  @summary reset user's password
+ *  @param email
+ */
+export const resetPassword = new ValidatedMethod({
+  name: 'users.resetPassword',
+  validate: new SimpleSchema({
+    alias: {
+      type: String
+    },
+    email: {
+      type: String
+    }
+  }).validator(),
+  run({ alias, email }) {
+    // verify user email & alias in server side
+    if(!this.isSimulation) {
+      const user = Accounts.findUserByEmail(email);
+      if(!_.isEmpty(user)) {
+        const username = user.username;
+        if(username !== alias) {
+          Session.set("resetPasswordValidate", `alias ${alias} doesn't belong to ${email}`);
+          throw new Error('invalid-alias', `alias ${alias} doesn't belong to ${email}`);
+        }
+      } else {
+        Session.set("resetPasswordValidate", `User not found`);
+        throw new Error('invalid-user', 'user not found');
       }
     }
   }

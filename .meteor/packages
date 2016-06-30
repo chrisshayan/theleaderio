@@ -25,7 +25,6 @@ mdg:validated-method
 mdg:validation-error@0.5.1
 
 # Routing
-kadira:flow-router
 
 # production
 standard-minifier-js
@@ -36,3 +35,7 @@ dburles:collection-helpers@1.0.4
 
 react-meteor-data
 accounts-password
+kadira:login-state
+email
+meteorhacks:ssr
+kadira:flow-router
