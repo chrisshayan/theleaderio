@@ -4,6 +4,7 @@ import NoticeForm from '/imports/ui/common/NoticeForm';
 
 export default class ThankyouPage extends Component {
   render() {
+    Meteor.logout();
     return (
       <div>
         <NoticeForm

@@ -26,13 +26,8 @@ export default class CreateAliasPage extends Component {
     // Call methods createAlias
     UserActions.createAlias.call({tokenId, alias}, (error) => {
       if (_.isEmpty(error)) {
-        // Redirect to user's home page
-        const context = {
-          params: {
-            userAlias: alias
-          }
-        };
-        SubdomainActions.addSubdomain(context);
+        // Redirect to user's login page
+        SubdomainActions.addSubdomain({ alias, route: 'signin' });
       } else {
         this.setState({
           errors: error.reason

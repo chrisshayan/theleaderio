@@ -1,37 +1,42 @@
-import React, { Component } from 'react';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import React, {Component} from 'react';
+import {FlowRouter} from 'meteor/kadira:flow-router';
 
 import CreateUser from '../../components/CreateUser';
 import * as ProfileActions from '/imports/api/profiles/methods';
 import * as TokenActions from '/imports/api/tokens/methods';
 import * as EmailActions from '/imports/api/email/methods';
-import { thankyouRoute }from '/imports/startup/client/routes';
+import {thankyouRoute}from '/imports/startup/client/routes';
+import Spinner from '/imports/ui/common/Spinner';
 
 export default class SignUpPage extends Component {
   constructor() {
     super();
 
     this.state = {
+      isLoading: null,
       errors: null
     };
   }
 
-  onSubmit({ firstName, lastName, email, password }) {
+  onSubmit({firstName, lastName, email, password}) {
     // set State onLoading to creating account
 
     // Create account for user
-    Accounts.createUser({ email, password }, (error) => {
-      if(!error) {
+    Accounts.createUser({email, password}, (error) => {
+      if (!error) {
         const userId = Accounts.userId();
-        ProfileActions.create.call({ userId, firstName, lastName }, (error) => {
-          if(error) {
+        this.setState({
+          isLoading: true
+        });
+        ProfileActions.create.call({userId, firstName, lastName}, (error) => {
+          if (error) {
             this.setState({
-              // set State onLoading to null
+              isLoading: false,
               errors: error.reason
             });
           } else {
-            const tokenId = TokenActions.generate.call({ email, password }, (error) => {
-              if(!error) {
+            const tokenId = TokenActions.generate.call({email, password}, (error) => {
+              if (!error) {
                 console.log('token created');
                 // call methods to send verify Email with token link to user
                 // route to Welcome page with a message to verify user's email
@@ -43,11 +48,16 @@ export default class SignUpPage extends Component {
                 };
                 console.log(mailOptions);
                 EmailActions.send.call(mailOptions, (error) => {
-                  if(!_.isEmpty(error)) {
+                  if (!_.isEmpty(error)) {
                     this.setState({
+                      isLoading: false,
                       errors: error.reason
                     });
                   } else {
+                    this.setState({
+                      isLoading: false,
+                      errors: null
+                    });
                     FlowRouter.go(thankyouRoute.path);
                   }
                 });
@@ -57,7 +67,7 @@ export default class SignUpPage extends Component {
         });
       } else {
         this.setState({
-          // set State onLoading to null
+          isLoading: false,
           errors: error.reason
         });
       }
@@ -65,13 +75,19 @@ export default class SignUpPage extends Component {
   }
 
   render() {
-    return (
-      <div>
-        <CreateUser
-          errors = {this.state.errors }
-          onSubmit = { this.onSubmit.bind(this) }
-        />
-      </div>
-    );
+    if (this.state.isLoading) {
+      return (
+        <Spinner />
+      );
+    } else {
+      return (
+        <div>
+          <CreateUser
+            errors={this.state.errors }
+            onSubmit={ this.onSubmit.bind(this) }
+          />
+        </div>
+      );
+    }
   }
 }

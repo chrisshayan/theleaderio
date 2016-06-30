@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 
+import {thankyouRoute} from '/imports/startup/client/routes';
+
 class TopNav extends Component {
 
   _onClickMinimalize() {
@@ -7,6 +9,7 @@ class TopNav extends Component {
   }
 
   render() {
+
     return (
       <div className="row border-bottom">
         <div className="col-md-6 col-sm-6">
@@ -39,7 +42,7 @@ class TopNav extends Component {
                 <ul className="dropdown-menu" aria-labelledby="user-info">
                   <li><a href="#">Edit profile</a></li>
                   <li role="separator" className="divider"></li>
-                  <li><a href="#">Logout</a></li>
+                  <li><a href={thankyouRoute.path}>Logout</a></li>
                 </ul>
               </li>
             </ul>

@@ -13,10 +13,10 @@ export const getSubdomain = () => {
   }
 }
 
-export const addSubdomain = function(context) {
+export const addSubdomain = function({ alias, route }) {
   // context is the output of `FlowRouter.current()`
   const domain = `devtheleader.io`;
-  const userAlias = context.params.userAlias;
-  newUrl = `http://${userAlias}.${domain}`;
+  const newUrl = `http://${alias}.${domain}/${route}`;
+  console.log(`newUrl: ${newUrl}`);
   window.location = newUrl;
 }

@@ -9,6 +9,7 @@ import LandingPage from '/imports/ui/containers/LandingPage';
 import SignUpPage from '/imports/ui/containers/register/SignUpPage';
 import CreateAliasPage from '/imports/ui/containers/register/CreateAliasPage';
 import UserHomePage from '/imports/ui/containers/UserHomePage';
+import SigninAliasPage from '/imports/ui/containers/authentication/SigninAliasPage';
 import SignInPage from '/imports/ui/containers/authentication/SignInPage';
 import PasswordPage from '/imports/ui/containers/authentication/PasswordPage';
 import ThankyouPage from '/imports/ui/containers/ThankyouPage';
@@ -34,10 +35,11 @@ export const landingRoute = commonRoutes.route('/', {
     () => {
       const subdomain = SubdomainActions.getSubdomain();
       if (subdomain !== undefined) {
-        console.log(`user call homepage ${subdomain}`);
-        console.log(`user: ${Meteor.user()}`);
-        FlowRouter.route = userHomeRoute.path;
-        // FlowRouter.go(userHomeRoute.path);
+        if(!_.isEmpty(Meteor.user())) {
+          FlowRouter.route = signinRoute.path;
+        } else {
+          FlowRouter.route = userHomeRoute.path;
+        }
       }
     }
   ],
@@ -76,7 +78,7 @@ signupRoutes.route('/alias', {
 // Still have problem with redirect user to new web address
 // Can't login for user automatically
 signupRoutes.route('/firstTime/:userAlias', {
-  triggersExit: [SubdomainActions.addSubdomain],
+  // triggersExit: [SubdomainActions.addSubdomain],
   action() {
     FlowRouter.go(signinRoute.path);
   }
@@ -85,15 +87,15 @@ signupRoutes.route('/firstTime/:userAlias', {
 // Sign in Route Group
 export const signinRoutes = FlowRouter.group({
   name: 'signinRouteGroup',
-  prefix: '/signin',
-  triggersEnter: [
-    () => {
-      const subdomain = SubdomainActions.getSubdomain();
-      if (subdomain === undefined) {
-        FlowRouter.go(signinRoute.path);
-      }
-    }
-  ]
+  prefix: '/signin'
+});
+// handling signin alias group
+export const signinAliasRoute = signinRoutes.route('/alias', {
+  name: 'SigninAliasPage',
+  // triggersExit: [ SubdomainActions.addSubdomain() ],
+  action() {
+    mount(SigninAliasPage);
+  }
 });
 // handling signin root group
 export const signinRoute = signinRoutes.route('/', {
@@ -136,7 +138,11 @@ export const userHomeRoute = loggedInRoutes.route('/dashboard', {
   //   }
   // ],
   action() {
-    mount(UserHomePage);
+    mount(MainLayout, {
+      content() {
+        return <UserHomePage />;
+      }
+    });
   }
 });
 
