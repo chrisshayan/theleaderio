@@ -11,6 +11,7 @@ import CreateAliasPage from '/imports/ui/containers/register/CreateAliasPage';
 import UserHomePage from '/imports/ui/containers/UserHomePage';
 import SignInPage from '/imports/ui/containers/authentication/SignInPage';
 import PasswordPage from '/imports/ui/containers/authentication/PasswordPage';
+import ThankyouPage from '/imports/ui/containers/ThankyouPage';
 import Spinner from '/imports/ui/common/Spinner';
 
 
@@ -33,12 +34,22 @@ export const landingRoute = commonRoutes.route('/', {
     () => {
       const subdomain = SubdomainActions.getSubdomain();
       if (subdomain !== undefined) {
-        FlowRouter.go(userHomeRoute.path);
+        console.log(`user call homepage ${subdomain}`);
+        console.log(`user: ${Meteor.user()}`);
+        FlowRouter.route = userHomeRoute.path;
+        // FlowRouter.go(userHomeRoute.path);
       }
     }
   ],
   action() {
     mount(LandingPage);
+  }
+});
+
+export const thankyouRoute = FlowRouter.route('/thankyou', {
+  name: 'thankyouPage',
+  action() {
+    mount(ThankyouPage);
   }
 });
 
@@ -65,7 +76,7 @@ signupRoutes.route('/alias', {
 // Still have problem with redirect user to new web address
 // Can't login for user automatically
 signupRoutes.route('/firstTime/:userAlias', {
-  triggersExit: [SubdomainActions.addSubdomain, Meteor.logout()],
+  triggersExit: [SubdomainActions.addSubdomain],
   action() {
     FlowRouter.go(signinRoute.path);
   }
@@ -113,17 +124,17 @@ export const loggedInRoutes = FlowRouter.group({
 
 export const userHomeRoute = loggedInRoutes.route('/dashboard', {
   name: 'dashboard',
-  triggersEnter: [
-    // Make sure user is signed in or signing in
-    () => {
-      if (Meteor.loggingIn() | Meteor.userId()) {
-        FlowRouter.route = FlowRouter.current();
-      } else {
-        console.log(`User not signed in yet. Redirect to sign in page now.`);
-        FlowRouter.go(signinRoute.path);
-      }
-    }
-  ],
+  // triggersEnter: [
+  //   // Make sure user is signed in or signing in
+  //   () => {
+  //     if (Meteor.loggingIn() | Meteor.userId()) {
+  //       FlowRouter.route = FlowRouter.current();
+  //     } else {
+  //       console.log(`User not signed in yet. Redirect to sign in page now.`);
+  //       FlowRouter.go(signinRoute.path);
+  //     }
+  //   }
+  // ],
   action() {
     mount(UserHomePage);
   }

@@ -43,20 +43,24 @@ const meteorData = params => {
   const userId = Meteor.userId();
   const sub = Meteor.subscribe('profiles');
   console.log(`subscribe profiles: ${sub.ready()} & userId: ${userId}`);
-  // if(!_.isEmpty(Meteor.user())) {
-  //   const alias = SubdomainActions.getSubdomain();
-  //   const username = Meteor.user().username;
-  //   if(alias !== username) {
-  //     // this.setState({
-  //     //   notification: `Wrong user for domain ${document.location.hostname}`
-  //     // });
-  //     // console.log(this.state.notification);
-  //     Meteor.logout();
-  //     FlowRouter.go(signinRoute.path);
-  //   }
-  // }
+  if(!_.isEmpty(Meteor.user())) {
+    const alias = SubdomainActions.getSubdomain();
+    const username = Meteor.user().username;
+    if(alias !== username) {
+      // this.setState({
+      //   notification: `Wrong user for domain ${document.location.hostname}`
+      // });
+      // console.log(this.state.notification);
+      console.log(`wrong alias`);
+      Meteor.logout();
+      FlowRouter.go(signinRoute.path);
+    }
+  } else {
+    console.log(`user not logged in: ${Meteor.user()}`);
+    FlowRouter.go(signinRoute.path);
+  }
   return {
-    isLoading: (Meteor.loggingIn() & sub.ready()),
+    isLoading: (Meteor.userId() & !sub.ready()),
     profiles: Profiles.find().fetch()[0]
   }
 };

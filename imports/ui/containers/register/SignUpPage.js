@@ -4,6 +4,8 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import CreateUser from '../../components/CreateUser';
 import * as ProfileActions from '/imports/api/profiles/methods';
 import * as TokenActions from '/imports/api/tokens/methods';
+import * as EmailActions from '/imports/api/email/methods';
+import { thankyouRoute }from '/imports/startup/client/routes';
 
 export default class SignUpPage extends Component {
   constructor() {
@@ -34,8 +36,21 @@ export default class SignUpPage extends Component {
                 // call methods to send verify Email with token link to user
                 // route to Welcome page with a message to verify user's email
                 // for now, temporary route user to page create Alias
-                const setAliasRoute = `/signup/alias?token=${tokenId}`;
-                FlowRouter.go(setAliasRoute);
+                const mailOptions = {
+                  email: email,
+                  template: 'verification',
+                  url: FlowRouter.url('/signup/alias', {}, {token: tokenId})
+                };
+                console.log(mailOptions);
+                EmailActions.send.call(mailOptions, (error) => {
+                  if(!_.isEmpty(error)) {
+                    this.setState({
+                      errors: error.reason
+                    });
+                  } else {
+                    FlowRouter.go(thankyouRoute.path);
+                  }
+                });
               }
             });
           }
