@@ -35,10 +35,10 @@ export const landingRoute = commonRoutes.route('/', {
     () => {
       const subdomain = SubdomainActions.getSubdomain();
       if (subdomain !== undefined) {
-        if(!_.isEmpty(Meteor.user())) {
-          FlowRouter.route = signinRoute.path;
+        if(!_.isEmpty(Meteor.user()) | Meteor.loggingIn()) {
+          FlowRouter.go(userHomeRoute.path);
         } else {
-          FlowRouter.route = userHomeRoute.path;
+          FlowRouter.go(signinRoute.path);
         }
       }
     }
@@ -78,7 +78,6 @@ signupRoutes.route('/alias', {
 // Still have problem with redirect user to new web address
 // Can't login for user automatically
 signupRoutes.route('/firstTime/:userAlias', {
-  // triggersExit: [SubdomainActions.addSubdomain],
   action() {
     FlowRouter.go(signinRoute.path);
   }
@@ -92,7 +91,6 @@ export const signinRoutes = FlowRouter.group({
 // handling signin alias group
 export const signinAliasRoute = signinRoutes.route('/alias', {
   name: 'SigninAliasPage',
-  // triggersExit: [ SubdomainActions.addSubdomain() ],
   action() {
     mount(SigninAliasPage);
   }
@@ -126,17 +124,6 @@ export const loggedInRoutes = FlowRouter.group({
 
 export const userHomeRoute = loggedInRoutes.route('/dashboard', {
   name: 'dashboard',
-  // triggersEnter: [
-  //   // Make sure user is signed in or signing in
-  //   () => {
-  //     if (Meteor.loggingIn() | Meteor.userId()) {
-  //       FlowRouter.route = FlowRouter.current();
-  //     } else {
-  //       console.log(`User not signed in yet. Redirect to sign in page now.`);
-  //       FlowRouter.go(signinRoute.path);
-  //     }
-  //   }
-  // ],
   action() {
     mount(MainLayout, {
       content() {

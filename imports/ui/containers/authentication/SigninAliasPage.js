@@ -15,6 +15,16 @@ export default class SigninAliasPage extends Component {
     };
   }
 
+  componentWillMount() {
+    if(!_.isEmpty(Meteor.user())) {
+      const subdomain = SubdomainActions.getSubdomain();
+      const alias = Meteor.user().username;
+      if(subdomain === alias) {
+        FlowRouter.go(userHomeRoute.path);
+      }
+    }
+  }
+
   // submit for sign in to web address alias.theleader.io
   _inputSubmit({inputValue}) {
     const alias = inputValue;

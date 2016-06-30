@@ -41,10 +41,12 @@ export default class SignUpPage extends Component {
                 // call methods to send verify Email with token link to user
                 // route to Welcome page with a message to verify user's email
                 // for now, temporary route user to page create Alias
+                const url = `http://${document.location.hostname}:9000/signup/alias?token=${tokenId}`;
                 const mailOptions = {
                   email: email,
                   template: 'verification',
-                  url: FlowRouter.url('/signup/alias', {}, {token: tokenId})
+                  url: url
+                  // url: FlowRouter.url('/signup/alias', {}, {token: tokenId})
                 };
                 console.log(mailOptions);
                 EmailActions.send.call(mailOptions, (error) => {

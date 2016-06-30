@@ -32,7 +32,7 @@ class UserHomePage extends Component {
     } else {
       return (
         <div>
-          <h4>test</h4>
+          <h4>User Profile Page</h4>
         </div>
       );
     }
@@ -47,17 +47,13 @@ const meteorData = params => {
     const alias = SubdomainActions.getSubdomain();
     const username = Meteor.user().username;
     if(alias !== username) {
-      // this.setState({
-      //   notification: `Wrong user for domain ${document.location.hostname}`
-      // });
-      // console.log(this.state.notification);
       console.log(`wrong alias`);
       Meteor.logout();
-      FlowRouter.go(signinRoute.path);
+      FlowRouter.go(signinAliasRoute.path);
     }
   } else {
     console.log(`user not logged in: ${Meteor.user()}`);
-    FlowRouter.go(signinRoute.path);
+    FlowRouter.go(signinAliasRoute.path);
   }
   return {
     isLoading: (Meteor.userId() & !sub.ready()),
