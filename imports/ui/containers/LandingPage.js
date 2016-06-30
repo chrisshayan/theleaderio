@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-import { signinAliasRoute, mainSignUp } from '/imports/startup/client/routes';
+import {signinAliasRoute, mainSignUp} from '/imports/startup/client/routes';
 
 export default class LandingPage extends Component {
 
@@ -18,7 +18,7 @@ export default class LandingPage extends Component {
                   <p>Get Insight on How Your Team Rates Your Leadership and How to Improve.</p>
                   <p><a className="btn btn-lg btn-primary" role="button" href={mainSignUp.path}>Try For Free!</a></p>
                   <p className="text-muted text-center">
-                    <small>You are a leader already? </small>
+                    <small>You are a leader already?</small>
                   </p>
                   <a className="btn btn-sm btn-white" href={signinAliasRoute.path}>Sign in</a>
                 </div>
@@ -34,6 +34,15 @@ export default class LandingPage extends Component {
               <div className="navy-line"></div>
               <h1>Analytics 3.0<br/> <span className="navy"> the era of data-enriched offerings</span></h1>
               <p>New ways of deciding, managing, changing, innovating, improving and Leading.</p>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-lg-12 text-center">
+              <a className="btn btn-lg btn-primary" role="button" href={mainSignUp.path}>Try For Free!</a>
+              <p className="text-muted text-center">
+                <small>You are a leader already?</small>
+              </p>
+              <a className="btn btn-sm btn-white" role="button" href={signinAliasRoute.path}>Sign in</a>
             </div>
           </div>
           <div className="row">
@@ -123,7 +132,7 @@ export default class LandingPage extends Component {
               <div className="col-lg-12 text-center">
                 <a className="btn btn-lg btn-primary" role="button" href={mainSignUp.path}>Try For Free!</a>
                 <p className="text-muted text-center">
-                  <small>You are a leader already? </small>
+                  <small>You are a leader already?</small>
                 </p>
                 <a className="btn btn-sm btn-white" role="button" href={signinAliasRoute.path}>Sign in</a>
                 <p className="m-t-sm">

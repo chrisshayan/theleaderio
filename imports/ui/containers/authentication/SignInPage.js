@@ -3,7 +3,6 @@ import {Meteor} from 'meteor/meteor';
 import _ from 'lodash';
 
 import SigninForm from '/imports/ui/components/SigninForm';
-import SingleInputForm from '/imports/ui/common/SingleInputForm';
 import * as SubdomainActions from '/imports/utils/subdomain';
 import {userHomeRoute, signinAliasRoute} from '/imports/startup/client/routes';
 

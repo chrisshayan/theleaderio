@@ -4,7 +4,7 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 import { Profiles } from '/imports/api/profiles/index';
 import * as SubdomainActions from '/imports/utils/subdomain';
-import { signinRoute } from '/imports/startup/client/routes';
+import { signinAliasRoute } from '/imports/startup/client/routes';
 import Spinner from '/imports/ui/common/Spinner';
 
 class UserHomePage extends Component {

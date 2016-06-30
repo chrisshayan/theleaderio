@@ -27,16 +27,9 @@ class TopNav extends Component {
               <li id="fat-menu" className="dropdown">
                 <a id="user-info" href="#" className="dropdown-toggle" data-toggle="dropdown" role="button"
                    aria-haspopup="true" aria-expanded="false">
-                  <span>
-                      <img
-                        src="https://avatars1.githubusercontent.com/u/4226119?v=3&s=460"
-                        className="img-rounded"
-                        width="32"
-                        height="32"
-                      />
-                  </span>
+                  
                   {" "}
-                  Chris Shayan
+                    UserName
                   <span className="caret"></span>
                 </a>
                 <ul className="dropdown-menu" aria-labelledby="user-info">

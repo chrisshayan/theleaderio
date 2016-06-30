@@ -4,7 +4,7 @@ import _ from 'lodash';
 
 import SingleInputForm from '/imports/ui/common/SingleInputForm';
 import * as SubdomainActions from '/imports/utils/subdomain';
-import {userHomeRoute, signinRoute} from '/imports/startup/client/routes';
+import {userHomeRoute, mainSignUp, passwordRoute} from '/imports/startup/client/routes';
 
 export default class SigninAliasPage extends Component {
   constructor() {
@@ -37,6 +37,7 @@ export default class SigninAliasPage extends Component {
   }
 
   render() {
+    const forgotAliasUrl = `${passwordRoute.path}/forgot`;
     return (
       <div>
         <SingleInputForm

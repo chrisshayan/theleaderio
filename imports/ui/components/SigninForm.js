@@ -16,7 +16,7 @@ export default class Signin extends Component {
       signinTitle = `Welcome to theLeader.io`,
       errors = null
     } = this.props;
-    const forgotPasswordUrl = `${passwordRoute.path}/forgot`;
+    const forgotPasswordUrl = `/signin/password/forgot`;
     return (
       <div className="loginColumns animated fadeInDown">
         <div className="row">

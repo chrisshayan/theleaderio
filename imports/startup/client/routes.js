@@ -12,8 +12,8 @@ import UserHomePage from '/imports/ui/containers/UserHomePage';
 import SigninAliasPage from '/imports/ui/containers/authentication/SigninAliasPage';
 import SignInPage from '/imports/ui/containers/authentication/SignInPage';
 import PasswordPage from '/imports/ui/containers/authentication/PasswordPage';
+import WelcomePage from '/imports/ui/containers/register/WelcomePage';
 import ThankyouPage from '/imports/ui/containers/ThankyouPage';
-import Spinner from '/imports/ui/common/Spinner';
 
 
 /**
@@ -45,6 +45,13 @@ export const landingRoute = commonRoutes.route('/', {
   ],
   action() {
     mount(LandingPage);
+  }
+});
+
+export const welcomeRoute = FlowRouter.route('/welcome', {
+  name: 'welcomePage',
+  action() {
+    mount(WelcomePage);
   }
 });
 

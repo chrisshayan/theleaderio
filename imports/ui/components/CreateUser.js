@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import Copyright from '/imports/ui/common/Copyright';
 
+import { signinAliasRoute } from '/imports/startup/client/routes';
+
 export default class CreateUser extends Component {
 
   _onSubmit() {
@@ -54,7 +56,7 @@ export default class CreateUser extends Component {
             <button type="submit" className="btn btn-primary block full-width m-b">Sign up</button>
           </div>
           <p className="text-muted text-center">
-            You are a leader already? <a href="/signin">Sign in.</a>
+            You are a leader already? <a href={signinAliasRoute.path}>Sign in.</a>
           </p>
         </form>
         <Copyright />

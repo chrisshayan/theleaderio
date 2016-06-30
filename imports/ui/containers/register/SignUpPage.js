@@ -5,7 +5,7 @@ import CreateUser from '../../components/CreateUser';
 import * as ProfileActions from '/imports/api/profiles/methods';
 import * as TokenActions from '/imports/api/tokens/methods';
 import * as EmailActions from '/imports/api/email/methods';
-import {thankyouRoute}from '/imports/startup/client/routes';
+import {welcomeRoute}from '/imports/startup/client/routes';
 import Spinner from '/imports/ui/common/Spinner';
 
 export default class SignUpPage extends Component {
@@ -46,9 +46,9 @@ export default class SignUpPage extends Component {
                   email: email,
                   template: 'verification',
                   url: url
-                  // url: FlowRouter.url('/signup/alias', {}, {token: tokenId})
                 };
                 console.log(mailOptions);
+                console.log(`isLoading: ${this.state.isLoading}`);
                 EmailActions.send.call(mailOptions, (error) => {
                   if (!_.isEmpty(error)) {
                     this.setState({
@@ -60,9 +60,9 @@ export default class SignUpPage extends Component {
                       isLoading: false,
                       errors: null
                     });
-                    FlowRouter.go(thankyouRoute.path);
                   }
                 });
+                FlowRouter.go(welcomeRoute.path);
               }
             });
           }

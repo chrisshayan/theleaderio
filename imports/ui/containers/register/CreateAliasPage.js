@@ -26,6 +26,8 @@ export default class CreateAliasPage extends Component {
     // Call methods createAlias
     UserActions.createAlias.call({tokenId, alias}, (error) => {
       if (_.isEmpty(error)) {
+        console.log(`token: ${tokenId} will be removed`);
+        TokenActions.remove.call({tokenId});
         // Redirect to user's login page
         SubdomainActions.addSubdomain({ alias, route: 'signin' });
       } else {
