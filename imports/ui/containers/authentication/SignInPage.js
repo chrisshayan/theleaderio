@@ -44,6 +44,8 @@ export default class SignInPage extends Component {
           if(subdomain === userAlias) {
             FlowRouter.go(userHomeRoute.path);
           } else {
+            // for user login in a consistency state
+            Meteor.logout();
             this.setState({
               alias: false,
               errors: `${email} doesn't belong to ${document.location.hostname}. Please enter the correct alias.`
