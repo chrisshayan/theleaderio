@@ -13,7 +13,7 @@ export default class SignUpPage extends Component {
     super();
 
     this.state = {
-      isLoading: null,
+      loading: null,
       errors: null
     };
   }
@@ -22,45 +22,43 @@ export default class SignUpPage extends Component {
     // set State onLoading to creating account
 
     // Create account for user
+    this.setState({
+      loading: true
+    });
     Accounts.createUser({email, password}, (error) => {
       if (!error) {
         const userId = Accounts.userId();
-        this.setState({
-          isLoading: true
-        });
         ProfileActions.create.call({userId, firstName, lastName}, (error) => {
           if (error) {
             this.setState({
-              isLoading: false,
+              loading: false,
               errors: error.reason
             });
           } else {
-            const tokenId = TokenActions.generate.call({email, password}, (error) => {
+            const tokenId = TokenActions.generate.call({email}, (error) => {
               if (!error) {
-                console.log('token created');
                 // call methods to send verify Email with token link to user
                 // route to Welcome page with a message to verify user's email
-                // for now, temporary route user to page create Alias
                 const url = `http://${document.location.hostname}:9000/signup/alias?token=${tokenId}`;
                 const mailOptions = {
                   email: email,
-                  template: 'verification',
-                  url: url
+                  firstName: firstName,
+                  url: url,
+                  templateName: 'welcome'
                 };
-                console.log(mailOptions);
-                console.log(`isLoading: ${this.state.isLoading}`);
                 EmailActions.send.call(mailOptions, (error) => {
                   if (!_.isEmpty(error)) {
                     this.setState({
-                      isLoading: false,
                       errors: error.reason
                     });
                   } else {
                     this.setState({
-                      isLoading: false,
                       errors: null
                     });
                   }
+                  this.setState({
+                    loading: false
+                  });
                 });
                 FlowRouter.go(welcomeRoute.path);
               }
@@ -69,7 +67,7 @@ export default class SignUpPage extends Component {
         });
       } else {
         this.setState({
-          isLoading: false,
+          loading: false,
           errors: error.reason
         });
       }
@@ -77,9 +75,11 @@ export default class SignUpPage extends Component {
   }
 
   render() {
-    if (this.state.isLoading) {
+    if (this.state.loading) {
       return (
-        <Spinner />
+        <Spinner
+          message = 'Creating account ...'
+        />
       );
     } else {
       return (

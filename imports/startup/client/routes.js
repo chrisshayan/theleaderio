@@ -2,19 +2,22 @@ import {FlowRouter} from 'meteor/kadira:flow-router';
 import React from 'react';
 import {mount} from 'react-mounter';
 
-import * as SubdomainActions from '/imports/utils/subdomain';
+import * as UserActions from '/imports/api/users/methods';
+
 import NoticeForm from '/imports/ui/common/NoticeForm';
+import Spinner from '/imports/ui/common/Spinner';
 import MainLayout from '/imports/ui/layouts/MainLayout';
 import LandingPage from '/imports/ui/containers/LandingPage';
 import SignUpPage from '/imports/ui/containers/register/SignUpPage';
 import CreateAliasPage from '/imports/ui/containers/register/CreateAliasPage';
+import WelcomePage from '/imports/ui/containers/register/WelcomePage';
+import ThankyouPage from '/imports/ui/containers/ThankyouPage';
+import UserProfilePage from '/imports/ui/containers/UserProfilePage';
 import UserHomePage from '/imports/ui/containers/UserHomePage';
 import SigninAliasPage from '/imports/ui/containers/authentication/SigninAliasPage';
 import SignInPage from '/imports/ui/containers/authentication/SignInPage';
 import PasswordPage from '/imports/ui/containers/authentication/PasswordPage';
-import WelcomePage from '/imports/ui/containers/register/WelcomePage';
-import ThankyouPage from '/imports/ui/containers/ThankyouPage';
-
+import ResetPasswordPage from '/imports/ui/containers/authentication/ResetPasswordPage';
 
 /**
  * @summary lists of public routes
@@ -31,20 +34,18 @@ const commonRoutes = FlowRouter.group({
 // Landing Page Route
 export const landingRoute = commonRoutes.route('/', {
   name: 'landingPage',
-  triggersEnter: [
-    () => {
-      const subdomain = SubdomainActions.getSubdomain();
-      if (subdomain !== undefined) {
-        if(!_.isEmpty(Meteor.user()) | Meteor.loggingIn()) {
-          FlowRouter.go(userHomeRoute.path);
-        } else {
-          FlowRouter.go(signinRoute.path);
-        }
-      }
-    }
-  ],
   action() {
-    mount(LandingPage);
+    const alias = Session.get('alias');
+    if (alias !== undefined) {
+      UserActions.verifyAlias.call({alias}, (error) => {
+        if(_.isEmpty(error)) {
+          mount(UserProfilePage);
+        }
+      });
+    } else {
+      mount(LandingPage);
+    }
+    mount(Spinner);
   }
 });
 
@@ -118,6 +119,14 @@ export const passwordRoute = signinRoutes.route('/password/:action', {
   }
 });
 
+// Reset Password Route
+export const resetpasswordRoute = FlowRouter.route('/password/reset', {
+  name: 'resetpassword',
+  action() {
+    mount(ResetPasswordPage);
+  }
+});
+
 /**
  * @summary lists of logged in Route (user have to login to access these route)
  * @route dashboard
@@ -126,7 +135,19 @@ export const passwordRoute = signinRoutes.route('/password/:action', {
  * @route measure
  */
 export const loggedInRoutes = FlowRouter.group({
-  name: 'loggedInRoutes'
+  name: 'loggedInRoutes',
+  triggersEnter: [() => {
+    const alias = Session.get('alias');
+    if (alias !== undefined) {
+      UserActions.verifyAlias.call({alias}, (error) => {
+        if(_.isEmpty(error)) {
+          FlowRouter.route = FlowRouter.current();
+        }
+      });
+    } else {
+      FlowRouter.go(landingRoute.path);
+    }
+  }]
 });
 
 export const userHomeRoute = loggedInRoutes.route('/dashboard', {

@@ -8,6 +8,7 @@ import TopNav from '/imports/ui/common/TopNav';
 class MainLayout extends Component {
   render() {
     const { content = () => null, activeRoute } = this.props;
+    console.log(activeRoute);
     return (
       <div>
         <div className="content-wrapper">
