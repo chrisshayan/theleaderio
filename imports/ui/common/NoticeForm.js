@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import {FlowRouter} from 'meteor/kadira:flow-router';
 
-export default class InvalidUrl extends Component {
+export default class NoticeForm extends Component {
   _onSubmit() {
-    this.props.onSubmit(this.props.redirectUrl);
+    // this.props.onSubmit(this.props.redirectUrl);
+    FlowRouter.go(this.props.redirectUrl);
   }
 
   render() {

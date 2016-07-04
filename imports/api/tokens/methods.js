@@ -45,3 +45,23 @@ export const verify = new ValidatedMethod({
     }
   }
 });
+
+
+
+/**
+ * @summary remove Token
+ * @param email
+ */
+export const remove = new ValidatedMethod({
+  name: 'tokens.remove',
+  validate: new SimpleSchema({
+    tokenId: {
+      type: String
+    }
+  }).validator(),
+  run({tokenId}) {
+    if (!this.isSimulation) {
+      Tokens.remove({_id: tokenId});
+    }
+  }
+});

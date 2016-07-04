@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-import { signinRoute, mainSignUp } from '/imports/startup/client/routes';
+import {signinAliasRoute, mainSignUp} from '/imports/startup/client/routes';
 
 export default class LandingPage extends Component {
 
@@ -8,7 +8,7 @@ export default class LandingPage extends Component {
 
     return (
       <div>
-        <div id="inSlider" className="carousel carousel-fade" data-ride="carousel">
+        <div className="carousel carousel-fade" data-ride="carousel">
           <div className="carousel-inner" role="listbox">
             <div className="item active">
               <div className="container-slider">
@@ -18,9 +18,9 @@ export default class LandingPage extends Component {
                   <p>Get Insight on How Your Team Rates Your Leadership and How to Improve.</p>
                   <p><a className="btn btn-lg btn-primary" role="button" href={mainSignUp.path}>Try For Free!</a></p>
                   <p className="text-muted text-center">
-                    <small>You are a leader already? </small>
+                    <small>You are a leader already?</small>
                   </p>
-                  <a className="btn btn-sm btn-white" href={signinRoute.path}>Sign in</a>
+                  <a className="btn btn-sm btn-white" href={signinAliasRoute.path}>Sign in</a>
                 </div>
                 <div className="header-back two"></div>
               </div>
@@ -28,29 +28,21 @@ export default class LandingPage extends Component {
           </div>
         </div>
 
-
-        <section id="features" className="container services">
-          <div className="row">
-            <div className="col-sm-6">
-              <h2>Survey Your Employees</h2>
-              <p>Create your own questions or choose from a list of questions which are already in use by others in
-                    your industry.
-                    Send simple, personalized surveys that get industry high response rates of 60%.</p>
-            </div>
-            <div className="col-sm-6">
-              <h2>Measure and Track Employee Satisfaction</h2>
-              <p>Keep track of employee satisfaction by monitoring changes from one survey period to the next.
-                    See if what you are doing is improving satisfaction or having a negative impact.</p>
-            </div>
-          </div>
-        </section>
-
         <section className="container features">
           <div className="row">
             <div className="col-lg-12 text-center">
               <div className="navy-line"></div>
               <h1>Analytics 3.0<br/> <span className="navy"> the era of data-enriched offerings</span></h1>
               <p>New ways of deciding, managing, changing, innovating, improving and Leading.</p>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-lg-12 text-center">
+              <a className="btn btn-lg btn-primary" role="button" href={mainSignUp.path}>Try For Free!</a>
+              <p className="text-muted text-center">
+                <small>You are a leader already?</small>
+              </p>
+              <a className="btn btn-sm btn-white" role="button" href={signinAliasRoute.path}>Sign in</a>
             </div>
           </div>
           <div className="row">
@@ -111,74 +103,6 @@ export default class LandingPage extends Component {
           </div>
         </section>
 
-        <section className="comments gray-section" style={{marginTop: 0}}>
-          <div className="container">
-            <div className="row">
-              <div className="col-lg-12 text-center">
-                <div className="navy-line"></div>
-                <h1>What our customers say</h1>
-                <p>Our Customers Love us.</p>
-              </div>
-            </div>
-            <div className="row features-block">
-              <div className="col-lg-4">
-                <div className="bubble">
-                  "theLeader.io can be as valuable as your business wants to make it. Its great to ask for
-                  feedback from employees and have dashboard! it gives me a lead in talking point to further
-                  employee relationships."
-                </div>
-                <div className="comments-avatar">
-                  <a href="" className="pull-left">
-                    <img alt="image" src="img/landing/avatar3.jpg"/>
-                  </a>
-                  <div className="media-body">
-                    <div className="commens-name">
-                      Paula Williams
-                    </div>
-                    <small className="text-muted">A-NET from Dubai</small>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-4">
-                <div className="bubble">
-                  "Great tool to automate employees feedback process and also get insights into changes over time!
-                  Easy to use - must have for any leader!."
-                </div>
-                <div className="comments-avatar">
-                  <a href="" className="pull-left">
-                    <img alt="image" src="img/landing/avatar1.jpg"/>
-                  </a>
-
-                  <div className="media-body">
-                    <div className="commens-name">
-                      Peter Nielsen
-                    </div>
-                    <small className="text-muted">British Telcom from Malaysia</small>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-4">
-                <div className="bubble">
-                  "Such a great service that provides me with valuable insight into our employee satisfaction.
-                  Thank you theLeader.io"
-                </div>
-                <div className="comments-avatar">
-                  <a href="" className="pull-left">
-                    <img alt="image"
-                         src="https://media.licdn.com/mpr/mpr/shrinknp_400_400/p/8/000/1b5/38d/0791224.jpg"/>
-                  </a>
-                  <div className="media-body">
-                    <div className="commens-name">
-                      Eduardo Mora
-                    </div>
-                    <small className="text-muted">VietnamWorks from Vietnam</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
         <section id="contact" className="gray-section contact">
           <div className="container">
             <div className="row m-b-lg">
@@ -208,9 +132,9 @@ export default class LandingPage extends Component {
               <div className="col-lg-12 text-center">
                 <a className="btn btn-lg btn-primary" role="button" href={mainSignUp.path}>Try For Free!</a>
                 <p className="text-muted text-center">
-                  <small>You are a leader already? </small>
+                  <small>You are a leader already?</small>
                 </p>
-                <a className="btn btn-sm btn-white" role="button" href={signinRoute.path}>Sign in</a>
+                <a className="btn btn-sm btn-white" role="button" href={signinAliasRoute.path}>Sign in</a>
                 <p className="m-t-sm">
                   Follow us on social platform
                 </p>
