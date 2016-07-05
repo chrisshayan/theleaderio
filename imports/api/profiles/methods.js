@@ -199,7 +199,7 @@ export const setStatus = new ValidatedMethod({
       allowedValues: [  STATUS_ACTIVE, STATUS_INACTIVE ]
     }
   }).validator(),
-  run(userProfile) {
+  run({userId, status}) {
     var userProfile = Profiles.findOne({ userId });
     if(!userProfile) {
       throw new Meteor.Error(404, 'User not found');

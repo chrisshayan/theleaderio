@@ -13,9 +13,6 @@ export const generate = new ValidatedMethod({
   validate: new SimpleSchema({
     email: {
       type: String
-    },
-    password: {
-      type: String
     }
   }).validator(),
   run({email}) {

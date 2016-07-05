@@ -6,9 +6,9 @@ import NoticeForm from '/imports/ui/common/NoticeForm';
 import Spinner from '/imports/ui/common/Spinner';
 import * as UserActions from '/imports/api/users/methods';
 import * as TokenActions from '/imports/api/tokens/methods';
-import * as SubdomainActions from '/imports/utils/subdomain';
+import { landingRoute } from '/imports/startup/client/routes';
 
-export default class CreateAliasPage extends Component {
+export default class ResetPasswordPage extends Component {
   constructor() {
     super();
 
@@ -20,19 +20,19 @@ export default class CreateAliasPage extends Component {
   }
 
   _inputSubmit({inputValue}) {
-    const alias = inputValue;
+    const password = inputValue;
     const tokenId = FlowRouter.getQueryParam("token");
     console.log('suppose to create alias');
     // Call methods createAlias
     this.setState({
       loading: true
     });
-    UserActions.createAlias.call({tokenId, alias}, (error) => {
+    UserActions.resetPassword.call({tokenId, password}, (error) => {
       if (_.isEmpty(error)) {
         console.log(`token: ${tokenId} will be removed`);
         TokenActions.remove.call({tokenId});
-        // Redirect to user's login page
-        SubdomainActions.addSubdomain({ alias, route: 'signin' });
+        // redirect to user homepage
+        FlowRouter.go(landingRoute.path);
       } else {
         this.setState({
           errors: error.reason
@@ -46,6 +46,7 @@ export default class CreateAliasPage extends Component {
 
   componentWillMount() {
     const tokenId = FlowRouter.getQueryParam("token");
+    console.log(tokenId);
     TokenActions.verify.call({tokenId}, (error) => {
       if (_.isEmpty(error)) {
         this.setState({
@@ -75,39 +76,37 @@ export default class CreateAliasPage extends Component {
       return (
         <div>
           <Spinner
-            message = 'Creating alias ...'
+            message='Resetting password ...'
+          />
+        </div>
+      );
+    }
+    if (this.state.tokenVerified) {
+      return (
+        <div>
+          <SingleInputForm
+            logoName='TL+'
+            formTitle='Enter your new password'
+            inputType='password'
+            inputHolder='Password'
+            buttonLabel='Reset'
+            errors={ this.state.errors }
+            onSubmit={ this._inputSubmit.bind(this) }
           />
         </div>
       );
     } else {
-      if (this.state.tokenVerified) {
-        return (
-          <div>
-            <SingleInputForm
-              logoName='TL+'
-              formTitle='Create your alias'
-              formDescription='This alias will be used as your web address.'
-              inputType='text'
-              inputHolder='Alias'
-              buttonLabel='Create'
-              errors={ this.state.errors }
-              onSubmit={ this._inputSubmit.bind(this) }
-            />
-          </div>
-        );
-      } else {
-        return (
-          <div>
-            <NoticeForm
-              code='404'
-              message={ this.state.errors }
-              description='Sorry, but the page you are looking for has note been found. Try checking the URL for error, then hit the refresh button on your browser or try found something else in our app.'
-              buttonLabel='Come back to HomePage'
-              redirectUrl='/'
-            />
-          </div>
-        );
-      }
+      return (
+        <div>
+          <NoticeForm
+            code='404'
+            message={ this.state.errors }
+            description='Sorry, but the page you are looking for has note been found. Try checking the URL for error, then hit the refresh button on your browser or try found something else in our app.'
+            buttonLabel='Come back to HomePage'
+            redirectUrl='/'
+          />
+        </div>
+      );
     }
   }
 }
