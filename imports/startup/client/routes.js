@@ -40,12 +40,13 @@ export const landingRoute = commonRoutes.route('/', {
       UserActions.verifyAlias.call({alias}, (error) => {
         if(_.isEmpty(error)) {
           mount(UserProfilePage);
+        } else {
+          mount(Spinner);
         }
       });
     } else {
       mount(LandingPage);
     }
-    mount(Spinner);
   }
 });
 
