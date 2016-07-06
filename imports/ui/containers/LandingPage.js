@@ -3,12 +3,48 @@ import React, {Component} from 'react';
 import {signinAliasRoute, mainSignUp} from '/imports/startup/client/routes';
 
 export default class LandingPage extends Component {
+  constructor() {
+    super();
+
+    this.state = {
+      navChange: false
+    };
+  }
+
+  componentDidMount() {
+    window.addEventListener('scroll', this.handleScroll.bind(this));
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.handleScroll.bind(this));
+  }
+
+  handleScroll() {
+    const changeNavOn = 125;
+    if(this.scrollY() > changeNavOn) {
+      this.setState({
+        navChange: true
+      });
+    } else {
+      this.setState({
+        navChange: false
+      });
+    }
+  }
+
+  scrollY() {
+    return window.pageYOffset || document.documentElement.scrollTop;
+  }
 
   render() {
+    let navStyle = "navbar navbar-default navbar-fixed-top";
+    if (this.state.navChange) {
+      navStyle = `${navStyle} navbar-scroll`
+    }
     return (
       <div id="page-top" className="landing-page">
         <div className="navbar-wrapper">
-          <nav className="navbar navbar-default navbar-fixed-top navbar-scroll" role="navigation">
+          <nav ref="nav" className={navStyle} role="navigation">
             <div className="container">
               <div className="navbar-header page-scroll">
                 <button type="button" className="navbar-toggle collapsed" dataToggle="collapse" dataTarget="#navbar"
@@ -18,7 +54,7 @@ export default class LandingPage extends Component {
                   <span className="icon-bar"></span>
                   <span className="icon-bar"></span>
                 </button>
-                <a className="navbar-brand" href="/">theLeader.io</a>
+                <a ref="title" className="navbar-brand" href="/">theLeader.io</a>
               </div>
               <div id="navbar" className="navbar-collapse collapse">
                 <ul className="nav navbar-nav navbar-right">
@@ -52,22 +88,24 @@ export default class LandingPage extends Component {
           <div className="row">
             <div className="col-sm-6">
               <h2>SURVEY YOUR EMPLOYEES</h2>
-              <p>Create your own questions or choose from a list of questions which are already in use by others in your industry. Send simple, personalized surveys that get industry high response rates of 60%.</p>
+              <p>
+                Create your own questions or choose from a list of questions which are already in use by others in your industry. Send simple, personalized surveys that get industry high response rates of 60%.</p>
               <p><a className="navy-link" href="#" role="button">Details &raquo;</a></p>
             </div>
             <div className="col-sm-6">
               <h2>MEASURE AND TRACK EMPLOYEE SATISFACTION</h2>
-              <p>Keep track of employee satisfaction by monitoring changes from one survey period to the next. See if what you are doing is improving satisfaction or having a negative impact.</p>
+              <p>
+                Keep track of employee satisfaction by monitoring changes from one survey period to the next. See if what you are doing is improving satisfaction or having a negative impact.</p>
               <p><a className="navy-link" href="#" role="button">Details &raquo;</a></p>
             </div>
           </div>
         </section>
 
-        <section  className="container features">
+        <section className="container features">
           <div className="row">
             <div className="col-lg-12 text-center">
               <div className="navy-line"></div>
-              <h1>Analytics 3.0<br/> <span className="navy"> the era of data-enriched offerings</span> </h1>
+              <h1>Analytics 3.0<br/> <span className="navy"> the era of data-enriched offerings</span></h1>
               <p>New ways of deciding, managing, changing, innovating, improving and Leading.</p>
             </div>
           </div>
@@ -76,27 +114,31 @@ export default class LandingPage extends Component {
               <div>
                 <i className="fa fa fa-frown-o features-icon"></i>
                 <h2>Identify Unhappy Employees</h2>
-                <p>By using past scores and industry data, we identify your 'at risk' employees and send you an immediate email notification so you can proactively address their concerns.</p>
+                <p>
+                  By using past scores and industry data, we identify your 'at risk' employees and send you an immediate email notification so you can proactively address their concerns.</p>
               </div>
               <div className="m-t-lg">
                 <i className="fa fa-bar-chart features-icon"></i>
                 <h2>Benchmark Against Your Industry</h2>
-                <p>See how your leadership stacks up against others in your industry. Benchmark your performance so you can continuously improve.</p>
+                <p>
+                  See how your leadership stacks up against others in your industry. Benchmark your performance so you can continuously improve.</p>
               </div>
             </div>
             <div className="col-md-6 text-center  wow zoomIn">
-              <img src="img/landing/perspective.png" alt="dashboard" className="img-responsive" />
+              <img src="img/landing/perspective.png" alt="dashboard" className="img-responsive"/>
             </div>
             <div className="col-md-3 text-center wow fadeInRight">
               <div>
                 <i className="fa fa-quote-left features-icon"></i>
                 <h2>Get Testimonials, Display and Share Them</h2>
-                <p>Generate testimonials from your employees, display them using our testimonial widget and have them instantly shared across LinkedIn, Facebook and Twitter.</p>
+                <p>
+                  Generate testimonials from your employees, display them using our testimonial widget and have them instantly shared across LinkedIn, Facebook and Twitter.</p>
               </div>
               <div className="m-t-lg">
                 <i className="fa fa-rocket features-icon"></i>
                 <h2>Embedded analytics</h2>
-                <p>Consistent with the increased speed of data processing and analysis, our models in Analytics 3.0 are often embedded into operational and decision processes, dramatically increasing speed and impact.</p>
+                <p>
+                  Consistent with the increased speed of data processing and analysis, our models in Analytics 3.0 are often embedded into operational and decision processes, dramatically increasing speed and impact.</p>
               </div>
             </div>
           </div>
@@ -224,7 +266,8 @@ export default class LandingPage extends Component {
             </div>
             <div className="row">
               <div className="col-lg-8 col-lg-offset-2 text-center m-t-lg m-b-lg">
-                <p><strong>&copy; 2016 theLeader.io</strong><br/> We Help Leaders to become a better Leader by improving the Decision Making Process.</p>
+                <p><strong>&copy; 2016 theLeader.io</strong><br/>
+                  We Help Leaders to become a better Leader by improving the Decision Making Process.</p>
               </div>
             </div>
           </div>
