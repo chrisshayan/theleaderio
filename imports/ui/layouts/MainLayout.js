@@ -7,18 +7,17 @@ import TopNav from '/imports/ui/common/TopNav';
 
 class MainLayout extends Component {
   render() {
-    const { content = () => null, activeRoute } = this.props;
+    const {content = () => null, activeRoute} = this.props;
     console.log(activeRoute);
     return (
-      <div>
-        <div className="content-wrapper">
+      <div id="wrapper">
+        <Navigation activeRoute={activeRoute} />
+        <div id="page-wrapper" className="gray-bg">
           <TopNav />
-          <div style={{padding: 20}}>
+          <div className="wrapper wrapper-content">
             {content()}
           </div>
         </div>
-
-        <Navigation activeRoute={activeRoute} />
       </div>
     );
   }

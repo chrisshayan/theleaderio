@@ -7,6 +7,7 @@ import * as UserActions from '/imports/api/users/methods';
 import NoticeForm from '/imports/ui/common/NoticeForm';
 import Spinner from '/imports/ui/common/Spinner';
 import MainLayout from '/imports/ui/layouts/MainLayout';
+import BlankLayout from '/imports/ui/layouts/BlankLayout';
 import LandingPage from '/imports/ui/containers/LandingPage';
 import SignUpPage from '/imports/ui/containers/register/SignUpPage';
 import CreateAliasPage from '/imports/ui/containers/register/CreateAliasPage';
@@ -39,9 +40,13 @@ export const landingRoute = commonRoutes.route('/', {
     if (alias !== undefined) {
       UserActions.verifyAlias.call({alias}, (error) => {
         if(_.isEmpty(error)) {
-          mount(UserProfilePage);
+          mount(BlankLayout, {
+            content() {
+              return <UserProfilePage />;
+            }
+          });
         } else {
-          mount(Spinner);
+          FlowRouter.notFound;
         }
       });
     } else {

@@ -54,7 +54,7 @@ export default class LandingPage extends Component {
                   <span className="icon-bar"></span>
                   <span className="icon-bar"></span>
                 </button>
-                <a ref="title" className="navbar-brand" href="/">theLeader.io</a>
+                <a className="navbar-brand" href="/">theLeader.io</a>
               </div>
               <div id="navbar" className="navbar-collapse collapse">
                 <ul className="nav navbar-nav navbar-right">
