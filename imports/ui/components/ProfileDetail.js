@@ -22,15 +22,12 @@ export default class ProfileDetail extends Component {
             </p>
             <div className="row m-t-lg">
               <div className="col-md-4">
-                <span className="bar">5,3,9,6,5,9,7,3,5,2</span>
                 <h5><strong>169</strong> Posts</h5>
               </div>
               <div className="col-md-4">
-                <span className="line">5,3,9,6,5,9,7,3,5,2</span>
                 <h5><strong>28</strong> Following</h5>
               </div>
               <div className="col-md-4">
-                <span className="bar">5,3,2,-1,-3,-2,2,3,5,2</span>
                 <h5><strong>240</strong> Followers</h5>
               </div>
             </div>

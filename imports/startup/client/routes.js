@@ -11,14 +11,15 @@ import BlankLayout from '/imports/ui/layouts/BlankLayout';
 import LandingPage from '/imports/ui/containers/LandingPage';
 import SignUpPage from '/imports/ui/containers/register/SignUpPage';
 import CreateAliasPage from '/imports/ui/containers/register/CreateAliasPage';
-import WelcomePage from '/imports/ui/containers/register/WelcomePage';
-import ThankyouPage from '/imports/ui/containers/ThankyouPage';
-import UserProfilePage from '/imports/ui/containers/UserProfilePage';
-import UserHomePage from '/imports/ui/containers/UserHomePage';
+import WelcomePage from '/imports/ui/common/WelcomePage';
+import ThankyouPage from '/imports/ui/common/ThankyouPage';
+import UserProfilePage from '/imports/ui/containers/user/UserProfilePage';
+import UserHomePage from '/imports/ui/containers/user/UserHomePage';
 import SigninAliasPage from '/imports/ui/containers/authentication/SigninAliasPage';
 import SignInPage from '/imports/ui/containers/authentication/SignInPage';
 import PasswordPage from '/imports/ui/containers/authentication/PasswordPage';
 import ResetPasswordPage from '/imports/ui/containers/authentication/ResetPasswordPage';
+import ForgotAliasPage from '/imports/ui/containers/authentication/ForgotAliasPage';
 
 /**
  * @summary lists of public routes
@@ -28,18 +29,21 @@ import ResetPasswordPage from '/imports/ui/containers/authentication/ResetPasswo
  * @route forgotpassword
  * @route resetpassword
  */
+// this domain should get from settings
+export const DOMAIN = 'devtheleader.io:9000';
+
 const commonRoutes = FlowRouter.group({
   name: 'commonRouteGroup',
   prefix: '/'
 });
 // Landing Page Route
-export const landingRoute = commonRoutes.route('/', {
+export const homeRoute = commonRoutes.route('/', {
   name: 'landingPage',
   action() {
     const alias = Session.get('alias');
     if (alias !== undefined) {
       UserActions.verifyAlias.call({alias}, (error) => {
-        if(_.isEmpty(error)) {
+        if (_.isEmpty(error)) {
           mount(BlankLayout, {
             content() {
               return <UserProfilePage />;
@@ -106,14 +110,31 @@ export const signinRoutes = FlowRouter.group({
 export const signinAliasRoute = signinRoutes.route('/alias', {
   name: 'SigninAliasPage',
   action() {
-    mount(SigninAliasPage);
+    mount(BlankLayout, {
+      content() {
+        return <SigninAliasPage />;
+      }
+    });
   }
 });
 // handling signin root group
 export const signinRoute = signinRoutes.route('/', {
   name: 'signin',
   action() {
-    mount(SignInPage);
+    const alias = Session.get('alias');
+    if (alias !== undefined) {
+      UserActions.verifyAlias.call({alias}, (error) => {
+        if (_.isEmpty(error)) {
+          mount(BlankLayout, {
+            content() {
+              return <SignInPage />;
+            }
+          });
+        } else {
+          FlowRouter.notFound;
+        }
+      });
+    }
   }
 });
 
@@ -127,9 +148,17 @@ export const passwordRoute = signinRoutes.route('/password/:action', {
 
 // Reset Password Route
 export const resetpasswordRoute = FlowRouter.route('/password/reset', {
-  name: 'resetpassword',
+  name: 'resetPassword',
   action() {
     mount(ResetPasswordPage);
+  }
+});
+
+// Forgot Alias Route
+export const forgotAliasRoute = FlowRouter.route('/alias/forgot', {
+  name: 'forgotAlias',
+  action() {
+    mount(ForgotAliasPage);
   }
 });
 
@@ -146,12 +175,12 @@ export const loggedInRoutes = FlowRouter.group({
     const alias = Session.get('alias');
     if (alias !== undefined) {
       UserActions.verifyAlias.call({alias}, (error) => {
-        if(_.isEmpty(error)) {
+        if (_.isEmpty(error)) {
           FlowRouter.route = FlowRouter.current();
         }
       });
     } else {
-      FlowRouter.go(landingRoute.path);
+      FlowRouter.go(homeRoute.path);
     }
   }]
 });

@@ -24,7 +24,7 @@ class TopNav extends Component {
           </div>
           <ul className="nav navbar-top-links navbar-right">
             <li>
-              <span className="m-r-sm text-muted welcome-message">firstName lastName</span>
+              <a href='/'>(firstName lastName)</a>
             </li>
             <li className="dropdown">
               <a className="dropdown-toggle count-info" data-toggle="dropdown" href="#">
@@ -40,7 +40,7 @@ class TopNav extends Component {
                       <small className="pull-right">46h ago</small>
                       <strong>Mike Loreipsum</strong> started following <strong>Monica Smith</strong>.
                       <br/>
-                        <small className="text-muted">3 days ago at 7:58 pm - 10.06.2014</small>
+                      <small className="text-muted">3 days ago at 7:58 pm - 10.06.2014</small>
                     </div>
                   </div>
                 </li>
@@ -123,15 +123,12 @@ class TopNav extends Component {
                 </li>
               </ul>
             </li>
-
-
             <li>
-              <a href="login.html">
-                <i className="fa fa-sign-in"></i> Sign in
+              <a href={thankyouRoute.path}>
+                <i className="fa fa-sign-out"></i> Sign out
               </a>
             </li>
           </ul>
-
         </nav>
       </div>
     );

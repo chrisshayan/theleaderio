@@ -37,16 +37,16 @@ export default class CreateUser extends Component {
           }}>
           <div>
             <div className="form-group">
-              <input ref="firstName" type="text" className="form-control" placeholder="First name" required=""/>
+              <input ref="firstName" type="text" className="form-control" placeholder="First name" required autofocus/>
             </div>
             <div className="form-group">
-              <input ref="lastName" type="text" className="form-control" placeholder="Last name" required=""/>
+              <input ref="lastName" type="text" className="form-control" placeholder="Last name" />
             </div>
             <div className="form-group">
-              <input ref="email" type="email" className="form-control" placeholder="Email address" required=""/>
+              <input ref="email" type="email" className="form-control" placeholder="Email address" required/>
             </div>
             <div className="form-group">
-              <input ref="password" type="password" className="form-control" placeholder="Password" required=""/>
+              <input ref="password" type="password" className="form-control" placeholder="Password" required/>
             </div>
             <div className="form-group">
               {!_.isEmpty(errors) && (

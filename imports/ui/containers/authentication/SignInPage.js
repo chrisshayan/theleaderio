@@ -14,9 +14,16 @@ export default class SignInPage extends Component {
       errors: null
     };
   }
+  
+  componentWillMount() {
+    
+  }
 
   // submit for sign in to subdomain
   onSubmit({email, password}) {
+    this.setState({
+      errors: null
+    });
     Meteor.loginWithPassword(email, password, (error) => {
       if (!_.isEmpty(error)) {
         this.setState({

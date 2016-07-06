@@ -1,6 +1,4 @@
-import _ from 'lodash';
-
-const DOMAIN = 'devtheleader.io';
+import { DOMAIN } from '/imports/startup/client/routes';
 
 export const getSubdomain = () => {
   var hostnameArr = document.location.hostname.split( "." );

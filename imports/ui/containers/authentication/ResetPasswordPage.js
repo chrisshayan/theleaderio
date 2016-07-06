@@ -4,9 +4,12 @@ import {FlowRouter} from 'meteor/kadira:flow-router';
 import SingleInputForm from '/imports/ui/common/SingleInputForm';
 import NoticeForm from '/imports/ui/common/NoticeForm';
 import Spinner from '/imports/ui/common/Spinner';
+import Copyright from '/imports/ui/common/Copyright';
+
 import * as UserActions from '/imports/api/users/methods';
 import * as TokenActions from '/imports/api/tokens/methods';
-import { landingRoute } from '/imports/startup/client/routes';
+
+import {homeRoute} from '/imports/startup/client/routes';
 
 export default class ResetPasswordPage extends Component {
   constructor() {
@@ -22,8 +25,6 @@ export default class ResetPasswordPage extends Component {
   _inputSubmit({inputValue}) {
     const password = inputValue;
     const tokenId = FlowRouter.getQueryParam("token");
-    console.log('suppose to create alias');
-    // Call methods createAlias
     this.setState({
       loading: true
     });
@@ -32,7 +33,7 @@ export default class ResetPasswordPage extends Component {
         console.log(`token: ${tokenId} will be removed`);
         TokenActions.remove.call({tokenId});
         // redirect to user homepage
-        FlowRouter.go(landingRoute.path);
+        FlowRouter.go(homeRoute.path);
       } else {
         this.setState({
           errors: error.reason
@@ -83,21 +84,26 @@ export default class ResetPasswordPage extends Component {
     }
     if (this.state.tokenVerified) {
       return (
-        <div>
-          <SingleInputForm
-            logoName='TL+'
-            formTitle='Enter your new password'
-            inputType='password'
-            inputHolder='Password'
-            buttonLabel='Reset'
-            errors={ this.state.errors }
-            onSubmit={ this._inputSubmit.bind(this) }
-          />
+        <div id="page-top" className="gray-bg">
+          <div className="middle-box text-center loginscreen   animated fadeInDown">
+            <div>
+              <h1 className="logo-name">TL+</h1>
+            </div>
+            <h3>Enter your new password</h3>
+            <SingleInputForm
+              inputType='password'
+              inputHolder='Password'
+              buttonLabel='Reset'
+              errors={ this.state.errors }
+              onSubmit={ this._inputSubmit.bind(this) }
+            />
+            <Copyright />
+          </div>
         </div>
       );
     } else {
       return (
-        <div>
+        <div id="page-top" className="gray-bg">
           <NoticeForm
             code='404'
             message={ this.state.errors }

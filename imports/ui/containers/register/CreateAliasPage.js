@@ -4,6 +4,7 @@ import {FlowRouter} from 'meteor/kadira:flow-router';
 import SingleInputForm from '/imports/ui/common/SingleInputForm';
 import NoticeForm from '/imports/ui/common/NoticeForm';
 import Spinner from '/imports/ui/common/Spinner';
+import Copyright from '/imports/ui/common/Copyright';
 import * as UserActions from '/imports/api/users/methods';
 import * as TokenActions from '/imports/api/tokens/methods';
 import * as SubdomainActions from '/imports/utils/subdomain';
@@ -32,7 +33,7 @@ export default class CreateAliasPage extends Component {
         console.log(`token: ${tokenId} will be removed`);
         TokenActions.remove.call({tokenId});
         // Redirect to user's login page
-        SubdomainActions.addSubdomain({ alias, route: 'signin' });
+        SubdomainActions.addSubdomain({alias, route: 'signin'});
       } else {
         this.setState({
           errors: error.reason
@@ -75,29 +76,34 @@ export default class CreateAliasPage extends Component {
       return (
         <div>
           <Spinner
-            message = 'Creating alias ...'
+            message='Creating alias ...'
           />
         </div>
       );
     } else {
       if (this.state.tokenVerified) {
         return (
-          <div>
-            <SingleInputForm
-              logoName='TL+'
-              formTitle='Create your alias'
-              formDescription='This alias will be used as your web address.'
-              inputType='text'
-              inputHolder='Alias'
-              buttonLabel='Create'
-              errors={ this.state.errors }
-              onSubmit={ this._inputSubmit.bind(this) }
-            />
+          <div id="page-top" className="gray-bg">
+            <div className="middle-box text-center loginscreen   animated fadeInDown">
+              <div>
+                <h1 className="logo-name">TL+</h1>
+              </div>
+              <h3>Create your alias</h3>
+              <p>This alias will be used as your web address.</p>
+              <SingleInputForm
+                inputType='text'
+                inputHolder='Alias'
+                buttonLabel='Create'
+                errors={ this.state.errors }
+                onSubmit={ this._inputSubmit.bind(this) }
+              />
+              <Copyright />
+            </div>
           </div>
         );
       } else {
         return (
-          <div>
+          <div id="page-top" className="gray-bg">
             <NoticeForm
               code='404'
               message={ this.state.errors }
