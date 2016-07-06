@@ -1,10 +1,16 @@
 import React, {Component} from 'react';
 import {FlowRouter} from 'meteor/kadira:flow-router';
 
+import { DOMAIN } from '/imports/startup/client/routes';
+
 export default class NoticeForm extends Component {
   _onSubmit() {
-    // this.props.onSubmit(this.props.redirectUrl);
-    FlowRouter.go(this.props.redirectUrl);
+    if(_.isEmpty(this.props.redirectUrl)) {
+      const newUrl = `http://${DOMAIN}/`;
+      window.location = newUrl;
+    } else {
+      FlowRouter.go(this.props.redirectUrl);
+    }
   }
 
   render() {

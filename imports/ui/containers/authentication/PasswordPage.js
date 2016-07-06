@@ -1,12 +1,14 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import _ from 'lodash';
 
 import SingleInputFrom from '/imports/ui/common/SingleInputForm';
 import NoticeForm from '/imports/ui/common/NoticeForm';
+import Spinner from '/imports/ui/common/Spinner';
+import Copyright from '/imports/ui/common/Copyright';
+
 import * as EmailActions from '/imports/api/email/methods';
 import * as SubdomainActins from '/imports/utils/subdomain';
 import * as TokenActions from '/imports/api/tokens/methods';
-import Spinner from '/imports/ui/common/Spinner';
 
 export default class PasswordPage extends Component {
   constructor() {
@@ -26,11 +28,10 @@ export default class PasswordPage extends Component {
     });
   }
 
-  _inputSubmit({ inputValue }) {
+  _inputSubmit({inputValue}) {
     const alias = SubdomainActins.getSubdomain();
     const domain = window.location.hostname;
     const email = inputValue;
-    console.log(`alias: ${alias}, email: ${email}, errors: ${this.state.errors}`);
     this.setState({
       loading: true
     });
@@ -65,45 +66,50 @@ export default class PasswordPage extends Component {
   render() {
     const formTitle = `Password ${this.state.action}`;
     const formDescription = `Enter your email address you use to sign in to ${document.location.hostname}`;
-    if(this.state.loading) {
+    if (this.state.loading) {
       return (
-        <div>
+        <div id="page-top" className="gray-bg">
           <Spinner
-            message = 'Sending email ...'
+            message='Sending email ...'
           />
         </div>
       );
     }
-    if(this.state.action === 'forgot' | this.state.action === 'reset') {
+    if (this.state.action === 'forgot' | this.state.action === 'reset') {
       return (
-        <div>
-          <SingleInputFrom
-            logoName = 'TL+'
-            formTitle = { formTitle }
-            formDescription = { formDescription }
-            inputType = 'email'
-            inputHolder = 'Email address'
-            buttonLabel = 'Send reset link'
-            errors = { this.state.errors }
-            onSubmit = { this._inputSubmit.bind(this) }
-          />
+        <div id="page-top" className="gray-bg">
+          <div className="middle-box text-center loginscreen   animated fadeInDown">
+            <div>
+              <h1 className="logo-name">TL+</h1>
+            </div>
+            <h3>{ formTitle }</h3>
+            <p>{formDescription}</p>
+            <SingleInputFrom
+              inputType='email'
+              inputHolder='Email address'
+              buttonLabel='Send reset link'
+              errors={ this.state.errors }
+              onSubmit={ this._inputSubmit.bind(this) }
+            />
+            <Copyright />
+          </div>
         </div>
       );
-    } else if(this.state.action === 'sent') {
+    } else if (this.state.action === 'sent') {
       return (
-        <div>
+        <div id="page-top" className="gray-bg">
           <NoticeForm
             code='TL+'
-            message = 'Email sent'
-            description = 'Please check your inbox for instructions from us on how to reset your password.'
-            buttonLabel = 'Come back to HomePage'
-            redirectUrl = '/'
+            message='Email sent'
+            description='Please check your inbox for instructions from us on how to reset your password.'
+            buttonLabel='Come back to HomePage'
+            redirectUrl='/'
           />
         </div>
       );
     } else {
       return (
-        <div>
+        <div id="page-top" className="gray-bg">
           <NoticeForm
             code='404'
             message={ this.state.errors }

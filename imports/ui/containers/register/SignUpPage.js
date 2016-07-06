@@ -77,13 +77,15 @@ export default class SignUpPage extends Component {
   render() {
     if (this.state.loading) {
       return (
-        <Spinner
-          message = 'Creating account ...'
-        />
+        <div id="page-top" className="gray-bg">
+          <Spinner
+            message='Creating account ...'
+          />
+        </div>
       );
     } else {
       return (
-        <div>
+        <div id="page-top" className="gray-bg">
           <CreateUser
             errors={this.state.errors }
             onSubmit={ this.onSubmit.bind(this) }
