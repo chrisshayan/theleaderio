@@ -5,21 +5,25 @@ import {mount} from 'react-mounter';
 import * as UserActions from '/imports/api/users/methods';
 
 import NoticeForm from '/imports/ui/common/NoticeForm';
-import Spinner from '/imports/ui/common/Spinner';
-import MainLayout from '/imports/ui/layouts/MainLayout';
-import BlankLayout from '/imports/ui/layouts/BlankLayout';
-import LandingPage from '/imports/ui/containers/LandingPage';
-import SignUpPage from '/imports/ui/containers/register/SignUpPage';
-import CreateAliasPage from '/imports/ui/containers/register/CreateAliasPage';
 import WelcomePage from '/imports/ui/common/WelcomePage';
 import ThankyouPage from '/imports/ui/common/ThankyouPage';
+
+import MainLayout from '/imports/ui/layouts/MainLayout';
+import BlankLayout from '/imports/ui/layouts/BlankLayout';
+
+import LandingPage from '/imports/ui/containers/LandingPage';
+
+import SignUpUser from '/imports/ui/containers/signup/SignUpUser';
+import SignUpAlias from '/imports/ui/containers/signup/SignUpAlias';
+
+import SignInAliasPage from '/imports/ui/containers/signin/SignInAliasPage';
+import SignInPage from '/imports/ui/containers/signin/SignInPage';
+import PasswordPage from '/imports/ui/containers/signin/PasswordPage';
+import ResetPasswordPage from '/imports/ui/containers/signin/ResetPasswordPage';
+import ForgotAliasPage from '/imports/ui/containers/signin/ForgotAliasPage';
+
 import PublicProfilePage from '/imports/ui/containers/user/PublicProfilePage';
 import UserHomePage from '/imports/ui/containers/user/HomePage';
-import SigninAliasPage from '/imports/ui/containers/authentication/SigninAliasPage';
-import SignInPage from '/imports/ui/containers/authentication/SignInPage';
-import PasswordPage from '/imports/ui/containers/authentication/PasswordPage';
-import ResetPasswordPage from '/imports/ui/containers/authentication/ResetPasswordPage';
-import ForgotAliasPage from '/imports/ui/containers/authentication/ForgotAliasPage';
 
 /**
  * @summary lists of public routes
@@ -63,31 +67,30 @@ export const thankyouRoute = FlowRouter.route('/thankyou', {
   }
 });
 
-// Sign up Route Group
+/**
+ * @summary lists of signup routes
+ * @route /signup/:action
+ * @action user
+ * @action alias
+ */
 export const signupRoutes = FlowRouter.group({
   name: 'signupRouteGroup',
   prefix: '/signup'
 });
 // handling /signup root group
-export const mainSignUp = signupRoutes.route('/', {
+export const mainSignUp = signupRoutes.route('/:action', {
   name: 'signUpPage',
-  action() {
-    mount(SignUpPage);
-  }
-});
-// handling /signup/alias route
-signupRoutes.route('/alias', {
-  name: 'createAliasPage',
-  action() {
-    mount(CreateAliasPage);
-  }
-});
-// handling /signup/firstTime/:userAlias route
-// Still have problem with redirect user to new web address
-// Can't login for user automatically
-signupRoutes.route('/firstTime/:userAlias', {
-  action() {
-    FlowRouter.go(signinRoute.path);
+  action(params, queryParams) {
+    // create new user
+    if(params.action == 'user') {
+      mount(SignUpUser);
+    }
+    // create new alias
+    if(params.action == 'alias') {
+      if(queryParams.token) {
+        mount(SignUpAlias);
+      }
+    }
   }
 });
 
@@ -102,7 +105,7 @@ export const signinAliasRoute = signinRoutes.route('/alias', {
   action() {
     mount(BlankLayout, {
       content() {
-        return <SigninAliasPage />;
+        return <SignInAliasPage />;
       }
     });
   }

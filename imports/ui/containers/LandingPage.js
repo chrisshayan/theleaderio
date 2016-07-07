@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-import {signinAliasRoute, mainSignUp} from '/imports/startup/client/routes';
+import {signinAliasRoute} from '/imports/startup/client/routes';
 
 export default class LandingPage extends Component {
   constructor() {
@@ -74,7 +74,7 @@ export default class LandingPage extends Component {
                 <h1>Do you strive to be a great leader? <br/> Not sure how to improve?</h1>
                 <p>Get insight on how your team rates your leadership and how to improve.</p>
                 <p>
-                  <a className="btn btn-lg btn-primary" role="button" href={mainSignUp.path}>Try for free!</a>
+                  <a className="btn btn-lg btn-primary" role="button" href="/signup/user">Try for free!</a>
                   <a className="caption-link" href={signinAliasRoute.path} role="button">Have account already?</a>
                 </p>
               </div>

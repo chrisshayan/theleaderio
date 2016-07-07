@@ -1,14 +1,17 @@
 import React, {Component} from 'react';
-import {FlowRouter} from 'meteor/kadira:flow-router';
+import Copyright from '/imports/ui/common/Copyright';
+import { Accounts } from 'meteor/accounts-base';
 
-import SignUpUser from '../../components/SignUpUser';
+import {welcomeRoute} from '/imports/startup/client/routes';
+import SignUpForm from '/imports/ui/components/SignUpForm';
+
 import * as ProfileActions from '/imports/api/profiles/methods';
 import * as TokenActions from '/imports/api/tokens/methods';
 import * as EmailActions from '/imports/api/email/methods';
-import {welcomeRoute}from '/imports/startup/client/routes';
-import Spinner from '/imports/ui/common/Spinner';
 
-export default class SignUpPage extends Component {
+import { DOMAIN } from '/imports/startup/client/routes';
+
+export default class SignUpUser extends Component {
   constructor() {
     super();
 
@@ -39,7 +42,7 @@ export default class SignUpPage extends Component {
               if (!error) {
                 // call methods to send verify Email with token link to user
                 // route to Welcome page with a message to verify user's email
-                const url = `http://${document.location.hostname}:9000/signup/alias?token=${tokenId}`;
+                const url = `http://${DOMAIN}/signup/alias?token=${tokenId}`;
                 const mailOptions = {
                   email: email,
                   firstName: firstName,
@@ -75,23 +78,23 @@ export default class SignUpPage extends Component {
   }
 
   render() {
-    if (this.state.loading) {
-      return (
-        <div id="page-top" className="gray-bg">
-          <Spinner
-            message='Creating account ...'
+
+    return (
+      <div id="page-top" className="gray-bg">
+        <div className="middle-box text-center loginscreen   animated fadeInDown">
+          <div>
+            <h1 className="logo-name">TL+</h1>
+          </div>
+          <h3>
+            Being a true leader doesn’t come from a title, it is a designation you must earn from the people you lead.</h3>
+          <p>Become a good leader from today.</p>
+          <SignUpForm
+            errors={this.state.errors}
+            onSubmit={this.onSubmit.bind(this)}
           />
+          <Copyright />
         </div>
-      );
-    } else {
-      return (
-        <div id="page-top" className="gray-bg">
-          <SignUpUser
-            errors={this.state.errors }
-            onSubmit={ this.onSubmit.bind(this) }
-          />
-        </div>
-      );
-    }
+      </div>
+    );
   }
 }

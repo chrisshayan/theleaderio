@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Meteor} from 'meteor/meteor';
 import _ from 'lodash';
 
-import SigninForm from '/imports/ui/components/SigninForm';
+import SigninForm from '/imports/ui/components/SignInForm';
 import * as SubdomainActions from '/imports/utils/subdomain';
 import {userHomeRoute, signinAliasRoute} from '/imports/startup/client/routes';
 
