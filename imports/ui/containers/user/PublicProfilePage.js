@@ -23,7 +23,7 @@ export default class PublicProfilePage extends Component {
       loading: true
     });
     const alias = Session.get('alias');
-    UserActions.verifyAlias.call({alias}, (error) => {
+    UserActions.verify.call({alias}, (error) => {
       if (_.isEmpty(error)) {
         this.setState({
           alias: true,

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-import {signinAliasRoute} from '/imports/startup/client/routes';
+import { DOMAIN, routes } from '/imports/startup/client/routes';
 
 export default class LandingPage extends Component {
   constructor() {
@@ -41,6 +41,7 @@ export default class LandingPage extends Component {
     if (this.state.navChange) {
       navStyle = `${navStyle} navbar-scroll`
     }
+    const homeUrl = `http://${DOMAIN}/${routes.home}`;
     return (
       <div id="page-top" className="landing-page">
         <div className="navbar-wrapper">
@@ -54,7 +55,7 @@ export default class LandingPage extends Component {
                   <span className="icon-bar"></span>
                   <span className="icon-bar"></span>
                 </button>
-                <a className="navbar-brand" href="/">theLeader.io</a>
+                <a className="navbar-brand" href={homeUrl}>theLeader.io</a>
               </div>
               <div id="navbar" className="navbar-collapse collapse">
                 <ul className="nav navbar-nav navbar-right">
@@ -74,8 +75,8 @@ export default class LandingPage extends Component {
                 <h1>Do you strive to be a great leader? <br/> Not sure how to improve?</h1>
                 <p>Get insight on how your team rates your leadership and how to improve.</p>
                 <p>
-                  <a className="btn btn-lg btn-primary" role="button" href="/signup/user">Try for free!</a>
-                  <a className="caption-link" href={signinAliasRoute.path} role="button">Have account already?</a>
+                  <a className="btn btn-lg btn-primary" role="button" href={routes.signUp.user}>Try for free!</a>
+                  <a className="caption-link" href={routes.signIn.alias} role="button">Have account already?</a>
                 </p>
               </div>
             </div>

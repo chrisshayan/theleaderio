@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-import {signinAliasRoute} from '/imports/startup/client/routes';
+import {routes} from '/imports/startup/client/routes';
 
 export default class SignUpForm extends Component {
 
@@ -21,6 +21,8 @@ export default class SignUpForm extends Component {
     };
 
     const {errors} = this.props;
+
+    const signInUrl = `/${routes.signIn.alias}`;
 
     return (
       <form className="m-t" role="form" onSubmit={(event) => {
@@ -48,7 +50,7 @@ export default class SignUpForm extends Component {
           <button type="submit" className="btn btn-primary block full-width m-b">Sign up</button>
         </div>
         <p>
-          You are a leader already? <a href="/signin/alias">Sign in.</a>
+          You are a leader already? <a href={signInUrl}>Sign in.</a>
         </p>
       </form>
     );

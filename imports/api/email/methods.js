@@ -37,7 +37,6 @@ export const send = new ValidatedMethod({
             subject: `theLeader.io`,
             html: html
           };
-          console.log(`sending welcome email`);
           Email.send(options);
         }
 

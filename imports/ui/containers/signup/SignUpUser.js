@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import Copyright from '/imports/ui/common/Copyright';
 import { Accounts } from 'meteor/accounts-base';
 
-import {welcomeRoute} from '/imports/startup/client/routes';
+import {welcomeRoute, routes} from '/imports/startup/client/routes';
 import SignUpForm from '/imports/ui/components/SignUpForm';
 
 import * as ProfileActions from '/imports/api/profiles/methods';
@@ -42,7 +42,7 @@ export default class SignUpUser extends Component {
               if (!error) {
                 // call methods to send verify Email with token link to user
                 // route to Welcome page with a message to verify user's email
-                const url = `http://${DOMAIN}/signup/alias?token=${tokenId}`;
+                const url = `http://${DOMAIN}/${routes.signUp.alias}?token=${tokenId}`;
                 const mailOptions = {
                   email: email,
                   firstName: firstName,

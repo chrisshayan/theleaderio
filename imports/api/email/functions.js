@@ -8,7 +8,7 @@ export const get = function ({ templateName, firstName, url, alias }) {
     url: url,
     alias: alias
   };
-  console.log(`data: templateName: ${templateName}, firstName: ${firstName}, url: ${url}, alias: ${alias}`);
+  // console.log(`data: templateName: ${templateName}, firstName: ${firstName}, url: ${url}, alias: ${alias}`);
   //Generate e-mail with data
   return emailTemplateBuilder.generate(data, template);
 }

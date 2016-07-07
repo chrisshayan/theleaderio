@@ -2,8 +2,6 @@ import {FlowRouter} from 'meteor/kadira:flow-router';
 import React from 'react';
 import {mount} from 'react-mounter';
 
-import * as UserActions from '/imports/api/users/methods';
-
 import NoticeForm from '/imports/ui/common/NoticeForm';
 import WelcomePage from '/imports/ui/common/WelcomePage';
 import ThankyouPage from '/imports/ui/common/ThankyouPage';
@@ -16,14 +14,36 @@ import LandingPage from '/imports/ui/containers/LandingPage';
 import SignUpUser from '/imports/ui/containers/signup/SignUpUser';
 import SignUpAlias from '/imports/ui/containers/signup/SignUpAlias';
 
-import SignInAliasPage from '/imports/ui/containers/signin/SignInAliasPage';
-import SignInPage from '/imports/ui/containers/signin/SignInPage';
-import PasswordPage from '/imports/ui/containers/signin/PasswordPage';
-import ResetPasswordPage from '/imports/ui/containers/signin/ResetPasswordPage';
-import ForgotAliasPage from '/imports/ui/containers/signin/ForgotAliasPage';
+import SignInAlias from '/imports/ui/containers/signin/SignInAlias';
+import SignInAccount from '/imports/ui/containers/signin/SignInAccount';
+import PasswordPage from '/imports/ui/containers/password/PasswordPage';
+import SetPasswordPage from '/imports/ui/containers/password/SetPasswordPage';
+import ForgotAliasPage from '/imports/ui/containers/alias/ForgotAliasPage';
 
 import PublicProfilePage from '/imports/ui/containers/user/PublicProfilePage';
-import UserHomePage from '/imports/ui/containers/user/HomePage';
+
+/**
+ * Constant Routes
+ */
+export const routes = {
+  home: '/',
+  signUp: {
+    user: 'signup/user',
+    alias: 'signup/alias'
+  },
+  signIn: {
+    alias: 'signin/alias',
+    account: 'signin/account'
+  },
+  password: {
+    forgot: 'password/forgot',
+    reset: 'password/reset',
+    set: 'password/set'
+  },
+  alias: {
+    forgot: 'alias/forgot'
+  }
+};
 
 /**
  * @summary lists of public routes
@@ -36,13 +56,8 @@ import UserHomePage from '/imports/ui/containers/user/HomePage';
 // this domain should get from settings
 export const DOMAIN = 'devtheleader.io:9000';
 
-const commonRoutes = FlowRouter.group({
-  name: 'commonRouteGroup',
-  prefix: '/'
-});
-// Landing Page Route
-export const homeRoute = commonRoutes.route('/', {
-  name: 'landingPage',
+const homeRoute = FlowRouter.route('/', {
+  name: 'homePage',
   action() {
     const alias = Session.get('alias');
     if (alias) {
@@ -73,85 +88,99 @@ export const thankyouRoute = FlowRouter.route('/thankyou', {
  * @action user
  * @action alias
  */
-export const signupRoutes = FlowRouter.group({
+export const signUpRoutes = FlowRouter.group({
   name: 'signupRouteGroup',
   prefix: '/signup'
 });
 // handling /signup root group
-export const mainSignUp = signupRoutes.route('/:action', {
+signUpRoutes.route('/:action', {
   name: 'signUpPage',
   action(params, queryParams) {
     // create new user
-    if(params.action == 'user') {
+    if (params.action == 'user') {
       mount(SignUpUser);
     }
     // create new alias
-    if(params.action == 'alias') {
-      if(queryParams.token) {
+    if (params.action == 'alias') {
+      if (queryParams.token) {
         mount(SignUpAlias);
       }
     }
   }
 });
 
-// Sign in Route Group
-export const signinRoutes = FlowRouter.group({
+/**
+ * @summary lists of signin routes
+ * @route /signin/:action
+ * @action alias
+ * @action email
+ */
+export const signInRoutes = FlowRouter.group({
   name: 'signinRouteGroup',
   prefix: '/signin'
 });
 // handling signin alias group
-export const signinAliasRoute = signinRoutes.route('/alias', {
-  name: 'SigninAliasPage',
-  action() {
-    mount(BlankLayout, {
-      content() {
-        return <SignInAliasPage />;
-      }
-    });
-  }
-});
-// handling signin root group
-export const signinRoute = signinRoutes.route('/', {
-  name: 'signin',
-  action() {
-    const alias = Session.get('alias');
-    if (alias !== undefined) {
-      UserActions.verifyAlias.call({alias}, (error) => {
-        if (_.isEmpty(error)) {
-          mount(BlankLayout, {
-            content() {
-              return <SignInPage />;
-            }
-          });
-        } else {
-          FlowRouter.notFound;
-        }
-      });
+signInRoutes.route('/:action', {
+  name: 'SignInPage',
+  action(params, queryParams) {
+    // sign in to user's web address with alias
+    if (params.action == 'alias') {
+      mount(SignInAlias);
+    }
+    // sign in to user's account
+    if (params.action == 'account') {
+      mount(SignInAccount);
     }
   }
 });
 
-// Password Route
-export const passwordRoute = signinRoutes.route('/password/:action', {
-  name: 'password',
-  action() {
-    mount(PasswordPage);
+/**
+ * @summary lists of password routes
+ * @route /password/:action
+ * @action forgot
+ * @action reset
+ */
+export const passwordRoutes = FlowRouter.group({
+  name: 'passwordRouteGroup',
+  prefix: '/password'
+});
+// handling signin alias group
+passwordRoutes.route('/:action', {
+  name: 'passwordPage',
+  action(params) {
+    // forgot password
+    if (params.action == 'forgot') {
+      mount(PasswordPage);
+    }
+    // reset password
+    if (params.action == 'reset') {
+      mount(PasswordPage);
+    }
+    // set password
+    if (params.action == 'set') {
+      mount(SetPasswordPage);
+    }
   }
 });
 
-// Reset Password Route
-export const resetpasswordRoute = FlowRouter.route('/password/reset', {
-  name: 'resetPassword',
-  action() {
-    mount(ResetPasswordPage);
-  }
-});
 
-// Forgot Alias Route
-export const forgotAliasRoute = FlowRouter.route('/alias/forgot', {
-  name: 'forgotAlias',
-  action() {
-    mount(ForgotAliasPage);
+/**
+ * @summary lists of alias routes
+ * @route /alias/:action
+ * @action forgot
+ */
+export const aliasRoutes = FlowRouter.group({
+  name: 'aliasRouteGroup',
+  prefix: '/alias'
+});
+// handling signin alias group
+aliasRoutes.route('/:action', {
+  name: 'aliasPage',
+  action(params) {
+    // forgot alias
+    if (params.action == 'forgot') {
+      mount(ForgotAliasPage);
+    }
   }
 });
 
@@ -162,32 +191,32 @@ export const forgotAliasRoute = FlowRouter.route('/alias/forgot', {
  * @route employees
  * @route measure
  */
-export const loggedInRoutes = FlowRouter.group({
-  name: 'loggedInRoutes',
-  triggersEnter: [() => {
-    const alias = Session.get('alias');
-    if (alias !== undefined) {
-      UserActions.verifyAlias.call({alias}, (error) => {
-        if (_.isEmpty(error)) {
-          FlowRouter.route = FlowRouter.current();
-        }
-      });
-    } else {
-      FlowRouter.go(homeRoute.path);
-    }
-  }]
-});
-
-export const userHomeRoute = loggedInRoutes.route('/dashboard', {
-  name: 'dashboard',
-  action() {
-    mount(MainLayout, {
-      content() {
-        return <UserHomePage />;
-      }
-    });
-  }
-});
+// export const loggedInRoutes = FlowRouter.group({
+//   name: 'loggedInRoutes',
+//   triggersEnter: [() => {
+//     const alias = Session.get('alias');
+//     if (alias !== undefined) {
+//       UserActions.verify.call({alias}, (error) => {
+//         if (_.isEmpty(error)) {
+//           FlowRouter.route = FlowRouter.current();
+//         }
+//       });
+//     } else {
+//       FlowRouter.go(homeRoute.path);
+//     }
+//   }]
+// });
+//
+// export const userHomeRoute = loggedInRoutes.route('/dashboard', {
+//   name: 'dashboard',
+//   action() {
+//     mount(MainLayout, {
+//       content() {
+//         return <UserHomePage />;
+//       }
+//     });
+//   }
+// });
 
 /**
  * @summary Default Invalid Url Route

@@ -7,8 +7,7 @@ import Spinner from '/imports/ui/common/Spinner';
 import Copyright from '/imports/ui/common/Copyright';
 
 import * as EmailActions from '/imports/api/email/methods';
-import * as SubdomainActins from '/imports/utils/subdomain';
-import * as TokenActions from '/imports/api/tokens/methods';
+import * as UserActions from '/imports/api/users/methods';
 
 export default class ForgotAliasPage extends Component {
   constructor() {
@@ -27,21 +26,32 @@ export default class ForgotAliasPage extends Component {
     this.setState({
       loading: true
     });
-    const mailOptions = {
-      email: email,
-      templateName: 'forgot_alias'
-    };
-    EmailActions.send.call(mailOptions, (error) => {
-      if (!_.isEmpty(error)) {
-        this.setState({
-          loading: false,
-          errors: error.reason
+    // verify email
+    UserActions.verify.call({email}, (error) => {
+      if(_.isEmpty(error)) {
+        const mailOptions = {
+          email: email,
+          templateName: 'forgot_alias'
+        };
+        EmailActions.send.call(mailOptions, (error) => {
+          if (!_.isEmpty(error)) {
+            this.setState({
+              loading: false,
+              errors: error.reason
+            });
+          } else {
+            this.setState({
+              loading: false,
+              errors: null,
+              action: 'sent'
+            });
+          }
         });
       } else {
+        console.log(error);
         this.setState({
           loading: false,
-          errors: null,
-          action: 'sent'
+          errors: `${email} doesn't exists`
         });
       }
     });
