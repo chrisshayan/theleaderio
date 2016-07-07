@@ -77,7 +77,7 @@ export default class ResetPasswordPage extends Component {
       return (
         <div>
           <Spinner
-            message='Resetting password ...'
+            message='Setting password ...'
           />
         </div>
       );

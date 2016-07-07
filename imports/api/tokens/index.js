@@ -9,7 +9,13 @@ Tokens.schema = new SimpleSchema({
     type: String
   },
   password: {
-    type: String
+    type: String,
+    optional: true
+  },
+  action: {
+    type: String,
+    allowedValues: ['email', 'password', 'alias'],
+    optional: true
   }
 });
 

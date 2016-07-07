@@ -7,8 +7,7 @@ import _ from 'lodash';
 import {IDValidator} from '/imports/utils';
 import {Tokens} from '/imports/api/tokens/index';
 import * as ProfileActions from '/imports/api/profiles/methods';
-import {Profiles, STATUS_ACTIVE} from '/imports/api/profiles/index';
-import * as EmailActions from '/imports/api/email/functions';
+import {STATUS_ACTIVE} from '/imports/api/profiles/index';
 
 /**
  *  @summary set alias for account which will use Account username as alias
@@ -92,19 +91,53 @@ export const resetPassword = new ValidatedMethod({
   }
 });
 
-export const verifyAlias = new ValidatedMethod({
-  name: 'users.verifyAlias',
+// verify user email & alias in server side
+export const verify = new ValidatedMethod({
+  name: 'users.verify',
   validate: new SimpleSchema({
     alias: {
-      type: String
+      type: String,
+      optional: true
+    }, 
+    email: {
+      type: String,
+      optional: true
     }
   }).validator(),
-  run({alias}) {
-    // verify user email & alias in server side
+  run({alias, email}) {
     if (!this.isSimulation) {
-      const user = Accounts.findUserByUsername(alias);
-      if (_.isEmpty(user)) {
-        throw new Error('invalid-alias', `alias ${alias} doesn't exists`);
+      // both alias & email
+      if(alias && email) {
+        const user = Accounts.findUserByUsername(alias);
+        if (_.isEmpty(user)) {
+          throw new Error('invalid-alias', `alias ${alias} doesn't exists`);
+        } else {
+          if(email) {
+            const checkUser = Accounts.findUserByEmail(email);
+            if(_.isEmpty(checkUser)) {
+              throw new Error(`email ${email} doesn't exists`);
+            } else {
+              if(checkUser.username !== user.username) {
+                throw new Error(`email ${email} doesn't belong to ${alias}`);
+              }
+            }
+          }
+        }
+      }
+      else if(alias) { // alias only
+        const user = Accounts.findUserByUsername(alias);
+        if (_.isEmpty(user)) {
+          throw new Error('invalid-alias', `alias ${alias} doesn't exists`);
+        } else {
+          return true;
+        }
+      } else if(email) { // email only
+        const user = Accounts.findUserByEmail(email);
+        if(_.isEmpty(user)) {
+          throw new Error(`email ${email} doesn't exists`);
+        } else {
+          return true;
+        }
       } else {
         return true;
       }

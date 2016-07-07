@@ -35,7 +35,7 @@ export default class Activities extends Component {
                 </a>
                 <div className="media-body ">
                   <small className="pull-right text-navy">1m ago</small>
-                  <strong>Sandra Momot</strong> started following <strong>Monica Smith</strong>. <br/>
+                  <strong>Sandra Momot</strong> has feedbacks for <strong>Monica Smith</strong>. <br/>
                   <small className="text-muted">Today 4:21 pm - 12.06.2014</small>
                   <div className="actions">
                     <a className="btn btn-xs btn-white"><i className="fa fa-thumbs-up"></i> Like </a>
@@ -50,7 +50,7 @@ export default class Activities extends Component {
                 </a>
                 <div className="media-body ">
                   <small className="pull-right">5m ago</small>
-                  <strong>Monica Smith</strong> posted a new blog. <br/>
+                  <strong>Monica Smith</strong> replied to 5 negative feedbacks <br/>
                   <small className="text-muted">Today 5:60 pm - 12.06.2014</small>
 
                 </div>
@@ -65,11 +65,10 @@ export default class Activities extends Component {
                   <strong>Mark Johnson</strong> posted message on <strong>Monica Smith</strong> site. <br/>
                   <small className="text-muted">Today 2:10 pm - 12.06.2014</small>
                   <div className="well">
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
-                    Over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
+                    You are a great leader ever!!!!
                   </div>
                   <div className="pull-right">
-                    <a className="btn btn-xs btn-white"><i className="fa fa-thumbs-up"></i> Like </a>
+                    <a className="btn btn-xs btn-success"><i className="fa fa-thumbs-up"></i> Like </a>
                     <a className="btn btn-xs btn-white"><i className="fa fa-heart"></i> Love</a>
                     <a className="btn btn-xs btn-primary"><i className="fa fa-pencil"></i> Message</a>
                   </div>

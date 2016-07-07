@@ -5,7 +5,7 @@ import _ from 'lodash';
 import SingleInputForm from '/imports/ui/common/SingleInputForm';
 import Copyright from '/imports/ui/common/Copyright';
 import * as SubdomainActions from '/imports/utils/subdomain';
-import {userHomeRoute, forgotAliasRoute} from '/imports/startup/client/routes';
+import {userHomeRoute, routes} from '/imports/startup/client/routes';
 
 export default class SigninAliasPage extends Component {
   constructor() {
@@ -17,11 +17,13 @@ export default class SigninAliasPage extends Component {
   }
 
   componentWillMount() {
+    // user signed in
     if(!_.isEmpty(Meteor.user())) {
       const subdomain = SubdomainActions.getSubdomain();
       const alias = Meteor.user().username;
       if(subdomain === alias) {
-        FlowRouter.go(userHomeRoute.path);
+        // should route to user's dashboard
+        FlowRouter.go(`${routes.home}`);
       }
     }
   }
@@ -29,12 +31,8 @@ export default class SigninAliasPage extends Component {
   // submit for sign in to web address alias.theleader.io
   _inputSubmit({inputValue}) {
     const alias = inputValue;
-    // for user login in a consistency state
     Meteor.logout();
-    console.log(`suppose to change domain`);
-    SubdomainActions.addSubdomain({ alias, route: 'signin'});
-    // console.log(`go to route: ${signinRoute.path}`);
-    // FlowRouter.go(signinRoute.path);
+    SubdomainActions.addSubdomain({ alias, route: routes.signIn.account});
   }
 
   render() {
@@ -42,6 +40,10 @@ export default class SigninAliasPage extends Component {
       signinTitle = `Welcome to theLeader.io`,
       errors = null
     } = this.props;
+
+    const signUpUrl = `/${routes.signUp.user}`;
+    const forgotAliasUrl = `/${routes.alias.forgot}`;
+
     return (
       <div className="loginColumns animated fadeInDown">
         <div className="row">
@@ -70,9 +72,13 @@ export default class SigninAliasPage extends Component {
                 errors={ this.state.errors }
                 onSubmit={ this._inputSubmit.bind(this) }
               />
-              <a href={forgotAliasRoute.path}>
+              <a href={forgotAliasUrl}>
                 <small>Forgot your alias?</small>
               </a>
+              <p className="text-muted text-center">
+                <small>Do not have an account?</small>
+              </p>
+              <a className="btn btn-sm btn-white btn-block" href={signUpUrl}>Create an account</a>
               <Copyright />
             </div>
           </div>

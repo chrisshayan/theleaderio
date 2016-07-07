@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-import {thankyouRoute} from '/imports/startup/client/routes';
+import {thankyouRoute, DOMAIN, routes} from '/imports/startup/client/routes';
 
 class TopNav extends Component {
 
@@ -10,11 +10,12 @@ class TopNav extends Component {
 
   render() {
 
+    const homeUrl = `http://${DOMAIN}/`;
     return (
       <div className="row border-bottom white-bg">
         <nav className="navbar navbar-static-top" role="navigation">
           <div className="navbar-header">
-            <a className="navbar-minimalize minimalize-styl-2 btn btn-primary " href="/">theLeader.io</a>
+            <a className="navbar-minimalize minimalize-styl-2 btn btn-primary " href={homeUrl}>theLeader.io</a>
             <form role="search" className="navbar-form-custom" action="search_results.html">
               <div className="form-group">
                 <input type="text" placeholder="Search for something..." className="form-control"
