@@ -13,8 +13,8 @@ import SignUpPage from '/imports/ui/containers/register/SignUpPage';
 import CreateAliasPage from '/imports/ui/containers/register/CreateAliasPage';
 import WelcomePage from '/imports/ui/common/WelcomePage';
 import ThankyouPage from '/imports/ui/common/ThankyouPage';
-import UserProfilePage from '/imports/ui/containers/user/UserProfilePage';
-import UserHomePage from '/imports/ui/containers/user/UserHomePage';
+import PublicProfilePage from '/imports/ui/containers/user/PublicProfilePage';
+import UserHomePage from '/imports/ui/containers/user/HomePage';
 import SigninAliasPage from '/imports/ui/containers/authentication/SigninAliasPage';
 import SignInPage from '/imports/ui/containers/authentication/SignInPage';
 import PasswordPage from '/imports/ui/containers/authentication/PasswordPage';
@@ -41,18 +41,8 @@ export const homeRoute = commonRoutes.route('/', {
   name: 'landingPage',
   action() {
     const alias = Session.get('alias');
-    if (alias !== undefined) {
-      UserActions.verifyAlias.call({alias}, (error) => {
-        if (_.isEmpty(error)) {
-          mount(BlankLayout, {
-            content() {
-              return <UserProfilePage />;
-            }
-          });
-        } else {
-          FlowRouter.notFound;
-        }
-      });
+    if (alias) {
+      mount(PublicProfilePage);
     } else {
       mount(LandingPage);
     }

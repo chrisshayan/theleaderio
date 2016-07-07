@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {FlowRouter} from 'meteor/kadira:flow-router';
 
-import CreateUser from '../../components/CreateUser';
+import SignUpUser from '../../components/SignUpUser';
 import * as ProfileActions from '/imports/api/profiles/methods';
 import * as TokenActions from '/imports/api/tokens/methods';
 import * as EmailActions from '/imports/api/email/methods';
@@ -86,7 +86,7 @@ export default class SignUpPage extends Component {
     } else {
       return (
         <div id="page-top" className="gray-bg">
-          <CreateUser
+          <SignUpUser
             errors={this.state.errors }
             onSubmit={ this.onSubmit.bind(this) }
           />
