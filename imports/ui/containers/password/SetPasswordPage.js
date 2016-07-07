@@ -9,7 +9,7 @@ import Copyright from '/imports/ui/common/Copyright';
 import * as UserActions from '/imports/api/users/methods';
 import * as TokenActions from '/imports/api/tokens/methods';
 
-import {homeRoute} from '/imports/startup/client/routes';
+import {routes} from '/imports/startup/client/routes';
 
 export default class ResetPasswordPage extends Component {
   constructor() {
@@ -33,7 +33,7 @@ export default class ResetPasswordPage extends Component {
         console.log(`token: ${tokenId} will be removed`);
         TokenActions.remove.call({tokenId});
         // redirect to user homepage
-        FlowRouter.go(homeRoute.path);
+        FlowRouter.go(`/${routes.home}`);
       } else {
         this.setState({
           errors: error.reason

@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import _ from 'lodash';
 
+import { DOMAIN } from '/imports/startup/client/routes';
+
 import SingleInputFrom from '/imports/ui/common/SingleInputForm';
 import NoticeForm from '/imports/ui/common/NoticeForm';
 import Spinner from '/imports/ui/common/Spinner';
@@ -24,7 +26,8 @@ export default class ForgotAliasPage extends Component {
     const domain = window.location.hostname;
     const email = inputValue;
     this.setState({
-      loading: true
+      loading: true,
+      errors: null
     });
     // verify email
     UserActions.verify.call({email}, (error) => {
@@ -51,7 +54,7 @@ export default class ForgotAliasPage extends Component {
         console.log(error);
         this.setState({
           loading: false,
-          errors: `${email} doesn't exists`
+          errors: `${email} doesn't exists in ${DOMAIN}`
         });
       }
     });

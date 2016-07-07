@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {FlowRouter} from 'meteor/kadira:flow-router';
 
+import {routes} from '/imports/startup/client/routes';
 import SingleInputForm from '/imports/ui/common/SingleInputForm';
 import NoticeForm from '/imports/ui/common/NoticeForm';
 import Spinner from '/imports/ui/common/Spinner';
@@ -33,7 +34,7 @@ export default class CreateAliasPage extends Component {
         console.log(`token: ${tokenId} will be removed`);
         TokenActions.remove.call({tokenId});
         // Redirect to user's login page
-        SubdomainActions.addSubdomain({alias, route: 'signin'});
+        SubdomainActions.addSubdomain({alias, route: `/${routes.signIn.account}`});
       } else {
         this.setState({
           errors: error.reason
