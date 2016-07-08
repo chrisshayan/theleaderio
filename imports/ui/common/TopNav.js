@@ -10,7 +10,7 @@ class TopNav extends Component {
 
   render() {
     const homeUrl = `http://${DOMAIN}/`;
-    const thankYouUrl = `http://${document.location.hostname}/${routes.thankyou}`;
+    const thankYouUrl = `http://${DOMAIN}/${routes.thankyou}`;
     console.log(thankYouUrl);
     return (
       <div className="row border-bottom white-bg">
