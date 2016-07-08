@@ -7,7 +7,7 @@ import {routes} from '/imports/startup/client/routes';
 import Copyright from '/imports/ui/common/Copyright';
 import Spinner from '/imports/ui/common/Spinner';
 import NoticeForm from '/imports/ui/common/NoticeForm';
-import SignInForm from '/imports/ui/components/SignInForm';
+import SignInForm from '/imports/ui/components/SigninForm';
 
 import * as SubdomainActions from '/imports/utils/subdomain';
 import * as UserActions from '/imports/api/users/methods';
