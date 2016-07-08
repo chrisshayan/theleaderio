@@ -29,7 +29,8 @@ export const routes = {
   home: '/',
   signUp: {
     user: 'signup/user',
-    alias: 'signup/alias'
+    alias: 'signup/alias',
+    verify: 'signup/verify'
   },
   signIn: {
     alias: 'signin/alias',
@@ -102,9 +103,7 @@ signUpRoutes.route('/:action', {
     }
     // create new alias
     if (params.action == 'alias') {
-      if (queryParams.token) {
-        mount(SignUpAlias);
-      }
+      mount(SignUpAlias);
     }
   }
 });
