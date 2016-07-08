@@ -45,7 +45,8 @@ export default class SigninAliasPage extends Component {
       UserActions.verify.call({alias: inputValue}, (error) => {
         if(_.isEmpty(error)) {
           this.setState({
-            aliasAllowed: true
+            aliasAllowed: true,
+            errors: null
           });
         } else {
           this.setState({
