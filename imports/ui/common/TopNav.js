@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-import {thankyouRoute, DOMAIN, routes} from '/imports/startup/client/routes';
+import {DOMAIN, routes} from '/imports/startup/client/routes';
 
 class TopNav extends Component {
 
@@ -9,8 +9,9 @@ class TopNav extends Component {
   }
 
   render() {
-
     const homeUrl = `http://${DOMAIN}/`;
+    const thankYouUrl = `http://${document.location.hostname}/${routes.thankyou}`;
+    console.log(thankYouUrl);
     return (
       <div className="row border-bottom white-bg">
         <nav className="navbar navbar-static-top" role="navigation">
@@ -125,7 +126,7 @@ class TopNav extends Component {
               </ul>
             </li>
             <li>
-              <a href={thankyouRoute.path}>
+              <a href={thankYouUrl}>
                 <i className="fa fa-sign-out"></i> Sign out
               </a>
             </li>

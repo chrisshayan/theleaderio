@@ -26,6 +26,9 @@ export default class SignUpAlias extends Component {
       if (_.isEmpty(error)) {
         // Redirect to user's login page
         // Need the cookie sharing login information here
+        this.setState({
+          errors: null
+        });
         SubdomainActions.addSubdomain({alias, route: `${routes.signIn.account}`});
       } else {
         this.setState({
@@ -33,16 +36,17 @@ export default class SignUpAlias extends Component {
         });
       }
     });
+
   }
-  
+
   _onKeyUp({inputValue}) {
     this.setState({
       aliasAllowed: false,
       errors: null
     });
-    if(inputValue.length > 0) {
+    if (inputValue.length > 0) {
       UserActions.verify.call({alias: inputValue}, (error) => {
-        if(!_.isEmpty(error)) {
+        if (!_.isEmpty(error)) {
           this.setState({
             aliasAllowed: true
           });

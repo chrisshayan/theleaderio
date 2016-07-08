@@ -12,6 +12,7 @@ export default class AliasForm extends Component {
   }
 
   _onSubmit() {
+    const inputValue = this.refs.input.value;
     this.props.onSubmit({inputValue});
   }
 

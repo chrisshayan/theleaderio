@@ -49,7 +49,9 @@ export const routes = {
   },
   alias: {
     forgot: 'alias/forgot'
-  }
+  },
+  thankyou: 'thankyou'
+
 };
 
 /**
