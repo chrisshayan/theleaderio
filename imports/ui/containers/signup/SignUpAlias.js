@@ -1,120 +1,86 @@
 import React, {Component} from 'react';
 import {FlowRouter} from 'meteor/kadira:flow-router';
 
-import {routes} from '/imports/startup/client/routes';
-import SingleInputForm from '/imports/ui/common/SingleInputForm';
-import NoticeForm from '/imports/ui/common/NoticeForm';
-import Spinner from '/imports/ui/common/Spinner';
+import {DOMAIN, routes} from '/imports/startup/client/routes';
+import AliasForm from '/imports/ui/common/AliasForm';
 import Copyright from '/imports/ui/common/Copyright';
 import * as UserActions from '/imports/api/users/methods';
-import * as TokenActions from '/imports/api/tokens/methods';
 import * as SubdomainActions from '/imports/utils/subdomain';
 
-export default class CreateAliasPage extends Component {
+
+export default class SignUpAlias extends Component {
   constructor() {
     super();
 
     this.state = {
-      loading: null,
-      errors: null,
-      tokenVerified: null
+      aliasAllowed: null,
+      errors: null
     };
   }
 
   _inputSubmit({inputValue}) {
     const alias = inputValue;
-    const tokenId = FlowRouter.getQueryParam("token");
-    console.log('suppose to create alias');
+    const email = FlowRouter.getQueryParam("email");
     // Call methods createAlias
-    this.setState({
-      loading: true
-    });
-    UserActions.createAlias.call({tokenId, alias}, (error) => {
+    UserActions.createAlias.call({email, alias}, (error) => {
       if (_.isEmpty(error)) {
-        console.log(`token: ${tokenId} will be removed`);
-        TokenActions.remove.call({tokenId});
         // Redirect to user's login page
-        SubdomainActions.addSubdomain({alias, route: `/${routes.signIn.account}`});
+        // Need the cookie sharing login information here
+        this.setState({
+          errors: null
+        });
+        SubdomainActions.addSubdomain({alias, route: `${routes.signIn.account}`});
       } else {
         this.setState({
           errors: error.reason
         });
       }
-      this.setState({
-        loading: false
-      });
     });
+
   }
 
-  componentWillMount() {
-    const tokenId = FlowRouter.getQueryParam("token");
-    TokenActions.verify.call({tokenId}, (error) => {
-      if (_.isEmpty(error)) {
-        this.setState({
-          tokenVerified: true
-        });
-      } else {
-        this.setState({
-          errors: error.reason,
-          tokenVerified: false
-        });
-      }
+  _onKeyUp({inputValue}) {
+    this.setState({
+      aliasAllowed: false,
+      errors: null
     });
-    if (tokenId) {
-      // call verify Token
-      this.setState({
-        tokenVerified: true
-      });
-    } else {
-      this.setState({
-        tokenVerified: false
+    if (inputValue.length > 0) {
+      UserActions.verify.call({alias: inputValue}, (error) => {
+        if (!_.isEmpty(error)) {
+          this.setState({
+            aliasAllowed: true
+          });
+        } else {
+          this.setState({
+            aliasAllowed: false,
+            errors: `${inputValue}.${DOMAIN} is already taken. Please choose another one ...`
+          });
+        }
       });
     }
   }
 
   render() {
-    if (this.state.loading) {
-      return (
-        <div>
-          <Spinner
-            message='Creating alias ...'
+    return (
+      <div id="page-top">
+        <div className="middle-box text-center loginscreen   animated fadeInDown">
+          <div>
+            <h1 className="logo-name">TL+</h1>
+          </div>
+          <h3>Create your alias</h3>
+          <p>This alias will be used as your web address.</p>
+          <AliasForm
+            inputType='text'
+            inputHolder='alias'
+            buttonLabel='Create'
+            aliasAllowed={this.state.aliasAllowed}
+            errors={ this.state.errors }
+            onSubmit={ this._inputSubmit.bind(this) }
+            onKeyUp={ this._onKeyUp.bind(this) }
           />
+          <Copyright />
         </div>
-      );
-    } else {
-      if (this.state.tokenVerified) {
-        return (
-          <div id="page-top" className="gray-bg">
-            <div className="middle-box text-center loginscreen   animated fadeInDown">
-              <div>
-                <h1 className="logo-name">TL+</h1>
-              </div>
-              <h3>Create your alias</h3>
-              <p>This alias will be used as your web address.</p>
-              <SingleInputForm
-                inputType='text'
-                inputHolder='Alias'
-                buttonLabel='Create'
-                errors={ this.state.errors }
-                onSubmit={ this._inputSubmit.bind(this) }
-              />
-              <Copyright />
-            </div>
-          </div>
-        );
-      } else {
-        return (
-          <div id="page-top" className="gray-bg">
-            <NoticeForm
-              code='404'
-              message={ this.state.errors }
-              description='Sorry, but the page you are looking for has note been found. Try checking the URL for error, then hit the refresh button on your browser or try found something else in our app.'
-              buttonLabel='Come back to HomePage'
-              redirectUrl='/'
-            />
-          </div>
-        );
-      }
-    }
+      </div>
+    );
   }
 }

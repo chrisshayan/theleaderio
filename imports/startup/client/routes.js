@@ -23,13 +23,20 @@ import ForgotAliasPage from '/imports/ui/containers/alias/ForgotAliasPage';
 import PublicProfilePage from '/imports/ui/containers/user/PublicProfilePage';
 
 /**
- * Constant Routes
+ * Constant
+ * @routes all routes in action
+ * @DOMAIN application domain
  */
+
+// this domain should get from settings
+export const DOMAIN = 'devtheleader.io:9000';
+
 export const routes = {
   home: '/',
   signUp: {
     user: 'signup/user',
-    alias: 'signup/alias'
+    alias: 'signup/alias',
+    verify: 'signup/verify'
   },
   signIn: {
     alias: 'signin/alias',
@@ -42,7 +49,9 @@ export const routes = {
   },
   alias: {
     forgot: 'alias/forgot'
-  }
+  },
+  thankyou: 'thankyou'
+
 };
 
 /**
@@ -53,8 +62,6 @@ export const routes = {
  * @route forgotpassword
  * @route resetpassword
  */
-// this domain should get from settings
-export const DOMAIN = 'devtheleader.io:9000';
 
 const homeRoute = FlowRouter.route('/', {
   name: 'homePage',
@@ -102,9 +109,7 @@ signUpRoutes.route('/:action', {
     }
     // create new alias
     if (params.action == 'alias') {
-      if (queryParams.token) {
-        mount(SignUpAlias);
-      }
+      mount(SignUpAlias);
     }
   }
 });

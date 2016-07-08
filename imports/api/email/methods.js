@@ -15,8 +15,9 @@ export const send = new ValidatedMethod({
           const user = Accounts.findUserByEmail(email);
           if(!_.isEmpty(user)) {
             const alias = user.username;
+            const loginUrl = `http://${alias}.${url}`;
             // Get email html
-            const html = EmailActions.get({ templateName, firstName, alias });
+            const html = EmailActions.get({ templateName, firstName, url: loginUrl, alias });
             const options = {
               to: email,
               from: 'chris@mail.mailgun.com',

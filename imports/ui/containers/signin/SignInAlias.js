@@ -2,10 +2,11 @@ import React, {Component} from 'react';
 import {Meteor} from 'meteor/meteor';
 import _ from 'lodash';
 
-import SingleInputForm from '/imports/ui/common/SingleInputForm';
+import AliasForm from '/imports/ui/common/AliasForm';
 import Copyright from '/imports/ui/common/Copyright';
+import * as UserActions from '/imports/api/users/methods';
 import * as SubdomainActions from '/imports/utils/subdomain';
-import {userHomeRoute, routes} from '/imports/startup/client/routes';
+import {userHomeRoute, DOMAIN, routes} from '/imports/startup/client/routes';
 
 export default class SigninAliasPage extends Component {
   constructor() {
@@ -33,6 +34,27 @@ export default class SigninAliasPage extends Component {
     const alias = inputValue;
     Meteor.logout();
     SubdomainActions.addSubdomain({ alias, route: routes.signIn.account});
+  }
+
+  _onKeyUp({inputValue}) {
+    this.setState({
+      aliasAllowed: false,
+      errors: null
+    });
+    if(inputValue.length > 0) {
+      UserActions.verify.call({alias: inputValue}, (error) => {
+        if(_.isEmpty(error)) {
+          this.setState({
+            aliasAllowed: true
+          });
+        } else {
+          this.setState({
+            aliasAllowed: false,
+            errors: `${inputValue}.${DOMAIN} doesn't exists. Please enter the correct one ...`
+          });
+        }
+      });
+    }
   }
 
   render() {
@@ -64,13 +86,15 @@ export default class SigninAliasPage extends Component {
           </div>
           <div className="col-md-6">
             <div className="ibox-content">
-              <h3 className="font-bold">Sign in to alias</h3>
-              <SingleInputForm
+              <h3 className="font-bold">Sign in to your web address:</h3>
+              <AliasForm
                 inputType='text'
-                inputHolder='Alias'
+                inputHolder='alias'
                 buttonLabel='Continue'
+                aliasAllowed={this.state.aliasAllowed}
                 errors={ this.state.errors }
                 onSubmit={ this._inputSubmit.bind(this) }
+                onKeyUp={ this._onKeyUp.bind(this) }
               />
               <a href={forgotAliasUrl}>
                 <small>Forgot your alias?</small>
@@ -78,7 +102,7 @@ export default class SigninAliasPage extends Component {
               <p className="text-muted text-center">
                 <small>Do not have an account?</small>
               </p>
-              <a className="btn btn-sm btn-white btn-block" href={signUpUrl}>Create an account</a>
+              <a className="btn btn-sm btn-white btn-block" href={signUpUrl}>Create</a>
               <Copyright />
             </div>
           </div>

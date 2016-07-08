@@ -16,43 +16,27 @@ import {STATUS_ACTIVE} from '/imports/api/profiles/index';
 export const createAlias = new ValidatedMethod({
   name: 'users.createAlias',
   validate: new SimpleSchema({
-    tokenId: {
+    email: {
       type: String
     },
     alias: {
       type: String
     }
   }).validator(),
-  run({tokenId, alias}) {
+  run({email, alias}) {
     if (!this.isSimulation) {
-      // verify Token
-      const token = Tokens.findOne({_id: tokenId});
-      if (!_.isEmpty(token)) {
-        const email = token.email;
-        const user = Accounts.findUserByEmail(email);
-        if (!_.isEmpty(user)) {
-          const userId = user._id;
-          Accounts.setUsername(userId, alias);
-          const verifyUser = Accounts.findUserByUsername(alias);
-          if (_.isEmpty(verifyUser)) {
-            throw new Meteor.Error('create-alias-failed',
-              `Can not create user alias with tokenId=${tokenId} & alias=${alias}`);
-          } else {
-            // Activate user
-            Meteor.users.update({
-              userId,
-              emails: {
-                $elemMatch: { address: email }
-              }}, {
-              $set: {
-                "emails.$.verified": true
-              }
-            });
-            ProfileActions.setStatus.call({userId, status: STATUS_ACTIVE});
-          }
+      const user = Accounts.findUserByEmail(email);
+      if (!_.isEmpty(user)) {
+        const userId = user._id;
+        Accounts.setUsername(userId, alias);
+        const verifyUser = Accounts.findUserByUsername(alias);
+        if (_.isEmpty(verifyUser)) {
+          throw new Meteor.Error('create-alias-failed',
+            `Can not create user alias with email=${email} & alias=${alias}`);
+        } else {
+          // add alias into alias collection
+          // Alias.create.call({alias});
         }
-      } else {
-        throw new Meteor.Error('invalid-token', 'User token is invalid or has been used.');
       }
     }
   }
@@ -98,7 +82,7 @@ export const verify = new ValidatedMethod({
     alias: {
       type: String,
       optional: true
-    }, 
+    },
     email: {
       type: String,
       optional: true
@@ -107,42 +91,36 @@ export const verify = new ValidatedMethod({
   run({alias, email}) {
     if (!this.isSimulation) {
       // both alias & email
-      if(alias && email) {
+      if (alias && email) {
         const user = Accounts.findUserByUsername(alias);
         if (_.isEmpty(user)) {
           throw new Error('invalid-alias', `alias ${alias} doesn't exists`);
         } else {
-          if(email) {
+          if (email) {
             const checkUser = Accounts.findUserByEmail(email);
-            if(_.isEmpty(checkUser)) {
+            if (_.isEmpty(checkUser)) {
               throw new Error(`email ${email} doesn't exists`);
             } else {
-              if(checkUser.username !== user.username) {
+              if (checkUser.username !== user.username) {
                 throw new Error(`email ${email} doesn't belong to ${alias}`);
               }
             }
           }
         }
       }
-      else if(alias) { // alias only
+      else if (alias) { // alias only
         const user = Accounts.findUserByUsername(alias);
         if (_.isEmpty(user)) {
           throw new Error('invalid-alias', `alias ${alias} doesn't exists`);
         } else {
           return true;
         }
-      } else if(email) { // email only
+      } else if (email) { // email only
         const user = Accounts.findUserByEmail(email);
-        if(_.isEmpty(user)) {
+        if (_.isEmpty(user)) {
           throw new Error(`email ${email} doesn't exists`);
-        } else {
-          return true;
         }
-      } else {
-        return true;
       }
-    } else {
-      return true;
     }
   }
 });
