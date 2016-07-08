@@ -1,104 +1,82 @@
 import React, {Component} from 'react';
 import {FlowRouter} from 'meteor/kadira:flow-router';
-import { createContainer } from 'meteor/react-meteor-data';
 
-import {routes} from '/imports/startup/client/routes';
-import SingleInputForm from '/imports/ui/common/SingleInputForm';
-import CreateAliasForm from '/imports/ui/common/CreateAliasForm';
-import NoticeForm from '/imports/ui/common/NoticeForm';
-import Spinner from '/imports/ui/common/Spinner';
+import {DOMAIN, routes} from '/imports/startup/client/routes';
+import AliasForm from '/imports/ui/common/AliasForm';
 import Copyright from '/imports/ui/common/Copyright';
 import * as UserActions from '/imports/api/users/methods';
-import * as TokenActions from '/imports/api/tokens/methods';
 import * as SubdomainActions from '/imports/utils/subdomain';
 
-import { Profiles } from '/imports/api/profiles/index';
 
-// SignUpAlias.propTypes = {
-//   aliases: React.PropTypes.array,
-//   loading: React.PropTypes.bool,
-//   listExists: React.PropTypes.bool
-// };
-
-class SignUpAlias extends Component {
+export default class SignUpAlias extends Component {
   constructor() {
     super();
 
     this.state = {
-      loading: null,
+      aliasAllowed: null,
       errors: null
     };
-  }
-
-  componentWillMount() {
-    // Get alias collection data
   }
 
   _inputSubmit({inputValue}) {
     const alias = inputValue;
     const email = FlowRouter.getQueryParam("email");
     // Call methods createAlias
-    this.setState({
-      loading: true
-    });
     UserActions.createAlias.call({email, alias}, (error) => {
       if (_.isEmpty(error)) {
         // Redirect to user's login page
         // Need the cookie sharing login information here
-        SubdomainActions.addSubdomain({alias, route: `${routes.home}`});
+        SubdomainActions.addSubdomain({alias, route: `${routes.signIn.account}`});
       } else {
         this.setState({
           errors: error.reason
         });
       }
-      this.setState({
-        loading: false
-      });
     });
+  }
+  
+  _onKeyUp({inputValue}) {
+    this.setState({
+      aliasAllowed: false,
+      errors: null
+    });
+    if(inputValue.length > 0) {
+      UserActions.verify.call({alias: inputValue}, (error) => {
+        if(!_.isEmpty(error)) {
+          this.setState({
+            aliasAllowed: true
+          });
+        } else {
+          this.setState({
+            aliasAllowed: false,
+            errors: `${inputValue}.${DOMAIN} is already taken. Please choose another one ...`
+          });
+        }
+      });
+    }
   }
 
   render() {
-    const { loading, listExists, aliases } = this.props;
-    if (this.state.loading || loading) {
-      return (
-        <div>
-          <Spinner
-            message='Loading ...'
-          />
-        </div>
-      );
-    } else {
-      return (
-        <div id="page-top">
-          <div className="middle-box text-center loginscreen   animated fadeInDown">
-            <div>
-              <h1 className="logo-name">TL+</h1>
-            </div>
-            <h3>Create your alias</h3>
-            <p>This alias will be used as your web address.</p>
-            <CreateAliasForm
-              inputType='text'
-              inputHolder='alias'
-              buttonLabel='Create'
-              errors={ this.state.errors }
-              onSubmit={ this._inputSubmit.bind(this) }
-            />
-            <Copyright />
+    return (
+      <div id="page-top">
+        <div className="middle-box text-center loginscreen   animated fadeInDown">
+          <div>
+            <h1 className="logo-name">TL+</h1>
           </div>
+          <h3>Create your alias</h3>
+          <p>This alias will be used as your web address.</p>
+          <AliasForm
+            inputType='text'
+            inputHolder='alias'
+            buttonLabel='Create'
+            aliasAllowed={this.state.aliasAllowed}
+            errors={ this.state.errors }
+            onSubmit={ this._inputSubmit.bind(this) }
+            onKeyUp={ this._onKeyUp.bind(this) }
+          />
+          <Copyright />
         </div>
-      );
-      
-    }
+      </div>
+    );
   }
 }
-
-export default SignUpAliasContainer = createContainer(({ params }) => {
-  const listAlias = Meteor.subscribe('alias.list');
-  const loading = !listAlias.ready();
-  const listExists = !loading;
-  return {
-    loading,
-    listExists,
-    aliases: listExists ? Meteor.users.find().fetch() : []
-  };
-}, SignUpAlias);
