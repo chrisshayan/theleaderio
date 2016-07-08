@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {FlowRouter} from 'meteor/kadira:flow-router';
 
 import { DOMAIN } from '/imports/startup/client/routes';
+import Copyright from '/imports/ui/common/Copyright';
 
 export default class NoticeForm extends Component {
   _onSubmit() {
@@ -51,9 +52,7 @@ export default class NoticeForm extends Component {
               </div>
             </div>
           </div>
-          <p className="m-t text-center">
-            <small>theLeader.io, strive for great leadership &copy; 2016</small>
-          </p>
+          <Copyright/>
         </div>
       </div>
     );

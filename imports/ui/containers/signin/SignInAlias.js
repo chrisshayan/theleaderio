@@ -50,7 +50,7 @@ export default class SigninAliasPage extends Component {
         } else {
           this.setState({
             aliasAllowed: false,
-            errors: `${inputValue}.${DOMAIN} doesn't exists. Please choose another one ...`
+            errors: `${inputValue}.${DOMAIN} doesn't exists. Please enter the correct one ...`
           });
         }
       });
@@ -86,7 +86,7 @@ export default class SigninAliasPage extends Component {
           </div>
           <div className="col-md-6">
             <div className="ibox-content">
-              <h3 className="font-bold">Sign in to alias</h3>
+              <h3 className="font-bold">Sign in to your web address:</h3>
               <AliasForm
                 inputType='text'
                 inputHolder='alias'
@@ -102,7 +102,7 @@ export default class SigninAliasPage extends Component {
               <p className="text-muted text-center">
                 <small>Do not have an account?</small>
               </p>
-              <a className="btn btn-sm btn-white btn-block" href={signUpUrl}>Create an account</a>
+              <a className="btn btn-sm btn-white btn-block" href={signUpUrl}>Create</a>
               <Copyright />
             </div>
           </div>

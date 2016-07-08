@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import _ from 'lodash';
 
-import { DOMAIN } from '/imports/startup/client/routes';
+import { DOMAIN, routes } from '/imports/startup/client/routes';
 
 import SingleInputFrom from '/imports/ui/common/SingleInputForm';
 import NoticeForm from '/imports/ui/common/NoticeForm';
@@ -17,8 +17,7 @@ export default class ForgotAliasPage extends Component {
 
     this.state = {
       action: null,
-      errors: null,
-      loading: null
+      errors: null
     };
   }
 
@@ -26,25 +25,24 @@ export default class ForgotAliasPage extends Component {
     const domain = window.location.hostname;
     const email = inputValue;
     this.setState({
-      loading: true,
       errors: null
     });
     // verify email
     UserActions.verify.call({email}, (error) => {
       if(_.isEmpty(error)) {
+        const url = `${DOMAIN}/${routes.signIn.account}`;
         const mailOptions = {
           email: email,
+          url: url,
           templateName: 'forgot_alias'
         };
         EmailActions.send.call(mailOptions, (error) => {
           if (!_.isEmpty(error)) {
             this.setState({
-              loading: false,
               errors: error.reason
             });
           } else {
             this.setState({
-              loading: false,
               errors: null,
               action: 'sent'
             });
@@ -63,18 +61,9 @@ export default class ForgotAliasPage extends Component {
   render() {
     const formTitle = `Alias forgot`;
     const formDescription = `Enter your email address`;
-    if (this.state.loading) {
-      return (
-        <div id="page-top" className="gray-bg">
-          <Spinner
-            message='Sending email ...'
-          />
-        </div>
-      );
-    }
     if (this.state.action === 'sent') {
       return (
-        <div id="page-top" className="gray-bg">
+        <div id="page-top">
           <NoticeForm
             code='TL+'
             message='Email sent'
@@ -86,7 +75,7 @@ export default class ForgotAliasPage extends Component {
       );
     } else {
       return (
-        <div id="page-top" className="gray-bg">
+        <div id="page-top">
           <div className="middle-box text-center loginscreen   animated fadeInDown">
             <div>
               <h1 className="logo-name">TL+</h1>

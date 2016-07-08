@@ -23,8 +23,14 @@ import ForgotAliasPage from '/imports/ui/containers/alias/ForgotAliasPage';
 import PublicProfilePage from '/imports/ui/containers/user/PublicProfilePage';
 
 /**
- * Constant Routes
+ * Constant
+ * @routes all routes in action
+ * @DOMAIN application domain
  */
+
+// this domain should get from settings
+export const DOMAIN = 'devtheleader.io:9000';
+
 export const routes = {
   home: '/',
   signUp: {
@@ -54,8 +60,6 @@ export const routes = {
  * @route forgotpassword
  * @route resetpassword
  */
-// this domain should get from settings
-export const DOMAIN = 'devtheleader.io:9000';
 
 const homeRoute = FlowRouter.route('/', {
   name: 'homePage',

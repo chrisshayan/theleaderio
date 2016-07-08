@@ -11,7 +11,7 @@ export default class WelcomePage extends Component {
   render() {
 
     return (
-      <div id="page-top" className="gray-bg">
+      <div id="page-top">
         <NoticeForm
           code='TL+'
           message = 'Welcome to theLeader.io'

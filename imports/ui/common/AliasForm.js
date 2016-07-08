@@ -17,8 +17,6 @@ export default class AliasForm extends Component {
 
   _onKeyUp() {
     const inputValue = this.refs.input.value;
-    console.log(`input: ${inputValue}`);
-    console.log(`disabled: ${!this.props.aliasAllowed}`);
     // verify Alias
     this.props.onKeyUp({inputValue});
   }
@@ -31,7 +29,6 @@ export default class AliasForm extends Component {
       aliasAllowed = false,
       errors = null
     } = this.props;
-    console.log(this.props);
     return (
       <form className="m-t" role="form" onSubmit={(event) => {
                       event.preventDefault();

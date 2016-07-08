@@ -16,7 +16,7 @@ export default class ThankyouPage extends Component {
   render() {
 
     return (
-      <div className="gray-bg">
+      <div>
         <NoticeForm
           code='TL+'
           message = 'Thank you'

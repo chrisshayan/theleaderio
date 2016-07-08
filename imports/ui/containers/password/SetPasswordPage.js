@@ -84,7 +84,7 @@ export default class ResetPasswordPage extends Component {
     }
     if (this.state.tokenVerified) {
       return (
-        <div id="page-top" className="gray-bg">
+        <div id="page-top">
           <div className="middle-box text-center loginscreen   animated fadeInDown">
             <div>
               <h1 className="logo-name">TL+</h1>
@@ -103,7 +103,7 @@ export default class ResetPasswordPage extends Component {
       );
     } else {
       return (
-        <div id="page-top" className="gray-bg">
+        <div id="page-top">
           <NoticeForm
             code='404'
             message={ this.state.errors }

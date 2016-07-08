@@ -94,7 +94,7 @@ export default class PasswordPage extends Component {
     if (this.state.alias) {
       if (this.state.action === 'forgot' || this.state.action === 'reset') {
         return (
-          <div id="page-top" className="gray-bg">
+          <div id="page-top">
             <div className="middle-box text-center loginscreen   animated fadeInDown">
               <div>
                 <h1 className="logo-name">TL+</h1>
@@ -114,7 +114,7 @@ export default class PasswordPage extends Component {
         );
       } else if (this.state.action === 'sent') {
         return (
-          <div id="page-top" className="gray-bg">
+          <div id="page-top">
             <NoticeForm
               code='TL+'
               message='Email sent'
@@ -124,18 +124,10 @@ export default class PasswordPage extends Component {
             />
           </div>
         );
-      } else {
-        return (
-          <div id="page-top" className="gray-bg">
-            <Spinner
-              message='Sending Email ...'
-            />
-          </div>
-        );
       }
     } else if(!this.state.alias) {
       return (
-        <div id="page-top" className="gray-bg">
+        <div id="page-top">
           <NoticeForm
             code='404'
             message={ this.state.errors }
@@ -145,7 +137,7 @@ export default class PasswordPage extends Component {
       );
     } else {
       return (
-        <div id="page-top" className="gray-bg">
+        <div id="page-top">
           <Spinner
             message='Loading ...'
           />

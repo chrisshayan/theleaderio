@@ -111,24 +111,16 @@ export const verify = new ValidatedMethod({
       else if (alias) { // alias only
         const user = Accounts.findUserByUsername(alias);
         if (_.isEmpty(user)) {
-          console.log(`alias: ${alias} invalid`);
           throw new Error('invalid-alias', `alias ${alias} doesn't exists`);
         } else {
-          console.log(`alias: ${alias} is valid`);
           return true;
         }
       } else if (email) { // email only
         const user = Accounts.findUserByEmail(email);
         if (_.isEmpty(user)) {
           throw new Error(`email ${email} doesn't exists`);
-        } else {
-          return true;
         }
-      } else {
-        return true;
       }
-    } else {
-      return true;
     }
   }
 });
