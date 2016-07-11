@@ -6,7 +6,7 @@ import IndustriesCollection from './collection';
  * Define config
  */
 export const STATUS_ACTIVE = 'ACTIVE';
-export const STATUS_DEACTIVE = 'DEACTIVE';
+export const STATUS_INACTIVE = 'DEACTIVE';
 
 /**
  * Define collection

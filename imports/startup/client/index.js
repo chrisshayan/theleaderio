@@ -1,5 +1,5 @@
 import { Session } from 'meteor/session';
-import { getSubdomain } from '/imports/utils';
-Session.setDefault('leaderAlias', getSubdomain());
+import { getSubdomain } from '/imports/utils/subdomain';
+Session.setDefault('alias', getSubdomain());
 
 import './routes';
