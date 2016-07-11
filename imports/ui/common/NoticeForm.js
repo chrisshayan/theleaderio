@@ -10,7 +10,7 @@ export default class NoticeForm extends Component {
       const newUrl = `http://${DOMAIN}/`;
       window.location = newUrl;
     } else {
-      FlowRouter.go(this.props.redirectUrl);
+      window.location = this.props.redirectUrl;
     }
   }
 
