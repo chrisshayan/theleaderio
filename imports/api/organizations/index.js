@@ -1,5 +1,4 @@
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
-
 import OrganizationsCollection from './collection';
 
 /**
@@ -80,3 +79,15 @@ Organizations.schema = new SimpleSchema({
 });
 
 Organizations.attachSchema(Organizations.schema);
+
+
+/**
+ * Public fields
+ */
+
+Organizations.publicFields = {
+  name: 1,
+  status: 1,
+  description: 1,
+  industries: 1,
+};

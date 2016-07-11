@@ -600,3 +600,12 @@ nav.left-nav ul li a span {
     width: 80px;
     height: 80px;
 }
+
+
+@media (min-width: 768px) {
+  #page-wrapper {
+    position: inherit;
+    margin: 0 0 0 120px;
+    min-height: 1200px;
+  }
+}

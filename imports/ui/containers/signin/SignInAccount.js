@@ -47,7 +47,7 @@ export default class SignInPage extends Component {
     this.setState({
       errors: null
     });
-    Meteor.loginWithPassword(email, password, (error) => {
+    Meteor.loginWithPassword({email}, password, (error) => {
       if (!_.isEmpty(error)) {
         this.setState({
           errors: error.reason

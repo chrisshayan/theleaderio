@@ -21,6 +21,7 @@ import SetPasswordPage from '/imports/ui/containers/password/SetPasswordPage';
 import ForgotAliasPage from '/imports/ui/containers/alias/ForgotAliasPage';
 
 import PublicProfilePage from '/imports/ui/containers/user/PublicProfilePage';
+import Dashboard from '/imports/ui/containers/dashboard/Dashboard';
 
 /**
  * Constant
@@ -29,7 +30,7 @@ import PublicProfilePage from '/imports/ui/containers/user/PublicProfilePage';
  */
 
 // this domain should get from settings
-export const DOMAIN = 'devtheleader.io:9000';
+export const DOMAIN = 'devtheleader.io:3000';
 
 export const routes = {
   home: '/',
@@ -189,42 +190,58 @@ aliasRoutes.route('/:action', {
   }
 });
 
+
+/**************************************************
+ * Main app routes
+ **************************************************/
+
+const requiredAuthentication = (context, redirect) => {
+  if(!Meteor.isLoggingIn && !Meteor.userId()) {
+    const alias = Session.get('alias');
+    const params = { action: 'alias' };
+    if(alias) {
+      params.action = 'account';
+    }
+    FlowRouter.go('SignInPage', params);
+  }
+}
+
+
+const appRoutes = FlowRouter.group({
+  prefix: '/app',
+  triggersEnter: [requiredAuthentication]
+});
+
 /**
- * @summary lists of logged in Route (user have to login to access these route)
- * @route dashboard
- * @routes feedbacks
- * @route employees
- * @route measure
+ * Route: Dashboard
  */
-// export const loggedInRoutes = FlowRouter.group({
-//   name: 'loggedInRoutes',
-//   triggersEnter: [() => {
-//     const alias = Session.get('alias');
-//     if (alias !== undefined) {
-//       UserActions.verify.call({alias}, (error) => {
-//         if (_.isEmpty(error)) {
-//           FlowRouter.route = FlowRouter.current();
-//         }
-//       });
-//     } else {
-//       FlowRouter.go(homeRoute.path);
-//     }
-//   }]
-// });
-//
-// export const userHomeRoute = loggedInRoutes.route('/dashboard', {
-//   name: 'dashboard',
-//   action() {
-//     mount(MainLayout, {
-//       content() {
-//         return <UserHomePage />;
-//       }
-//     });
-//   }
-// });
+appRoutes.route('/', {
+  name: 'app.dashboard',
+  action() {
+    mount(MainLayout, {
+      content() {
+        return <Dashboard />
+      }
+    })
+  }
+})
+
 
 /**
  * @summary Default Invalid Url Route
  * @route notFound
  */
-FlowRouter.notFound = mount(NoticeForm);
+FlowRouter.notFound = {
+  action() {
+    mount(NoticeForm);
+  }
+};
+
+FlowRouter.route('/not-found', {
+  name: 'notFound',
+  action() {
+    mount(NoticeForm);
+  }
+})
+
+

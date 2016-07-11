@@ -26,3 +26,4 @@ universe
 mongo-test-output
 .idea
 node_modules
+.meteor/dev_bundle
