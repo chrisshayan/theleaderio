@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {FlowRouter} from 'meteor/kadira:flow-router';
 
-import {DOMAIN, routes} from '/imports/startup/client/routes';
+import {DOMAIN} from '/imports/startup/client/routes';
 import AliasForm from '/imports/ui/common/AliasForm';
 import Copyright from '/imports/ui/common/Copyright';
 import * as UserActions from '/imports/api/users/methods';
@@ -29,7 +29,7 @@ export default class SignUpAlias extends Component {
         this.setState({
           errors: null
         });
-        SubdomainActions.addSubdomain({alias, route: `${routes.signIn.account}`});
+        SubdomainActions.addSubdomain({alias, route: FlowRouter.path('signInPage', {action: 'account'})});
       } else {
         this.setState({
           errors: error.reason

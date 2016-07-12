@@ -50,6 +50,10 @@ export const edit = new ValidatedMethod({
       type: String,
       optional: true
     },
+    industries: {
+      type: [String],
+      optional: true
+    },
     imageUrl: {
       type: String,
       optional: true
@@ -68,6 +72,9 @@ export const edit = new ValidatedMethod({
     if(lastName != undefined) {
       modifier['lastName'] = lastName;
     }
+    if(industries != undefined) {
+      modifier['industries'] = industries;
+    }
     if(imageUrl != undefined) {
       modifier['imageUrl'] = imageUrl;
     }
@@ -75,7 +82,6 @@ export const edit = new ValidatedMethod({
       modifier['phoneNumber'] = phoneNumber;
     }
     var userProfile = Profiles.findOne(selector);
-    console.log(modifier);
     if(!userProfile) {
       throw new Meteor.Error(404, 'User not found');
     } else if(!_.isEmpty(modifier)) {

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import _ from 'lodash';
 
-import { DOMAIN, routes } from '/imports/startup/client/routes';
+import { DOMAIN } from '/imports/startup/client/routes';
 
 import SingleInputFrom from '/imports/ui/common/SingleInputForm';
 import NoticeForm from '/imports/ui/common/NoticeForm';
@@ -30,7 +30,7 @@ export default class ForgotAliasPage extends Component {
     // verify email
     UserActions.verify.call({email}, (error) => {
       if(_.isEmpty(error)) {
-        const url = `${DOMAIN}/${routes.signIn.account}`;
+        const url = `http://${DOMAIN}${FlowRouter.path('aliasPage',{action: 'forgot'})}`;
         const mailOptions = {
           email: email,
           url: url,

@@ -24,7 +24,7 @@ export default class SigninAliasPage extends Component {
       const alias = Meteor.user().username;
       if(subdomain === alias) {
         // should route to user's dashboard
-        FlowRouter.go(`${routes.home}`);
+        FlowRouter.go('homePage');
       }
     }
   }
@@ -33,7 +33,11 @@ export default class SigninAliasPage extends Component {
   _inputSubmit({inputValue}) {
     const alias = inputValue;
     Meteor.logout();
-    SubdomainActions.addSubdomain({ alias, route: routes.signIn.account});
+<<<<<<< Updated upstream
+    SubdomainActions.addSubdomain({ alias, route: FlowRouter.path('signInPage', {action: 'account'})});
+=======
+    SubdomainActions.addSubdomain({ alias, route: FlowRouter.path('SignInPage', {action: 'account'})});
+>>>>>>> Stashed changes
   }
 
   _onKeyUp({inputValue}) {
@@ -64,8 +68,8 @@ export default class SigninAliasPage extends Component {
       errors = null
     } = this.props;
 
-    const signUpUrl = `/${routes.signUp.user}`;
-    const forgotAliasUrl = `/${routes.alias.forgot}`;
+    const signUpUrl = FlowRouter.path('signUpPage', {action: 'user'});
+    const forgotAliasUrl = FlowRouter.path('aliasPage', {action: 'forgot'});
 
     return (
       <div className="loginColumns animated fadeInDown">

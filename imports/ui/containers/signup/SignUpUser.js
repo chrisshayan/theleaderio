@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import Copyright from '/imports/ui/common/Copyright';
 import {Accounts} from 'meteor/accounts-base';
 
-import {welcomeRoute, routes} from '/imports/startup/client/routes';
 import SignUpForm from '/imports/ui/components/SignUpForm';
 
 import * as ProfileActions from '/imports/api/profiles/methods';
@@ -43,7 +42,8 @@ export default class SignUpUser extends Component {
               if (!error) {
                 // call methods to send verify Email with token link to user
                 // route to Welcome page with a message to verify user's email
-                const url = `http://${DOMAIN}/${routes.signUp.verify}?token=${tokenId}`;
+                const verifyUrl = FlowRouter.path('signUpPage', {action: 'verify'}, { token: tokenId});
+                const url = `http://${DOMAIN}/${verifyUrl}`;
                 const mailOptions = {
                   email: email,
                   firstName: firstName,
@@ -53,7 +53,8 @@ export default class SignUpUser extends Component {
                 EmailActions.send.call(mailOptions);
               }
             });
-            FlowRouter.go(`/${routes.signUp.alias}?email=${email}`);
+            FlowRouter.go('signUpPage', {action: 'alias'}, {email: email});
+            // FlowRouter.go(`/${routes.signUp.alias}?email=${email}`);
           }
         });
       } else {

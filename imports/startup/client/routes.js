@@ -22,6 +22,10 @@ import ForgotAliasPage from '/imports/ui/containers/alias/ForgotAliasPage';
 
 import PublicProfilePage from '/imports/ui/containers/user/PublicProfilePage';
 import Dashboard from '/imports/ui/containers/dashboard/Dashboard';
+import EditProfile from '/imports/ui/containers/profile/EditProfile';
+
+// Admin page
+import ManageIndustries from '/imports/ui/containers/admin/ManageIndustries';
 
 /**
  * Constant
@@ -30,30 +34,7 @@ import Dashboard from '/imports/ui/containers/dashboard/Dashboard';
  */
 
 // this domain should get from settings
-export const DOMAIN = 'devtheleader.io:3000';
-
-export const routes = {
-  home: '/',
-  signUp: {
-    user: 'signup/user',
-    alias: 'signup/alias',
-    verify: 'signup/verify'
-  },
-  signIn: {
-    alias: 'signin/alias',
-    account: 'signin/account'
-  },
-  password: {
-    forgot: 'password/forgot',
-    reset: 'password/reset',
-    set: 'password/set'
-  },
-  alias: {
-    forgot: 'alias/forgot'
-  },
-  thankyou: 'thankyou'
-
-};
+export const DOMAIN = 'devtheleader.io';
 
 /**
  * @summary lists of public routes
@@ -224,8 +205,49 @@ appRoutes.route('/', {
       }
     })
   }
-})
+});
 
+/**
+ * Route: Edit Profile
+ */
+appRoutes.route('/profile', {
+  name: 'app.profile',
+  action() {
+    mount(MainLayout, {
+      content() {
+        return <EditProfile />
+      }
+    })
+  }
+});
+
+
+/**************************************************
+ * Admin routes
+ **************************************************/
+
+const requiredAdminAuthentication = (context, redirect) => {
+
+}
+
+const adminRoutes = FlowRouter.group({
+  prefix: '/admin',
+  triggersEnter: [requiredAuthentication, requiredAdminAuthentication]
+});
+
+/**
+ * Route: Dashboard
+ */
+adminRoutes.route('/industries', {
+  name: 'admin.industries',
+  action() {
+    mount(MainLayout, {
+      content() {
+        return <ManageIndustries />
+      }
+    })
+  }
+});
 
 /**
  * @summary Default Invalid Url Route

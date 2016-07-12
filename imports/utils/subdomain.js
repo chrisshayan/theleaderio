@@ -13,7 +13,7 @@ export const getSubdomain = () => {
 }
 
 export const addSubdomain = function({ alias, route }) {
-  const newUrl = `http://${alias}.${DOMAIN}/${route}`;
+  const newUrl = `http://${alias}.${DOMAIN}${route}`;
   window.location = newUrl;
 }
 
