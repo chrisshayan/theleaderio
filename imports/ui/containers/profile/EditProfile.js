@@ -45,6 +45,17 @@ class EditProfile extends Component {
     });
   }
 
+  onUploadedImage(imageUrl) {
+    const userId = Meteor.userId()
+    ProfileActions.edit.call({userId, imageUrl}, (error) => {
+      if (!_.isEmpty(error)) {
+        console.log(error);
+      } else {
+        console.log(`show notification`);
+      }
+    });
+  }
+
   render() {
     const {loading, profile, industries} = this.props;
     if (loading) {
@@ -57,6 +68,17 @@ class EditProfile extends Component {
       return (
         <div className="wrapper wrapper-content animated fadeInRight">
           <div className="row">
+            <div className="col-md-4">
+              <div className="ibox">
+                <div className="ibox-title">
+                  <h5>Profile photo</h5>
+                </div>
+                <UploadImage
+                  imageUrl={profile.imageUrl}
+                  onUploadedImage={this.onUploadedImage.bind(this)}
+                />
+              </div>
+            </div>
             <div className="col-lg-8">
               <div className="ibox float-e-margins">
                 <div className="ibox-title">
@@ -113,16 +135,6 @@ class EditProfile extends Component {
                     </div>
                   </form>
                 </div>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="ibox">
-                <div className="ibox-title">
-                  <h5>Profile photo</h5>
-                </div>
-                <UploadImage
-                  imageUrl={profile.imageUrl}
-                />
               </div>
             </div>
           </div>
