@@ -74,7 +74,7 @@ class EditProfile extends Component {
                   <h5>Profile photo</h5>
                 </div>
                 <UploadImage
-                  imageUrl={profile.imageUrl}
+                  imageUrl={!!(profile.imageUrl) ? profile.imageUrl : "/img/default-profile-pic.png"}
                   onUploadedImage={this.onUploadedImage.bind(this)}
                 />
               </div>

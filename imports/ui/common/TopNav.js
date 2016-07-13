@@ -11,7 +11,6 @@ class TopNav extends Component {
   render() {
     const homeUrl = `http://${DOMAIN}/`;
     const thankYouUrl = `http://${DOMAIN}${FlowRouter.path('thankyouPage')}`;
-    console.log(thankYouUrl);
     return (
       <div className="row border-bottom white-bg">
         <nav className="navbar navbar-static-top" role="navigation">
