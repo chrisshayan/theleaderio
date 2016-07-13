@@ -1,10 +1,7 @@
 import React, {Component} from 'react';
 
-<<<<<<< Updated upstream
-export default class SelectIndustries extends Component {
-=======
+
 export default class ChosenIndustries extends Component {
->>>>>>> Stashed changes
 
   constructor() {
     super();
@@ -16,8 +13,8 @@ export default class ChosenIndustries extends Component {
 
   componentDidMount() {
     const el = $(this.refs.industries);
-    el.chosen().change(this._onSelected.bind(this));
-
+    // el.chosen({max_selected_options: 3}).change(this._onSelected.bind(this));
+    el.chosen({max_selected_options: 3});
   }
 
   _onSelected(event, action) {
@@ -32,7 +29,8 @@ export default class ChosenIndustries extends Component {
   }
 
   getValue() {
-    return this.state.selected;
+    const el = $(this.refs.industries);
+    return el.val();
   }
 
   reset() {
@@ -40,29 +38,23 @@ export default class ChosenIndustries extends Component {
   }
 
   render() {
-    const { options } = this.props;
-<<<<<<< Updated upstream
-    console.log(this.state.selected)
-=======
->>>>>>> Stashed changes
-
+    const { options, selectedIndustries } = this.props;
     return (
       <div>
         <select ref="industries"
-                data-placeholder="Choose ..."
-<<<<<<< Updated upstream
-                className="form-control chosen-select"
-                multiple
-        >
-          {options.map(option => (
-            <option value={option._id}>{option.name}</option>
-=======
+                data-placeholder="Choose your industries..."
                 className="chosen-select form-control"
+                defaultValue={selectedIndustries}
                 multiple
         >
           {options.map(option => (
-            <option key={option._id} value={option._id}>{option.name}</option>
->>>>>>> Stashed changes
+            <option
+              key={option._id}
+              value={option._id}
+              // selected={_.includes(selectedIndustries, option._id) ? true : false}
+            >
+              {option.name}
+            </option>
           ))}
         </select>
       </div>

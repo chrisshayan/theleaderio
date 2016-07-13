@@ -2,11 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data'
 import React, {Component} from 'react';
 
-<<<<<<< Updated upstream
-import { Industries } from '/imports/api/admin';
-=======
 import { Industries } from '/imports/api/industries/index';
->>>>>>> Stashed changes
 import * as Actions from '/imports/api/industries/methods';
 
 // import .views

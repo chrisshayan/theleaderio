@@ -63,75 +63,33 @@ export const edit = new ValidatedMethod({
       optional: true
     }
   }).validator(),
-  run({ userId, firstName, lastName, imageUrl, phoneNumber }) {
-    var selector = { userId };
-    var modifier = {};
-    if(firstName != undefined) {
+  run({ userId, firstName, lastName, industries, imageUrl, phoneNumber }) {
+    const selector = { userId };
+    const modifier = {};
+    if(typeof firstName !== "undefined") {
       modifier['firstName'] = firstName;
     }
-    if(lastName != undefined) {
+    if(typeof lastName !== "undefined") {
       modifier['lastName'] = lastName;
     }
-    if(industries != undefined) {
+    if(typeof industries !== "undefined") {
       modifier['industries'] = industries;
     }
-    if(imageUrl != undefined) {
+    if(typeof imageUrl !== "undefined") {
       modifier['imageUrl'] = imageUrl;
     }
-    if(phoneNumber != undefined) {
+    if(typeof phoneNumber !== "undefined") {
       modifier['phoneNumber'] = phoneNumber;
     }
-    var userProfile = Profiles.findOne(selector);
+    const userProfile = Profiles.findOne(selector);
     if(!userProfile) {
       throw new Meteor.Error(404, 'User not found');
     } else if(!_.isEmpty(modifier)) {
-      return Profiles.update(selector, { $set: { modifier }});
+      // console.log(selector);
+      // console.log(userProfile);
+      return Profiles.update(selector, { $set: modifier });
     } else {
       return true;
-    }
-  }
-});
-
-// Add Industry
-export const addIndustry = new ValidatedMethod({
-  name: 'profiles.addIndustry',
-  validate: new SimpleSchema({
-    userId: {
-      type: String
-    }, // validate userId which is mapped with _id in collection Accounts
-    industries: {
-      type: String
-    }
-  }).validator(),
-  run({ userId, industry }) {
-    var userProfile = Profiles.findOne({ userId });
-    if(!userProfile) {
-      throw new Meteor.Error(404, 'User not found');
-    } else {
-      return Profiles.update({ userId }, {
-        $push: { industries: industry }});
-    }
-  }
-});
-
-// Remove Industry
-export const removeIndustry = new ValidatedMethod({
-  name: 'profiles.removeIndustry',
-  validate: new SimpleSchema({
-    userId: {
-      type: String
-    }, // validate userId which is mapped with _id in collection Accounts
-    industries: {
-      type: String
-    }
-  }).validator(),
-  run({ userId, industry }) {
-    var userProfile = Profiles.findOne({ userId });
-    if(!userProfile) {
-      throw new Meteor.Error(404, 'User not found');
-    } else {
-      return Profiles.update({ userId }, {
-        $pull: { industries: industry }});
     }
   }
 });

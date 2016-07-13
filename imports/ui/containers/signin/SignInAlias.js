@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Meteor} from 'meteor/meteor';
 import _ from 'lodash';
 
-import AliasForm from '/imports/ui/common/AliasForm';
+import AliasForm from '/imports/ui/components/AliasForm';
 import Copyright from '/imports/ui/common/Copyright';
 import * as UserActions from '/imports/api/users/methods';
 import * as SubdomainActions from '/imports/utils/subdomain';
@@ -33,11 +33,7 @@ export default class SigninAliasPage extends Component {
   _inputSubmit({inputValue}) {
     const alias = inputValue;
     Meteor.logout();
-<<<<<<< Updated upstream
-    SubdomainActions.addSubdomain({ alias, route: FlowRouter.path('signInPage', {action: 'account'})});
-=======
     SubdomainActions.addSubdomain({ alias, route: FlowRouter.path('SignInPage', {action: 'account'})});
->>>>>>> Stashed changes
   }
 
   _onKeyUp({inputValue}) {

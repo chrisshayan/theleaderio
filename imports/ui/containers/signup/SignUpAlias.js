@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {FlowRouter} from 'meteor/kadira:flow-router';
 
 import {DOMAIN} from '/imports/startup/client/routes';
-import AliasForm from '/imports/ui/common/AliasForm';
+import AliasForm from '/imports/ui/components/AliasForm';
 import Copyright from '/imports/ui/common/Copyright';
 import * as UserActions from '/imports/api/users/methods';
 import * as SubdomainActions from '/imports/utils/subdomain';
