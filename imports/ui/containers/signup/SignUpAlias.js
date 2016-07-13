@@ -29,7 +29,7 @@ export default class SignUpAlias extends Component {
         this.setState({
           errors: null
         });
-        SubdomainActions.addSubdomain({alias, route: FlowRouter.path('signInPage', {action: 'account'})});
+        SubdomainActions.addSubdomain({alias, route: FlowRouter.path('SignInPage', {action: 'account'})});
       } else {
         this.setState({
           errors: error.reason
