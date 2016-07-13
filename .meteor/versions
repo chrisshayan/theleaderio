@@ -18,6 +18,7 @@ caching-compiler@1.0.6
 caching-html-compiler@1.0.6
 callback-hook@1.0.9
 check@1.2.3
+chrismbeckett:toastr@2.1.2_1
 chuangbo:cookie@1.1.0
 dburles:collection-helpers@1.0.4
 ddp@1.2.5

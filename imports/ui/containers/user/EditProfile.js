@@ -9,6 +9,7 @@ import * as ProfileActions from '/imports/api/profiles/methods';
 import ChosenIndustries from '/imports/ui/components/ChosenIndustries';
 import UploadImage from '/imports/ui/components/UploadImage';
 import Spinner from '/imports/ui/common/Spinner';
+import * as Notifications from '/imports/api/notifications/methods';
 
 // EditProfile.propTypes = {
 //   loading: React.PropTypes.bool,
@@ -17,14 +18,6 @@ import Spinner from '/imports/ui/common/Spinner';
 // };
 
 class EditProfile extends Component {
-
-  constructor() {
-    super();
-
-    this.state = {
-      savedChanges: null
-    };
-  }
 
   onSave() {
     const userId = Meteor.userId(),
@@ -37,10 +30,12 @@ class EditProfile extends Component {
       if (!_.isEmpty(error)) {
         console.log(error);
       } else {
-        console.log(`show notification`);
-        this.setState({
-          savedChanges: true
-        });
+        const closeButton = true,
+          timeOut = 2000,
+          title = 'Edit profile',
+          message = 'Saved'
+        ;
+        Notifications.success.call({closeButton, timeOut, title, message});
       }
     });
   }
@@ -51,7 +46,12 @@ class EditProfile extends Component {
       if (!_.isEmpty(error)) {
         console.log(error);
       } else {
-        console.log(`show notification`);
+        const closeButton = true,
+          timeOut = 2000,
+          title = 'Profile photo',
+          message = 'Uploaded'
+        ;
+        Notifications.success.call({closeButton, timeOut, title, message});
       }
     });
   }
@@ -125,9 +125,6 @@ class EditProfile extends Component {
                     <div className="hr-line-dashed"></div>
                     <div className="form-group">
                       <div className="col-sm-4 col-sm-offset-3">
-                        {this.state.savedChanges && (
-                          <p className="alert-info text-center form-control">Saved</p>
-                        )}
                         <button className="btn btn-primary" type="submit">
                           Save changes
                         </button>

@@ -15,7 +15,6 @@
     "react-dom": "^15.1.0",
     "react-filepicker": "^0.6.0",
     "react-mounter": "^1.2.0",
-    "react-spinner": "^0.2.6",
-    "react-toastr": "^2.7.0"
+    "react-spinner": "^0.2.6"
   }
 }

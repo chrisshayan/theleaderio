@@ -5,6 +5,7 @@ import {mount} from 'react-mounter';
 import NoticeForm from '/imports/ui/common/NoticeForm';
 import WelcomePage from '/imports/ui/common/WelcomePage';
 import ThankyouPage from '/imports/ui/common/ThankyouPage';
+import Notification from '/imports/api/notifications/methods';
 
 import MainLayout from '/imports/ui/layouts/MainLayout';
 import BlankLayout from '/imports/ui/layouts/BlankLayout';
@@ -60,7 +61,7 @@ const homeRoute = FlowRouter.route('/', {
 export const welcomeRoute = FlowRouter.route('/welcome', {
   name: 'welcomePage',
   action() {
-    mount(WelcomePage);
+    mount(Notification);
   }
 });
 

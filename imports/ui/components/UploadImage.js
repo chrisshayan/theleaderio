@@ -29,12 +29,18 @@ export default class UploadImage extends Component {
       buttonClass: 'btn btn-primary',
       mimetype: 'image/*',
     };
+    const imgStyle = {
+      width: 293
+    };
+
 
     const { imageUrl } = this.props;
     return (
     <div>
       <div className="ibox-content no-padding border-left-right">
-        <img alt="image" className="img-responsive img-preview img-preview-md" src={imageUrl}/>
+        <img alt="image" className="img-responsive img-preview img-preview-md"
+              style={imgStyle}
+             src={imageUrl}/>
       </div>
       <div className="ibox-content btn-group">
         <ReactFilepicker
