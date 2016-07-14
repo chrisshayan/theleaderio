@@ -410,9 +410,9 @@ nav.left-nav ul li {
 nav.left-nav ul li a {
   display: block;
   text-decoration: none;
-  color: #f5f5f5;
+  color: #fff;
   padding: 15px 0;
-  opacity: 0.7;
+  opacity: 0.5;
 }
 
 nav.left-nav ul li:hover a,
@@ -601,7 +601,7 @@ nav.left-nav ul li a span {
 @media (min-width: 992px) {
   #page-wrapper {
     position: inherit;
-    margin: 0 0 0 120px;
+    margin: 0 0 0 135px;
     min-height: 1200px;
   }
   .page-heading-actions {

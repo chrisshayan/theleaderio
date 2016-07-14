@@ -38,6 +38,19 @@ Organizations.schema = new SimpleSchema({
     type: String,
     optional: true
   },
+  startTime: {
+    type: Date,
+    optional: true,
+  },
+  endTime: {
+    type: Date,
+    optional: true,
+  },
+  isPresent: {
+    type: Boolean,
+    defaultValue: false,
+    optional: true,
+  },
   createdAt: {
     type: Date,
     optional: true,
@@ -63,6 +76,9 @@ Organizations.publicFields = {
   status: 1,
   description: 1,
   industries: 1,
+  startTime: 1,
+  endTime: 1,
+  isPresent: 1,
   owner: 1,
   createdAt: 1,
   updatedAt: 1

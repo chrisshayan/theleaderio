@@ -10,7 +10,7 @@ class Navigation extends Component {
       menuItems: [
         {route: 'landingPage', path: '/', label: 'Home', icon: 'fa fa-dashboard'},
         {route: 'app.organizations', path: FlowRouter.url('app.organizations'), label: 'Organizations', icon: 'fa fa-sitemap'},
-        {route: '', path: '', label: 'Employees', icon: 'fa fa-users'},
+        {route: 'app.employees', path: FlowRouter.url('app.employees'), label: 'Employees', icon: 'fa fa-users'},
         {route: '', path: '', label: 'Feedback', icon: 'fa fa-gift'},
         {route: '', path: '', label: 'Measure', icon: 'fa fa-info'},
       ]
@@ -23,6 +23,7 @@ class Navigation extends Component {
 
   render() {
     const {activeRoute} = this.props;
+    console.log(activeRoute)
 
     return (
       <nav id="left-nav" className="left-nav">

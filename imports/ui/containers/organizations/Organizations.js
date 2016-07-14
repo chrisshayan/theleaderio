@@ -52,12 +52,37 @@ class Organizations extends Component {
 							<Box title={ org.name } tools={<a className="fa fa-edit" href={org.editUrl()}></a>}>
 								<div className="team-members">
 									<a href="#" style={{marginRight: '3px'}}><img alt="member" className="img-circle" src="/img/a1.jpg" /></a>
-									<a href="#" style={{marginRight: '3px'}}><img alt="member" className="img-circle" src="/img/a1.jpg" /></a>
-									<a href="#" style={{marginRight: '3px'}}><img alt="member" className="img-circle" src="/img/a1.jpg" /></a>
-									<a href="#" style={{marginRight: '3px'}}><img alt="member" className="img-circle" src="/img/a1.jpg" /></a>
-									<a href="#" style={{marginRight: '3px'}}><img alt="member" className="img-circle" src="/img/a1.jpg" /></a>
+									<a href="#" style={{marginRight: '3px'}}><img alt="member" className="img-circle" src="/img/a2.jpg" /></a>
+									<a href="#" style={{marginRight: '3px'}}><img alt="member" className="img-circle" src="/img/a3.jpg" /></a>
+									<a href="#" style={{marginRight: '3px'}}><img alt="member" className="img-circle" src="/img/a4.jpg" /></a>
+									<a href="#" style={{marginRight: '3px'}}><img alt="member" className="img-circle" src="/img/a5.jpg" /></a>
 								</div>
+								<h4>Info about { org.name }</h4>
+								{/* Description */}
 								<p>{ org.description }</p>
+								{/* Status of response */}
+								<div>
+	                <span>Status of current month:</span>
+	                <div className="stat-percent">48%</div>
+	                <div className="progress progress-mini">
+                    <div style={{width: '48%'}} className="progress-bar"></div>
+	                </div>
+		            </div>
+		            {/* Some numbers*/}
+								<div className="row  m-t-sm">
+									<div className="col-sm-4">
+										<div className="font-bold">EMPLOYEES</div>
+										12
+									</div>
+									<div className="col-sm-4">
+										<div className="font-bold">FEEDBACK</div>
+										23
+									</div>
+									<div className="col-sm-4 text-right">
+										<div className="font-bold">OVERALL</div>
+										3.4 <i className="fa fa-level-up text-navy"></i>
+									</div>
+								</div>
 							</Box>
 						</div>
 					))}

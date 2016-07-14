@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import _ from 'lodash';
+import moment from 'moment';
 
 import { Organizations, STATUS_ACTIVE, STATUS_INACTIVE } from './index';
 import { IDValidator } from '/imports/utils';
@@ -21,7 +22,13 @@ export const create = new ValidatedMethod({
   validate: Organizations.schema.validator(),
   run(doc) {
     if (!Meteor.userId()) throw new Meteor.Error(ERROR_CODE.UNAUTHORIZED);
-    return Organizations.insert(doc);
+
+    // validate startTime and endTime
+
+
+    if(!this.isSimulation) {
+      return Organizations.insert(doc);
+    }
   }
 });
 
@@ -38,6 +45,18 @@ export const update = new ValidatedMethod({
       type: String,
       optional: true
     },
+    startTime: {
+      type: Date,
+      optional: true,
+    },
+    endTime: {
+      type: Date,
+      optional: true,
+    },
+    isPresent: {
+      type: Boolean,
+      optional: true,
+    },
     imageUrl: {
       type: String,
       optional: true
@@ -46,6 +65,13 @@ export const update = new ValidatedMethod({
   run(data) {
     if (!Meteor.userId())
       throw new Meteor.Error(ERROR_CODE.UNAUTHORIZED);
+
+    // check time
+    if(data.startTime && data.endTime) {
+      if(data.startTime.getTime() >= data.endTime.getTime()) {
+        throw new Meteor.Error('ORGANIZATION_INVALID_RANGE', 'End time should greater than start time');
+      }
+    }
 
     if (!this.isSimulation) {
       var selector = { _id: data._id };
