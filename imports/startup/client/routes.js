@@ -25,6 +25,7 @@ import PublicProfilePage from '/imports/ui/containers/user/PublicProfilePage';
 import Dashboard from '/imports/ui/containers/dashboard/Dashboard';
 import Organizations from '/imports/ui/containers/organizations/Organizations';
 import SingleOrganization from '/imports/ui/containers/organizations/SingleOrganization';
+import Employees from '/imports/ui/containers/employees/Employees';
 
 import { resetPageHeading } from '/imports/store/modules/pageHeading';
 /**
@@ -302,6 +303,20 @@ appRoutes.route('/organizations/update/:_id', {
     mount(MainLayout, {
       content() {
         return <SingleOrganization _id={params._id} />
+      }
+    })
+  }
+});
+
+/**
+ * Route for manage employees
+ */
+appRoutes.route('/employees', {
+  name: 'app.employees',
+  action(params) {
+    mount(MainLayout, {
+      content() {
+        return <Employees />
       }
     })
   }

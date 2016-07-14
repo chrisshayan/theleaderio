@@ -5,7 +5,7 @@ import moment from 'moment';
 import { Organizations } from '/imports/api/organizations/index';
 import * as Actions from '/imports/api/organizations/methods';
 
-import {ScrollBox, FastTrack} from 'react-scroll-box'; // ES6
+import ScrollBox from 'react-scrollbar';
 
 
 // import views
@@ -241,7 +241,7 @@ class SingleOrganization extends Component {
           				</button>
           			</div>
           		</div>
-          		<ScrollBox style={{height: '500px'}} scrollableY={true} scrollableX={false} fastTrackDuration={100} wheelStepY={80}>
+          		<ScrollBox style={{height: '500px'}}>
           			
 								  <table className="table table-striped table-hover">
 								    <tbody>

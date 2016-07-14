@@ -16,6 +16,7 @@
     "react-dom": "^15.1.0",
     "react-mounter": "^1.2.0",
     "react-scroll-box": "^0.3.3-beta",
+    "react-scrollbar": "^0.4.1",
     "react-spinner": "^0.2.6",
     "redux-logger": "^2.6.1"
   },
