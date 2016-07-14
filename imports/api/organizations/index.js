@@ -1,4 +1,5 @@
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import OrganizationsCollection from './collection';
 
 /**
@@ -26,7 +27,8 @@ Organizations.schema = new SimpleSchema({
   status: {
     type: String,
     allowedValues: [ STATUS_ACTIVE, STATUS_INACTIVE ],
-    defaultValue: STATUS_ACTIVE
+    defaultValue: STATUS_ACTIVE,
+    optional: true
   },
   description: {
     type: String,
@@ -36,50 +38,21 @@ Organizations.schema = new SimpleSchema({
     type: String,
     optional: true
   },
-  "address.zipCode": {
-    type: String,
-    optional: true
+  createdAt: {
+    type: Date,
+    optional: true,
   },
-  "address.countryCode": {
-    type: String,
-    optional: true
+  updatedAt: {
+    type: Date,
+    optional: true,
   },
-  "address.country": {
+  owner: {
     type: String,
-    optional: true
-  },
-  "address.city": {
-    type: String,
-    optional: true
-  },
-  "address.district": {
-    type: String,
-    optional: true
-  },
-  "address.streetName": {
-    type: String,
-    optional: true
-  },
-  "address.streetAddress": {
-    type: String,
-    optional: true
-  },
-  "address.secondaryAddress": {
-    type: String,
-    optional: true
-  },
-  "address.geo.latitude": {
-    type: String,
-    optional: true
-  },
-  "address.geo.longitude": {
-    type: String,
-    optional: true
+    optional: true,
   }
 });
 
 Organizations.attachSchema(Organizations.schema);
-
 
 /**
  * Public fields
@@ -90,4 +63,16 @@ Organizations.publicFields = {
   status: 1,
   description: 1,
   industries: 1,
+  owner: 1,
+  createdAt: 1,
+  updatedAt: 1
 };
+
+/**
+ * Organization helpers
+ */
+Organizations.helpers({
+  editUrl() {
+    return FlowRouter.url('app.organizations.update', {_id: this._id});
+  }
+});

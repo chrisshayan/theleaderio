@@ -1,16 +1,25 @@
 import { Organizations } from '../index';
 
-const PAGE_LIMIT = 10;
+const PAGE_LIMIT = 9;
 
-Meteor.publish('organizations.list', function({ page:number = 1, q:string = '' }) {
-	if(!Meteor.userId()) return null;
+Meteor.publish('organizations.list', function({ page = 1, q = '' }) {
+	if(!this.userId) return null;
 	
-	check(q, String);
-	check(page, Number);
+	check(q, Match.Optional(String));
+	check(page, Match.Optional(Number));
 
-	let selector = option = {};
+	let selector = {
+		owner: this.userId
+	};
 
-	// query selector
+	let option = {
+		limit: (PAGE_LIMIT * page) + 3,
+		skip: 0,
+		sort: { createdAt: -1 },
+		fields: Organizations.publicFields,
+	};
+
+	// filter by keyword
 	if(!_.isEmpty(q)) {
 		selector = {
 			$or: [
@@ -19,11 +28,16 @@ Meteor.publish('organizations.list', function({ page:number = 1, q:string = '' }
 		};
 	}
 
-	// query option
-	option = {
-		limit: PAGE_LIMIT,
-		skip: PAGE_LIMIT * (page - 1),
-	};
-	
 	return Organizations.find(selector, option);
 });
+
+Meteor.publish('organizations.details', function({ _id }) {
+	check(_id, String);
+	let selector = { _id };
+	let option = {
+		limit: 1,
+		fields: Organizations.publicFields,
+	};
+
+	return Organizations.find(selector, option);
+})

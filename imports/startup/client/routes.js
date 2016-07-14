@@ -1,6 +1,7 @@
-import {FlowRouter} from 'meteor/kadira:flow-router';
+import { Meteor } from 'meteor/meteor';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import React from 'react';
-import {mount} from 'react-mounter';
+import { mount } from 'react-mounter';
 
 import NoticeForm from '/imports/ui/common/NoticeForm';
 import WelcomePage from '/imports/ui/common/WelcomePage';
@@ -22,7 +23,10 @@ import ForgotAliasPage from '/imports/ui/containers/alias/ForgotAliasPage';
 
 import PublicProfilePage from '/imports/ui/containers/user/PublicProfilePage';
 import Dashboard from '/imports/ui/containers/dashboard/Dashboard';
+import Organizations from '/imports/ui/containers/organizations/Organizations';
+import SingleOrganization from '/imports/ui/containers/organizations/SingleOrganization';
 
+import { resetPageHeading } from '/imports/store/modules/pageHeading';
 /**
  * Constant
  * @routes all routes in action
@@ -31,6 +35,21 @@ import Dashboard from '/imports/ui/containers/dashboard/Dashboard';
 
 // this domain should get from settings
 export const DOMAIN = 'devtheleader.io:3000';
+
+/**
+ * Change root url to make flow router understand subdomain
+ */
+FlowRouter.setRootUrl = (url) => {
+  Meteor.absoluteUrl.defaultOptions.rootUrl = url || window.location.origin;
+}
+
+Tracker.autorun(function() {
+  FlowRouter.watchPathChange();
+  FlowRouter.setRootUrl();
+});
+
+// init root url - support subdomain
+FlowRouter.setRootUrl();
 
 export const routes = {
   home: '/',
@@ -54,6 +73,24 @@ export const routes = {
   thankyou: 'thankyou'
 
 };
+
+/**
+ * @summary Default Invalid Url Route
+ * @route notFound
+ */
+FlowRouter.notFound = {
+  action() {
+    mount(NoticeForm);
+  }
+};
+
+FlowRouter.route('/not-found', {
+  name: 'notFound',
+  action() {
+    mount(NoticeForm);
+  }
+});
+
 
 /**
  * @summary lists of public routes
@@ -224,24 +261,48 @@ appRoutes.route('/', {
       }
     })
   }
-})
-
+});
 
 /**
- * @summary Default Invalid Url Route
- * @route notFound
+ * Route for organization
+ *
+ * This route can show leader's organizations
  */
-FlowRouter.notFound = {
+appRoutes.route('/organizations', {
+  name: 'app.organizations',
   action() {
-    mount(NoticeForm);
+    mount(MainLayout, {
+      content() {
+        return <Organizations />
+      }
+    })
   }
-};
+});
 
-FlowRouter.route('/not-found', {
-  name: 'notFound',
+/**
+ * Route for creating new organization
+ */
+appRoutes.route('/organizations/create', {
+  name: 'app.organizations.create',
   action() {
-    mount(NoticeForm);
+    mount(MainLayout, {
+      content() {
+        return <SingleOrganization />
+      }
+    })
   }
-})
+});
 
-
+/**
+ * Route for updating an organization
+ */
+appRoutes.route('/organizations/update/:_id', {
+  name: 'app.organizations.update',
+  action(params) {
+    mount(MainLayout, {
+      content() {
+        return <SingleOrganization _id={params._id} />
+      }
+    })
+  }
+});

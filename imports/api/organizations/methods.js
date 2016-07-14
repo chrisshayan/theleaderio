@@ -5,6 +5,7 @@ import _ from 'lodash';
 
 import { Organizations, STATUS_ACTIVE, STATUS_INACTIVE } from './index';
 import { IDValidator } from '/imports/utils';
+import * as ERROR_CODE from '/imports/utils/error_code';
 
 /**
  * CUD Organizations (Create, Edit, Deactivate)
@@ -17,19 +18,16 @@ import { IDValidator } from '/imports/utils';
 // with basics information: name
 export const create = new ValidatedMethod({
   name: 'organizations.create',
-  validate: new SimpleSchema({
-    name: {
-      type: String
-    }
-  }).validator(),
-  run({ name }) {
-    return Organizations.insert(name);
+  validate: Organizations.schema.validator(),
+  run(doc) {
+    if (!Meteor.userId()) throw new Meteor.Error(ERROR_CODE.UNAUTHORIZED);
+    return Organizations.insert(doc);
   }
 });
 
 // Edit Organization's name, description, imageUrl, address
-export const edit = new ValidatedMethod({
-  name: 'organizations.edit',
+export const update = new ValidatedMethod({
+  name: 'organizations.update',
   validate: new SimpleSchema({
     ...IDValidator,
     name: {
@@ -45,103 +43,54 @@ export const edit = new ValidatedMethod({
       optional: true
     }
   }).validator(),
-  run({ _id, name, description, imageUrl }) {
-    var selector = { _id };
-    var modifier = {};
-    if(name != undefined) {
-      modifier['name'] = name;
-    }
-    if(name != undefined) {
-      modifier['name'] = name;
-    }
-    if(name != undefined) {
-      modifier['name'] = name;
-    }
-    var org = Organizations.findOne({ _id });
-    if(!org) {
-      throw new Meteor.Error(404, 'Organization not found');
-    } else if(!_.isEmpty(modifier)) {
-      return Organizations.update(selector, {$set: modifier})
-    } else {
-      return true;
+  run(data) {
+    if (!Meteor.userId())
+      throw new Meteor.Error(ERROR_CODE.UNAUTHORIZED);
+
+    if (!this.isSimulation) {
+      var selector = { _id: data._id };
+      var modifier = {
+        $set: _.omit(data, '_id')
+      };
+
+      var org = Organizations.findOne({ _id: data._id });
+
+      if (!org) {
+        throw new Meteor.Error(404, 'Organization not found');
+      } else if (org.owner != Meteor.userId()) {
+        throw new Meteor.Error(403, 'Permission Denied');
+      } else if (!_.isEmpty(modifier)) {
+        return Organizations.update(selector, modifier);
+      } else {
+        return true;
+      }
     }
   }
 });
 
-// Edit address
-export const editAddress = new ValidatedMethod({
-  name: 'organizations.editAddress',
-  validate: new SimpleSchema({
-    ...IDValidator,
-    "address.zipCode": {
-      type: String,
-      optional: true
-    },
-    "address.countryCode": {
-      type: String,
-      optional: true
-    },
-    "address.country": {
-      type: String,
-      optional: true
-    },
-    "address.city": {
-      type: String,
-      optional: true
-    },
-    "address.district": {
-      type: String,
-      optional: true
-    },
-    "address.streetName": {
-      type: String,
-      optional: true
-    },
-    "address.streetAddress": {
-      type: String,
-      optional: true
-    },
-    "address.secondaryAddress": {
-      type: String,
-      optional: true
-    },
-    "address.geo.latitude": {
-      type: String,
-      optional: true
-    },
-    "address.geo.longitude": {
-      type: String,
-      optional: true
-    }
-  }).validator(),
-  run({ _id, address }) {
-    var org = Organizations.findOne({ _id });
-    if(!org) {
-      throw new Meteor.Error(404, 'Organization not found');
-    } else {
-      return Organizations.update({ _id: org._id }, {
-        $set: { address }});
-    }
-  }
-});
 
-// Set Organization's Status ( Activate or Deactivate)
-export const setStatus = new ValidatedMethod({
-  name: 'organizations.setStatus',
+// Edit Organization's name, description, imageUrl, address
+export const remove = new ValidatedMethod({
+  name: 'organizations.remove',
   validate: new SimpleSchema({
     ...IDValidator,
-    status: {
-      type: String,
-      allowedValues: [  STATUS_ACTIVE, STATUS_INACTIVE ]
-    }
   }).validator(),
-  run({ _id, status }) {
-    var org = Organizations.findOne({ _id });
-    if(!org) {
-      throw new Meteor.Error(404, 'Organization not found');
-    } else {
-      return Organizations.update({ _id }, {
-        $set: { status }});
+  run({ _id }) {
+    if (!Meteor.userId()) {
+      throw new Meteor.Error(ERROR_CODE.UNAUTHORIZED);
+    }
+
+    if (!this.isSimulation) {
+      var selector = { _id };
+      var org = Organizations.findOne(selector);
+
+      if (!org) {
+        throw new Meteor.Error(ERROR_CODE.RESOURCE_NOT_FOUND, 'Organization not found');
+      } else if (org.owner != Meteor.userId()) {
+        throw new Meteor.Error(ERROR_CODE.PERMISSION_DENIED, 'Permission Denied');
+      } else {
+        return Organizations.remove(selector);
+      }
     }
   }
 });

@@ -1,3 +1,4 @@
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, {Component} from 'react';
 
 class Navigation extends Component {
@@ -8,8 +9,9 @@ class Navigation extends Component {
     this.state = {
       menuItems: [
         {route: 'landingPage', path: '/', label: 'Home', icon: 'fa fa-dashboard'},
-        {route: '', path: '', label: 'Feedback', icon: 'fa fa-gift'},
+        {route: 'app.organizations', path: FlowRouter.url('app.organizations'), label: 'Organizations', icon: 'fa fa-sitemap'},
         {route: '', path: '', label: 'Employees', icon: 'fa fa-users'},
+        {route: '', path: '', label: 'Feedback', icon: 'fa fa-gift'},
         {route: '', path: '', label: 'Measure', icon: 'fa fa-info'},
       ]
     };

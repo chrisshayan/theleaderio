@@ -1,5 +1,9 @@
 import { Session } from 'meteor/session';
 import { getSubdomain } from '/imports/utils/subdomain';
+import { createStore } from '/imports/store'
+
 Session.setDefault('alias', getSubdomain());
 
-import './routes';
+createStore().then(() => {
+	require('./routes');
+});
