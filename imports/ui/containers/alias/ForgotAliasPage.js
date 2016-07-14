@@ -3,6 +3,8 @@ import _ from 'lodash';
 
 import { DOMAIN } from '/imports/startup/client/routes';
 
+import { removeSubdomain } from '/imports/utils/subdomain';
+
 import SingleInputFrom from '/imports/ui/common/SingleInputForm';
 import NoticeForm from '/imports/ui/common/NoticeForm';
 import Spinner from '/imports/ui/common/Spinner';
@@ -25,12 +27,13 @@ export default class ForgotAliasPage extends Component {
     const domain = window.location.hostname;
     const email = inputValue;
     this.setState({
+      loading: true,
       errors: null
     });
     // verify email
     UserActions.verify.call({email}, (error) => {
       if(_.isEmpty(error)) {
-        const url = `http://${DOMAIN}${FlowRouter.path('aliasPage',{action: 'forgot'})}`;
+        const url = `${DOMAIN}${FlowRouter.path('SignInPage',{action: 'alias'})}`;
         const mailOptions = {
           email: email,
           url: url,
@@ -39,10 +42,12 @@ export default class ForgotAliasPage extends Component {
         EmailActions.send.call(mailOptions, (error) => {
           if (!_.isEmpty(error)) {
             this.setState({
+              loading: false,
               errors: error.reason
             });
           } else {
             this.setState({
+              loading: false,
               errors: null,
               action: 'sent'
             });
@@ -61,6 +66,15 @@ export default class ForgotAliasPage extends Component {
   render() {
     const formTitle = `Alias forgot`;
     const formDescription = `Enter your email address`;
+    if(this.state.loading) {
+      return (
+        <div>
+          <Spinner
+            message="Sending ..."
+          />
+        </div>
+      );
+    }
     if (this.state.action === 'sent') {
       return (
         <div id="page-top">

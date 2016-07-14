@@ -1,15 +1,9 @@
-import React, { Component } from 'react';
-
+import React, {Component} from 'react';
 import ReactFilepicker from 'react-filepicker';
 
+import ProfilePhoto from '/imports/ui/components/ProfilePhoto';
+
 export default class UploadImage extends Component {
-  // constructor() {
-  //   super();
-  //
-  //   this.state = {
-  //     imageUrl: this.props.imageUrl
-  //   };
-  // }
 
   _onSuccess(fpfiles) {
     // console.log(this.props);
@@ -29,29 +23,29 @@ export default class UploadImage extends Component {
       buttonClass: 'btn btn-primary',
       mimetype: 'image/*',
     };
-    const imgStyle = {
-      width: 293
-    };
 
 
-    const { imageUrl } = this.props;
+    const {imageUrl} = this.props;
     return (
-    <div>
-      <div className="ibox-content no-padding border-left-right">
-        <img alt="image" className="img-responsive img-preview img-preview-md"
-              style={imgStyle}
-             src={imageUrl}/>
+      <div>
+        <div className="ibox-content no-padding border-left-right ">
+          <ProfilePhoto
+            imageUrl={imageUrl}
+            width={293}
+            height={293}
+          />
+        </div>
+        <div className="ibox-content btn-group">
+          <div className="hr-line-dashed">
+            <ReactFilepicker
+              apikey={datFpApikey}
+              defaultWidget={false}
+              options={options}
+              onSuccess={this._onSuccess.bind(this)}
+            />
+          </div>
+        </div>
       </div>
-      <div className="ibox-content btn-group">
-        <ReactFilepicker
-          apikey={datFpApikey}
-          defaultWidget={false}
-          options={options}
-          onSuccess={this._onSuccess.bind(this)}
-        />
-      </div>
-    </div>
-
     );
   }
 }

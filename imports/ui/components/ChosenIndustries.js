@@ -51,7 +51,6 @@ export default class ChosenIndustries extends Component {
             <option
               key={option._id}
               value={option._id}
-              // selected={_.includes(selectedIndustries, option._id) ? true : false}
             >
               {option.name}
             </option>

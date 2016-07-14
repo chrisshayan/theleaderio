@@ -29,7 +29,7 @@ export default class ResetPasswordPage extends Component {
     UserActions.resetPassword.call({tokenId, password}, (error) => {
       if (_.isEmpty(error)) {
         console.log(`token: ${tokenId} will be removed`);
-        TokenActions.remove.call({tokenId});
+        TokenActions.remove.call({tokenId, action: 'password'});
         // redirect to user homepage
         FlowRouter.go('homePage');
       } else {
@@ -46,7 +46,7 @@ export default class ResetPasswordPage extends Component {
   componentWillMount() {
     const tokenId = FlowRouter.getQueryParam("token");
     console.log(tokenId);
-    TokenActions.verify.call({tokenId}, (error) => {
+    TokenActions.verify.call({tokenId, action: 'password'}, (error) => {
       if (_.isEmpty(error)) {
         this.setState({
           tokenVerified: true
@@ -71,6 +71,7 @@ export default class ResetPasswordPage extends Component {
   }
 
   render() {
+    console.log(this.state);
     if (this.state.loading) {
       return (
         <div>

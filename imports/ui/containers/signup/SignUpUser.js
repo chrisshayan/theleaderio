@@ -38,12 +38,12 @@ export default class SignUpUser extends Component {
             });
           } else {
             // Send confirmation email to user
-            const tokenId = TokenActions.generate.call({email}, (error) => {
+            const tokenId = TokenActions.generate.call({email, action: 'email'}, (error) => {
               if (!error) {
                 // call methods to send verify Email with token link to user
                 // route to Welcome page with a message to verify user's email
-                const verifyUrl = FlowRouter.path('signUpPage', {action: 'verify'}, { token: tokenId});
-                const url = `http://${DOMAIN}/${verifyUrl}`;
+                const verifyUrl = FlowRouter.path('signUpPage', {action: 'confirm'}, { token: tokenId});
+                const url = `http://${DOMAIN}${verifyUrl}`;
                 const mailOptions = {
                   email: email,
                   firstName: firstName,
@@ -53,8 +53,7 @@ export default class SignUpUser extends Component {
                 EmailActions.send.call(mailOptions);
               }
             });
-            FlowRouter.go('signUpPage', {action: 'alias'}, {email: email});
-            // FlowRouter.go(`/${routes.signUp.alias}?email=${email}`);
+            FlowRouter.go('signUpPage', {action: 'alias'});
           }
         });
       } else {

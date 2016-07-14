@@ -53,12 +53,12 @@ export default class PasswordPage extends Component {
     // verify Alias with email input first
     UserActions.verify.call({alias, email}, (error) => {
       if (_.isEmpty(error)) {
-        const tokenId = TokenActions.generate.call({email}, (error) => {
+        const tokenId = TokenActions.generate.call({email, action: 'password'}, (error) => {
           if (_.isEmpty(error)) {
             // call methods to send verify Email with token link to user
             // route to Welcome page with a message to verify user's email
             const setPassUrl = FlowRouter.path('passwordPage',{action: 'set'}, {token: tokenId});
-            const url = `http://${document.location.hostname}:9000/${setPassUrl}`;
+            const url = `http://${document.location.hostname}:9000${setPassUrl}`;
             const mailOptions = {
               email: email,
               url: url,

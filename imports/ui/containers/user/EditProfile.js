@@ -24,11 +24,11 @@ class EditProfile extends Component {
       firstName = this.refs.firstName.value,
       lastName = this.refs.lastName.value,
       industries = this.refs.selectedIndustries.getValue(),
-      phoneNumber = this.refs.phoneNumber.value
+      phoneNumber = this.refs.phoneNumber.value,
+      aboutMe = this.refs.aboutMe.value
       ;
-    ProfileActions.edit.call({userId, firstName, lastName, industries, phoneNumber}, (error) => {
+    ProfileActions.edit.call({userId, firstName, lastName, industries, phoneNumber, aboutMe}, (error) => {
       if (!_.isEmpty(error)) {
-        console.log(error);
       } else {
         const closeButton = true,
           timeOut = 2000,
@@ -44,7 +44,6 @@ class EditProfile extends Component {
     const userId = Meteor.userId()
     ProfileActions.edit.call({userId, imageUrl}, (error) => {
       if (!_.isEmpty(error)) {
-        console.log(error);
       } else {
         const closeButton = true,
           timeOut = 2000,
@@ -74,7 +73,7 @@ class EditProfile extends Component {
                   <h5>Profile photo</h5>
                 </div>
                 <UploadImage
-                  imageUrl={!!(profile.imageUrl) ? profile.imageUrl : "/img/default-profile-pic.png"}
+                  imageUrl={profile.imageUrl}
                   onUploadedImage={this.onUploadedImage.bind(this)}
                 />
               </div>
@@ -124,6 +123,14 @@ class EditProfile extends Component {
                     </div>
                     <div className="hr-line-dashed"></div>
                     <div className="form-group">
+                      <label className="col-sm-3 control-label">About me</label>
+                      <div className="col-sm-9">
+                        <input ref="aboutMe" type="text" className="form-control"
+                               defaultValue={profile.aboutMe} placeholder="Tell us something about you ...."/>
+                      </div>
+                    </div>
+                    <div className="hr-line-dashed"></div>
+                    <div className="form-group">
                       <div className="col-sm-4 col-sm-offset-3">
                         <button className="btn btn-primary" type="submit">
                           Save changes
@@ -146,8 +153,10 @@ export default EditProfileContainer = createContainer(({params}) => {
   const subIndustries = Meteor.subscribe('industries.list');
   const subProfile = Meteor.subscribe('profiles');
 
+  // check loading
   const loading = (!subIndustries.ready() & !subProfile.ready());
 
+  // check exists
   const profile = Profiles.find({});
   const profileExists = !loading && !!profile;
 

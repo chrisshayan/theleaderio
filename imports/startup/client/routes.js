@@ -7,6 +7,8 @@ import WelcomePage from '/imports/ui/common/WelcomePage';
 import ThankyouPage from '/imports/ui/common/ThankyouPage';
 import Notification from '/imports/api/notifications/methods';
 
+import ConfirmEmail from '/imports/ui/components/ConfirmEmail';
+
 import MainLayout from '/imports/ui/layouts/MainLayout';
 import BlankLayout from '/imports/ui/layouts/BlankLayout';
 
@@ -93,6 +95,10 @@ signUpRoutes.route('/:action', {
     // create new alias
     if (params.action == 'alias') {
       mount(SignUpAlias);
+    }
+    // create new alias
+    if (params.action == 'confirm') {
+      mount(ConfirmEmail);
     }
   }
 });

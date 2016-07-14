@@ -84,6 +84,10 @@ Profiles.schema = new SimpleSchema({
   phoneNumber: {
     type: String,
     optional: true
+  },
+  aboutMe: {
+    type: String,
+    optional: true
   }
 });
 

@@ -18,6 +18,6 @@ export const addSubdomain = function({ alias, route }) {
 }
 
 export const removeSubdomain = function ({route}) {
-  const newUrl = `http://${DOMAIN}/${route}`;
+  const newUrl = `http://${DOMAIN}${route}`;
   window.location = newUrl;
 }
