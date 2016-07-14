@@ -33,7 +33,7 @@ export default class ForgotAliasPage extends Component {
     // verify email
     UserActions.verify.call({email}, (error) => {
       if(_.isEmpty(error)) {
-        const url = `${DOMAIN}${FlowRouter.path('SignInPage',{action: 'alias'})}`;
+        const url = `${DOMAIN}${FlowRouter.path('SignInPage',{action: 'account'})}`;
         const mailOptions = {
           email: email,
           url: url,
