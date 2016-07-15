@@ -13,10 +13,15 @@ export const generate = new ValidatedMethod({
   validate: new SimpleSchema({
     email: {
       type: String
+    },
+    action: {
+      type: String,
+      allowedValues: ['email', 'password', 'alias'],
+      optional: true
     }
   }).validator(),
-  run({email}) {
-    return Tokens.insert({email});
+  run({email, action}) {
+    return Tokens.insert({email, action});
   }
 });
 
@@ -29,11 +34,14 @@ export const verify = new ValidatedMethod({
   validate: new SimpleSchema({
     tokenId: {
       type: String
+    },
+    action: {
+      type: String
     }
   }).validator(),
-  run({tokenId}) {
+  run({tokenId, action}) {
     if (!this.isSimulation) {
-      const token = Tokens.findOne({_id: tokenId});
+      const token = Tokens.findOne({_id: tokenId, action});
       if (token) {
         return true;
       } else {
@@ -54,11 +62,14 @@ export const remove = new ValidatedMethod({
   validate: new SimpleSchema({
     tokenId: {
       type: String
+    },
+    action: {
+      type: String
     }
   }).validator(),
-  run({tokenId}) {
+  run({tokenId, action}) {
     if (!this.isSimulation) {
-      Tokens.remove({_id: tokenId});
+      Tokens.remove({_id: tokenId, action});
     }
   }
 });

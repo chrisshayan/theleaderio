@@ -1,9 +1,7 @@
 import React, {Component} from 'react';
 import { Meteor } from 'meteor/meteor';
 
-import { DOMAIN } from '/imports/startup/client/routes';
 import NoticeForm from '/imports/ui/common/NoticeForm';
-import * as SubdomainActions from '/imports/utils/subdomain';
 
 export default class ThankyouPage extends Component {
   componentWillMount() {
