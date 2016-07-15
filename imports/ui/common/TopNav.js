@@ -37,7 +37,7 @@ class TopNav extends Component {
                   <span className="caret"></span>
                 </a>
                 <ul className="dropdown-menu" aria-labelledby="user-info">
-                  <li><a href={FlowRouter.url('app.profile.edit')}>Edit profile</a></li>
+                  <li><a href={FlowRouter.url('app.profile.edit', {action: 'edit'})}>Edit profile</a></li>
                   <li role="separator" className="divider"></li>
                   <li><a href={FlowRouter.url('app.logout')}>Logout</a></li>
                 </ul>
