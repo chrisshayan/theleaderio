@@ -251,6 +251,18 @@ const appRoutes = FlowRouter.group({
 });
 
 /**
+ * Route: Logout
+ */
+appRoutes.route('/', {
+  name: 'app.logout',
+  action() {
+    Meteor.logout(() => {
+      FlowRouter.go('/');
+    });
+  }
+});
+
+/**
  * Route: Dashboard
  */
 appRoutes.route('/', {
