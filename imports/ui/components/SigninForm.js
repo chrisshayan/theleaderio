@@ -16,7 +16,7 @@ export default class SignInForm extends Component {
       errors = null
     } = this.props;
     const forgotPasswordUrl = FlowRouter.path('passwordPage',{action: 'forgot'});
-    const signUpUrl = `http://${DOMAIN}/${FlowRouter.path('signUpPage',{action: 'user'})}`;
+    const signUpUrl = `http://${DOMAIN}${FlowRouter.path('signUpPage',{action: 'user'})}`;
     return (
       
               <form className="m-t" role="form" onSubmit={(event) => {

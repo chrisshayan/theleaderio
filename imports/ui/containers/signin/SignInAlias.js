@@ -103,7 +103,7 @@ export default class SigninAliasPage extends Component {
               <p className="text-muted text-center">
                 <small>Do not have an account?</small>
               </p>
-              <a className="btn btn-sm btn-white btn-block" href={signUpUrl}>Create</a>
+              <a className="btn btn-sm btn-white btn-block" href={signUpUrl}>Create an account</a>
               <Copyright />
             </div>
           </div>

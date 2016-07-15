@@ -31,6 +31,8 @@ import SingleOrganization from '/imports/ui/containers/organizations/SingleOrgan
 import Employees from '/imports/ui/containers/employees/Employees';
 import EditProfile from '/imports/ui/containers/user/EditProfile';
 
+import * as Notifications from '/imports/api/notifications/methods';
+
 // Admin page
 import ManageIndustries from '/imports/ui/containers/admin/ManageIndustries';
 
@@ -42,7 +44,7 @@ import { resetPageHeading } from '/imports/store/modules/pageHeading';
  */
 
 // this domain should get from settings
-export const DOMAIN = 'devtheleader.io:3000';
+export const DOMAIN = 'devtheleader.io:9000';
 
 /**
  * Change root url to make flow router understand subdomain
@@ -278,6 +280,12 @@ appRoutes.route('/', {
   name: 'app.logout',
   action() {
     Meteor.logout(() => {
+      const closeButton = false,
+        timeOut = 2000,
+        title = 'Signed out',
+        message = ''
+        ;
+      Notifications.success.call({closeButton, timeOut, title, message});
       FlowRouter.go('/');
     });
   }

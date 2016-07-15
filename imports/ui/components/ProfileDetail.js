@@ -19,9 +19,10 @@ export default class ProfileDetail extends Component {
         </div>
         <div className="ibox float-e-margins">
           <div className="ibox-content profile-content">
-            <h4><strong>{profile.mame}</strong></h4>
-            <p><i className="fa fa-bank"></i> Current Organization</p>
-            {}
+            <h4><strong>{profile.name}</strong></h4>
+            {!_.isEmpty(profile.orgName) && (
+              <p><i className="fa fa-bank"></i>{' '} {profile.orgName}</p>
+            )}
             {!_.isEmpty(profile.industry) && (
               <p><i className="fa fa-building"></i>{' '} {profile.industry}</p>
             )}
@@ -37,9 +38,11 @@ export default class ProfileDetail extends Component {
               </div>
             )}
             <div className="row m-t-lg">
-              <div className="col-md-4">
-                <h5><strong>28</strong> Organizations</h5>
-              </div>
+              {profile.noOrg && (
+                <div className="col-md-4">
+                  <h5><strong>{profile.noOrg}</strong> Organizations</h5>
+                </div>
+              )}
               <div className="col-md-4">
                 <h5><strong>149</strong> Employees</h5>
               </div>

@@ -208,9 +208,12 @@ export const getPublicData = new ValidatedMethod({
         };
 
         const profile = Profiles.findOne({userId: user._id});
-        console.log(profile);
         if (!!profile.firstName || profile.lastName) {
           result.name = `${profile.firstName} ${profile.lastName}`;
+        }
+        if(Organizations.find({ owner : user._id }).count() > 0) {
+          const orgName = Organizations.find({ owner : user._id }, {"sort" : ['endTime', 'desc']} ).fetch()[0].name;
+          result.orgName = !!orgName ? orgName : null;
         }
         if(!!profile.industries) {
           result.industry = Industries.findOne({ _id: { $in: profile.industries } }).name;
@@ -218,10 +221,11 @@ export const getPublicData = new ValidatedMethod({
         result.phoneNumber = !!profile.phoneNumber ? profile.phoneNumber : null;
         result.aboutMe = !!profile.aboutMe ? profile.aboutMe : null;
         result.imageUrl = !!profile.imageUrl ? profile.imageUrl : null;
-        result.noOrg = 28;
+        // result.noOrg = 28;
+        const noOrg = Organizations.find({ owner: user._id }).count();
+        result.noOrg = !!noOrg ? noOrg : null;
         result.noEmployees = 149;
         result.noFeedbacks = 240;
-
         return result;
       } else {
         return [];

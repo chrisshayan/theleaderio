@@ -31,19 +31,17 @@ export default class UploadImage extends Component {
         <div className="ibox-content no-padding border-left-right ">
           <ProfilePhoto
             imageUrl={imageUrl}
-            width={293}
-            height={293}
+            width={333}
+            height={333}
           />
         </div>
-        <div className="ibox-content btn-group">
-          <div className="hr-line-dashed">
-            <ReactFilepicker
-              apikey={datFpApikey}
-              defaultWidget={false}
-              options={options}
-              onSuccess={this._onSuccess.bind(this)}
-            />
-          </div>
+        <div className="ibox-content form-group">
+          <ReactFilepicker
+            apikey={datFpApikey}
+            defaultWidget={false}
+            options={options}
+            onSuccess={this._onSuccess.bind(this)}
+          />
         </div>
       </div>
     );
