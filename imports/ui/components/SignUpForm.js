@@ -20,7 +20,7 @@ export default class SignUpForm extends Component {
 
     const {errors} = this.props;
 
-    const signInUrl = FlowRouter.path('signInPage',{action: 'alias'});
+    const signInUrl = FlowRouter.path('SignInPage',{action: 'alias'});
 
     return (
       <form className="m-t" role="form" onSubmit={(event) => {
