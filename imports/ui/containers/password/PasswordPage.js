@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import _ from 'lodash';
 
-import {routes} from '/imports/startup/client/routes';
 
 import SingleInputFrom from '/imports/ui/common/SingleInputForm';
 import NoticeForm from '/imports/ui/common/NoticeForm';
@@ -54,11 +53,12 @@ export default class PasswordPage extends Component {
     // verify Alias with email input first
     UserActions.verify.call({alias, email}, (error) => {
       if (_.isEmpty(error)) {
-        const tokenId = TokenActions.generate.call({email}, (error) => {
+        const tokenId = TokenActions.generate.call({email, action: 'password'}, (error) => {
           if (_.isEmpty(error)) {
             // call methods to send verify Email with token link to user
             // route to Welcome page with a message to verify user's email
-            const url = `http://${document.location.hostname}:9000/${routes.password.set}?token=${tokenId}`;
+            const setPassUrl = FlowRouter.path('passwordPage',{action: 'set'}, {token: tokenId});
+            const url = `http://${document.location.hostname}:9000${setPassUrl}`;
             const mailOptions = {
               email: email,
               url: url,

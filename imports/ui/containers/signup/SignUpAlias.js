@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import {FlowRouter} from 'meteor/kadira:flow-router';
 
-import {DOMAIN, routes} from '/imports/startup/client/routes';
-import AliasForm from '/imports/ui/common/AliasForm';
+import {DOMAIN} from '/imports/startup/client/routes';
+import AliasForm from '/imports/ui/components/AliasForm';
 import Copyright from '/imports/ui/common/Copyright';
+import Spinner from '/imports/ui/common/Spinner';
 import * as UserActions from '/imports/api/users/methods';
 import * as SubdomainActions from '/imports/utils/subdomain';
 
@@ -20,7 +21,7 @@ export default class SignUpAlias extends Component {
 
   _inputSubmit({inputValue}) {
     const alias = inputValue;
-    const email = FlowRouter.getQueryParam("email");
+    const email = Meteor.user().emails[0].address;
     // Call methods createAlias
     UserActions.createAlias.call({email, alias}, (error) => {
       if (_.isEmpty(error)) {
@@ -29,7 +30,7 @@ export default class SignUpAlias extends Component {
         this.setState({
           errors: null
         });
-        SubdomainActions.addSubdomain({alias, route: `${routes.signIn.account}`});
+        SubdomainActions.addSubdomain({alias, route: FlowRouter.path('SignInPage', {action: 'account'})});
       } else {
         this.setState({
           errors: error.reason

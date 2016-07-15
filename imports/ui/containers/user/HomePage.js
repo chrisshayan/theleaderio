@@ -4,7 +4,6 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 import { Profiles } from '/imports/api/profiles/index';
 import * as SubdomainActions from '/imports/utils/subdomain';
-import { signinAliasRoute } from '/imports/startup/client/routes';
 import Spinner from '/imports/ui/common/Spinner';
 
 class UserHomePage extends Component {
@@ -49,11 +48,11 @@ const meteorData = params => {
     if(alias !== username) {
       console.log(`wrong alias`);
       Meteor.logout();
-      FlowRouter.go(signinAliasRoute.path);
+      FlowRouter.go('SignInPage', {action: 'alias'});
     }
   } else {
     console.log(`user not logged in: ${Meteor.user()}`);
-    FlowRouter.go(signinAliasRoute.path);
+    FlowRouter.go('SignInPage', {action: 'alias'});
   }
   return {
     isLoading: (Meteor.userId() & !sub.ready()),

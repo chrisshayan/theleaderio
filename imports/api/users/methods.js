@@ -4,6 +4,9 @@ import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 import {Accounts} from 'meteor/accounts-base';
 import _ from 'lodash';
 
+import * as ProfileActions from '/imports/api/profiles/methods';
+import {STATUS_ACTIVE} from '/imports/api/profiles/index';
+
 import {IDValidator} from '/imports/utils';
 import {Tokens} from '/imports/api/tokens/index';
 
@@ -25,21 +28,25 @@ export const createAlias = new ValidatedMethod({
     if (!this.isSimulation) {
       const user = Accounts.findUserByEmail(email);
       if (!_.isEmpty(user)) {
-        const userId = user._id;
-        Accounts.setUsername(userId, alias);
-        const verifyUser = Accounts.findUserByUsername(alias);
-        if (_.isEmpty(verifyUser)) {
-          throw new Meteor.Error('create-alias-failed',
-            `Can not create user alias with email=${email} & alias=${alias}`);
+        if (typeof user.username === 'undefined') {
+          const userId = user._id;
+          Accounts.setUsername(userId, alias);
+          const verifyUser = Accounts.findUserByUsername(alias);
+          if (_.isEmpty(verifyUser)) {
+            throw new Meteor.Error('create-alias-failed',
+              `Can not create user alias with email=${email} & alias=${alias}`);
+          } else {
+            // add alias into profiles collection
+            return `create alias success`;
+          }
         } else {
-          // add alias into alias collection
-          // Alias.create.call({alias});
+          throw new Meteor.Error('create-alias-failed',
+            `Account email=${email} have alias already`);
         }
       }
     }
   }
 });
-
 
 /**
  *  @summary set alias for account which will use Account username as alias
@@ -73,7 +80,10 @@ export const resetPassword = new ValidatedMethod({
   }
 });
 
-// verify user email & alias in server side
+/**
+ *  @summary verify user email & alias in server side
+ *  @param alias, email
+ */
 export const verify = new ValidatedMethod({
   name: 'users.verify',
   validate: new SimpleSchema({
@@ -118,6 +128,47 @@ export const verify = new ValidatedMethod({
         if (_.isEmpty(user)) {
           throw new Meteor.Error(`email ${email} doesn't exists`);
         }
+      }
+    }
+  }
+});
+
+
+/**
+ *  @summary confirm user email address
+ *  @param email
+ */
+export const confirm = new ValidatedMethod({
+  name: 'users.confirm',
+  validate: new SimpleSchema({
+    tokenId: {
+      type: String
+    }
+  }).validator(),
+  run({tokenId}) {
+    if (!this.isSimulation) {
+      // verify Token
+      const token = Tokens.findOne({_id: tokenId});
+      if (!_.isEmpty(token)) {
+        const email = token.email;
+        const user = Accounts.findUserByEmail(email);
+        if (!_.isEmpty(user)) {
+          const userId = user._id;
+          // Activate user
+          Meteor.users.update({
+            userId,
+            emails: {
+              $elemMatch: {address: email}
+            }
+          }, {
+            $set: {
+              "emails.$.verified": true
+            }
+          });
+          ProfileActions.setStatus.call({userId, status: STATUS_ACTIVE});
+        }
+      } else {
+        throw new Meteor.Error('invalid-token', 'User token is invalid or has been used.');
       }
     }
   }

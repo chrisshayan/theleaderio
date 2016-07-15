@@ -6,6 +6,9 @@ import { mount } from 'react-mounter';
 import NoticeForm from '/imports/ui/common/NoticeForm';
 import WelcomePage from '/imports/ui/common/WelcomePage';
 import ThankyouPage from '/imports/ui/common/ThankyouPage';
+import Notification from '/imports/api/notifications/methods';
+
+import ConfirmEmail from '/imports/ui/components/ConfirmEmail';
 
 import MainLayout from '/imports/ui/layouts/MainLayout';
 import BlankLayout from '/imports/ui/layouts/BlankLayout';
@@ -21,11 +24,15 @@ import PasswordPage from '/imports/ui/containers/password/PasswordPage';
 import SetPasswordPage from '/imports/ui/containers/password/SetPasswordPage';
 import ForgotAliasPage from '/imports/ui/containers/alias/ForgotAliasPage';
 
-import PublicProfilePage from '/imports/ui/containers/user/PublicProfilePage';
+import PublicProfile from '/imports/ui/containers/user/PublicProfile';
 import Dashboard from '/imports/ui/containers/dashboard/Dashboard';
 import Organizations from '/imports/ui/containers/organizations/Organizations';
 import SingleOrganization from '/imports/ui/containers/organizations/SingleOrganization';
 import Employees from '/imports/ui/containers/employees/Employees';
+import EditProfile from '/imports/ui/containers/user/EditProfile';
+
+// Admin page
+import ManageIndustries from '/imports/ui/containers/admin/ManageIndustries';
 
 import { resetPageHeading } from '/imports/store/modules/pageHeading';
 /**
@@ -107,7 +114,7 @@ const homeRoute = FlowRouter.route('/', {
   action() {
     const alias = Session.get('alias');
     if (alias) {
-      mount(PublicProfilePage);
+      mount(PublicProfile);
     } else {
       mount(LandingPage);
     }
@@ -117,7 +124,7 @@ const homeRoute = FlowRouter.route('/', {
 export const welcomeRoute = FlowRouter.route('/welcome', {
   name: 'welcomePage',
   action() {
-    mount(WelcomePage);
+    mount(Notification);
   }
 });
 
@@ -150,6 +157,10 @@ signUpRoutes.route('/:action', {
     if (params.action == 'alias') {
       mount(SignUpAlias);
     }
+    // create new alias
+    if (params.action == 'confirm') {
+      mount(ConfirmEmail);
+    }
   }
 });
 
@@ -159,6 +170,12 @@ signUpRoutes.route('/:action', {
  * @action alias
  * @action email
  */
+const checkSignIn = (context, redirect) => {
+  if(Meteor.isLoggingIn || Meteor.userId()) {
+    FlowRouter.go('app.dashboard');
+  }
+}
+
 export const signInRoutes = FlowRouter.group({
   name: 'signinRouteGroup',
   prefix: '/signin'
@@ -173,7 +190,11 @@ signInRoutes.route('/:action', {
     }
     // sign in to user's account
     if (params.action == 'account') {
-      mount(SignInAccount);
+      if(Meteor.isLoggingIn || Meteor.userId()) {
+        FlowRouter.go('app.dashboard');
+      } else {
+        mount(SignInAccount);
+      }
     }
   }
 });
@@ -271,6 +292,50 @@ appRoutes.route('/', {
     mount(MainLayout, {
       content() {
         return <Dashboard />
+      }
+    })
+  }
+});
+
+/**
+ * Route: Edit Profile
+ */
+appRoutes.route('/profile/:action', {
+  name: 'app.profile.edit',
+  action(params) {
+    mount(MainLayout, {
+      content() {
+        if(params.action == 'edit') {
+          return <EditProfile />
+        }
+      }
+    })
+  }
+});
+
+
+/**************************************************
+ * Admin routes
+ **************************************************/
+
+const requiredAdminAuthentication = (context, redirect) => {
+
+}
+
+const adminRoutes = FlowRouter.group({
+  prefix: '/admin',
+  triggersEnter: [requiredAuthentication, requiredAdminAuthentication]
+});
+
+/**
+ * Route: Dashboard
+ */
+adminRoutes.route('/industries', {
+  name: 'admin.industries',
+  action() {
+    mount(MainLayout, {
+      content() {
+        return <ManageIndustries />
       }
     })
   }

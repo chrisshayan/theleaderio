@@ -41,3 +41,5 @@ kadira:login-state
 email
 meteorhacks:ssr
 kadira:flow-router
+ejson
+chrismbeckett:toastr
