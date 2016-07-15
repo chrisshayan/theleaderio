@@ -228,7 +228,7 @@ appRoutes.route('/', {
  * Route: Edit Profile
  */
 appRoutes.route('/profile/:action', {
-  name: 'app.profile',
+  name: 'app.profile.edit',
   action(params) {
     mount(MainLayout, {
       content() {

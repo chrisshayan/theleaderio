@@ -6,7 +6,6 @@ export default class ProfileDetail extends Component {
 
   render() {
     const {profile} = this.props;
-    console.log(profile);
     return (
       <div>
         <div className="gray-bg row">
