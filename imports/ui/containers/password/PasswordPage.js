@@ -17,6 +17,7 @@ export default class PasswordPage extends Component {
     super();
 
     this.state = {
+      loading: null,
       alias: null,
       action: null,
       errors: null
@@ -46,6 +47,7 @@ export default class PasswordPage extends Component {
     const domain = window.location.hostname;
     const email = inputValue;
     this.setState({
+      loading: true,
       action: 'sending',
       errors: null
     });
@@ -57,7 +59,7 @@ export default class PasswordPage extends Component {
           if (_.isEmpty(error)) {
             // call methods to send verify Email with token link to user
             // route to Welcome page with a message to verify user's email
-            const setPassUrl = FlowRouter.path('passwordPage',{action: 'set'}, {token: tokenId});
+            const setPassUrl = FlowRouter.path('passwordPage', {action: 'set'}, {token: tokenId});
             const url = `http://${document.location.hostname}:9000${setPassUrl}`;
             const mailOptions = {
               email: email,
@@ -67,11 +69,13 @@ export default class PasswordPage extends Component {
             EmailActions.send.call(mailOptions, (error) => {
               if (!_.isEmpty(error)) {
                 this.setState({
+                  loading: false,
                   action: 'failed',
                   errors: error.reason
                 });
               } else {
                 this.setState({
+                  loading: false,
                   errors: null,
                   action: 'sent'
                 });
@@ -81,6 +85,7 @@ export default class PasswordPage extends Component {
         });
       } else {
         this.setState({
+          loading: false,
           action: 'forgot',
           errors: `${email} & ${document.location.hostname} unmatched`
         });
@@ -91,7 +96,15 @@ export default class PasswordPage extends Component {
   render() {
     const formTitle = `Password ${this.state.action}`;
     const formDescription = `Enter your email address you use to sign in to ${document.location.hostname}`;
-    if (this.state.alias) {
+    if (this.state.loading) {
+      return (
+        <div id="page-top">
+          <Spinner
+            message={this.state.action == 'sending' ? 'Sending ...' : 'Loading ...'}
+          />
+        </div>
+      );
+    } else if (this.state.alias) {
       if (this.state.action === 'forgot' || this.state.action === 'reset') {
         return (
           <div id="page-top">
@@ -125,21 +138,13 @@ export default class PasswordPage extends Component {
           </div>
         );
       }
-    } else if(!this.state.alias) {
+    } else if (!this.state.alias) {
       return (
         <div id="page-top">
           <NoticeForm
             code='404'
             message={ this.state.errors }
             redirectUrl='/'
-          />
-        </div>
-      );
-    } else {
-      return (
-        <div id="page-top">
-          <Spinner
-            message='Loading ...'
           />
         </div>
       );

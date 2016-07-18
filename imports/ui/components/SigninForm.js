@@ -24,7 +24,7 @@ export default class SignInForm extends Component {
                       this._onSubmit();
                     }}>
                 <div className="form-group">
-                  <input ref="email" type="email" className="form-control" placeholder="Email address" required=""/>
+                  <input ref="email" type="email" className="form-control" placeholder="Email address" required autoFocus/>
                 </div>
                 <div className="form-group">
                   <input ref="password" type="password" className="form-control" placeholder="Password" required=""/>

@@ -7,6 +7,7 @@ import Copyright from '/imports/ui/common/Copyright';
 import Spinner from '/imports/ui/common/Spinner';
 import * as UserActions from '/imports/api/users/methods';
 import * as SubdomainActions from '/imports/utils/subdomain';
+import { warning } from '/imports/api/notifications/methods';
 
 
 export default class SignUpAlias extends Component {
@@ -30,6 +31,8 @@ export default class SignUpAlias extends Component {
         this.setState({
           errors: null
         });
+        // Sign out user before route to subdomain
+        Meteor.logout();
         SubdomainActions.addSubdomain({alias, route: FlowRouter.path('SignInPage', {action: 'account'})});
       } else {
         this.setState({

@@ -29,7 +29,7 @@ export default class SignUpForm extends Component {
           }}>
         <div>
           <div className="form-group">
-            <input ref="firstName" type="text" className="form-control" placeholder="First name" required autofocus/>
+            <input ref="firstName" type="text" className="form-control" placeholder="First name" required autoFocus/>
           </div>
           <div className="form-group">
             <input ref="lastName" type="text" className="form-control" placeholder="Last name (optional)"/>

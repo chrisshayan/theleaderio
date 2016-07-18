@@ -42,7 +42,7 @@ export default class SingleInputForm extends Component {
                  type={ inputType }
                  className="form-control"
                  placeholder={ inputHolder }
-                 autofocus
+                 autoFocus
           />
         </div>
         <div className="form-group">

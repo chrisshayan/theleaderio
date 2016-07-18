@@ -23,7 +23,6 @@ class Navigation extends Component {
 
   render() {
     const {activeRoute} = this.props;
-    console.log(activeRoute)
 
     return (
       <nav id="left-nav" className="left-nav">

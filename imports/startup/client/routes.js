@@ -61,29 +61,6 @@ Tracker.autorun(function() {
 // init root url - support subdomain
 FlowRouter.setRootUrl();
 
-export const routes = {
-  home: '/',
-  signUp: {
-    user: 'signup/user',
-    alias: 'signup/alias',
-    verify: 'signup/verify'
-  },
-  signIn: {
-    alias: 'signin/alias',
-    account: 'signin/account'
-  },
-  password: {
-    forgot: 'password/forgot',
-    reset: 'password/reset',
-    set: 'password/set'
-  },
-  alias: {
-    forgot: 'alias/forgot'
-  },
-  thankyou: 'thankyou'
-
-};
-
 /**
  * @summary Default Invalid Url Route
  * @route notFound
@@ -157,7 +134,17 @@ signUpRoutes.route('/:action', {
     }
     // create new alias
     if (params.action == 'alias') {
-      mount(SignUpAlias);
+      if(!Meteor.loggingIn() && !Meteor.userId()) {
+        const
+          closeButton = false,
+          title = "Signup user",
+          message = "Please enter your basic informations first"
+          ;
+        Notifications.warning.call({closeButton, title, message});
+        FlowRouter.go('signUpPage', {action: 'user'});
+      } else {
+        mount(SignUpAlias);
+      }
     }
     // create new alias
     if (params.action == 'confirm') {
@@ -280,12 +267,14 @@ appRoutes.route('/', {
   name: 'app.logout',
   action() {
     Meteor.logout(() => {
-      const closeButton = false,
-        timeOut = 2000,
-        title = 'Signed out',
-        message = ''
-        ;
-      Notifications.success.call({closeButton, timeOut, title, message});
+      if (!Meteor.loggingIn() || !Meteor.user()) {
+        const closeButton = false,
+          timeOut = 2000,
+          title = 'Signed out',
+          message = ''
+          ;
+        Notifications.success.call({closeButton, timeOut, title, message});
+      }
       FlowRouter.go('/');
     });
   }
