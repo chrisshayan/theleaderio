@@ -25,7 +25,8 @@ export default class SignUpUser extends Component {
 
     // Create account for user
     this.setState({
-      loading: true
+      loading: true,
+      errors: null
     });
     Accounts.createUser({email, password}, (error) => {
       if (!error) {
@@ -42,7 +43,7 @@ export default class SignUpUser extends Component {
               if (!error) {
                 // call methods to send verify Email with token link to user
                 // route to Welcome page with a message to verify user's email
-                const verifyUrl = FlowRouter.path('signUpPage', {action: 'confirm'}, { token: tokenId});
+                const verifyUrl = FlowRouter.path('signUpPage', {action: 'confirm'}, {token: tokenId});
                 const url = `http://${DOMAIN}${verifyUrl}`;
                 const mailOptions = {
                   email: email,
@@ -68,20 +69,18 @@ export default class SignUpUser extends Component {
   render() {
 
     return (
-      <div id="page-top">
-        <div className="middle-box text-center loginscreen   animated fadeInDown">
-          <div>
-            <h1 className="logo-name">TL+</h1>
-          </div>
-          <h3>
-            Being a true leader doesn’t come from a title, it is a designation you must earn from the people you lead.</h3>
-          <p>Become a good leader from today.</p>
-          <SignUpForm
-            errors={this.state.errors}
-            onSubmit={this.onSubmit.bind(this)}
-          />
-          <Copyright />
+      <div className="middle-box text-center loginscreen   animated fadeInDown">
+        <div>
+          <h1 className="logo-name">TL+</h1>
         </div>
+        <h3>
+          Being a true leader doesn’t come from a title, it is a designation you must earn from the people you lead.</h3>
+        <p>Become a good leader from today.</p>
+        <SignUpForm
+          errors={this.state.errors}
+          onSubmit={this.onSubmit.bind(this)}
+        />
+        <Copyright />
       </div>
     );
   }

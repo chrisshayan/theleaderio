@@ -32,7 +32,6 @@ export default class SigninAliasPage extends Component {
   // submit for sign in to web address alias.theleader.io
   _inputSubmit({inputValue}) {
     const alias = inputValue;
-    Meteor.logout();
     SubdomainActions.addSubdomain({ alias, route: FlowRouter.path('SignInPage', {action: 'account'})});
   }
 

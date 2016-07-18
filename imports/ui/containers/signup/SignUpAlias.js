@@ -7,7 +7,7 @@ import Copyright from '/imports/ui/common/Copyright';
 import Spinner from '/imports/ui/common/Spinner';
 import * as UserActions from '/imports/api/users/methods';
 import * as SubdomainActions from '/imports/utils/subdomain';
-import { warning } from '/imports/api/notifications/methods';
+import {warning} from '/imports/api/notifications/methods';
 
 
 export default class SignUpAlias extends Component {
@@ -67,24 +67,22 @@ export default class SignUpAlias extends Component {
 
   render() {
     return (
-      <div id="page-top">
-        <div className="middle-box text-center loginscreen   animated fadeInDown">
-          <div>
-            <h1 className="logo-name">TL+</h1>
-          </div>
-          <h3>Create your alias</h3>
-          <p>This alias will be used as your web address.</p>
-          <AliasForm
-            inputType='text'
-            inputHolder='alias'
-            buttonLabel='Create'
-            aliasAllowed={this.state.aliasAllowed}
-            errors={ this.state.errors }
-            onSubmit={ this._inputSubmit.bind(this) }
-            onKeyUp={ this._onKeyUp.bind(this) }
-          />
-          <Copyright />
+      <div className="middle-box text-center loginscreen   animated fadeInDown">
+        <div>
+          <h1 className="logo-name">TL+</h1>
         </div>
+        <h3>Create your alias</h3>
+        <p>This alias will be used as your web address.</p>
+        <AliasForm
+          inputType='text'
+          inputHolder='alias'
+          buttonLabel='Create'
+          aliasAllowed={this.state.aliasAllowed}
+          errors={ this.state.errors }
+          onSubmit={ this._inputSubmit.bind(this) }
+          onKeyUp={ this._onKeyUp.bind(this) }
+        />
+        <Copyright />
       </div>
     );
   }

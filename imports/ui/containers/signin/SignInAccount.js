@@ -70,7 +70,7 @@ export default class SignInPage extends Component {
   }
 
   render() {
-    if(this.state.loading) {
+    if (this.state.loading) {
       return (
         <div>
           <Spinner
@@ -111,24 +111,20 @@ export default class SignInPage extends Component {
           </div>
         </div>
       );
-    } else  if(!this.state.alias){
+    } else if (!this.state.alias) {
       return (
-        <div id="page-top" className="gray-bg">
-          <NoticeForm
-            code='404'
-            message="Alias doesn't exists"
-            description='Sorry, but the page you are looking for has note been found. Try checking the URL for error, then hit the refresh button on your browser or try found something else in our app.'
-            buttonLabel='Come back to HomePage'
-          />
-        </div>
+        <NoticeForm
+          code='404'
+          message="Alias doesn't exists"
+          description='Sorry, but the page you are looking for has note been found. Try checking the URL for error, then hit the refresh button on your browser or try found something else in our app.'
+          buttonLabel='Come back to HomePage'
+        />
       );
     } else {
       return (
-        <div>
-          <Spinner
-            message="Loading ..."
-          />
-        </div>
+        <Spinner
+          message="Loading ..."
+        />
       );
     }
   }

@@ -263,7 +263,7 @@ const appRoutes = FlowRouter.group({
 /**
  * Route: Logout
  */
-appRoutes.route('/', {
+appRoutes.route('/logout', {
   name: 'app.logout',
   action() {
     Meteor.logout(() => {
