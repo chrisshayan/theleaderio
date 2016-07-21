@@ -107,7 +107,7 @@ class ConfigProfile extends Component {
                     method="get"
                     className="form-horizontal"
                     onSubmit={(e) => {
-                    // e.preventDefault();
+                    e.preventDefault();
                     this.onSave();
                   }}>
                     <div className="form-group" style={{margin: 0}}>
