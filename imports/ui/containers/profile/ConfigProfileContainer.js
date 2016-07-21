@@ -69,6 +69,14 @@ class ConfigProfile extends Component {
           title = 'Customize public information',
           message = 'Saved';
         Notifications.success.call({closeButton, title, message});
+        const alias = Session.get('alias');
+        getPublicData.call({alias}, (error, result) => {
+          if (_.isEmpty(error)) {
+            this.setState({
+              publicData: result
+            });
+          }
+        });
       } else {
         const
           closeButton = false,
