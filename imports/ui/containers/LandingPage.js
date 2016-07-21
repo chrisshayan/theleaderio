@@ -48,8 +48,7 @@ export default class LandingPage extends Component {
           <nav ref="nav" className={navStyle} role="navigation">
             <div className="container">
               <div className="navbar-header page-scroll">
-                <button type="button" className="navbar-toggle collapsed" dataToggle="collapse" dataTarget="#navbar"
-                        ariaExpanded="false" ariaControls="navbar">
+                <button type="button" className="navbar-toggle collapsed">
                   <span className="sr-only">Toggle navigation</span>
                   <span className="icon-bar"></span>
                   <span className="icon-bar"></span>

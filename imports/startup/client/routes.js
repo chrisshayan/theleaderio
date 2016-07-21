@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import {Meteor} from 'meteor/meteor';
+import {FlowRouter} from 'meteor/kadira:flow-router';
 import React from 'react';
-import { mount } from 'react-mounter';
+import {mount} from 'react-mounter';
 
 import NoticeForm from '/imports/ui/common/NoticeForm';
 import WelcomePage from '/imports/ui/common/WelcomePage';
@@ -24,19 +24,19 @@ import PasswordPage from '/imports/ui/containers/password/PasswordPage';
 import SetPasswordPage from '/imports/ui/containers/password/SetPasswordPage';
 import ForgotAliasPage from '/imports/ui/containers/alias/ForgotAliasPage';
 
-import PublicProfile from '/imports/ui/containers/user/PublicProfile';
+import PublicProfile from '/imports/ui/containers/profile/PublicProfile';
+import Profile from '/imports/ui/containers/profile/Profile';
 import Dashboard from '/imports/ui/containers/dashboard/Dashboard';
 import Organizations from '/imports/ui/containers/organizations/Organizations';
 import SingleOrganization from '/imports/ui/containers/organizations/SingleOrganization';
 import Employees from '/imports/ui/containers/employees/Employees';
-import EditProfile from '/imports/ui/containers/user/EditProfile';
 
 import * as Notifications from '/imports/api/notifications/methods';
 
 // Admin page
 import ManageIndustries from '/imports/ui/containers/admin/ManageIndustries';
 
-import { resetPageHeading } from '/imports/store/modules/pageHeading';
+import {resetPageHeading} from '/imports/store/modules/pageHeading';
 /**
  * Constant
  * @routes all routes in action
@@ -53,7 +53,7 @@ FlowRouter.setRootUrl = (url) => {
   Meteor.absoluteUrl.defaultOptions.rootUrl = url || window.location.origin;
 }
 
-Tracker.autorun(function() {
+Tracker.autorun(function () {
   FlowRouter.watchPathChange();
   FlowRouter.setRootUrl();
 });
@@ -134,7 +134,7 @@ signUpRoutes.route('/:action', {
     }
     // create new alias
     if (params.action == 'alias') {
-      if(!Meteor.loggingIn() && !Meteor.userId()) {
+      if (!Meteor.loggingIn() && !Meteor.userId()) {
         const
           closeButton = false,
           title = "Signup user",
@@ -160,7 +160,7 @@ signUpRoutes.route('/:action', {
  * @action email
  */
 const checkSignIn = (context, redirect) => {
-  if(Meteor.isLoggingIn || Meteor.userId()) {
+  if (Meteor.isLoggingIn || Meteor.userId()) {
     FlowRouter.go('app.dashboard');
   }
 }
@@ -179,7 +179,7 @@ signInRoutes.route('/:action', {
     }
     // sign in to user's account
     if (params.action == 'account') {
-      if(Meteor.isLoggingIn || Meteor.userId()) {
+      if (Meteor.isLoggingIn || Meteor.userId()) {
         FlowRouter.go('app.dashboard');
       } else {
         mount(SignInAccount);
@@ -244,10 +244,10 @@ aliasRoutes.route('/:action', {
  **************************************************/
 
 const requiredAuthentication = (context, redirect) => {
-  if(!Meteor.isLoggingIn && !Meteor.userId()) {
+  if (!Meteor.isLoggingIn && !Meteor.userId()) {
     const alias = Session.get('alias');
-    const params = { action: 'alias' };
-    if(alias) {
+    const params = {action: 'alias'};
+    if (alias) {
       params.action = 'account';
     }
     FlowRouter.go('SignInPage', params);
@@ -294,22 +294,6 @@ appRoutes.route('/', {
   }
 });
 
-/**
- * Route: Edit Profile
- */
-appRoutes.route('/profile/:action', {
-  name: 'app.profile.edit',
-  action(params) {
-    mount(MainLayout, {
-      content() {
-        if(params.action == 'edit') {
-          return <EditProfile />
-        }
-      }
-    })
-  }
-});
-
 
 /**************************************************
  * Admin routes
@@ -333,6 +317,20 @@ adminRoutes.route('/industries', {
     mount(MainLayout, {
       content() {
         return <ManageIndustries />
+      }
+    })
+  }
+});
+
+/**
+ * Route: profile
+ */
+appRoutes.route('/profile', {
+  name: 'app.profile',
+  action() {
+    mount(MainLayout, {
+      content() {
+        return <Profile />
       }
     })
   }
@@ -376,7 +374,7 @@ appRoutes.route('/organizations/update/:_id', {
   action(params) {
     mount(MainLayout, {
       content() {
-        return <SingleOrganization _id={params._id} />
+        return <SingleOrganization _id={params._id}/>
       }
     })
   }

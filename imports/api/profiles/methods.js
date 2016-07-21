@@ -3,10 +3,12 @@ import {ValidatedMethod} from 'meteor/mdg:validated-method';
 import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 import _ from 'lodash';
 
+// collections
 import {Profiles, STATUS_ACTIVE, STATUS_INACTIVE} from './index';
-import { Organizations } from '/imports/api/organizations/index';
-import { Employees } from '/imports/api/employees/index';
-import { Industries } from '/imports/api/industries/index';
+import {Organizations} from '/imports/api/organizations/index';
+import {Employees} from '/imports/api/employees/index';
+import {Industries} from '/imports/api/industries/index';
+import {Configs} from '/imports/api/users/index';
 
 import {IDValidator} from '/imports/utils';
 
@@ -184,6 +186,7 @@ export const setStatus = new ValidatedMethod({
   }
 });
 
+// get public information
 export const getPublicData = new ValidatedMethod({
   name: 'profiles.getPublicData',
   validate: new SimpleSchema({
@@ -192,43 +195,73 @@ export const getPublicData = new ValidatedMethod({
     }
   }).validator(),
   run({alias}) {
-    if(!this.isSimulation) {
+    if (!this.isSimulation) {
       const user = Accounts.findUserByUsername(alias);
-      if(!_.isEmpty(user)) {
+      if (!_.isEmpty(user)) {
         let result = {
-          name: null,
-          orgName: null,
-          industry: null,
-          phoneNumber: null,
-          aboutMe: null,
-          imageUrl: null,
-          noOrg: null,
-          noEmployees: null,
-          noFeedbacks: null
+          profile: {
+            name: null,
+            orgName: null,
+            industry: null,
+            phoneNumber: null,
+            aboutMe: null,
+            picture: null,
+            noOrg: null,
+            noEmployees: null,
+            noFeedbacks: null
+          }
         };
 
+        // Always public the name
         const profile = Profiles.findOne({userId: user._id});
         if (!!profile.firstName || profile.lastName) {
-          result.name = `${profile.firstName} ${profile.lastName}`;
+          result.profile.name = `${profile.firstName} ${profile.lastName}`;
         }
-        if(Organizations.find({ owner : user._id }).count() > 0) {
-          const orgName = Organizations.find({ owner : user._id }, {"sort" : ['endTime', 'desc']} ).fetch()[0].name;
-          result.orgName = !!orgName ? orgName : null;
+        if(Configs.find({userId: user._id}).count() > 0) {
+          const configs = Configs.find({userId: user._id}).fetch()[0].configs;
+          // Get public information
+          // Profile
+          const profileConfigs = configs.profile;
+          // orgName
+          if(profileConfigs.orgName && typeof profileConfigs.orgName !== 'undefined') {
+            if (Organizations.find({owner: user._id}).count() > 0) {
+              const orgName = Organizations.find({owner: user._id}, {"sort": ['endTime', 'desc']}).fetch()[0].name;
+              result.profile.orgName = !!orgName ? orgName : null;
+            }
+          }
+          // industry
+          if(profileConfigs.industry && typeof profileConfigs.industry !== 'undefined') {
+            if (!!profile.industries) {
+              result.profile.industry = Industries.findOne({_id: {$in: profile.industries}}).name;
+            }
+          }
+          // phoneNumber
+          if(profileConfigs.phoneNumber && typeof profileConfigs.phoneNumber !== 'undefined') {
+            result.profile.phoneNumber = !!profile.phoneNumber ? profile.phoneNumber : null;
+          }
+          // aboutMe
+          if(profileConfigs.aboutMe && typeof profileConfigs.aboutMe !== 'undefined') {
+            result.profile.aboutMe = !!profile.aboutMe ? profile.aboutMe : null;
+          }
+          // picture
+          if(profileConfigs.picture && typeof profileConfigs.picture !== 'undefined') {
+            result.profile.picture = !!profile.imageUrl ? profile.imageUrl : null;
+          }
+          // noOrg
+          if(profileConfigs.noOrg && typeof profileConfigs.noOrg !== 'undefined') {
+            const noOrg = Organizations.find({owner: user._id}).count();
+            result.profile.noOrg = !!noOrg ? noOrg : null;
+          }
+          // noEmployees
+          if(profileConfigs.noEmployees && typeof profileConfigs.noEmployees !== 'undefined') {
+            result.profile.noEmployees = 149;
+          }
+          // noFeedbacks
+          if(profileConfigs.noFeedbacks && typeof profileConfigs.noFeedbacks !== 'undefined') {
+            result.profile.noFeedbacks = 240;
+          }
         }
-        if(!!profile.industries) {
-          result.industry = Industries.findOne({ _id: { $in: profile.industries } }).name;
-        }
-        result.phoneNumber = !!profile.phoneNumber ? profile.phoneNumber : null;
-        result.aboutMe = !!profile.aboutMe ? profile.aboutMe : null;
-        result.imageUrl = !!profile.imageUrl ? profile.imageUrl : null;
-        // result.noOrg = 28;
-        const noOrg = Organizations.find({ owner: user._id }).count();
-        result.noOrg = !!noOrg ? noOrg : null;
-        result.noEmployees = 149;
-        result.noFeedbacks = 240;
         return result;
-      } else {
-        return [];
       }
     }
   }

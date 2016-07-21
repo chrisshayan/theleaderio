@@ -9,6 +9,7 @@ class Navigation extends Component {
     this.state = {
       menuItems: [
         {route: 'landingPage', path: '/', label: 'Home', icon: 'fa fa-dashboard'},
+        {route: 'app.profile', path: FlowRouter.url('app.profile'), label: 'Profile', icon: 'fa fa-user'},
         {route: 'app.organizations', path: FlowRouter.url('app.organizations'), label: 'Organizations', icon: 'fa fa-sitemap'},
         {route: 'app.employees', path: FlowRouter.url('app.employees'), label: 'Employees', icon: 'fa fa-users'},
         {route: '', path: '', label: 'Feedback', icon: 'fa fa-gift'},

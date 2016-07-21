@@ -5,11 +5,11 @@ import {Profiles} from '/imports/api/profiles/index';
 import {Industries} from '/imports/api/industries/index';
 
 import * as ProfileActions from '/imports/api/profiles/methods';
+import * as Notifications from '/imports/api/notifications/methods';
 
 import ChosenIndustries from '/imports/ui/components/ChosenIndustries';
 import UploadImage from '/imports/ui/components/UploadImage';
 import Spinner from '/imports/ui/common/Spinner';
-import * as Notifications from '/imports/api/notifications/methods';
 
 // EditProfile.propTypes = {
 //   loading: React.PropTypes.bool,
@@ -18,7 +18,7 @@ import * as Notifications from '/imports/api/notifications/methods';
 // };
 
 class EditProfile extends Component {
-
+  
   onSave() {
     const userId = Meteor.userId(),
       firstName = this.refs.firstName.value,
@@ -84,7 +84,10 @@ class EditProfile extends Component {
                   <h5>Edit your profile</h5>
                 </div>
                 <div className="ibox-content">
-                  <form method="get" className="form-horizontal" onSubmit={(e) => {
+                  <form 
+                    method="get" 
+                    className="form-horizontal" 
+                    onSubmit={(e) => {
                     e.preventDefault();
                     this.onSave();
                   }}>
