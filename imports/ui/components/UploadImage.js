@@ -31,8 +31,9 @@ export default class UploadImage extends Component {
         <div className="ibox-content no-padding border-left-right ">
           <ProfilePhoto
             imageUrl={imageUrl}
-            width={333}
-            height={333}
+            imageClass="img-responsive"
+            width={325}
+            height={325}
           />
         </div>
         <div className="ibox-content form-group">

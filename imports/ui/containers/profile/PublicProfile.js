@@ -22,7 +22,7 @@ export default class PublicProfile extends Component {
     this.state = {
       loading: null,
       alias: null,
-      profile: null
+      publicInfo: null
     };
   }
 
@@ -40,7 +40,7 @@ export default class PublicProfile extends Component {
           if (_.isEmpty(error)) {
             this.setState({
               loading: false,
-              profile: result
+              publicInfo: result
             });
           } else {
             this.setState({
@@ -60,7 +60,8 @@ export default class PublicProfile extends Component {
   }
 
   render() {
-    const { profile, errors, loading, alias } = this.state;
+    const { publicInfo, errors, loading, alias } = this.state;
+    console.log(publicInfo)
     if (loading) {
       return (
         <div>
@@ -76,7 +77,7 @@ export default class PublicProfile extends Component {
             <div className="row animated fadeInRight">
               <div className="col-md-4">
                 <ProfileDetail
-                  profile={profile}
+                  profile={publicInfo.profile}
                 />
               </div>
               <div className="col-md-8">

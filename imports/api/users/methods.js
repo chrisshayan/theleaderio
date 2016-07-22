@@ -4,11 +4,14 @@ import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 import {Accounts} from 'meteor/accounts-base';
 import _ from 'lodash';
 
+// actions
 import * as ProfileActions from '/imports/api/profiles/methods';
 import {STATUS_ACTIVE} from '/imports/api/profiles/index';
-
 import {IDValidator} from '/imports/utils';
+
+// collection
 import {Tokens} from '/imports/api/tokens/index';
+import { Configs } from '/imports/api/users/index';
 
 /**
  *  @summary set alias for account which will use Account username as alias
@@ -171,5 +174,33 @@ export const confirm = new ValidatedMethod({
         throw new Meteor.Error('invalid-token', 'User token is invalid or has been used.');
       }
     }
+  }
+});
+
+/**
+ *  @summary add configuration for user
+ *  @param name, configs
+ */
+export const addConfig = new ValidatedMethod({
+  name: 'users.addConfig',
+  validate: null,
+  run({name, configs}) {
+    Configs.insert({name, configs});
+  }
+});
+
+/**
+ *  @summary add configuration for user
+ *  @param name, configs
+ */
+export const updateConfig = new ValidatedMethod({
+  name: 'users.updateConfig',
+  validate: null,
+  run({name, configs}) {
+    const selector = {
+      userId: Meteor.userId(),
+      name
+    };
+    Configs.update(selector, { $set: {configs}});
   }
 });

@@ -5,13 +5,13 @@ import ProfilePhoto from '/imports/ui/components/ProfilePhoto';
 export default class ProfileDetail extends Component {
 
   render() {
-    const {profile} = this.props;
+    const {profile, profileClass="gray-bg row"} = this.props;
     return (
       <div>
-        <div className="gray-bg row">
+        <div className={profileClass}>
           <div className="col-md-12">
             <ProfilePhoto
-              imageUrl={profile.imageUrl}
+              imageUrl={profile.picture}
               width={325}
               height={325}
             />
@@ -43,12 +43,16 @@ export default class ProfileDetail extends Component {
                   <h5><strong>{profile.noOrg}</strong> Organizations</h5>
                 </div>
               )}
-              <div className="col-md-4">
-                <h5><strong>149</strong> Employees</h5>
-              </div>
-              <div className="col-md-4">
-                <h5><strong>240</strong> Feedbacks</h5>
-              </div>
+              {profile.noEmployees && (
+                <div className="col-md-4">
+                  <h5><strong>{profile.noEmployees}</strong> Employees</h5>
+                </div>
+              )}
+              {profile.noFeedbacks && (
+                <div className="col-md-4">
+                  <h5><strong>{profile.noFeedbacks}</strong> Feedbacks</h5>
+                </div>
+              )}
             </div>
           </div>
         </div>
