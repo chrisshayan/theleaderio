@@ -6,6 +6,22 @@ class DatePicker extends Component {
 	el = null;
 
 	componentDidMount() {
+		if(!this.props.disabled) {
+			this.initDatePicker();
+		}
+	}
+
+	componentDidUpdate(prevProps) {
+		if(prevProps.disabled != this.props.disabled) {
+			if(this.props.disabled) {
+				$(this.refs.component).find(".input-group-addon").off();
+			} else {
+				this.initDatePicker();
+			}
+		}
+	}
+
+	initDatePicker() {
 		this.el = $(this.refs.component);
 		const option = this.props.option || {};
 		this.el.datepicker(option).on('input change', _.debounce(e => {
@@ -27,7 +43,7 @@ class DatePicker extends Component {
 	}
 
 	render() {
-		const { label = '', value = '', error, isDateObject = false } = this.props;
+		const { label = '', value = '', error, isDateObject = false, disabled } = this.props;
 		return (
 			<div className={error ? 'form-group has-error' : 'form-group'}>
 				<label className="font-noraml">
@@ -40,6 +56,7 @@ class DatePicker extends Component {
 					<input 
 						type="text" 
 						className="form-control" 
+						disabled={disabled}
 						defaultValue={isDateObject ? new moment(value).format('MM/DD/YYYY') : value}
 					/>
 				</div>

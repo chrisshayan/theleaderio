@@ -38,6 +38,7 @@ class TopNav extends Component {
                 </a>
                 <ul className="dropdown-menu" aria-labelledby="user-info">
                   <li><a href={FlowRouter.url('app.profile')}>Edit profile</a></li>
+                  <li><a href={FlowRouter.url('app.dashboard')}>Dashboard</a></li>
                   <li role="separator" className="divider"></li>
                   <li><a href={FlowRouter.url('app.logout')}>Sign out</a></li>
                 </ul>
