@@ -1,10 +1,16 @@
-import { Meteor } from 'meteor/meteor';
-import { ValidatedMethod } from 'meteor/mdg:validated-method';
-import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+import {Meteor} from 'meteor/meteor';
+import {ValidatedMethod} from 'meteor/mdg:validated-method';
+import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 import _ from 'lodash';
 
-import { Profiles, STATUS_ACTIVE, STATUS_INACTIVE } from './index';
-import { IDValidator } from '/imports/utils';
+// collections
+import {Profiles, STATUS_ACTIVE, STATUS_INACTIVE} from './index';
+import {Organizations} from '/imports/api/organizations/index';
+import {Employees} from '/imports/api/employees/index';
+import {Industries} from '/imports/api/industries/index';
+import {Configs} from '/imports/api/users/index';
+
+import {IDValidator} from '/imports/utils';
 
 /**
  * CUD user profiles (Create, Update, Deactivate)
@@ -15,7 +21,7 @@ import { IDValidator } from '/imports/utils';
  * # setStatus
  */
 // Create User Profile
-// with basics information: userId, firstName, lastName
+// with basics information: userId, firstName, lastName, publicFields
 export const create = new ValidatedMethod({
   name: 'profiles.create',
   validate: new SimpleSchema({
@@ -30,8 +36,9 @@ export const create = new ValidatedMethod({
       optional: true
     }
   }).validator(),
-  run(userProfile) {
-    return Profiles.insert(userProfile);
+  run({userId, firstName, lastName}) {
+    // console.log({userId, firstName, lastName});
+    return Profiles.insert({userId, firstName, lastName});
   }
 });
 
@@ -50,6 +57,10 @@ export const edit = new ValidatedMethod({
       type: String,
       optional: true
     },
+    industries: {
+      type: [String],
+      optional: true
+    },
     imageUrl: {
       type: String,
       optional: true
@@ -57,75 +68,40 @@ export const edit = new ValidatedMethod({
     phoneNumber: {
       type: String,
       optional: true
+    },
+    aboutMe: {
+      type: String,
+      optional: true
     }
   }).validator(),
-  run({ userId, firstName, lastName, imageUrl, phoneNumber }) {
-    var selector = { userId };
-    var modifier = {};
-    if(firstName != undefined) {
+  run({userId, firstName, lastName, industries, imageUrl, phoneNumber, aboutMe}) {
+    const selector = {userId};
+    const modifier = {};
+    if (typeof firstName !== "undefined") {
       modifier['firstName'] = firstName;
     }
-    if(lastName != undefined) {
+    if (typeof lastName !== "undefined") {
       modifier['lastName'] = lastName;
     }
-    if(imageUrl != undefined) {
+    if (typeof industries !== "undefined") {
+      modifier['industries'] = industries;
+    }
+    if (typeof imageUrl !== "undefined") {
       modifier['imageUrl'] = imageUrl;
     }
-    if(phoneNumber != undefined) {
+    if (typeof phoneNumber !== "undefined") {
       modifier['phoneNumber'] = phoneNumber;
     }
-    var userProfile = Profiles.findOne(selector);
-    console.log(modifier);
-    if(!userProfile) {
+    if (typeof aboutMe !== "undefined") {
+      modifier['aboutMe'] = aboutMe;
+    }
+    const userProfile = Profiles.findOne(selector);
+    if (!userProfile) {
       throw new Meteor.Error(404, 'User not found');
-    } else if(!_.isEmpty(modifier)) {
-      return Profiles.update(selector, { $set: { modifier }});
+    } else if (!_.isEmpty(modifier)) {
+      return Profiles.update(selector, {$set: modifier});
     } else {
       return true;
-    }
-  }
-});
-
-// Add Industry
-export const addIndustry = new ValidatedMethod({
-  name: 'profiles.addIndustry',
-  validate: new SimpleSchema({
-    userId: {
-      type: String
-    }, // validate userId which is mapped with _id in collection Accounts
-    industries: {
-      type: String
-    }
-  }).validator(),
-  run({ userId, industry }) {
-    var userProfile = Profiles.findOne({ userId });
-    if(!userProfile) {
-      throw new Meteor.Error(404, 'User not found');
-    } else {
-      return Profiles.update({ userId }, {
-        $push: { industries: industry }});
-    }
-  }
-});
-
-// Remove Industry
-export const removeIndustry = new ValidatedMethod({
-  name: 'profiles.removeIndustry',
-  validate: new SimpleSchema({
-    userId: {
-      type: String
-    }, // validate userId which is mapped with _id in collection Accounts
-    industries: {
-      type: String
-    }
-  }).validator(),
-  run({ userId, industry }) {
-    var userProfile = Profiles.findOne({ userId });
-    if(!userProfile) {
-      throw new Meteor.Error(404, 'User not found');
-    } else {
-      return Profiles.update({ userId }, {
-        $pull: { industries: industry }});
     }
   }
 });
@@ -176,13 +152,14 @@ export const editAddress = new ValidatedMethod({
       optional: true
     }
   }).validator(),
-  run({ userId, address }) {
-    var userProfile = Profiles.findOne({ userId });
-    if(!userProfile) {
+  run({userId, address}) {
+    var userProfile = Profiles.findOne({userId});
+    if (!userProfile) {
       throw new Meteor.Error(404, 'User not found');
     } else {
-      return Profiles.update({ userId: userProfile.userId }, {
-        $set: { address: userProfile.address }});
+      return Profiles.update({userId: userProfile.userId}, {
+        $set: {address: userProfile.address}
+      });
     }
   }
 });
@@ -196,15 +173,98 @@ export const setStatus = new ValidatedMethod({
     }, // validate userId which is mapped with _id in collection Accounts
     status: {
       type: String,
-      allowedValues: [  STATUS_ACTIVE, STATUS_INACTIVE ]
+      allowedValues: [STATUS_ACTIVE, STATUS_INACTIVE]
     }
   }).validator(),
   run({userId, status}) {
-    var userProfile = Profiles.findOne({ userId });
-    if(!userProfile) {
+    const userProfile = Profiles.findOne({userId});
+    if (!userProfile) {
       throw new Meteor.Error(404, 'User not found');
     } else {
-      return Profiles.update({ userId }, { $set: { status }});
+      return Profiles.update({userId}, {$set: {status}});
     }
   }
 });
+
+// get public information
+export const getPublicData = new ValidatedMethod({
+  name: 'profiles.getPublicData',
+  validate: new SimpleSchema({
+    alias: {
+      type: String
+    }
+  }).validator(),
+  run({alias}) {
+    if (!this.isSimulation) {
+      const user = Accounts.findUserByUsername(alias);
+      if (!_.isEmpty(user)) {
+        let result = {
+          profile: {
+            name: null,
+            orgName: null,
+            industry: null,
+            phoneNumber: null,
+            aboutMe: null,
+            picture: null,
+            noOrg: null,
+            noEmployees: null,
+            noFeedbacks: null
+          }
+        };
+
+        // Always public the name
+        const profile = Profiles.findOne({userId: user._id});
+        if (!!profile.firstName || profile.lastName) {
+          result.profile.name = `${profile.firstName} ${profile.lastName}`;
+        }
+        if(Configs.find({userId: user._id}).count() > 0) {
+          const configs = Configs.find({userId: user._id}).fetch()[0].configs;
+          // Get public information
+          // Profile
+          const profileConfigs = configs.profile;
+          // orgName
+          if(profileConfigs.orgName && typeof profileConfigs.orgName !== 'undefined') {
+            if (Organizations.find({owner: user._id}).count() > 0) {
+              const orgName = Organizations.find({owner: user._id}, {"sort": ['endTime', 'desc']}).fetch()[0].name;
+              result.profile.orgName = !!orgName ? orgName : null;
+            }
+          }
+          // industry
+          if(profileConfigs.industry && typeof profileConfigs.industry !== 'undefined') {
+            if (!!profile.industries) {
+              result.profile.industry = Industries.findOne({_id: {$in: profile.industries}}).name;
+            }
+          }
+          // phoneNumber
+          if(profileConfigs.phoneNumber && typeof profileConfigs.phoneNumber !== 'undefined') {
+            result.profile.phoneNumber = !!profile.phoneNumber ? profile.phoneNumber : null;
+          }
+          // aboutMe
+          if(profileConfigs.aboutMe && typeof profileConfigs.aboutMe !== 'undefined') {
+            result.profile.aboutMe = !!profile.aboutMe ? profile.aboutMe : null;
+          }
+          // picture
+          if(profileConfigs.picture && typeof profileConfigs.picture !== 'undefined') {
+            result.profile.picture = !!profile.imageUrl ? profile.imageUrl : null;
+          }
+          // noOrg
+          if(profileConfigs.noOrg && typeof profileConfigs.noOrg !== 'undefined') {
+            const noOrg = Organizations.find({owner: user._id}).count();
+            result.profile.noOrg = !!noOrg ? noOrg : null;
+          }
+          // noEmployees
+          if(profileConfigs.noEmployees && typeof profileConfigs.noEmployees !== 'undefined') {
+            result.profile.noEmployees = 149;
+          }
+          // noFeedbacks
+          if(profileConfigs.noFeedbacks && typeof profileConfigs.noFeedbacks !== 'undefined') {
+            result.profile.noFeedbacks = 240;
+          }
+        }
+        return result;
+      }
+    }
+  }
+});
+
+

@@ -1,3 +1,4 @@
+import {Meteor} from 'meteor/meteor';
 import {FlowRouter} from 'meteor/kadira:flow-router';
 import React from 'react';
 import {mount} from 'react-mounter';
@@ -5,6 +6,9 @@ import {mount} from 'react-mounter';
 import NoticeForm from '/imports/ui/common/NoticeForm';
 import WelcomePage from '/imports/ui/common/WelcomePage';
 import ThankyouPage from '/imports/ui/common/ThankyouPage';
+import Notification from '/imports/api/notifications/methods';
+
+import ConfirmEmail from '/imports/ui/components/ConfirmEmail';
 
 import MainLayout from '/imports/ui/layouts/MainLayout';
 import BlankLayout from '/imports/ui/layouts/BlankLayout';
@@ -20,8 +24,19 @@ import PasswordPage from '/imports/ui/containers/password/PasswordPage';
 import SetPasswordPage from '/imports/ui/containers/password/SetPasswordPage';
 import ForgotAliasPage from '/imports/ui/containers/alias/ForgotAliasPage';
 
-import PublicProfilePage from '/imports/ui/containers/user/PublicProfilePage';
+import PublicProfile from '/imports/ui/containers/profile/PublicProfile';
+import Profile from '/imports/ui/containers/profile/Profile';
+import Dashboard from '/imports/ui/containers/dashboard/Dashboard';
+import Organizations from '/imports/ui/containers/organizations/Organizations';
+import SingleOrganization from '/imports/ui/containers/organizations/SingleOrganization';
+import Employees from '/imports/ui/containers/employees/Employees';
 
+import * as Notifications from '/imports/api/notifications/methods';
+
+// Admin page
+import ManageIndustries from '/imports/ui/containers/admin/ManageIndustries';
+
+import {resetPageHeading} from '/imports/store/modules/pageHeading';
 /**
  * Constant
  * @routes all routes in action
@@ -31,28 +46,38 @@ import PublicProfilePage from '/imports/ui/containers/user/PublicProfilePage';
 // this domain should get from settings
 export const DOMAIN = 'devtheleader.io:9000';
 
-export const routes = {
-  home: '/',
-  signUp: {
-    user: 'signup/user',
-    alias: 'signup/alias',
-    verify: 'signup/verify'
-  },
-  signIn: {
-    alias: 'signin/alias',
-    account: 'signin/account'
-  },
-  password: {
-    forgot: 'password/forgot',
-    reset: 'password/reset',
-    set: 'password/set'
-  },
-  alias: {
-    forgot: 'alias/forgot'
-  },
-  thankyou: 'thankyou'
+/**
+ * Change root url to make flow router understand subdomain
+ */
+FlowRouter.setRootUrl = (url) => {
+  Meteor.absoluteUrl.defaultOptions.rootUrl = url || window.location.origin;
+}
 
+Tracker.autorun(function () {
+  FlowRouter.watchPathChange();
+  FlowRouter.setRootUrl();
+});
+
+// init root url - support subdomain
+FlowRouter.setRootUrl();
+
+/**
+ * @summary Default Invalid Url Route
+ * @route notFound
+ */
+FlowRouter.notFound = {
+  action() {
+    mount(NoticeForm);
+  }
 };
+
+FlowRouter.route('/not-found', {
+  name: 'notFound',
+  action() {
+    mount(NoticeForm);
+  }
+});
+
 
 /**
  * @summary lists of public routes
@@ -68,7 +93,7 @@ const homeRoute = FlowRouter.route('/', {
   action() {
     const alias = Session.get('alias');
     if (alias) {
-      mount(PublicProfilePage);
+      mount(PublicProfile);
     } else {
       mount(LandingPage);
     }
@@ -78,7 +103,7 @@ const homeRoute = FlowRouter.route('/', {
 export const welcomeRoute = FlowRouter.route('/welcome', {
   name: 'welcomePage',
   action() {
-    mount(WelcomePage);
+    mount(Notification);
   }
 });
 
@@ -109,7 +134,21 @@ signUpRoutes.route('/:action', {
     }
     // create new alias
     if (params.action == 'alias') {
-      mount(SignUpAlias);
+      if (!Meteor.loggingIn() && !Meteor.userId()) {
+        const
+          closeButton = false,
+          title = "Signup user",
+          message = "Please enter your basic informations first"
+          ;
+        Notifications.warning.call({closeButton, title, message});
+        FlowRouter.go('signUpPage', {action: 'user'});
+      } else {
+        mount(SignUpAlias);
+      }
+    }
+    // create new alias
+    if (params.action == 'confirm') {
+      mount(ConfirmEmail);
     }
   }
 });
@@ -120,6 +159,12 @@ signUpRoutes.route('/:action', {
  * @action alias
  * @action email
  */
+const checkSignIn = (context, redirect) => {
+  if (Meteor.isLoggingIn || Meteor.userId()) {
+    FlowRouter.go('app.dashboard');
+  }
+}
+
 export const signInRoutes = FlowRouter.group({
   name: 'signinRouteGroup',
   prefix: '/signin'
@@ -134,7 +179,11 @@ signInRoutes.route('/:action', {
     }
     // sign in to user's account
     if (params.action == 'account') {
-      mount(SignInAccount);
+      if (Meteor.isLoggingIn || Meteor.userId()) {
+        FlowRouter.go('app.dashboard');
+      } else {
+        mount(SignInAccount);
+      }
     }
   }
 });
@@ -189,42 +238,158 @@ aliasRoutes.route('/:action', {
   }
 });
 
-/**
- * @summary lists of logged in Route (user have to login to access these route)
- * @route dashboard
- * @routes feedbacks
- * @route employees
- * @route measure
- */
-// export const loggedInRoutes = FlowRouter.group({
-//   name: 'loggedInRoutes',
-//   triggersEnter: [() => {
-//     const alias = Session.get('alias');
-//     if (alias !== undefined) {
-//       UserActions.verify.call({alias}, (error) => {
-//         if (_.isEmpty(error)) {
-//           FlowRouter.route = FlowRouter.current();
-//         }
-//       });
-//     } else {
-//       FlowRouter.go(homeRoute.path);
-//     }
-//   }]
-// });
-//
-// export const userHomeRoute = loggedInRoutes.route('/dashboard', {
-//   name: 'dashboard',
-//   action() {
-//     mount(MainLayout, {
-//       content() {
-//         return <UserHomePage />;
-//       }
-//     });
-//   }
-// });
+
+/**************************************************
+ * Main app routes
+ **************************************************/
+
+const requiredAuthentication = (context, redirect) => {
+  if (!Meteor.isLoggingIn && !Meteor.userId()) {
+    const alias = Session.get('alias');
+    const params = {action: 'alias'};
+    if (alias) {
+      params.action = 'account';
+    }
+    FlowRouter.go('SignInPage', params);
+  }
+}
+
+
+const appRoutes = FlowRouter.group({
+  prefix: '/app',
+  triggersEnter: [requiredAuthentication]
+});
 
 /**
- * @summary Default Invalid Url Route
- * @route notFound
+ * Route: Logout
  */
-FlowRouter.notFound = mount(NoticeForm);
+appRoutes.route('/logout', {
+  name: 'app.logout',
+  action() {
+    Meteor.logout(() => {
+      if (!Meteor.loggingIn() || !Meteor.user()) {
+        const closeButton = false,
+          timeOut = 2000,
+          title = 'Signed out',
+          message = ''
+          ;
+        Notifications.success.call({closeButton, timeOut, title, message});
+      }
+      FlowRouter.go('/');
+    });
+  }
+});
+
+/**
+ * Route: Dashboard
+ */
+appRoutes.route('/', {
+  name: 'app.dashboard',
+  action() {
+    mount(MainLayout, {
+      content() {
+        return <Dashboard />
+      }
+    })
+  }
+});
+
+
+/**************************************************
+ * Admin routes
+ **************************************************/
+
+const requiredAdminAuthentication = (context, redirect) => {
+
+}
+
+const adminRoutes = FlowRouter.group({
+  prefix: '/admin',
+  triggersEnter: [requiredAuthentication, requiredAdminAuthentication]
+});
+
+/**
+ * Route: Dashboard
+ */
+adminRoutes.route('/industries', {
+  name: 'admin.industries',
+  action() {
+    mount(MainLayout, {
+      content() {
+        return <ManageIndustries />
+      }
+    })
+  }
+});
+
+/**
+ * Route: profile
+ */
+appRoutes.route('/profile', {
+  name: 'app.profile',
+  action() {
+    mount(MainLayout, {
+      content() {
+        return <Profile />
+      }
+    })
+  }
+});
+
+/**
+ * Route for organization
+ *
+ * This route can show leader's organizations
+ */
+appRoutes.route('/organizations', {
+  name: 'app.organizations',
+  action() {
+    mount(MainLayout, {
+      content() {
+        return <Organizations />
+      }
+    })
+  }
+});
+
+/**
+ * Route for creating new organization
+ */
+appRoutes.route('/organizations/create', {
+  name: 'app.organizations.create',
+  action() {
+    mount(MainLayout, {
+      content() {
+        return <SingleOrganization />
+      }
+    })
+  }
+});
+
+/**
+ * Route for updating an organization
+ */
+appRoutes.route('/organizations/update/:_id', {
+  name: 'app.organizations.update',
+  action(params) {
+    mount(MainLayout, {
+      content() {
+        return <SingleOrganization _id={params._id}/>
+      }
+    })
+  }
+});
+
+/**
+ * Route for manage employees
+ */
+appRoutes.route('/employees', {
+  name: 'app.employees',
+  action(params) {
+    mount(MainLayout, {
+      content() {
+        return <Employees />
+      }
+    })
+  }
+});

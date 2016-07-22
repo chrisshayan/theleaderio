@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-import {DOMAIN, routes} from '/imports/startup/client/routes';
+import {DOMAIN} from '/imports/startup/client/routes';
 
 export default class SignInForm extends Component {
 
@@ -15,8 +15,8 @@ export default class SignInForm extends Component {
       signinTitle = `Welcome to theLeader.io`,
       errors = null
     } = this.props;
-    const forgotPasswordUrl = `/${routes.password.forgot}`;
-    const signUpUrl = `http://${DOMAIN}/${routes.signUp.user}`;
+    const forgotPasswordUrl = FlowRouter.path('passwordPage',{action: 'forgot'});
+    const signUpUrl = `http://${DOMAIN}${FlowRouter.path('signUpPage',{action: 'user'})}`;
     return (
       
               <form className="m-t" role="form" onSubmit={(event) => {
@@ -24,7 +24,7 @@ export default class SignInForm extends Component {
                       this._onSubmit();
                     }}>
                 <div className="form-group">
-                  <input ref="email" type="email" className="form-control" placeholder="Email address" required=""/>
+                  <input ref="email" type="email" className="form-control" placeholder="Email address" required autoFocus/>
                 </div>
                 <div className="form-group">
                   <input ref="password" type="password" className="form-control" placeholder="Password" required=""/>

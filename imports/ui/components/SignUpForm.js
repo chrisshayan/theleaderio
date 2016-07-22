@@ -1,7 +1,5 @@
 import React, {Component} from 'react';
 
-import {routes} from '/imports/startup/client/routes';
-
 export default class SignUpForm extends Component {
 
   _onSubmit() {
@@ -22,7 +20,7 @@ export default class SignUpForm extends Component {
 
     const {errors} = this.props;
 
-    const signInUrl = `/${routes.signIn.alias}`;
+    const signInUrl = FlowRouter.path('SignInPage',{action: 'alias'});
 
     return (
       <form className="m-t" role="form" onSubmit={(event) => {
@@ -31,7 +29,7 @@ export default class SignUpForm extends Component {
           }}>
         <div>
           <div className="form-group">
-            <input ref="firstName" type="text" className="form-control" placeholder="First name" required autofocus/>
+            <input ref="firstName" type="text" className="form-control" placeholder="First name" required autoFocus/>
           </div>
           <div className="form-group">
             <input ref="lastName" type="text" className="form-control" placeholder="Last name (optional)"/>

@@ -1,45 +1,58 @@
 import React, {Component} from 'react';
 
+import ProfilePhoto from '/imports/ui/components/ProfilePhoto';
+
 export default class ProfileDetail extends Component {
+
   render() {
+    const {profile, profileClass="gray-bg row"} = this.props;
     return (
-      <div className="ibox float-e-margins">
-        <div className="ibox-title">
-          <h5>Profile Detail</h5>
-        </div>
-        <div>
-          <div className="ibox-content no-padding border-left-right">
-            <img alt="image" className="img-responsive" src="img/profile_big.jpg"/>
+      <div>
+        <div className={profileClass}>
+          <div className="col-md-12">
+            <ProfilePhoto
+              imageUrl={profile.picture}
+              width={325}
+              height={325}
+            />
           </div>
+        </div>
+        <div className="ibox float-e-margins">
           <div className="ibox-content profile-content">
-            <h4><strong>Monica Smith</strong></h4>
-            <p><i className="fa fa-map-marker"></i> Riviera State 32/106</p>
-            <h5>
-              About me
-            </h5>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitat.
-            </p>
+            <h4><strong>{profile.name}</strong></h4>
+            {!_.isEmpty(profile.orgName) && (
+              <p><i className="fa fa-bank"></i>{' '} {profile.orgName}</p>
+            )}
+            {!_.isEmpty(profile.industry) && (
+              <p><i className="fa fa-building"></i>{' '} {profile.industry}</p>
+            )}
+            {profile.phoneNumber && (
+              <p><i className="fa fa-phone"></i>{' '}{profile.phoneNumber}</p>
+            )}
+            {profile.aboutMe && (
+              <div>
+                <h5>About me</h5>
+                <p>
+                  {profile.aboutMe}
+                </p>
+              </div>
+            )}
             <div className="row m-t-lg">
-              <div className="col-md-4">
-                <h5><strong>169</strong> Posts</h5>
-              </div>
-              <div className="col-md-4">
-                <h5><strong>28</strong> Following</h5>
-              </div>
-              <div className="col-md-4">
-                <h5><strong>240</strong> Followers</h5>
-              </div>
-            </div>
-            <div className="user-button">
-              <div className="row">
-                <div className="col-md-6">
-                  <button type="button" className="btn btn-primary btn-sm btn-block"><i className="fa fa-envelope"></i> Send Message</button>
+              {profile.noOrg && (
+                <div className="col-md-4">
+                  <h5><strong>{profile.noOrg}</strong> Organizations</h5>
                 </div>
-                <div className="col-md-6">
-                  <button type="button" className="btn btn-default btn-sm btn-block"><i className="fa fa-coffee"></i> Buy a coffee</button>
+              )}
+              {profile.noEmployees && (
+                <div className="col-md-4">
+                  <h5><strong>{profile.noEmployees}</strong> Employees</h5>
                 </div>
-              </div>
+              )}
+              {profile.noFeedbacks && (
+                <div className="col-md-4">
+                  <h5><strong>{profile.noFeedbacks}</strong> Feedbacks</h5>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -1,5 +1,9 @@
-// import {Meteor} from 'meteor/meteor';
-//
-// Meteor.publish("alias.list", function () {
-//   return Meteor.users.find({}, {fields: {username: 1}});
-// });
+import { Meteor } from 'meteor/meteor';
+
+// collection
+import { Configs } from '../index';
+
+Meteor.publish('configs', function({name}) {
+  return Configs.find({userId: this.userId, name});
+});
+

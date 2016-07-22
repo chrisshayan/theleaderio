@@ -41,15 +41,14 @@ export default class LandingPage extends Component {
     if (this.state.navChange) {
       navStyle = `${navStyle} navbar-scroll`
     }
-    const homeUrl = `http://${DOMAIN}/${routes.home}`;
+    const homeUrl = `http://${DOMAIN}/${FlowRouter.path('homePage')}`;
     return (
       <div id="page-top" className="landing-page">
         <div className="navbar-wrapper">
           <nav ref="nav" className={navStyle} role="navigation">
             <div className="container">
               <div className="navbar-header page-scroll">
-                <button type="button" className="navbar-toggle collapsed" dataToggle="collapse" dataTarget="#navbar"
-                        ariaExpanded="false" ariaControls="navbar">
+                <button type="button" className="navbar-toggle collapsed">
                   <span className="sr-only">Toggle navigation</span>
                   <span className="icon-bar"></span>
                   <span className="icon-bar"></span>
@@ -75,8 +74,8 @@ export default class LandingPage extends Component {
                 <h1>Do you strive to be a great leader? <br/> Not sure how to improve?</h1>
                 <p>Get insight on how your team rates your leadership and how to improve.</p>
                 <p>
-                  <a className="btn btn-lg btn-primary" role="button" href={routes.signUp.user}>Try for free!</a>
-                  <a className="caption-link" href={routes.signIn.alias} role="button">Have account already?</a>
+                  <a className="btn btn-lg btn-primary" role="button" href={FlowRouter.path('signUpPage', {action: 'user'})}>Try for free!</a>
+                  <a className="caption-link" href={FlowRouter.path('SignInPage', {action: 'alias'})} role="button">Have account already?</a>
                 </p>
               </div>
             </div>

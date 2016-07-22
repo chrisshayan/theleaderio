@@ -2,8 +2,6 @@ import React, {Component} from 'react';
 import {Meteor} from 'meteor/meteor';
 import _ from 'lodash';
 
-import {routes} from '/imports/startup/client/routes';
-
 import Copyright from '/imports/ui/common/Copyright';
 import Spinner from '/imports/ui/common/Spinner';
 import NoticeForm from '/imports/ui/common/NoticeForm';
@@ -47,7 +45,7 @@ export default class SignInPage extends Component {
     this.setState({
       errors: null
     });
-    Meteor.loginWithPassword(email, password, (error) => {
+    Meteor.loginWithPassword({email}, password, (error) => {
       if (!_.isEmpty(error)) {
         this.setState({
           errors: error.reason
@@ -57,7 +55,7 @@ export default class SignInPage extends Component {
           const alias = Meteor.user().username;
           const subdomain = SubdomainActions.getSubdomain();
           if (subdomain === alias) {
-            FlowRouter.go(`/${routes.home}`);
+            FlowRouter.go('homePage');
           } else {
             Meteor.logout();
             this.setState({
@@ -72,7 +70,7 @@ export default class SignInPage extends Component {
   }
 
   render() {
-    if(this.state.loading) {
+    if (this.state.loading) {
       return (
         <div>
           <Spinner
@@ -113,24 +111,20 @@ export default class SignInPage extends Component {
           </div>
         </div>
       );
-    } else  if(!this.state.alias){
+    } else if (!this.state.alias) {
       return (
-        <div id="page-top" className="gray-bg">
-          <NoticeForm
-            code='404'
-            message="Alias doesn't exists"
-            description='Sorry, but the page you are looking for has note been found. Try checking the URL for error, then hit the refresh button on your browser or try found something else in our app.'
-            buttonLabel='Come back to HomePage'
-          />
-        </div>
+        <NoticeForm
+          code='404'
+          message="Alias doesn't exists"
+          description='Sorry, but the page you are looking for has note been found. Try checking the URL for error, then hit the refresh button on your browser or try found something else in our app.'
+          buttonLabel='Come back to HomePage'
+        />
       );
     } else {
       return (
-        <div>
-          <Spinner
-            message="Loading ..."
-          />
-        </div>
+        <Spinner
+          message="Loading ..."
+        />
       );
     }
   }

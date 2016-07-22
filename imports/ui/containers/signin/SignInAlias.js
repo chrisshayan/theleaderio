@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Meteor} from 'meteor/meteor';
 import _ from 'lodash';
 
-import AliasForm from '/imports/ui/common/AliasForm';
+import AliasForm from '/imports/ui/components/AliasForm';
 import Copyright from '/imports/ui/common/Copyright';
 import * as UserActions from '/imports/api/users/methods';
 import * as SubdomainActions from '/imports/utils/subdomain';
@@ -24,7 +24,7 @@ export default class SigninAliasPage extends Component {
       const alias = Meteor.user().username;
       if(subdomain === alias) {
         // should route to user's dashboard
-        FlowRouter.go(`${routes.home}`);
+        FlowRouter.go('homePage');
       }
     }
   }
@@ -32,8 +32,7 @@ export default class SigninAliasPage extends Component {
   // submit for sign in to web address alias.theleader.io
   _inputSubmit({inputValue}) {
     const alias = inputValue;
-    Meteor.logout();
-    SubdomainActions.addSubdomain({ alias, route: routes.signIn.account});
+    SubdomainActions.addSubdomain({ alias, route: FlowRouter.path('SignInPage', {action: 'account'})});
   }
 
   _onKeyUp({inputValue}) {
@@ -64,8 +63,8 @@ export default class SigninAliasPage extends Component {
       errors = null
     } = this.props;
 
-    const signUpUrl = `/${routes.signUp.user}`;
-    const forgotAliasUrl = `/${routes.alias.forgot}`;
+    const signUpUrl = FlowRouter.path('signUpPage', {action: 'user'});
+    const forgotAliasUrl = FlowRouter.path('aliasPage', {action: 'forgot'});
 
     return (
       <div className="loginColumns animated fadeInDown">
@@ -103,7 +102,7 @@ export default class SigninAliasPage extends Component {
               <p className="text-muted text-center">
                 <small>Do not have an account?</small>
               </p>
-              <a className="btn btn-sm btn-white btn-block" href={signUpUrl}>Create</a>
+              <a className="btn btn-sm btn-white btn-block" href={signUpUrl}>Create an account</a>
               <Copyright />
             </div>
           </div>

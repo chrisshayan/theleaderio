@@ -1,5 +1,5 @@
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
-
+import { FlowRouter } from 'meteor/kadira:flow-router';
 import OrganizationsCollection from './collection';
 
 /**
@@ -27,7 +27,8 @@ Organizations.schema = new SimpleSchema({
   status: {
     type: String,
     allowedValues: [ STATUS_ACTIVE, STATUS_INACTIVE ],
-    defaultValue: STATUS_ACTIVE
+    defaultValue: STATUS_ACTIVE,
+    optional: true
   },
   description: {
     type: String,
@@ -37,46 +38,63 @@ Organizations.schema = new SimpleSchema({
     type: String,
     optional: true
   },
-  "address.zipCode": {
-    type: String,
-    optional: true
+  startTime: {
+    type: Date,
+    optional: true,
   },
-  "address.countryCode": {
-    type: String,
-    optional: true
+  endTime: {
+    type: Date,
+    optional: true,
   },
-  "address.country": {
-    type: String,
-    optional: true
+  isPresent: {
+    type: Boolean,
+    defaultValue: false,
+    optional: true,
   },
-  "address.city": {
-    type: String,
-    optional: true
+  createdAt: {
+    type: Date,
+    optional: true,
   },
-  "address.district": {
-    type: String,
-    optional: true
+  updatedAt: {
+    type: Date,
+    optional: true,
   },
-  "address.streetName": {
+  owner: {
     type: String,
-    optional: true
+    optional: true,
   },
-  "address.streetAddress": {
-    type: String,
-    optional: true
-  },
-  "address.secondaryAddress": {
-    type: String,
-    optional: true
-  },
-  "address.geo.latitude": {
-    type: String,
-    optional: true
-  },
-  "address.geo.longitude": {
-    type: String,
-    optional: true
+  employees: {
+    type: [String],
+    optional: true,
+    defaultValue: []
   }
 });
 
 Organizations.attachSchema(Organizations.schema);
+
+/**
+ * Public fields
+ */
+
+Organizations.publicFields = {
+  name: 1,
+  status: 1,
+  description: 1,
+  industries: 1,
+  startTime: 1,
+  endTime: 1,
+  isPresent: 1,
+  owner: 1,
+  createdAt: 1,
+  updatedAt: 1,
+  employees: 1,
+};
+
+/**
+ * Organization helpers
+ */
+Organizations.helpers({
+  editUrl() {
+    return FlowRouter.url('app.organizations.update', {_id: this._id});
+  }
+});

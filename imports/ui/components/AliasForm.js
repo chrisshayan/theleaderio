@@ -48,9 +48,11 @@ export default class AliasForm extends Component {
                   this._onKeyUp();
                 }}
             />
-            <span className="input-group-addon font-bold m-t text-left">.theleader.io</span>
+            <span className="input-group-addon font-bold m-t text-left" style={{borderWidth: 0, padding: 0,
+    paddingLeft: 1}}>.theleader.io</span>
             {aliasAllowed && (
-              <span className="input-group-addon m-t text-left text-navy">
+              <span className="input-group-addon m-t text-left text-navy" style={{borderWidth: 0, padding: 0,
+    paddingLeft: 1}}>
                   <i className="fa fa-check"></i>
                 </span>
             )}

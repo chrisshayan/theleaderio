@@ -5,15 +5,29 @@
     "start": "meteor run"
   },
   "dependencies": {
+    "babel-plugin-transform-class-properties": "^6.10.2",
+    "bluebird": "^3.4.1",
     "email-template-builder": "^1.0.0",
     "faker": "^3.1.0",
     "lodash": "^4.13.1",
     "meteor-node-stubs": "^0.2.3",
-    "moment": "^2.13.0",
-    "react": "^15.1.0",
-    "react-addons-pure-render-mixin": "^15.1.0",
-    "react-dom": "^15.1.0",
+    "moment": "^2.14.1",
+    "randomcolor": "^0.4.4",
+    "react": "^15.2.1",
+    "react-addons-pure-render-mixin": "^15.2.1",
+    "react-bootstrap": "^0.29.5",
+    "react-bootstrap-modal": "^2.1.0",
+    "react-dom": "^15.2.1",
+    "react-filepicker": "^0.6.0",
     "react-mounter": "^1.2.0",
-    "react-spinner": "^0.2.6"
+    "react-scroll-box": "^0.3.3-beta",
+    "react-scrollbar": "^0.4.1",
+    "react-skylight": "^0.4.0",
+    "react-spinner": "^0.2.6",
+    "redux-logger": "^2.6.1",
+    "validate.js": "^0.10.0"
+  },
+  "devDependencies": {
+    "babel-plugin-transform-class-properties": "^6.10.2"
   }
 }

@@ -39,3 +39,16 @@ Employees.schema = new SimpleSchema({
 });
 
 Employees.attachSchema(Employees.schema);
+
+/**
+ * Helpers
+ */
+Employees.helpers({
+  fullname() {
+    return [this.lastName, this.firstName].join(' ');
+  },
+
+  firstLetter() {
+    return this.firstName ? this.firstName[0] : '';
+  }
+})
