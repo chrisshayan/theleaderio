@@ -168,56 +168,24 @@ export default class LandingPage extends Component {
             <div className="row">
               <div className="col-lg-12 text-center">
                 <div className="navy-line"></div>
-                <h1>What our customers say</h1>
-                <p>Our Customers Love us.</p>
+                <h1>Recommended by Other Leaders</h1>
+                <p>The Most Recommended Leadership Tool</p>
               </div>
             </div>
             <div className="row features-block">
-              <div className="col-lg-4">
-                <div className="bubble">
-                  "theLeader.io can be as valuable as your business wants to make it. Its great to ask for feedback from employees and have dashboard! it gives me a lead in talking point to further employee relationships."
+              <div className="col-lg-6 col-lg-offset-3">
+                <div className="bubble" style={{height: 180}}>
+                  Fortunately, theleader.io is a great resource for tracking feedback and measuring leadership effectiveness, not only in your company, but industrywide. Theleader.io helps identify sources for disgruntled rumblings within your organization so you can nip them in the bud before they sprout into full-blown resentment.
                 </div>
                 <div className="comments-avatar">
-                  <a href="" className="pull-left">
-                    <img alt="image" src="img/landing/avatar3.jpg"/>
+                  <a href="https://www.entrepreneur.com/author/jeff-boss" className="pull-left">
+                    <img alt="image" src="/img/jeff_boss.jpg"/>
                   </a>
                   <div className="media-body">
                     <div className="commens-name">
-                      Paula Williams
+                      Jeff Boss
                     </div>
-                    <small className="text-muted">A-NET from Dubai</small>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-4">
-                <div className="bubble">
-                  "Great tool to automate employees feedback process and also get insights into changes over time! Easy to use - must have for any leader!."
-                </div>
-                <div className="comments-avatar">
-                  <a href="" className="pull-left">
-                    <img alt="image" src="img/landing/avatar1.jpg"/>
-                  </a>
-                  <div className="media-body">
-                    <div className="commens-name">
-                      Peter Nielsen
-                    </div>
-                    <small className="text-muted">British Telcom from Malaysia</small>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-4">
-                <div className="bubble">
-                  "Such a great service that provides me with valuable insight into our employee satisfaction. Thank you theLeader.io"
-                </div>
-                <div className="comments-avatar">
-                  <a href="" className="pull-left">
-                    <img alt="image" src="img/landing/avatar2.jpg"/>
-                  </a>
-                  <div className="media-body">
-                    <div className="commens-name">
-                      Eduardo Mora
-                    </div>
-                    <small className="text-muted">VietnamWorks from Vietnam</small>
+                    <small className="text-muted">Entrepreneur, Executive Coach, Author, Speaker</small>
                   </div>
                 </div>
               </div>
