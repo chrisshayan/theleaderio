@@ -8,6 +8,7 @@ import { setPageHeading, resetPageHeading } from '/imports/store/modules/pageHea
 import { actions as orgActions  } from '/imports/store/modules/organizations';
 
 // Views
+import NoOrganization from './NoOrganization';
 import Box from '/imports/ui/components/Box';
 
 class Organizations extends Component {
@@ -44,6 +45,9 @@ class Organizations extends Component {
 		const { isLoading, organizations, hasMore } = this.props;
 		return (
 			<div className="animated fadeInRight">
+				{!organizations.length && (
+					<NoOrganization />
+				)}
 				{/* Organization list */}
 				<div className="row">
 					{organizations.map((org, key) => (
@@ -72,7 +76,7 @@ class Organizations extends Component {
 								<div className="row  m-t-sm">
 									<div className="col-sm-4">
 										<div className="font-bold">EMPLOYEES</div>
-										12
+										{ org.employees ? org.employees.length: 0 }
 									</div>
 									<div className="col-sm-4">
 										<div className="font-bold">FEEDBACK</div>

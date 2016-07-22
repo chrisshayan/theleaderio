@@ -611,6 +611,19 @@ nav.left-nav ul li a span {
   }
 }
 
+@media (min-width: 768px) {
+  #page-wrapper {
+    position: inherit;
+    margin: 0 0 0 135px;
+    min-height: 1200px;
+  }
+  .page-heading-actions {
+    text-align: right;
+    padding-top: 25px;
+    border: none;
+  }
+}
+
 @media (max-width: 768px) {
   .page-heading-actions {
     text-align: center;

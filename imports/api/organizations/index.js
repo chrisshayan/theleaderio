@@ -62,6 +62,11 @@ Organizations.schema = new SimpleSchema({
   owner: {
     type: String,
     optional: true,
+  },
+  employees: {
+    type: [String],
+    optional: true,
+    defaultValue: []
   }
 });
 
@@ -81,7 +86,8 @@ Organizations.publicFields = {
   isPresent: 1,
   owner: 1,
   createdAt: 1,
-  updatedAt: 1
+  updatedAt: 1,
+  employees: 1,
 };
 
 /**

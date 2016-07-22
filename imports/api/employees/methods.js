@@ -5,6 +5,7 @@ import _ from 'lodash';
 
 import { Employees, STATUS_ACTIVE, STATUS_INACTIVE } from './index';
 import { IDValidator } from '/imports/utils';
+import validate from '/imports/utils/validate';
 
 /**
  * CUD Employees (Create, Update, Deactivate)
@@ -18,18 +19,20 @@ import { IDValidator } from '/imports/utils';
 // with basics information: email, firstName, lastName
 export const create = new ValidatedMethod({
   name: 'employees.create',
-  validate: new SimpleSchema({
-    email: {
-      type: String
-    },
+  validate: validate.methodValidator({
     firstName: {
-      type: String
+      presence: true,
+      type: 'string',
     },
     lastName: {
-      type: String,
-      optional: true
+      type: 'string',
+    },
+    email: {
+      presence: true,
+      type: 'string',
+      email: true,
     }
-  }).validator(),
+  }),
   run({ email, firstName, lastName }) {
     var employee = { email, firstName };
     if (lastName != undefined) {

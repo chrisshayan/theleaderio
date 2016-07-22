@@ -1,4 +1,3 @@
-/* @flow */
 import { ReactiveDict } from 'meteor/reactive-dict';
 
 const _STORE = Symbol('STORE');

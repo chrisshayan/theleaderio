@@ -2,17 +2,18 @@ import React, { Component } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import moment from 'moment';
-import { Organizations } from '/imports/api/organizations/index';
+import { Organizations } from '/imports/api/organizations';
+import { Employees } from '/imports/api/employees';
 import * as Actions from '/imports/api/organizations/methods';
-
-import ScrollBox from 'react-scrollbar';
-
 
 // import views
 import Box from '/imports/ui/components/Box';
 import FormInput from '/imports/ui/components/FormInput';
+import CheckBox from '/imports/ui/components/CheckBox';
 import HrDashed from '/imports/ui/components/HrDashed';
 import DatePicker from '/imports/ui/components/DatePicker';
+import SingleOrganizationEmployees from '/imports/ui/components/SingleOrganizationEmployees';
+import SingleOrganizationAddEmployee from '/imports/ui/components/SingleOrganizationAddEmployee';
 
 // import actions
 import { setPageHeading, resetPageHeading } from '/imports/store/modules/pageHeading';
@@ -35,7 +36,10 @@ class SingleOrganization extends Component {
 				endTime: endTime.toDate(),
 				isPresent: false,
 			},
-			error: {}
+			error: {},
+
+			showAddDialog: false,
+			employeeId: null,
 		};
 
 		// Setup page heading
@@ -65,14 +69,6 @@ class SingleOrganization extends Component {
 		}
 	}
 
-	componentDidMount() {
-		console.log($('.client-list'));
-
-		$('.client-list').slimscroll({
-      height: '500px'
-    });
-	}
-
 	/**
 	 * @event
 	 * Form submit
@@ -92,13 +88,18 @@ class SingleOrganization extends Component {
 		}
 
 		onSave.call(data, (err, result) => {
+			console.log(err, result)
 			if (err) {
 				let details = [];
 				let error = {};
 				try {
 					if (err.details) {
-						details = JSON.parse(err.details);
-						_.each(details, e => error[e.name] = ' ');
+						if(_.isObject(err.details)) {
+							details = err.details;
+						} else {
+							details = JSON.parse(err.details);
+						}
+						_.each(details, e => error[e.name] = e.reason);
 					} else {
 						error.GENERAL = err.reason;
 					}
@@ -129,13 +130,21 @@ class SingleOrganization extends Component {
 		});
 	}
 
+	_onClickShowDialog = e => {
+		this.setState({showAddDialog: true});
+	}
+
+	_onDismissDialog = e => {
+		this.setState({showAddDialog: false});
+	}
+
 	render() {
 		const { doc, error } = this.state;
-		const { _id, isLoading, onCancel } = this.props;
+		const { _id, isLoading, onCancel, employees } = this.props;
 		if (isLoading) return <h1>Loading...</h1>;
 
 		return (
-			<div className="col-md-8">
+			<div className="col-md-9 col-sm-12 col-xs-12">
 				<Box>
 					<h2>Organization</h2>
 					<div />
@@ -165,7 +174,7 @@ class SingleOrganization extends Component {
 
 								<HrDashed />
 								<div className="row">
-									<div className="col-md-6">
+									<div className="col-md-4">
 										<DatePicker 
 											label="Start time"
 											option={{
@@ -177,10 +186,11 @@ class SingleOrganization extends Component {
 											}}
 											isDateObject={true}
 											value={doc.startTime}
+											error={error.startTime}
 											onChange={startTime => this.setState({doc: {...doc, startTime}})}
 										/>
 									</div>
-									<div className="col-md-6">
+									<div className="col-md-4">
 										<DatePicker 
 											label="End time"
 											option={{
@@ -192,7 +202,16 @@ class SingleOrganization extends Component {
 											}}
 											isDateObject={true}
 											value={doc.endTime}
+											error={error.endTime}
+											disabled={doc.isPresent}
 											onChange={endTime => this.setState({doc: {...doc, endTime}})}
+										/>
+									</div>
+									<div className="col-md-4">
+										<CheckBox
+											label="Current organization"
+											checked={doc.isPresent}
+											onChange={isPresent => this.setState({doc: { ...doc, isPresent }})}
 										/>
 									</div>
 								</div>
@@ -226,236 +245,28 @@ class SingleOrganization extends Component {
           	<div id="tab-2" className="tab-pane">
           		<div className="row">
           			<div className="col-md-9">
-          				<div className="input-group">
-		                <input type="text" placeholder="Search employee " className="input form-control" />
-		                <span className="input-group-btn">
-		                  <button type="button" className="btn btn-default"> <i className="fa fa-search"></i> Search</button>
-		                </span>
-		              </div>
+          				
           			</div>
           			<div className="col-md-3">
-          				<button className="btn btn-primary btn-block">
+          				<button className="btn btn-primary btn-block" onClick={this._onClickShowDialog}>
           					<i className="fa fa-user-plus" />
           					{' '}
           					Add Employee
           				</button>
           			</div>
           		</div>
-          		<ScrollBox style={{height: '500px'}}>
-          			
-								  <table className="table table-striped table-hover">
-								    <tbody>
-								      <tr>
-								        <td className="client-avatar"><img alt="image" src="/img/a2.jpg" /> </td>
-								        <td><a data-toggle="tab" href="#contact-1" className="client-link" aria-expanded="true">Anthony Jackson</a></td>
-								        <td> Tellus Institute</td>
-								        <td className="contact-type"><i className="fa fa-envelope"> </i></td>
-								        <td> gravida@rbisit.com</td>
-								        <td className="client-status"><span className="label label-primary">Active</span></td>
-								      </tr>
-								      <tr>
-								        <td className="client-avatar"><img alt="image" src="/img/a3.jpg" /> </td>
-								        <td><a data-toggle="tab" href="#contact-2" className="client-link" aria-expanded="true">Rooney Lindsay</a></td>
-								        <td>Proin Limited</td>
-								        <td className="contact-type"><i className="fa fa-envelope"> </i></td>
-								        <td> rooney@proin.com</td>
-								        <td className="client-status"><span className="label label-primary">Active</span></td>
-								      </tr>
-								      <tr>
-								        <td className="client-avatar"><img alt="image" src="/img/a4.jpg" /> </td>
-								        <td><a data-toggle="tab" href="#contact-3" className="client-link" aria-expanded="true">Lionel Mcmillan</a></td>
-								        <td>Et Industries</td>
-								        <td className="contact-type"><i className="fa fa-phone"> </i></td>
-								        <td> +432 955 908</td>
-								        <td className="client-status"></td>
-								      </tr>
-								      <tr>
-								        <td className="client-avatar">
-								          <a href=""><img alt="image" src="/img/a5.jpg" /></a>
-								        </td>
-								        <td><a data-toggle="tab" href="#contact-4" className="client-link" aria-expanded="true">Edan Randall</a></td>
-								        <td>Integer Sem Corp.</td>
-								        <td className="contact-type"><i className="fa fa-phone"> </i></td>
-								        <td> +422 600 213</td>
-								        <td className="client-status"><span className="label label-warning">Waiting</span></td>
-								      </tr>
-								      <tr>
-								        <td className="client-avatar">
-								          <a href=""><img alt="image" src="/img/a6.jpg" /></a>
-								        </td>
-								        <td><a data-toggle="tab" href="#contact-2" className="client-link" aria-expanded="true">Jasper Carson</a></td>
-								        <td>Mone Industries</td>
-								        <td className="contact-type"><i className="fa fa-phone"> </i></td>
-								        <td> +400 468 921</td>
-								        <td className="client-status"></td>
-								      </tr>
-								      <tr>
-								        <td className="client-avatar">
-								          <a href=""><img alt="image" src="/img/a7.jpg" /></a>
-								        </td>
-								        <td><a data-toggle="tab" href="#contact-3" className="client-link" aria-expanded="true">Reuben Pacheco</a></td>
-								        <td>Magna Associates</td>
-								        <td className="contact-type"><i className="fa fa-envelope"> </i></td>
-								        <td> pacheco@manga.com</td>
-								        <td className="client-status"><span className="label label-info">Phoned</span></td>
-								      </tr>
-								      <tr>
-								        <td className="client-avatar">
-								          <a href=""><img alt="image" src="/img/a1.jpg" /></a>
-								        </td>
-								        <td><a data-toggle="tab" href="#contact-1" className="client-link" aria-expanded="true">Simon Carson</a></td>
-								        <td>Erat Corp.</td>
-								        <td className="contact-type"><i className="fa fa-envelope"> </i></td>
-								        <td> Simon@erta.com</td>
-								        <td className="client-status"><span className="label label-primary">Active</span></td>
-								      </tr>
-								      <tr>
-								        <td className="client-avatar">
-								          <a href=""><img alt="image" src="/img/a3.jpg" /></a>
-								        </td>
-								        <td><a data-toggle="tab" href="#contact-2" className="client-link" aria-expanded="true">Rooney Lindsay</a></td>
-								        <td>Proin Limited</td>
-								        <td className="contact-type"><i className="fa fa-envelope"> </i></td>
-								        <td> rooney@proin.com</td>
-								        <td className="client-status"><span className="label label-warning">Waiting</span></td>
-								      </tr>
-								      <tr>
-								        <td className="client-avatar">
-								          <a href=""><img alt="image" src="/img/a4.jpg" /></a>
-								        </td>
-								        <td><a data-toggle="tab" href="#contact-3" className="client-link" aria-expanded="true">Lionel Mcmillan</a></td>
-								        <td>Et Industries</td>
-								        <td className="contact-type"><i className="fa fa-phone"> </i></td>
-								        <td> +432 955 908</td>
-								        <td className="client-status"></td>
-								      </tr>
-								      <tr>
-								        <td className="client-avatar">
-								          <a href=""><img alt="image" src="/img/a5.jpg" /></a>
-								        </td>
-								        <td><a data-toggle="tab" href="#contact-4" className="client-link" aria-expanded="true">Edan Randall</a></td>
-								        <td>Integer Sem Corp.</td>
-								        <td className="contact-type"><i className="fa fa-phone"> </i></td>
-								        <td> +422 600 213</td>
-								        <td className="client-status"></td>
-								      </tr>
-								      <tr>
-								        <td className="client-avatar">
-								          <a href=""><img alt="image" src="/img/a2.jpg" /></a>
-								        </td>
-								        <td><a data-toggle="tab" href="#contact-1" className="client-link" aria-expanded="true">Anthony Jackson</a></td>
-								        <td> Tellus Institute</td>
-								        <td className="contact-type"><i className="fa fa-envelope"> </i></td>
-								        <td> gravida@rbisit.com</td>
-								        <td className="client-status"><span className="label label-danger">Deleted</span></td>
-								      </tr>
-								      <tr>
-								        <td className="client-avatar">
-								          <a href=""><img alt="image" src="/img/a7.jpg" /></a>
-								        </td>
-								        <td><a data-toggle="tab" href="#contact-2" className="client-link" aria-expanded="true">Reuben Pacheco</a></td>
-								        <td>Magna Associates</td>
-								        <td className="contact-type"><i className="fa fa-envelope"> </i></td>
-								        <td> pacheco@manga.com</td>
-								        <td className="client-status"><span className="label label-primary">Active</span></td>
-								      </tr>
-								      <tr>
-								        <td className="client-avatar">
-								          <a href=""><img alt="image" src="/img/a5.jpg" /></a>
-								        </td>
-								        <td><a data-toggle="tab" href="#contact-3" className="client-link" aria-expanded="true">Edan Randall</a></td>
-								        <td>Integer Sem Corp.</td>
-								        <td className="contact-type"><i className="fa fa-phone"> </i></td>
-								        <td> +422 600 213</td>
-								        <td className="client-status"><span className="label label-info">Phoned</span></td>
-								      </tr>
-								      <tr>
-								        <td className="client-avatar">
-								          <a href=""><img alt="image" src="/img/a6.jpg" /></a>
-								        </td>
-								        <td><a data-toggle="tab" href="#contact-4" className="client-link" aria-expanded="true">Jasper Carson</a></td>
-								        <td>Mone Industries</td>
-								        <td className="contact-type"><i className="fa fa-phone"> </i></td>
-								        <td> +400 468 921</td>
-								        <td className="client-status"><span className="label label-primary">Active</span></td>
-								      </tr>
-								      <tr>
-								        <td className="client-avatar">
-								          <a href=""><img alt="image" src="/img/a7.jpg" /></a>
-								        </td>
-								        <td><a data-toggle="tab" href="#contact-2" className="client-link" aria-expanded="true">Reuben Pacheco</a></td>
-								        <td>Magna Associates</td>
-								        <td className="contact-type"><i className="fa fa-envelope"> </i></td>
-								        <td> pacheco@manga.com</td>
-								        <td className="client-status"><span className="label label-primary">Active</span></td>
-								      </tr>
-								      <tr>
-								        <td className="client-avatar">
-								          <a href=""><img alt="image" src="/img/a1.jpg" /></a>
-								        </td>
-								        <td><a data-toggle="tab" href="#contact-1" className="client-link" aria-expanded="true">Simon Carson</a></td>
-								        <td>Erat Corp.</td>
-								        <td className="contact-type"><i className="fa fa-envelope"> </i></td>
-								        <td> Simon@erta.com</td>
-								        <td className="client-status"></td>
-								      </tr>
-								      <tr>
-								        <td className="client-avatar">
-								          <a href=""><img alt="image" src="/img/a3.jpg" /></a>
-								        </td>
-								        <td><a data-toggle="tab" href="#contact-3" className="client-link" aria-expanded="true">Rooney Lindsay</a></td>
-								        <td>Proin Limited</td>
-								        <td className="contact-type"><i className="fa fa-envelope"> </i></td>
-								        <td> rooney@proin.com</td>
-								        <td className="client-status"></td>
-								      </tr>
-								      <tr>
-								        <td className="client-avatar">
-								          <a href=""><img alt="image" src="/img/a4.jpg" /></a>
-								        </td>
-								        <td><a data-toggle="tab" href="#contact-4" className="client-link" aria-expanded="true">Lionel Mcmillan</a></td>
-								        <td>Et Industries</td>
-								        <td className="contact-type"><i className="fa fa-phone"> </i></td>
-								        <td> +432 955 908</td>
-								        <td className="client-status"><span className="label label-primary">Active</span></td>
-								      </tr>
-								      <tr>
-								        <td className="client-avatar">
-								          <a href=""><img alt="image" src="/img/a5.jpg" /></a>
-								        </td>
-								        <td><a data-toggle="tab" href="#contact-1" className="client-link" aria-expanded="true">Edan Randall</a></td>
-								        <td>Integer Sem Corp.</td>
-								        <td className="contact-type"><i className="fa fa-phone"> </i></td>
-								        <td> +422 600 213</td>
-								        <td className="client-status"><span className="label label-info">Phoned</span></td>
-								      </tr>
-								      <tr>
-								        <td className="client-avatar">
-								          <a href=""><img alt="image" src="/img/a2.jpg" /></a>
-								        </td>
-								        <td><a data-toggle="tab" href="#contact-2" className="client-link" aria-expanded="true">Anthony Jackson</a></td>
-								        <td> Tellus Institute</td>
-								        <td className="contact-type"><i className="fa fa-envelope"> </i></td>
-								        <td> gravida@rbisit.com</td>
-								        <td className="client-status"><span className="label label-warning">Waiting</span></td>
-								      </tr>
-								      <tr>
-								        <td className="client-avatar">
-								          <a href=""><img alt="image" src="/img/a7.jpg" /></a>
-								        </td>
-								        <td><a data-toggle="tab" href="#contact-4" className="client-link" aria-expanded="true">Reuben Pacheco</a></td>
-								        <td>Magna Associates</td>
-								        <td className="contact-type"><i className="fa fa-envelope"> </i></td>
-								        <td> pacheco@manga.com</td>
-								        <td className="client-status"></td>
-								      </tr>
-								    </tbody>
-								  </table>
-
-          		</ScrollBox>
+          		
+          		<SingleOrganizationEmployees employees={employees} />
           	</div>
           </div>
 				</Box>
+
+				<SingleOrganizationAddEmployee 
+					show={this.state.showAddDialog}
+					onDismiss={this._onDismissDialog}
+					organizationId={this.props._id}
+					employeeId={this.state.employeeId}
+				/>
 			</div>
 		);
 	}
@@ -466,6 +277,7 @@ const mapMeteorToProps = params => {
 		_id = params._id,
 		type = 'insert',
 		doc = {},
+		employees = [],
 		isLoading = false,
 		onSave = Actions.create,
 		onSaveSuccess = () => {
@@ -481,6 +293,10 @@ const mapMeteorToProps = params => {
 		type = 'update';
 		isLoading = !sub.ready();
 		doc = Organizations.findOne(_id) || {};
+		if(!_.isEmpty(doc.employees)) {
+			employees = Employees.find({_id: { $in: doc.employees }}).fetch()
+		}
+
 		onSave = Actions.update;
 		onRemove = Actions.remove;
 	}
@@ -489,6 +305,7 @@ const mapMeteorToProps = params => {
 		_id,
 		type,
 		doc,
+		employees,
 		isLoading,
 		onSave,
 		onSaveSuccess,
