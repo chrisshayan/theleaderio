@@ -10,7 +10,9 @@ import Spinner from '/imports/ui/common/Spinner';
 import NoticeForm from '/imports/ui/common/NoticeForm';
 import CopyRight from '/imports/ui/common/Copyright';
 import TopNav from '/imports/ui/common/TopNav';
-import ProfilePhoto from '/imports/ui/components/ProfilePhoto';
+import Card2Columns from '/imports/ui/components/Card2Columns';
+import CardProfilePhoto from '/imports/ui/components/CardProfilePhoto';
+import CardDescription from '/imports/ui/components/CardDescription';
 import ProfileDetail from '/imports/ui/components/ProfileDetail';
 import LeadershipProgress from '/imports/ui/components/LeadershipProgress';
 import Activities from '/imports/ui/components/Activities';
@@ -70,25 +72,121 @@ export default class PublicProfile extends Component {
     }
     if (alias) {
       const {profile} = publicInfo;
+      const classGridLabel = 'col-md-4', classGridValue = 'col-md-8';
+      const basicContent = [
+        {
+          label: 'Senior Database Administrator',
+          value: ''
+        },
+        {
+          label: profile.industry,
+          value: ''
+        }
+      ];
+      const contactContent = [
+        {
+          label: 'Phone',
+          value: profile.phoneNumber
+        },
+        {
+          label: 'Email',
+          value: 'jackiekhuu@gmail.com'
+        }
+      ];
+      const summaryContent = [
+        {
+          label: 'Organization',
+          value: profile.noOrg
+        },
+        {
+          label: 'Employees',
+          value: profile.noEmployees
+        },
+        {
+          label: 'Feedbacks',
+          value: profile.noFeedbacks
+        }];
       return (
-        <div id="wrapper">
+        <div id="page-top" className="gray-bg">
           <div id="page-wrapper" className="gray-bg">
+            <nav id="left-nav" className="left-nav">
+            </nav>
             <TopNav
-              navClass="row border-bottom white-bg"
+              navClass="row border-bottom"
             />
             <div className="wrapper wrapper-content">
               <div className="row">
                 <div className="ibox float-e-margins">
-                  <div className="ibox-title">
-                    <h5>Public Profile</h5>
+                  <div className="col-md-10 no-padding">
+                    <div className="ibox-title">
+                      <ul className="list-inline social-icon pull-right">
+                        <li>
+                          <a href="https://www.linkedin.com/in/jeffboss236" className="text-navy">
+                            <i className="fa fa-linkedin"></i>
+                          </a>
+                        </li>
+                        <li>
+                          <a href="https://twitter.com/JeffBoss9" className="text-navy">
+                            <i className="fa fa-twitter"></i>
+                          </a>
+                        </li>
+                        <li>
+                          <a href="https://www.facebook.com/Adaptabilitycoach/" className="text-navy">
+                            <i className="fa fa-facebook"></i>
+                          </a>
+                        </li>
+                      </ul>
+                      <h5>Public Profile</h5>
+                    </div>
                   </div>
-                  <div className="col-md-8 no-padding">
+                  <div className="col-md-4 no-padding">
                     <div className="ibox-content gray-bg">
                       <div className="row">
                         <div className="ibox float-e-margins">
+                          <CardProfilePhoto
+                            imageClass="img-thumbnail"
+                            imageUrl={profile.picture}
+                            width={360}
+                            height={360}
+                          />
+                          <Card2Columns
+                            cardTitle={profile.name}
+                            cardContent={basicContent}
+                            classGridLabel='col-md-12'
+                            classGridValue='col-md-0'
+                          />
+
+                          {(profile.phoneNumber) && (
+                            <Card2Columns
+                              cardTitle="Contact"
+                              cardContent={contactContent}
+                              classGridLabel={classGridLabel}
+                              classGridValue={classGridValue}
+                            />
+                          )}
+                          {(profile.noOrg || profile.noEmployees || profile.noFeedbacks) && (
+                            <Card2Columns
+                              cardTitle="Summary"
+                              cardContent={summaryContent}
+                              classGridLabel={classGridLabel}
+                              classGridValue={classGridValue}
+                            />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-6 no-padding">
+                    <div className="ibox-content gray-bg">
+                      <div className="row">
+                        <div className="ibox float-e-margins" style={{marginBottom: 18}}>
                           <div className="ibox-title">
-                            <span className="label label-info pull-right">July 14, 2016</span>
                             <h5>Leadership progress (not implemented)</h5>
+                          </div>
+                          <div className="ibox-content">
+                            <div>
+                              <canvas id="lineChart" height="140"></canvas>
+                            </div>
                           </div>
                           <div className="ibox-content">
                             <div className="row">
@@ -155,156 +253,58 @@ export default class PublicProfile extends Component {
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                  <div className="col-md-4 no-padding">
-                    <div className="ibox-content gray-bg">
-                      <div className="row">
-                        <div className="text-center gray-bg">
-                          <ProfilePhoto
-                            imageClass='img-thumbnail'
-                            imageUrl={profile.picture}
-                            width={360}
-                            height={360}
-                          />
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="ibox float-e-margins" style={{marginBottom: 1}}>
-                          <div className="ibox-content profile-content no-padding">
-                            <div className="ibox-content">
-                              <h3 style={{marginBottom: 5}}><strong>{profile.name}</strong></h3>
-                              {!_.isEmpty(profile.orgName) && (
-                                <h5>{profile.orgName}</h5>
-                              )}
-                              {!_.isEmpty(profile.industry) && (
-                                <div className="row">
-                                  <div className="col-md-5">
-                                    Job category
-                                  </div>
-                                  <div className="col-md-7">
-                                    {profile.industry}
-                                  </div>
-                                </div>
-                              )}
-                              {(profile.noOrg || profile.noEmployees || profile.noFeedbacks) && (
-                                <div className="ibox-content no-padding">
-                                  <h5><strong>Summary</strong></h5>
-                                  <div className="row">
-                                    {profile.noOrg && (
-                                      <div className="col-md-4">
-                                        <p><strong>{profile.noOrg}</strong> Organizations</p>
-                                      </div>
-                                    )}
-                                    {profile.noEmployees && (
-                                      <div className="col-md-4">
-                                        <p><strong>{profile.noEmployees}</strong> Employees</p>
-                                      </div>
-                                    )}
-                                    {profile.noFeedbacks && (
-                                      <div className="col-md-4">
-                                        <p><strong>{profile.noFeedbacks}</strong> Feedbacks</p>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              )}
-                              {profile.aboutMe && (
-                                <div className="ibox-content no-padding">
-                                  <h5><strong>About</strong></h5>
-                                  <p>
-                                    {profile.aboutMe}
-                                  </p>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      {(profile.phoneNumber) && (
+                      {profile.aboutMe && (
                         <div className="row">
-                          <div className="ibox float-e-margins">
-                            <div className="ibox-content profile-content no-padding">
-                              <div className="ibox-content">
-                                  <h5><strong>Contact</strong></h5>
-                                  {!_.isEmpty(profile.phoneNumber) && (
-                                    <div className="row">
-                                      <div className="col-md-5">
-                                        Phone number
-                                      </div>
-                                      <div className="col-md-7">
-                                        {profile.phoneNumber}
-                                      </div>
-                                    </div>
-                                  )}
-                              </div>
-                            </div>
-                          </div>
+                          <CardDescription
+                            cardTitle='Objective'
+                            cardContent={profile.aboutMe}
+                            height={171}
+                          />
                         </div>
                       )}
                       <div className="row">
                         <div className="ibox float-e-margins">
-                          <div className="ibox-content profile-content no-padding">
-                            <div className="ibox-content">
-                              <h3 style={{marginBottom: 5}}><strong>{profile.name}</strong></h3>
-                              {!_.isEmpty(profile.orgName) && (
-                                <h5>{profile.orgName}</h5>
-                              )}
-                              {!_.isEmpty(profile.industry) && (
-                                <div className="row">
-                                  <div className="col-md-5">
-                                    Job category
-                                  </div>
-                                  <div className="col-md-7">
-                                    {profile.industry}
-                                  </div>
-                                </div>
-                              )}
-                              {(profile.phoneNumber) && (
-                                <div className="ibox-content no-padding">
-                                  <h5><strong>Contact</strong></h5>
-                                  {!_.isEmpty(profile.phoneNumber) && (
-                                    <div className="row">
-                                      <div className="col-md-5">
-                                        Phone number
-                                      </div>
-                                      <div className="col-md-7">
-                                        {profile.phoneNumber}
-                                      </div>
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                              {(profile.noOrg || profile.noEmployees || profile.noFeedbacks) && (
-                                <div className="ibox-content no-padding">
-                                  <h5><strong>Summary</strong></h5>
-                                  <div className="row">
-                                    {profile.noOrg && (
-                                      <div className="col-md-4">
-                                        <p><strong>{profile.noOrg}</strong> Organizations</p>
-                                      </div>
-                                    )}
-                                    {profile.noEmployees && (
-                                      <div className="col-md-4">
-                                        <p><strong>{profile.noEmployees}</strong> Employees</p>
-                                      </div>
-                                    )}
-                                    {profile.noFeedbacks && (
-                                      <div className="col-md-4">
-                                        <p><strong>{profile.noFeedbacks}</strong> Feedbacks</p>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              )}
-                              {profile.aboutMe && (
-                                <div className="ibox-content no-padding">
-                                  <h5><strong>About</strong></h5>
-                                  <p>
-                                    {profile.aboutMe}
-                                  </p>
-                                </div>
-                              )}
+                          <div className="ibox-title">
+                            <h5>Organizations</h5>
+                          </div>
+                          <div className="ibox-content">
+                            <h4>Head of Engineering</h4>
+                            <p>Icare benefit</p>
+                            <div><span>Overall</span>
+                              <div className="stat-percent">48%</div>
+                              <div className="progress progress-mini">
+                                <div className="progress-bar"></div>
+                              </div>
+                            </div>
+                            <div className="row  m-t-sm">
+                              <div className="col-sm-6">
+                                <small className="stats-label">Employees</small>
+                                <h4>2</h4>
+                              </div>
+                              <div className="col-sm-6">
+                                <small className="stats-label">Feedbacks</small>
+                                <h4>24</h4>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="ibox-content">
+                            <h4>Head of Product</h4>
+                            <p>Navigos Group</p>
+                            <div><span>Overall</span>
+                              <div className="stat-percent">48%</div>
+                              <div className="progress progress-mini">
+                                <div className="progress-bar"></div>
+                              </div>
+                            </div>
+                            <div className="row  m-t-sm">
+                              <div className="col-sm-6">
+                                <small className="stats-label">Employees</small>
+                                <h4>22</h4>
+                              </div>
+                              <div className="col-sm-6">
+                                <small className="stats-label">Feedbacks</small>
+                                <h4>44</h4>
+                              </div>
                             </div>
                           </div>
                         </div>
