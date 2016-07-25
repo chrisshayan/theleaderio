@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-import { DOMAIN, routes } from '/imports/startup/client/routes';
+import {DOMAIN, routes} from '/imports/startup/client/routes';
 
 export default class LandingPage extends Component {
   constructor() {
@@ -21,7 +21,7 @@ export default class LandingPage extends Component {
 
   handleScroll() {
     const changeNavOn = 125;
-    if(this.scrollY() > changeNavOn) {
+    if (this.scrollY() > changeNavOn) {
       this.setState({
         navChange: true
       });
@@ -41,7 +41,7 @@ export default class LandingPage extends Component {
     if (this.state.navChange) {
       navStyle = `${navStyle} navbar-scroll`
     }
-    const homeUrl = `http://${DOMAIN}/${FlowRouter.path('homePage')}`;
+    const homeUrl = `http://${DOMAIN}${FlowRouter.path('homePage')}`;
     return (
       <div id="page-top" className="landing-page">
         <div className="navbar-wrapper">
@@ -74,7 +74,8 @@ export default class LandingPage extends Component {
                 <h1>Do you strive to be a great leader? <br/> Not sure how to improve?</h1>
                 <p>Get insight on how your team rates your leadership and how to improve.</p>
                 <p>
-                  <a className="btn btn-lg btn-primary" role="button" href={FlowRouter.path('signUpPage', {action: 'user'})}>Try for free!</a>
+                  <a className="btn btn-lg btn-primary" role="button"
+                     href={FlowRouter.path('signUpPage', {action: 'user'})}>Try for free!</a>
                   <a className="caption-link" href={FlowRouter.path('SignInPage', {action: 'alias'})} role="button">Have account already?</a>
                 </p>
               </div>
@@ -163,30 +164,33 @@ export default class LandingPage extends Component {
           </div>
         </section>
 
-        <section className="comments gray-section">
+        <section id="team" className="gray-section team">
           <div className="container">
-            <div className="row">
+            <div className="row m-b-lg">
               <div className="col-lg-12 text-center">
                 <div className="navy-line"></div>
                 <h1>Recommended by Other Leaders</h1>
                 <p>The Most Recommended Leadership Tool</p>
               </div>
             </div>
-            <div className="row features-block">
-              <div className="col-lg-6 col-lg-offset-3">
-                <div className="bubble" style={{height: 180}}>
-                  Fortunately, theleader.io is a great resource for tracking feedback and measuring leadership effectiveness, not only in your company, but industrywide. Theleader.io helps identify sources for disgruntled rumblings within your organization so you can nip them in the bud before they sprout into full-blown resentment.
-                </div>
-                <div className="comments-avatar">
-                  <a href="https://www.entrepreneur.com/author/jeff-boss" className="pull-left">
-                    <img alt="image" src="/img/jeff_boss.jpg"/>
+            <div className="row">
+              <div className="col-sm-4 col-sm-offset-4">
+                <div className="team-member wow zoomIn">
+                  <a href="https://www.entrepreneur.com/author/jeff-boss">
+                    <img src="/img/jeff_boss.jpg" className="img-responsive img-circle" alt="Jeff Boss"/>
                   </a>
-                  <div className="media-body">
-                    <div className="commens-name">
-                      Jeff Boss
-                    </div>
-                    <small className="text-muted">Entrepreneur, Executive Coach, Author, Speaker</small>
-                  </div>
+                  <small className="text-muted">Entrepreneur, Executive Coach, Author, Speaker</small>
+                  <h4><span className="navy">Jeff</span> Boss</h4>
+                  <p>
+                    "Fortunately, theleader.io is a great resource for tracking feedback and measuring leadership effectiveness, not only in your company, but industrywide. Theleader.io helps identify sources for disgruntled rumblings within your organization so you can nip them in the bud before they sprout into full-blown resentment."</p>
+                  <ul className="list-inline social-icon">
+                    <li><a href="https://www.linkedin.com/in/jeffboss236"><i className="fa fa-linkedin"></i></a>
+                    </li>
+                    <li><a href="https://twitter.com/JeffBoss9"><i className="fa fa-twitter"></i></a>
+                    </li>
+                    <li><a href="https://www.facebook.com/Adaptabilitycoach/"><i className="fa fa-facebook"></i></a>
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
