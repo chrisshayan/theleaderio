@@ -7,8 +7,9 @@ class TopNav extends Component {
   }
 
   render() {
+    const { navClass = "row border-bottom" } = this.props;
     return (
-      <div className="row border-bottom">
+      <div className={navClass}>
         <div className="col-md-6 col-sm-6">
           <a href="/">
             <div className="main-logo">
@@ -17,7 +18,6 @@ class TopNav extends Component {
             </div>
           </a>
         </div>
-
         <div className="col-md-6 col-sm-6">
           <div className="account-info">
             <ul className="nav navbar-nav navbar-right">

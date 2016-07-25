@@ -3,9 +3,8 @@ import React, {Component} from 'react';
 export default class ProfilePhoto extends Component {
   render() {
     const defaultPhoto = '/img/default-profile-pic.png';
-    const {imageUrl, imageClass = 'img-circle', width = 100, height = 100} = this.props;
+    const {imageUrl, imageClass = 'img-circle', width = 200, height = 200} = this.props;
     return (
-      <div>
         <img
           src={!!imageUrl ? imageUrl : defaultPhoto}
           alt="profile photo"
@@ -16,7 +15,6 @@ export default class ProfilePhoto extends Component {
           margin: '0 auto'
         }}
         />
-      </div>
     );
   }
 }
