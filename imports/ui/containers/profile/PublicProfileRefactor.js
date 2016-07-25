@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {createContainer} from 'meteor/react-meteor-data';
+import {words as capitalize} from 'capitalize';
 
 // methods
 import {getPublicData}  from '/imports/api/profiles/methods';
@@ -75,7 +76,7 @@ export default class PublicProfile extends Component {
       const classGridLabel = 'col-md-4', classGridValue = 'col-md-8';
       const basicContent = [
         {
-          label: 'Senior Database Administrator',
+          label: capitalize('Senior database administrator'),
           value: ''
         },
         {
@@ -107,17 +108,19 @@ export default class PublicProfile extends Component {
           value: profile.noFeedbacks
         }];
       return (
-        <div id="page-top" className="gray-bg">
-          <div id="page-wrapper" className="gray-bg">
+        <div id="page-top">
+          <div id="wrapper">
             <nav id="left-nav" className="left-nav">
             </nav>
+          </div>
+          <div id="page-wrapper" className="gray-bg">
             <TopNav
               navClass="row border-bottom"
             />
             <div className="wrapper wrapper-content">
               <div className="row">
                 <div className="ibox float-e-margins">
-                  <div className="col-md-10 no-padding">
+                  <div className="col-md-10 col-md-offset-1 no-padding">
                     <div className="ibox-title">
                       <ul className="list-inline social-icon pull-right">
                         <li>
@@ -139,7 +142,7 @@ export default class PublicProfile extends Component {
                       <h5>Public Profile</h5>
                     </div>
                   </div>
-                  <div className="col-md-4 no-padding">
+                  <div className="col-md-4 col-md-offset-1 no-padding">
                     <div className="ibox-content gray-bg">
                       <div className="row">
                         <div className="ibox float-e-margins">
@@ -150,7 +153,7 @@ export default class PublicProfile extends Component {
                             height={360}
                           />
                           <Card2Columns
-                            cardTitle={profile.name}
+                            cardTitle={capitalize(profile.name)}
                             cardContent={basicContent}
                             classGridLabel='col-md-12'
                             classGridValue='col-md-0'
