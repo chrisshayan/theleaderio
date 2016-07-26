@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {createContainer} from 'meteor/react-meteor-data';
 import {words as capitalize} from 'capitalize';
+import moment from 'moment';
 
 // methods
 import {getPublicData}  from '/imports/api/profiles/methods';
@@ -14,6 +15,8 @@ import TopNav from '/imports/ui/common/TopNav';
 import IboxContentHorizontal from '/imports/ui/components/IboxContentHorizontal';
 import IboxContentPhoto from '/imports/ui/components/IboxContentPhoto';
 import IboxContentInline from '/imports/ui/components/IboxContentInline';
+import ProfilePhoto from '/imports/ui/components/ProfilePhoto';
+import IboxContentOrganization from '/imports/ui/components/IboxContentOrganization';
 
 export default class PublicProfile extends Component {
   constructor() {
@@ -42,6 +45,51 @@ export default class PublicProfile extends Component {
               loading: false,
               publicInfo: result
             });
+
+            // line chart
+            const lineData = {
+              labels: ["January", "February", "March", "April", "May", "June", "July"],
+              datasets: [
+                {
+                  label: "Example dataset",
+                  fillColor: "rgba(220,220,220,0.5)",
+                  strokeColor: "rgba(220,220,220,1)",
+                  pointColor: "rgba(220,220,220,1)",
+                  pointStrokeColor: "#fff",
+                  pointHighlightFill: "#fff",
+                  pointHighlightStroke: "rgba(220,220,220,1)",
+                  data: [65, 59, 80, 81, 56, 55, 40]
+                },
+                {
+                  label: "Example dataset",
+                  fillColor: "rgba(26,179,148,0.5)",
+                  strokeColor: "rgba(26,179,148,0.7)",
+                  pointColor: "rgba(26,179,148,1)",
+                  pointStrokeColor: "#fff",
+                  pointHighlightFill: "#fff",
+                  pointHighlightStroke: "rgba(26,179,148,1)",
+                  data: [28, 48, 40, 19, 86, 27, 90]
+                }
+              ]
+            };
+            const lineOptions = {
+              scaleShowGridLines: true,
+              scaleGridLineColor: "rgba(0,0,0,.05)",
+              scaleGridLineWidth: 1,
+              bezierCurve: true,
+              bezierCurveTension: 0.4,
+              pointDot: true,
+              pointDotRadius: 4,
+              pointDotStrokeWidth: 1,
+              pointHitDetectionRadius: 20,
+              datasetStroke: true,
+              datasetStrokeWidth: 2,
+              datasetFill: true,
+              responsive: true,
+            };
+            const ctx = document.getElementById("lineChart").getContext("2d");
+            const myNewChart = new Chart(ctx).Line(lineData, lineOptions);
+
           } else {
             this.setState({
               loading: false,
@@ -69,10 +117,11 @@ export default class PublicProfile extends Component {
       );
     }
     if (alias) {
-      const {basic, contact, summary, picture, about} = publicInfo;
+      const {basic, headline, contact, summary, picture, about, organizations} = publicInfo;
+
       const basicContent = [
         {
-          label: capitalize('Senior database administrator'),
+          label: capitalize(headline.title),
           value: ''
         },
         {
@@ -97,8 +146,8 @@ export default class PublicProfile extends Component {
       };
       const aboutContent = [
         {
-          label: about.aboutMe,
-          value: ''
+          label: '',
+          value: about.aboutMe
         }
       ];
       const metricsContent = [
@@ -131,11 +180,13 @@ export default class PublicProfile extends Component {
           <div id="page-wrapper" className="gray-bg">
             <TopNav
               navClass="row border-bottom"
+              imageUrl={picture.imageUrl}
+              name={capitalize(basic.name)}
             />
             <div className="wrapper wrapper-content">
               <div className="row">
                 <div className="ibox float-e-margins">
-                  <div className="col-md-10 col-md-offset-1 no-padding">
+                  <div className="col-xs-10 col-xs-offset-1 no-padding">
                     <div className="ibox-title">
                       <ul className="list-inline social-icon pull-right">
                         <li>
@@ -157,7 +208,7 @@ export default class PublicProfile extends Component {
                       <h5>Public Profile</h5>
                     </div>
                   </div>
-                  <div className="col-md-4 col-md-offset-1 no-padding">
+                  <div className="col-xs-4 col-xs-offset-1 no-padding">
                     <div className="ibox-content gray-bg">
                       <div className="row">
                         <div className="ibox float-e-margins">
@@ -170,38 +221,38 @@ export default class PublicProfile extends Component {
                           <IboxContentHorizontal
                             ibcTitle={capitalize(basic.name)}
                             ibcContent={basicContent}
-                            classGridLabel='col-md-12'
-                            classGridValue='col-md-0'
+                            classGridLabel='col-xs-12'
+                            classGridValue='col-xs-0'
                           />
 
                           {(contact.phone || contact.email) && (
                             <IboxContentHorizontal
                               ibcTitle="Contact"
                               ibcContent={contactContent}
-                              classGridLabel='col-md-4'
-                              classGridValue='col-md-8'
+                              classGridLabel='col-xs-4'
+                              classGridValue='col-xs-8'
                             />
                           )}
                           {(summary.noOrg || summary.noEmployees || summary.noFeedbacks) && (
                             <IboxContentInline
                               ibcTitle="Summary"
                               ibcContent={summaryContent}
-                              classGrid="col-md-4"
+                              classGrid="col-xs-4"
                             />
                           )}
                           {about.aboutMe && (
                             <IboxContentHorizontal
                               ibcTitle='About'
                               ibcContent={aboutContent}
-                              classGridLabel='col-md-12'
-                              classGridValue='col-md-0'
+                              classGridLabel='col-xs-0'
+                              classGridValue='col-xs-12'
                             />
                           )}
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div className="col-md-6 no-padding">
+                  <div className="col-xs-6 no-padding">
                     <div className="ibox-content gray-bg">
                       <div className="row">
                         <div className="ibox float-e-margins" style={{marginBottom: 18}}>
@@ -215,71 +266,46 @@ export default class PublicProfile extends Component {
                           </div>
                           <IboxContentInline
                             ibcContent={metricsContent[0]}
-                            classGrid="col-md-3"
+                            classGrid="col-xs-3"
                           />
                           <IboxContentInline
                             ibcContent={metricsContent[1]}
-                            classGrid="col-md-3"
+                            classGrid="col-xs-3"
                           />
                           <IboxContentInline
                             ibcContent={metricsContent[2]}
-                            classGrid="col-md-3"
+                            classGrid="col-xs-3"
                           />
                         </div>
                       </div>
-                      <div className="row">
-                        <div className="ibox float-e-margins">
-                          <div className="ibox-title">
-                            <h5>Organizations</h5>
-                          </div>
-                          <div className="ibox-content">
-                            <h4>Head of Engineering</h4>
-                            <p>Icare benefit</p>
-                            <div><span>Overall</span>
-                              <div className="stat-percent">48%</div>
-                              <div className="progress progress-mini">
-                                <div className="progress-bar"></div>
-                              </div>
+                      {!_.isEmpty(organizations) && (
+                        <div className="row">
+                          <div className="ibox float-e-margins">
+                            <div className="ibox-title">
+                              <h5>Organizations</h5>
                             </div>
-                            <div className="row  m-t-sm">
-                              <div className="col-sm-6">
-                                <small className="stats-label">Employees</small>
-                                <h4>2</h4>
-                              </div>
-                              <div className="col-sm-6">
-                                <small className="stats-label">Feedbacks</small>
-                                <h4>24</h4>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="ibox-content">
-                            <h4>Head of Product</h4>
-                            <p>Navigos Group</p>
-                            <div><span>Overall</span>
-                              <div className="stat-percent">48%</div>
-                              <div className="progress progress-mini">
-                                <div className="progress-bar"></div>
-                              </div>
-                            </div>
-                            <div className="row  m-t-sm">
-                              <div className="col-sm-6">
-                                <small className="stats-label">Employees</small>
-                                <h4>22</h4>
-                              </div>
-                              <div className="col-sm-6">
-                                <small className="stats-label">Feedbacks</small>
-                                <h4>44</h4>
-                              </div>
-                            </div>
+                            {organizations.map(org => {
+                              return (
+                                <IboxContentOrganization
+                                  key={org._id}
+                                  title="Head of Engineering"
+                                  name={org.name}
+                                  startTime={new moment(org.startTime).format('MMMM YYYY')}
+                                  endTime={new moment(org.endTime).format('MMMM YYYY')}
+                                  noEmployees={org.employees.length}
+                                  overallPercent="60%"
+                                  imageUrl='/img/icare_benefits.png'
+                                />)
+                            })}
                           </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="footer">
+            <div className="footer gray-bg">
               <CopyRight />
             </div>
           </div>

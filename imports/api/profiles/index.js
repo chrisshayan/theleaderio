@@ -28,6 +28,10 @@ Profiles.schema = new SimpleSchema({
     type: String,
     optional: true
   },
+  title: {
+    type: String,
+    optional: true
+  },
   industries: {
     type: [String],
     optional: true

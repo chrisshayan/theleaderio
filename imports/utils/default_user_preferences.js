@@ -4,6 +4,9 @@ export const DEFAULT_PUBLIC_INFO_PREFERENCES = {
     title: true,
     industry: true
   },
+  headline: {
+    title: true
+  },
   contact: {
     phone: true,
     email: true
@@ -18,6 +21,10 @@ export const DEFAULT_PUBLIC_INFO_PREFERENCES = {
   },
   about: {
     aboutMe: true
+  },
+  organizations: {
+    show: true,
+    list: []
   },
   metrics: {
     overall: true,

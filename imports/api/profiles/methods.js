@@ -1,7 +1,7 @@
 import {Meteor} from 'meteor/meteor';
 import {ValidatedMethod} from 'meteor/mdg:validated-method';
 import {SimpleSchema} from 'meteor/aldeed:simple-schema';
-import { Accounts } from 'meteor/accounts-base';
+import {Accounts} from 'meteor/accounts-base';
 import _ from 'lodash';
 
 // collections
@@ -62,6 +62,10 @@ export const edit = new ValidatedMethod({
       type: String,
       optional: true
     },
+    title: {
+      type: String,
+      optional: true
+    },
     industries: {
       type: [String],
       optional: true
@@ -79,7 +83,7 @@ export const edit = new ValidatedMethod({
       optional: true
     }
   }).validator(),
-  run({userId, firstName, lastName, industries, imageUrl, phoneNumber, aboutMe}) {
+  run({userId, firstName, lastName, title, industries, imageUrl, phoneNumber, aboutMe}) {
     const selector = {userId};
     const modifier = {};
     if (typeof firstName !== "undefined") {
@@ -87,6 +91,9 @@ export const edit = new ValidatedMethod({
     }
     if (typeof lastName !== "undefined") {
       modifier['lastName'] = lastName;
+    }
+    if (typeof title !== "undefined") {
+      modifier['title'] = title;
     }
     if (typeof industries !== "undefined") {
       modifier['industries'] = industries;
@@ -209,8 +216,10 @@ export const getPublicData = new ValidatedMethod({
         let result = {
           basic: {
             name: null,
-            title: null,
             industry: null
+          },
+          headline: {
+            title: null
           },
           contact: {
             phone: null,
@@ -227,6 +236,7 @@ export const getPublicData = new ValidatedMethod({
           about: {
             aboutMe: null
           },
+          organizations: []
         };
 
         // Get basic info - always show
@@ -244,7 +254,13 @@ export const getPublicData = new ValidatedMethod({
         if (Preferences.find({userId: user._id}).count() > 0) {
           const preferences = Preferences.find({userId: user._id}).fetch()[0].preferences;
           // Get preferences
-          const {contact, summary, picture, about} = preferences;
+          const {headline, contact, summary, picture, about, organizations} = preferences;
+
+          // Get headline info
+          // title
+          if (headline.title && typeof headline.title !== 'undefined') {
+            result.headline.title = !!profile.title ? profile.title : null;
+          }
 
           // Get contact info
           // phoneNumber
@@ -252,44 +268,48 @@ export const getPublicData = new ValidatedMethod({
             result.contact.phone = !!profile.phoneNumber ? profile.phoneNumber : null;
           }
           // email
-          if(contact.email && typeof contact.email !== 'undefined') {
+          if (contact.email && typeof contact.email !== 'undefined') {
             result.contact.email = user.emails[0].address;
           }
 
           // Get summary info
           // noOrg
-          if (preferences.summary.noOrg && typeof preferences.summary.noOrg !== 'undefined') {
+          if (summary.noOrg && typeof summary.noOrg !== 'undefined') {
             const noOrg = Organizations.find({owner: user._id}).count();
             result.summary.noOrg = !!noOrg ? noOrg : null;
           }
           // noEmployees
-          if (preferences.summary.noEmployees && typeof preferences.summary.noEmployees !== 'undefined') {
+          if (summary.noEmployees && typeof summary.noEmployees !== 'undefined') {
             result.summary.noEmployees = 149;
           }
           // noFeedbacks
-          if (preferences.summary.noFeedbacks && typeof preferences.summary.noFeedbacks !== 'undefined') {
+          if (summary.noFeedbacks && typeof summary.noFeedbacks !== 'undefined') {
             result.summary.noFeedbacks = 240;
           }
 
           // Get picture
-          if (preferences.picture.imageUrl && typeof preferences.picture.imageUrl !== 'undefined') {
+          if (picture.imageUrl && typeof picture.imageUrl !== 'undefined') {
             result.picture.imageUrl = !!profile.imageUrl ? profile.imageUrl : null;
           }
 
           // Get about info
           // AboutMe
-          if (preferences.about.aboutMe && typeof preferences.about.aboutMe !== 'undefined') {
+          if (about.aboutMe && typeof about.aboutMe !== 'undefined') {
             result.about.aboutMe = !!profile.aboutMe ? profile.aboutMe : null;
           }
-          
-          // orgName
-          // if (preferences.summary.orgName && typeof preferences.summary.orgName !== 'undefined') {
-          //   if (Organizations.find({owner: user._id}).count() > 0) {
-          //     const orgName = Organizations.find({owner: user._id}, {"sort": ['endTime', 'desc']}).fetch()[0].name;
-          //     result.summary.orgName = !!orgName ? orgName : null;
-          //   }
-          // }
-          
+
+          // Get Organizations
+          if (organizations.show) {
+            if (Organizations.find({owner: user._id}).count() > 0) {
+              const modifier = {
+                fields: {name: 1, startTime: 1, endTime: 1, isPresent: 1, employees: 1},
+                sort: {startTime: -1}
+              };
+              const orgInfo = Organizations.find({owner: user._id}, modifier).fetch();
+              result.organizations = !_.isEmpty(orgInfo) ? orgInfo : [];
+            }
+          }
+
         }
         return result;
       }

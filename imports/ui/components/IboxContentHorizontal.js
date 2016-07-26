@@ -13,11 +13,11 @@ export default class IboxContentHorizontal extends Component {
     const {ibcTitle, ibcContent, classGridLabel, classGridValue} = this.props;
     return (
       <div className="ibox-content">
-        <h5><strong>{ibcTitle}</strong></h5>
+        <h4><strong>{ibcTitle}</strong></h4>
         {ibcContent.map((content, key) => (
           <div key={key} className="row">
             <div className={classGridLabel}>
-              {content.label}
+              <h5>{content.label}</h5>
             </div>
             <div className={classGridValue}>
               {content.value}

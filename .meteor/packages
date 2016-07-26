@@ -45,3 +45,4 @@ ejson
 chrismbeckett:toastr
 reywood:publish-composite
 percolate:migrations
+momentjs:moment
