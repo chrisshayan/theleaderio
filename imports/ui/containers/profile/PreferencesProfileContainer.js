@@ -3,10 +3,10 @@ import {createContainer} from 'meteor/react-meteor-data';
 import {Mongo} from 'meteor/mongo';
 
 // collection
-import {Configs} from '/imports/api/users/index';
+import {Preferences} from '/imports/api/users/index';
 
 // methods
-import {updateConfig} from '/imports/api/users/methods';
+import {updatePreferences} from '/imports/api/users/methods';
 import * as Notifications from '/imports/api/notifications/methods';
 import {getPublicData}  from '/imports/api/profiles/methods';
 
@@ -18,14 +18,18 @@ import Spinner from '/imports/ui/common/Spinner';
 import ProfileDetail from '/imports/ui/components/ProfileDetail';
 import LeadershipProgress from '/imports/ui/components/LeadershipProgress';
 
-class ConfigProfile extends Component {
+class PreferencesProfile extends Component {
 
   constructor(props) {
     super(props);
 
     this.state = {
       loading: true,
-      profile: null,
+      basic: null,
+      contact: null,
+      summary: null,
+      about: null,
+      picture: null,
       metrics: null,
       publicData: null
     };
@@ -45,10 +49,14 @@ class ConfigProfile extends Component {
 
 
   componentDidUpdate(prevProps) {
-    if (!_.isEqual(prevProps.configs, this.props.configs)) {
+    if (!_.isEqual(prevProps.preferences, this.props.preferences)) {
       this.setState({
         loading: false,
-        profile: this.props.configs.configs.profile,
+        basic: this.props.preferences.preferences.basic,
+        contact: this.props.preferences.preferences.contact,
+        summary: this.props.preferences.preferences.summary,
+        about: this.props.preferences.preferences.about,
+        picture: this.props.preferences.preferences.picture,
         metrics: this.props.configs.configs.metrics
       });
     }
@@ -58,11 +66,15 @@ class ConfigProfile extends Component {
     const
       name = 'publicInfo',
       configs = {
-        profile: this.state.profile,
+        basic: this.state.basic,
+        contact: this.state.contact,
+        summary: this.state.summary,
+        about: this.state.about,
+        picture: this.state.picture,
         metrics: this.state.metrics
       };
     console.log(configs);
-    updateConfig.call({name, configs}, (error) => {
+    updatePreferences.call({name, preferences}, (error) => {
       if (_.isEmpty(error)) {
         const
           closeButton = false,
@@ -88,7 +100,16 @@ class ConfigProfile extends Component {
   }
 
   render() {
-    const {loading, profile, metrics, publicData} = this.state;
+    const {
+      loading,
+      basic,
+      contact,
+      summary,
+      picture,
+      about,
+      metrics,
+      publicData
+    } = this.state;
     if (loading) {
       return (
         <div>
@@ -100,10 +121,6 @@ class ConfigProfile extends Component {
         <div className="wrapper wrapper-content animated fadeInRight">
           <div className="row">
             <div className="col-md-4">
-              <ProfileDetail
-                profile={publicData.profile}
-                profileClass="row"
-              />
             </div>
             <div className="col-md-3">
               <div className="ibox float-e-margins">
@@ -122,49 +139,44 @@ class ConfigProfile extends Component {
                       <label className="control-label">Profile</label>
                       <CheckBox
                         label=" Name"
-                        checked={profile.name}
-                        onChange={value => this.setState({ profile: { ...profile, name: value } })}
+                        checked={basic.name}
+                        onChange={value => this.setState({ basic: { ...basic, name: value } })}
                         disabled={true}
                       />
                       <CheckBox
-                        label=" Current Organization"
-                        checked={profile.orgName}
-                        onChange={value => this.setState({ profile: { ...profile, orgName: value } })}
-                      />
-                      <CheckBox
                         label=" Industry"
-                        checked={profile.industry}
-                        onChange={value => this.setState({ profile: { ...profile, industry: value } })}
+                        checked={basic.industry}
+                        onChange={value => this.setState({ basic: { ...basic, industry: value } })}
                       />
                       <CheckBox
-                        label=" Phone number"
-                        checked={profile.phoneNumber}
-                        onChange={value => this.setState({ profile: { ...profile, phoneNumber: value } })}
+                        label=" Phone"
+                        checked={contact.phone}
+                        onChange={value => this.setState({ contact: { ...contact, phone: value } })}
                       />
                       <CheckBox
-                        label=" About me"
-                        checked={profile.aboutMe}
-                        onChange={value => this.setState({ profile: { ...profile, aboutMe: value } })}
+                        label=" About"
+                        checked={about.aboutMe}
+                        onChange={value => this.setState({ about: { ...about, aboutMe: value } })}
                       />
                       <CheckBox
                         label=" Picture"
-                        checked={profile.picture}
-                        onChange={value => this.setState({ profile: { ...profile, picture: value } })}
+                        checked={picture.imageUrl}
+                        onChange={value => this.setState({ picture: { ...picture, imageUrl: value } })}
                       />
                       <CheckBox
                         label=" Number of Organizations"
-                        checked={profile.noOrg}
-                        onChange={value => this.setState({ profile: { ...profile, noOrg: value } })}
+                        checked={summary.noOrg}
+                        onChange={value => this.setState({ summary: { ...summary, noOrg: value } })}
                       />
                       <CheckBox
                         label=" Number of Employees"
-                        checked={profile.noEmployees}
-                        onChange={value => this.setState({ profile: { ...profile, noEmployees: value } })}
+                        checked={summary.noEmployees}
+                        onChange={value => this.setState({ summary: { ...summary, noEmployees: value } })}
                       />
                       <CheckBox
                         label=" Number of Feedbacks"
-                        checked={profile.noFeedbacks}
-                        onChange={value => this.setState({ profile: { ...profile, noFeedbacks: value } })}
+                        checked={summary.noFeedbacks}
+                        onChange={value => this.setState({ summary: { ...summary, noFeedbacks: value } })}
                       />
                     </div>
                     <div className="hr-line-dashed"></div>
@@ -246,19 +258,19 @@ class ConfigProfile extends Component {
   }
 }
 
-export default ConfigProfileContainer = createContainer(({params}) => {
+export default PreferencesProfileContainer = createContainer(({params}) => {
   // subscribe
-  const subConfig = Meteor.subscribe('configs', {name: 'publicInfo'});
+  const subPreferences = Meteor.subscribe('preferences', {name: 'publicInfo'});
 
   // loading
-  const loading = !subConfig.ready() && (Configs.find({}).count() < 1);
+  const loading = !subPreferences.ready() && (Preferences.find({}).count() < 1);
 
   // check exists
-  const configs = Configs.findOne({});
-  const configExists = !loading;
+  const preferences = Preferences.findOne({});
+  const preferencesExists = !loading;
 
   return {
     loading,
-    configs: configExists ? configs : {}
+    preferences: preferencesExists ? preferences : {}
   };
-}, ConfigProfile);
+}, PreferencesProfile);

@@ -1,6 +1,7 @@
 import {Meteor} from 'meteor/meteor';
 import {ValidatedMethod} from 'meteor/mdg:validated-method';
 import {SimpleSchema} from 'meteor/aldeed:simple-schema';
+import { Accounts } from 'meteor/accounts-base';
 import _ from 'lodash';
 
 // collections
@@ -8,9 +9,13 @@ import {Profiles, STATUS_ACTIVE, STATUS_INACTIVE} from './index';
 import {Organizations} from '/imports/api/organizations/index';
 import {Employees} from '/imports/api/employees/index';
 import {Industries} from '/imports/api/industries/index';
-import {Configs} from '/imports/api/users/index';
+import {Preferences} from '/imports/api/users/index';
 
 import {IDValidator} from '/imports/utils';
+import {DEFAULT_PUBLIC_INFO_PREFERENCES} from '/imports/utils/default_user_preferences';
+
+// methods
+import {addPreferences} from '/imports/api/users/methods';
 
 /**
  * CUD user profiles (Create, Update, Deactivate)
@@ -198,68 +203,93 @@ export const getPublicData = new ValidatedMethod({
     if (!this.isSimulation) {
       const user = Accounts.findUserByUsername(alias);
       if (!_.isEmpty(user)) {
+        if (Preferences.find({userId: user._id, name: 'publicInfo'}).count() == 0) {
+          addPreferences.call({name: 'publicInfo', preferences: DEFAULT_PUBLIC_INFO_PREFERENCES});
+        }
         let result = {
-          profile: {
+          basic: {
             name: null,
-            orgName: null,
-            industry: null,
-            phoneNumber: null,
-            aboutMe: null,
-            picture: null,
+            title: null,
+            industry: null
+          },
+          contact: {
+            phone: null,
+            email: null
+          },
+          summary: {
             noOrg: null,
             noEmployees: null,
             noFeedbacks: null
-          }
+          },
+          picture: {
+            imageUrl: null
+          },
+          about: {
+            aboutMe: null
+          },
         };
 
-        // Always public the name
+        // Get basic info - always show
+        // name
         const profile = Profiles.findOne({userId: user._id});
-        if (!!profile.firstName || profile.lastName) {
-          result.profile.name = `${profile.firstName} ${profile.lastName}`;
+        if (!!profile.firstName || !!profile.lastName) {
+          result.basic.name = `${profile.firstName} ${profile.lastName}`;
         }
-        if(Configs.find({userId: user._id}).count() > 0) {
-          const configs = Configs.find({userId: user._id}).fetch()[0].configs;
-          // Get public information
-          // Profile
-          const profileConfigs = configs.profile;
-          // orgName
-          if(profileConfigs.orgName && typeof profileConfigs.orgName !== 'undefined') {
-            if (Organizations.find({owner: user._id}).count() > 0) {
-              const orgName = Organizations.find({owner: user._id}, {"sort": ['endTime', 'desc']}).fetch()[0].name;
-              result.profile.orgName = !!orgName ? orgName : null;
-            }
-          }
-          // industry
-          if(profileConfigs.industry && typeof profileConfigs.industry !== 'undefined') {
-            if (!!profile.industries) {
-              result.profile.industry = Industries.findOne({_id: {$in: profile.industries}}).name;
-            }
-          }
+        // industry
+        if (!!profile.industries) {
+          result.basic.industry = Industries.findOne({_id: {$in: profile.industries}}).name;
+        }
+
+        // others
+        if (Preferences.find({userId: user._id}).count() > 0) {
+          const preferences = Preferences.find({userId: user._id}).fetch()[0].preferences;
+          // Get preferences
+          const {contact, summary, picture, about} = preferences;
+
+          // Get contact info
           // phoneNumber
-          if(profileConfigs.phoneNumber && typeof profileConfigs.phoneNumber !== 'undefined') {
-            result.profile.phoneNumber = !!profile.phoneNumber ? profile.phoneNumber : null;
+          if (contact.phone && typeof contact.phone !== 'undefined') {
+            result.contact.phone = !!profile.phoneNumber ? profile.phoneNumber : null;
           }
-          // aboutMe
-          if(profileConfigs.aboutMe && typeof profileConfigs.aboutMe !== 'undefined') {
-            result.profile.aboutMe = !!profile.aboutMe ? profile.aboutMe : null;
+          // email
+          if(contact.email && typeof contact.email !== 'undefined') {
+            result.contact.email = user.emails[0].address;
           }
-          // picture
-          if(profileConfigs.picture && typeof profileConfigs.picture !== 'undefined') {
-            result.profile.picture = !!profile.imageUrl ? profile.imageUrl : null;
-          }
+
+          // Get summary info
           // noOrg
-          if(profileConfigs.noOrg && typeof profileConfigs.noOrg !== 'undefined') {
+          if (preferences.summary.noOrg && typeof preferences.summary.noOrg !== 'undefined') {
             const noOrg = Organizations.find({owner: user._id}).count();
-            result.profile.noOrg = !!noOrg ? noOrg : null;
+            result.summary.noOrg = !!noOrg ? noOrg : null;
           }
           // noEmployees
-          if(profileConfigs.noEmployees && typeof profileConfigs.noEmployees !== 'undefined') {
-            result.profile.noEmployees = 149;
+          if (preferences.summary.noEmployees && typeof preferences.summary.noEmployees !== 'undefined') {
+            result.summary.noEmployees = 149;
           }
           // noFeedbacks
-          if(profileConfigs.noFeedbacks && typeof profileConfigs.noFeedbacks !== 'undefined') {
-            result.profile.noFeedbacks = 240;
+          if (preferences.summary.noFeedbacks && typeof preferences.summary.noFeedbacks !== 'undefined') {
+            result.summary.noFeedbacks = 240;
           }
+
+          // Get picture
+          if (preferences.picture.imageUrl && typeof preferences.picture.imageUrl !== 'undefined') {
+            result.picture.imageUrl = !!profile.imageUrl ? profile.imageUrl : null;
+          }
+
+          // Get about info
+          // AboutMe
+          if (preferences.about.aboutMe && typeof preferences.about.aboutMe !== 'undefined') {
+            result.about.aboutMe = !!profile.aboutMe ? profile.aboutMe : null;
+          }
+          
+          // orgName
+          // if (preferences.summary.orgName && typeof preferences.summary.orgName !== 'undefined') {
+          //   if (Organizations.find({owner: user._id}).count() > 0) {
+          //     const orgName = Organizations.find({owner: user._id}, {"sort": ['endTime', 'desc']}).fetch()[0].name;
+          //     result.summary.orgName = !!orgName ? orgName : null;
+          //   }
+          // }
+          
         }
         return result;
       }

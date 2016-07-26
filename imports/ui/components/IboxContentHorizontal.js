@@ -8,13 +8,13 @@ import React, {Component} from 'react';
 //   colStandard: React.PropTypes.string
 // };
 
-export default class Card2Columns extends Component {
+export default class IboxContentHorizontal extends Component {
   render() {
-    const {cardTitle, cardContent, classGridLabel, classGridValue} = this.props;
+    const {ibcTitle, ibcContent, classGridLabel, classGridValue} = this.props;
     return (
       <div className="ibox-content">
-        <h5><strong>{cardTitle}</strong></h5>
-        {cardContent.map((content, key) => (
+        <h5><strong>{ibcTitle}</strong></h5>
+        {ibcContent.map((content, key) => (
           <div key={key} className="row">
             <div className={classGridLabel}>
               {content.label}
