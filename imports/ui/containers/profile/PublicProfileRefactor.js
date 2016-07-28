@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {createContainer} from 'meteor/react-meteor-data';
 import {words as capitalize} from 'capitalize';
 import moment from 'moment';
+import {LinkedinButton, FacebookButton, TwitterTweetButton} from 'react-social-sharebuttons';
 
 // methods
 import {getPublicData}  from '/imports/api/profiles/methods';
@@ -18,6 +19,7 @@ import IboxContentInline from '/imports/ui/components/IboxContentInline';
 import IboxContentOrganization from '/imports/ui/components/IboxContentOrganization';
 import LineChart from '/imports/ui/components/LineChart';
 import Chosen from '/imports/ui/components/Chosen';
+
 
 export default class PublicProfile extends Component {
   constructor() {
@@ -69,42 +71,47 @@ export default class PublicProfile extends Component {
   }
 
   onChooseMetric(selected) {
-    if(selected === 'overall') {
+    if (selected === 'overall') {
       this.setState({chartData: this.state.publicInfo.chart.overall});
     }
-    if(selected === 'purpose') {
+    if (selected === 'purpose') {
       this.setState({chartData: this.state.publicInfo.chart.purpose});
     }
-    if(selected === 'mettings') {
+    if (selected === 'mettings') {
       this.setState({chartData: this.state.publicInfo.chart.mettings});
     }
-    if(selected === 'rules') {
+    if (selected === 'rules') {
       this.setState({chartData: this.state.publicInfo.chart.rules});
     }
-    if(selected === 'communications') {
+    if (selected === 'communications') {
       this.setState({chartData: this.state.publicInfo.chart.communications});
     }
-    if(selected === 'leadership') {
+    if (selected === 'leadership') {
       this.setState({chartData: this.state.publicInfo.chart.leadership});
     }
-    if(selected === 'workload') {
+    if (selected === 'workload') {
       this.setState({chartData: this.state.publicInfo.chart.workload});
     }
-    if(selected === 'energy') {
+    if (selected === 'energy') {
       this.setState({chartData: this.state.publicInfo.chart.energy});
     }
-    if(selected === 'stress') {
+    if (selected === 'stress') {
       this.setState({chartData: this.state.publicInfo.chart.stress});
     }
-    if(selected === 'decision') {
+    if (selected === 'decision') {
       this.setState({chartData: this.state.publicInfo.chart.decision});
     }
-    if(selected === 'respect') {
+    if (selected === 'respect') {
       this.setState({chartData: this.state.publicInfo.chart.respect});
     }
-    if(selected === 'conflict') {
+    if (selected === 'conflict') {
       this.setState({chartData: this.state.publicInfo.chart.conflict});
     }
+  }
+
+  shareOn() {
+    console.log(`share on Linkedin`)
+    console.log(this.refs.shareLinkedin.value)
   }
 
   render() {
@@ -119,6 +126,8 @@ export default class PublicProfile extends Component {
       );
     }
     if (alias) {
+      const url = "http://jackiekhuu.devtheleader.io:9000/";
+
       const {
         basic,
         headline,
@@ -244,19 +253,37 @@ export default class PublicProfile extends Component {
                     <div className="ibox-title">
                       <ul className="list-inline social-icon pull-right">
                         <li>
-                          <a href="https://www.linkedin.com/in/jeffboss236" className="text-navy">
+                          <span className="text-navy"><i className="fa fa-share"></i></span>
+                        </li>
+                        <li>
+                          <a
+                            ref="shareLinkedin"
+                            className="btn btn-xs btn-primary"
+                            onClick={this.shareOn.bind(this)}
+                          >
                             <i className="fa fa-linkedin"></i>
                           </a>
                         </li>
                         <li>
-                          <a href="https://twitter.com/JeffBoss9" className="text-navy">
+                          <a
+                            ref="shareTwitter"
+                            className="btn btn-xs btn-primary"
+                            onClick={this.shareOn.bind(this)}
+                          >
                             <i className="fa fa-twitter"></i>
                           </a>
                         </li>
                         <li>
-                          <a href="https://www.facebook.com/Adaptabilitycoach/" className="text-navy">
+                          <a
+                            ref="shareFacebook"
+                            className="btn btn-xs btn-primary"
+                            onClick={this.shareOn.bind(this)}
+                          >
                             <i className="fa fa-facebook"></i>
                           </a>
+                        </li>
+                        <li>
+                          <LinkedinButton url={url}/>
                         </li>
                       </ul>
                       <h5>Public Profile</h5>

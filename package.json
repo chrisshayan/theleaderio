@@ -24,6 +24,7 @@
     "react-scroll-box": "^0.3.3-beta",
     "react-scrollbar": "^0.4.1",
     "react-skylight": "^0.4.0",
+    "react-social-sharebuttons": "^2.0.0",
     "react-spinner": "^0.2.6",
     "redux-logger": "^2.6.1",
     "validate.js": "^0.10.0"
