@@ -8,8 +8,8 @@ export const DEFAULT_PUBLIC_INFO_PREFERENCES = {
     title: true
   },
   contact: {
-    phone: true,
-    email: true
+    phone: false,
+    email: false
   },
   summary: {
     noOrg: true,

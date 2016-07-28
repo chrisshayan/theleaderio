@@ -44,7 +44,7 @@ class TopNav extends Component {
                      aria-haspopup="true" aria-expanded="false">
                   <span>
                       <img
-                        src={imageUrl}
+                        src={imageUrl || '/img/default-profile-pic.png'}
                         className="img-rounded"
                         width="32"
                         height="32"

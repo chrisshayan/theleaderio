@@ -8,7 +8,7 @@ import SignUpForm from '/imports/ui/components/SignUpForm';
 import * as ProfileActions from '/imports/api/profiles/methods';
 import * as TokenActions from '/imports/api/tokens/methods';
 import * as EmailActions from '/imports/api/email/methods';
-import { addConfig } from '/imports/api/users/methods';
+import { addPreferences } from '/imports/api/users/methods';
 
 // constants
 import {DOMAIN} from '/imports/startup/client/routes';
@@ -42,7 +42,7 @@ export default class SignUpUser extends Component {
             });
           } else {
             // add default user settings
-            addConfig.call({name: 'publicInfo', configs: DEFAULT_PUBLIC_INFO_PREFERENCES});
+            // addPreferences.call({name: 'publicInfo', configs: DEFAULT_PUBLIC_INFO_PREFERENCES});
             // Send confirmation email to user
             const tokenId = TokenActions.generate.call({email, action: 'email'}, (error) => {
               if (!error) {

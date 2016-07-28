@@ -4,19 +4,19 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-meteor-base             # Packages every Meteor app needs to have
-mobile-experience       # Packages for a great mobile UX
-mongo                   # The database Meteor supports right now
-static-html
-reactive-var            # Reactive variable for tracker
-reactive-dict            # Reactive variable for tracker
-jquery                  # Helpful client-side library
-tracker                 # Meteor's client-side reactive programming library
-check
-es5-shim                # ECMAScript 5 compatibility for older browsers.
-ecmascript              # Enable ECMAScript2015+ syntax in app code
-session
-less
+meteor-base@1.0.4             # Packages every Meteor app needs to have
+mobile-experience@1.0.4       # Packages for a great mobile UX
+mongo@1.1.10                   # The database Meteor supports right now
+static-html@1.1.11
+reactive-var@1.0.10            # Reactive variable for tracker
+reactive-dict@1.1.8            # Reactive variable for tracker
+jquery@1.11.9                  # Helpful client-side library
+tracker@1.1.0                 # Meteor's client-side reactive programming library
+check@1.2.3
+es5-shim@4.6.13                # ECMAScript 5 compatibility for older browsers.
+ecmascript@0.5.7              # Enable ECMAScript2015+ syntax in app code
+session@1.1.6
+less@2.7.4
 twbs:bootstrap
 fortawesome:fontawesome@4.5.0
 
@@ -29,19 +29,19 @@ mdg:validation-error@0.5.1
 # Routing
 
 # production
-standard-minifier-js
-standard-minifier-css
-ddp-rate-limiter@1.0.4
+standard-minifier-js@1.1.8
+standard-minifier-css@1.1.8
+ddp-rate-limiter@1.0.5
 dburles:collection-helpers@1.0.4
 
 
 react-meteor-data
-accounts-password
+accounts-password@1.2.12
 kadira:login-state
-email
+email@1.1.16
 meteorhacks:ssr
 kadira:flow-router
-ejson
+ejson@1.0.12
 chrismbeckett:toastr
 reywood:publish-composite
 percolate:migrations

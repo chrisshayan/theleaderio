@@ -15,8 +15,9 @@ import TopNav from '/imports/ui/common/TopNav';
 import IboxContentHorizontal from '/imports/ui/components/IboxContentHorizontal';
 import IboxContentPhoto from '/imports/ui/components/IboxContentPhoto';
 import IboxContentInline from '/imports/ui/components/IboxContentInline';
-import ProfilePhoto from '/imports/ui/components/ProfilePhoto';
 import IboxContentOrganization from '/imports/ui/components/IboxContentOrganization';
+import LineChart from '/imports/ui/components/LineChart';
+import Chosen from '/imports/ui/components/Chosen';
 
 export default class PublicProfile extends Component {
   constructor() {
@@ -25,7 +26,9 @@ export default class PublicProfile extends Component {
     this.state = {
       loading: null,
       alias: null,
-      publicInfo: null
+      publicInfo: null,
+      chartLabel: null,
+      chartData: null
     };
   }
 
@@ -43,52 +46,10 @@ export default class PublicProfile extends Component {
           if (_.isEmpty(error)) {
             this.setState({
               loading: false,
-              publicInfo: result
+              publicInfo: result,
+              chartLabel: result.chart.label,
+              chartData: result.chart.overall
             });
-
-            // line chart
-            const lineData = {
-              labels: ["January", "February", "March", "April", "May", "June", "July"],
-              datasets: [
-                {
-                  label: "Example dataset",
-                  fillColor: "rgba(220,220,220,0.5)",
-                  strokeColor: "rgba(220,220,220,1)",
-                  pointColor: "rgba(220,220,220,1)",
-                  pointStrokeColor: "#fff",
-                  pointHighlightFill: "#fff",
-                  pointHighlightStroke: "rgba(220,220,220,1)",
-                  data: [65, 59, 80, 81, 56, 55, 40]
-                },
-                {
-                  label: "Example dataset",
-                  fillColor: "rgba(26,179,148,0.5)",
-                  strokeColor: "rgba(26,179,148,0.7)",
-                  pointColor: "rgba(26,179,148,1)",
-                  pointStrokeColor: "#fff",
-                  pointHighlightFill: "#fff",
-                  pointHighlightStroke: "rgba(26,179,148,1)",
-                  data: [28, 48, 40, 19, 86, 27, 90]
-                }
-              ]
-            };
-            const lineOptions = {
-              scaleShowGridLines: true,
-              scaleGridLineColor: "rgba(0,0,0,.05)",
-              scaleGridLineWidth: 1,
-              bezierCurve: true,
-              bezierCurveTension: 0.4,
-              pointDot: true,
-              pointDotRadius: 4,
-              pointDotStrokeWidth: 1,
-              pointHitDetectionRadius: 20,
-              datasetStroke: true,
-              datasetStrokeWidth: 2,
-              datasetFill: true,
-              responsive: true,
-            };
-            const ctx = document.getElementById("lineChart").getContext("2d");
-            const myNewChart = new Chart(ctx).Line(lineData, lineOptions);
 
           } else {
             this.setState({
@@ -107,8 +68,49 @@ export default class PublicProfile extends Component {
     });
   }
 
+  onChooseMetric(selected) {
+    if(selected === 'overall') {
+      this.setState({chartData: this.state.publicInfo.chart.overall});
+    }
+    if(selected === 'purpose') {
+      this.setState({chartData: this.state.publicInfo.chart.purpose});
+    }
+    if(selected === 'mettings') {
+      this.setState({chartData: this.state.publicInfo.chart.mettings});
+    }
+    if(selected === 'rules') {
+      this.setState({chartData: this.state.publicInfo.chart.rules});
+    }
+    if(selected === 'communications') {
+      this.setState({chartData: this.state.publicInfo.chart.communications});
+    }
+    if(selected === 'leadership') {
+      this.setState({chartData: this.state.publicInfo.chart.leadership});
+    }
+    if(selected === 'workload') {
+      this.setState({chartData: this.state.publicInfo.chart.workload});
+    }
+    if(selected === 'energy') {
+      this.setState({chartData: this.state.publicInfo.chart.energy});
+    }
+    if(selected === 'stress') {
+      this.setState({chartData: this.state.publicInfo.chart.stress});
+    }
+    if(selected === 'decision') {
+      this.setState({chartData: this.state.publicInfo.chart.decision});
+    }
+    if(selected === 'respect') {
+      this.setState({chartData: this.state.publicInfo.chart.respect});
+    }
+    if(selected === 'conflict') {
+      this.setState({chartData: this.state.publicInfo.chart.conflict});
+    }
+  }
+
   render() {
-    const {publicInfo, errors, loading, alias} = this.state;
+    const {publicInfo, loading, alias} = this.state;
+    // console.log(this.state.chartData)
+
     if (loading) {
       return (
         <div>
@@ -117,59 +119,111 @@ export default class PublicProfile extends Component {
       );
     }
     if (alias) {
-      const {basic, headline, contact, summary, picture, about, organizations} = publicInfo;
+      const {
+        basic,
+        headline,
+        contact,
+        summary,
+        picture,
+        about,
+        organizations,
+        metrics
+      } = publicInfo;
 
-      const basicContent = [
-        {
-          label: capitalize(headline.title),
-          value: ''
-        },
-        {
-          label: basic.industry,
-          value: ''
-        }
-      ];
-      const contactContent = [
-        {
-          label: 'Phone',
-          value: contact.phone
-        },
-        {
-          label: 'Email',
-          value: contact.email
-        }
-      ];
-      const summaryContent = {
-        Organizations: summary.noOrg,
-        Employees: summary.noEmployees,
-        Feedbacks: summary.noFeedbacks
-      };
-      const aboutContent = [
-        {
-          label: '',
-          value: about.aboutMe
-        }
-      ];
-      const metricsContent = [
-        {
-          Overall: 3.5,
-          Purpose: 3.6,
-          Mettings: 5,
-          Rules: 4.1
-        },
-        {
-          Communications: 2.3,
-          Leadership: 4.4,
-          Workload: 5,
-          Energy: 3.4,
-        },
-        {
-          Stress: 3.8,
-          Decision: 3.9,
-          Respect: 4,
-          Conflict: 4.9
-        }
-      ];
+      // content for basic info
+      const basicContent = [];
+      if (!!headline.title) {
+        basicContent.push({label: capitalize(headline.title), value: ''});
+      }
+      if (!!basic.industry) {
+        basicContent.push({label: basic.industry, value: ''});
+      }
+
+      // content for contact info
+      const contactContent = [];
+      if (!!contact.email) {
+        contactContent.push({label: 'Email', value: contact.email});
+      }
+      if (!!contact.phone) {
+        contactContent.push({label: 'Phone', value: contact.phone});
+      }
+
+      // content for summary info
+      const summaryContent = {};
+      if (!!summary.noOrg) {
+        summaryContent.Organizations = summary.noOrg;
+      }
+      if (!!summary.noEmployees) {
+        summaryContent.Employees = summary.noEmployees;
+      }
+      if (!!summary.noFeedbacks) {
+        summaryContent.Feedbacks = summary.noFeedbacks;
+      }
+
+      // content for about info
+      const aboutContent = [];
+      if (!!about.aboutMe) {
+        aboutContent.push({label: '', value: about.aboutMe});
+      }
+
+      // metrics chart
+      const {chartLabel, chartData} = this.state;
+      const metricOptions = [];
+      $.map(metrics, (value, key) => {
+        metricOptions.push(key);
+      });
+
+      // content for metrics info
+      const metricsContent = [];
+      const group1 = {};
+      const group2 = {};
+      const group3 = {};
+      if (!!metrics.overall) {
+        group1.Overall = metrics.overall;
+      }
+      if (!!metrics.purpose) {
+        group1.Purpose = metrics.purpose;
+      }
+      if (!!metrics.mettings) {
+        group1.Mettings = metrics.mettings;
+      }
+      if (!!metrics.rules) {
+        group1.Rules = metrics.rules;
+      }
+      if (!!metrics.communications) {
+        group2.Communications = metrics.communications;
+      }
+      if (!!metrics.leadership) {
+        group2.Leadership = metrics.leadership;
+      }
+      if (!!metrics.workload) {
+        group2.Workload = metrics.workload;
+      }
+      if (!!metrics.energy) {
+        group2.Energy = metrics.energy;
+      }
+      if (!!metrics.stress) {
+        group3.Stress = metrics.stress;
+      }
+      if (!!metrics.decision) {
+        group3.Decision = metrics.decision;
+      }
+      if (!!metrics.respect) {
+        group3.Respect = metrics.respect;
+      }
+      if (!!metrics.conflict) {
+        group3.Conflict = metrics.conflict;
+      }
+      if (!_.isEmpty(group1)) {
+        metricsContent.push(group1);
+      }
+      if (!_.isEmpty(group2)) {
+        metricsContent.push(group2);
+      }
+      if (!_.isEmpty(group3)) {
+        metricsContent.push(group3);
+      }
+
 
       return (
         <div id="page-top">
@@ -225,7 +279,7 @@ export default class PublicProfile extends Component {
                             classGridValue='col-xs-0'
                           />
 
-                          {(contact.phone || contact.email) && (
+                          {!_.isEmpty(contactContent) && (
                             <IboxContentHorizontal
                               ibcTitle="Contact"
                               ibcContent={contactContent}
@@ -233,14 +287,14 @@ export default class PublicProfile extends Component {
                               classGridValue='col-xs-8'
                             />
                           )}
-                          {(summary.noOrg || summary.noEmployees || summary.noFeedbacks) && (
+                          {!_.isEmpty(summaryContent) && (
                             <IboxContentInline
                               ibcTitle="Summary"
                               ibcContent={summaryContent}
                               classGrid="col-xs-4"
                             />
                           )}
-                          {about.aboutMe && (
+                          {!_.isEmpty(aboutContent) && (
                             <IboxContentHorizontal
                               ibcTitle='About'
                               ibcContent={aboutContent}
@@ -257,25 +311,31 @@ export default class PublicProfile extends Component {
                       <div className="row">
                         <div className="ibox float-e-margins" style={{marginBottom: 18}}>
                           <div className="ibox-title">
-                            <h5>Leadership progress (not implemented)</h5>
+                            <h5>Leadership progress (no real data)</h5>
                           </div>
                           <div className="ibox-content">
-                            <div>
-                              <canvas id="lineChart" height="140"></canvas>
-                            </div>
+                            <h5><strong>Half-year Metric Progress Chart</strong></h5>
+                            <Chosen
+                              ref="chosenMetric"
+                              options={metricOptions}
+                              selectedOptions={null}
+                              chosenClass="chosen-select"
+                              isMultiple={false}
+                              placeHolder='Choose one option ...'
+                              onChange={this.onChooseMetric.bind(this)}
+                            />
+                            <LineChart
+                              label={chartLabel}
+                              data={chartData}
+                            />
                           </div>
-                          <IboxContentInline
-                            ibcContent={metricsContent[0]}
-                            classGrid="col-xs-3"
-                          />
-                          <IboxContentInline
-                            ibcContent={metricsContent[1]}
-                            classGrid="col-xs-3"
-                          />
-                          <IboxContentInline
-                            ibcContent={metricsContent[2]}
-                            classGrid="col-xs-3"
-                          />
+                          {metricsContent.map((content, key) => (
+                            <IboxContentInline
+                              key={key}
+                              ibcContent={content}
+                              classGrid="col-xs-3"
+                            />
+                          ))}
                         </div>
                       </div>
                       {!_.isEmpty(organizations) && (

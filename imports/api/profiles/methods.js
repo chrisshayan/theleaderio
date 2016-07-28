@@ -236,7 +236,36 @@ export const getPublicData = new ValidatedMethod({
           about: {
             aboutMe: null
           },
-          organizations: []
+          organizations: [],
+          chart: {
+            label: [],
+            overall: [],
+            purpose: [],
+            mettings: [],
+            rules: [],
+            communications: [],
+            leadership: [],
+            workload: [],
+            energy: [],
+            stress: [],
+            decision: [],
+            respect: [],
+            conflict: []
+          },
+          metrics: {
+            overall: null,
+            purpose: null,
+            mettings: null,
+            rules: null,
+            communications: null,
+            leadership: null,
+            workload: null,
+            energy: null,
+            stress: null,
+            decision: null,
+            respect: null,
+            conflict: null
+          }
         };
 
         // Get basic info - always show
@@ -302,14 +331,49 @@ export const getPublicData = new ValidatedMethod({
           if (organizations.show) {
             if (Organizations.find({owner: user._id}).count() > 0) {
               const modifier = {
-                fields: {name: 1, startTime: 1, endTime: 1, isPresent: 1, employees: 1},
+                fields: {name: true, startTime: true, endTime: true, isPresent: true, employees: true},
                 sort: {startTime: -1}
               };
               const orgInfo = Organizations.find({owner: user._id}, modifier).fetch();
               result.organizations = !_.isEmpty(orgInfo) ? orgInfo : [];
             }
           }
+          
+          // Get chart info
+          result.chart.label = ["February", "March", "April", "May", "June", "July"];
+          result.chart.overall = [2.5, 3.2, 4.0, 3.9, 4.9, 4.5, 4];
+          result.chart.purpose = [3.5, 2.2, 3.0, 4.9, 3.9, 5, 3];
+          result.chart.mettings = [3.5, 3.2, 3.0, 3.9, 4.9, 4, 4.3];
+          result.chart.rules = [3.5, 2.7, 4.6, 3.9, 3.2, 4, 3];
+          result.chart.communications = [3.5, 4.2, 2.0, 3.9, 4.9, 4, 4];
+          result.chart.leadership = [2.5, 3.2, 4.0, 3.9, 4.9, 4, 4];
+          result.chart.workload = [4.5, 3.2, 2.0, 3.9, 4.9, 2.3, 3];
+          result.chart.energy = [3.8, 2.7, 3.3, 4.6, 3.7, 4.5, 3.6];
+          result.chart.stress = [3.4, 3.3, 3.5, 4.2, 4.9, 5, 4];
+          result.chart.decision = [3.5, 2.6, 3.8, 4.2, 3.4, 3.4, 3.7];
+          result.chart.respect = [3.5, 4.2, 5.0, 3.9, 2.9, 4.5, 4];
+          result.chart.conflict = [3.3, 2.8, 2.0, 4.9, 4.9, 4.7, 4.4];
 
+          // Get metrics
+          const userId = user._id;
+          // modifier for finding public metrics
+          const metricsModifier = {
+            fields: preferences.metrics
+          };
+          result.metrics = {
+            overall: 4.4,
+              purpose: 3.6,
+              mettings: 4.7,
+              rules: 5,
+              communications: 4.2,
+              leadership: 3.9,
+              workload: 2.5,
+              energy: 3.8,
+              stress: 3.7,
+              decision: 4.2,
+              respect: 4,
+              conflict: 4.9
+          };
         }
         return result;
       }
