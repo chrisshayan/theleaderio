@@ -47,3 +47,4 @@ reywood:publish-composite
 percolate:migrations
 momentjs:moment
 http
+spiderable

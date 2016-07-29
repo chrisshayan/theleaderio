@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {createContainer} from 'meteor/react-meteor-data';
 import {words as capitalize} from 'capitalize';
 import moment from 'moment';
-import {LinkedinButton, FacebookButton, TwitterTweetButton} from 'react-social-sharebuttons';
+import {LinkedinButton, TwitterTweetButton, FacebookButton} from 'react-social-sharebuttons';
 
 // methods
 import {getPublicData}  from '/imports/api/profiles/methods';
@@ -68,6 +68,7 @@ export default class PublicProfile extends Component {
         });
       }
     });
+
   }
 
   onChooseMetric(selected) {
@@ -109,11 +110,6 @@ export default class PublicProfile extends Component {
     }
   }
 
-  shareOn() {
-    console.log(`share on Linkedin`)
-    console.log(this.refs.shareLinkedin.value)
-  }
-
   render() {
     const {publicInfo, loading, alias} = this.state;
     // console.log(this.state.chartData)
@@ -126,7 +122,8 @@ export default class PublicProfile extends Component {
       );
     }
     if (alias) {
-      const url = "http://jackiekhuu.devtheleader.io:9000/";
+      const url = document.location.href;
+      console.log(url)
 
       const {
         basic,
@@ -253,37 +250,14 @@ export default class PublicProfile extends Component {
                     <div className="ibox-title">
                       <ul className="list-inline social-icon pull-right">
                         <li>
-                          <span className="text-navy"><i className="fa fa-share"></i></span>
+                          <LinkedinButton
+                            url={url}
+                          />
                         </li>
                         <li>
-                          <a
-                            ref="shareLinkedin"
-                            className="btn btn-xs btn-primary"
-                            onClick={this.shareOn.bind(this)}
-                          >
-                            <i className="fa fa-linkedin"></i>
-                          </a>
-                        </li>
-                        <li>
-                          <a
-                            ref="shareTwitter"
-                            className="btn btn-xs btn-primary"
-                            onClick={this.shareOn.bind(this)}
-                          >
-                            <i className="fa fa-twitter"></i>
-                          </a>
-                        </li>
-                        <li>
-                          <a
-                            ref="shareFacebook"
-                            className="btn btn-xs btn-primary"
-                            onClick={this.shareOn.bind(this)}
-                          >
-                            <i className="fa fa-facebook"></i>
-                          </a>
-                        </li>
-                        <li>
-                          <LinkedinButton url={url}/>
+                          <TwitterTweetButton
+                            url={url}
+                          />
                         </li>
                       </ul>
                       <h5>Public Profile</h5>
