@@ -23,11 +23,11 @@ class TopNav extends Component {
   }
 
   render() {
-    const {navClass = "row border-bottom", imageUrl="/img/default-profile-pic.png", name} = this.props;
+    const {imageUrl="/img/default-profile-pic.png"} = this.props;
     const {loggedIn} = this.state;
     return (
-      <div className={navClass}>
-        <div className="col-md-6 col-sm-6">
+      <div className="">
+        <div className="col-sm-6">
           <a href="/">
             <div className="main-logo">
               <h2>theLeader.io</h2>
@@ -35,11 +35,11 @@ class TopNav extends Component {
             </div>
           </a>
         </div>
-        <div className="col-md-6 col-sm-6">
+        <div className="col-sm-6 pull-right">
           <div className="account-info">
             <ul className="nav navbar-top-links navbar-right">
               {(loggedIn) && (
-                <li id="fat-menu" className="dropdown">
+                <li id="fat-menu" className="dropdown" style={{marginRight: 0}}>
                   <a id="user-info" href="#" className="dropdown-toggle" data-toggle="dropdown" role="button"
                      aria-haspopup="true" aria-expanded="false">
                   <span>
@@ -50,8 +50,6 @@ class TopNav extends Component {
                         height="32"
                       />
                   </span>
-                    {" "}
-                    {name}
                     <span className="caret"></span>
                   </a>
                   <ul className="dropdown-menu" aria-labelledby="user-info">

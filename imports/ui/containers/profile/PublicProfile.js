@@ -13,12 +13,13 @@ import Spinner from '/imports/ui/common/Spinner';
 import NoticeForm from '/imports/ui/common/NoticeForm';
 import CopyRight from '/imports/ui/common/Copyright';
 import TopNav from '/imports/ui/common/TopNav';
-import IboxContentHorizontal from '/imports/ui/components/IboxContentHorizontal';
-import IboxContentPhoto from '/imports/ui/components/IboxContentPhoto';
+
 import IboxContentInline from '/imports/ui/components/IboxContentInline';
 import IboxContentOrganization from '/imports/ui/components/IboxContentOrganization';
 import LineChart from '/imports/ui/components/LineChart';
 import Chosen from '/imports/ui/components/Chosen';
+
+import ProfileDetail from '/imports/ui/components/ProfileDetail';
 
 
 export default class PublicProfile extends Component {
@@ -123,7 +124,6 @@ export default class PublicProfile extends Component {
     }
     if (alias) {
       const url = document.location.href;
-      console.log(url)
 
       const {
         basic,
@@ -232,141 +232,108 @@ export default class PublicProfile extends Component {
 
 
       return (
-        <div id="page-top">
-          <div id="wrapper">
-            <nav id="left-nav" className="left-nav">
-            </nav>
-          </div>
-          <div id="page-wrapper" className="gray-bg">
-            <TopNav
-              navClass="row border-bottom"
-              imageUrl={picture.imageUrl}
-              name={capitalize(basic.name)}
-            />
-            <div className="wrapper wrapper-content">
-              <div className="row">
-                <div className="ibox float-e-margins">
-                  <div className="col-xs-10 col-xs-offset-1 no-padding">
-                    <div className="ibox-title">
-                      <ul className="list-inline social-icon pull-right">
-                        <li>
-                          <LinkedinButton
-                            url={url}
-                          />
-                        </li>
-                        <li>
-                          <TwitterTweetButton
-                            url={url}
-                          />
-                        </li>
-                      </ul>
-                      <h5>Public Profile</h5>
+        <div className="gray-bg">
+          <div className="container gray-bg">
+            <div className="row">
+              <div className="col-xs-10 col-xs-offset-1">
+                <TopNav
+                  imageUrl={picture.imageUrl}
+                />
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="ibox float-e-margins">
+                <div className="col-xs-10 col-xs-offset-1 no-padding">
+                  <div className="ibox-title">
+                    <ul className="list-inline social-icon pull-right">
+                      <li>
+                        <LinkedinButton
+                          url={url}
+                        />
+                      </li>
+                      <li>
+                        <TwitterTweetButton
+                          url={url}
+                        />
+                      </li>
+                    </ul>
+                    <h5>Public Profile</h5>
+                  </div>
+                </div>
+                <div className="col-xs-4 col-xs-offset-1 no-padding">
+                  <div className="ibox-content gray-bg">
+                    <div className="row">
+                      <ProfileDetail
+                        basic={basic}
+                        picture={picture}
+                        basicContent={basicContent}
+                        contactContent={contactContent}
+                        summaryContent={summaryContent}
+                        aboutContent={aboutContent}
+                      />
                     </div>
                   </div>
-                  <div className="col-xs-4 col-xs-offset-1 no-padding">
-                    <div className="ibox-content gray-bg">
+                </div>
+                <div className="col-xs-6 no-padding">
+                  <div className="ibox-content gray-bg">
+                    <div className="row">
+                      <div className="ibox float-e-margins" style={{marginBottom: 18}}>
+                        <div className="ibox-title">
+                          <h5>Leadership progress (no real data)</h5>
+                        </div>
+                        <div className="ibox-content">
+                          <h5><strong>Half-year Metric Progress Chart</strong></h5>
+                          <Chosen
+                            ref="chosenMetric"
+                            options={metricOptions}
+                            selectedOptions={null}
+                            chosenClass="chosen-select"
+                            isMultiple={false}
+                            placeHolder='Choose one option ...'
+                            onChange={this.onChooseMetric.bind(this)}
+                          />
+                          <LineChart
+                            label={chartLabel}
+                            data={chartData}
+                          />
+                        </div>
+                        {metricsContent.map((content, key) => (
+                          <IboxContentInline
+                            key={key}
+                            ibcContent={content}
+                            classGrid="col-xs-3"
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    {!_.isEmpty(organizations) && (
                       <div className="row">
                         <div className="ibox float-e-margins">
-                          <IboxContentPhoto
-                            imageClass="img-thumbnail"
-                            imageUrl={picture.imageUrl}
-                            width={360}
-                            height={360}
-                          />
-                          <IboxContentHorizontal
-                            ibcTitle={capitalize(basic.name)}
-                            ibcContent={basicContent}
-                            classGridLabel='col-xs-12'
-                            classGridValue='col-xs-0'
-                          />
-
-                          {!_.isEmpty(contactContent) && (
-                            <IboxContentHorizontal
-                              ibcTitle="Contact"
-                              ibcContent={contactContent}
-                              classGridLabel='col-xs-4'
-                              classGridValue='col-xs-8'
-                            />
-                          )}
-                          {!_.isEmpty(summaryContent) && (
-                            <IboxContentInline
-                              ibcTitle="Summary"
-                              ibcContent={summaryContent}
-                              classGrid="col-xs-4"
-                            />
-                          )}
-                          {!_.isEmpty(aboutContent) && (
-                            <IboxContentHorizontal
-                              ibcTitle='About'
-                              ibcContent={aboutContent}
-                              classGridLabel='col-xs-0'
-                              classGridValue='col-xs-12'
-                            />
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-xs-6 no-padding">
-                    <div className="ibox-content gray-bg">
-                      <div className="row">
-                        <div className="ibox float-e-margins" style={{marginBottom: 18}}>
                           <div className="ibox-title">
-                            <h5>Leadership progress (no real data)</h5>
+                            <h5>Organizations</h5>
                           </div>
-                          <div className="ibox-content">
-                            <h5><strong>Half-year Metric Progress Chart</strong></h5>
-                            <Chosen
-                              ref="chosenMetric"
-                              options={metricOptions}
-                              selectedOptions={null}
-                              chosenClass="chosen-select"
-                              isMultiple={false}
-                              placeHolder='Choose one option ...'
-                              onChange={this.onChooseMetric.bind(this)}
-                            />
-                            <LineChart
-                              label={chartLabel}
-                              data={chartData}
-                            />
-                          </div>
-                          {metricsContent.map((content, key) => (
-                            <IboxContentInline
-                              key={key}
-                              ibcContent={content}
-                              classGrid="col-xs-3"
-                            />
-                          ))}
+                          {organizations.map(org => {
+                            return (
+                              <IboxContentOrganization
+                                key={org._id}
+                                title="Head of Engineering"
+                                name={org.name}
+                                startTime={new moment(org.startTime).format('MMMM YYYY')}
+                                endTime={new moment(org.endTime).format('MMMM YYYY')}
+                                noEmployees={org.employees.length}
+                                overallPercent="60%"
+                                imageUrl='/img/icare_benefits.png'
+                              />)
+                          })}
                         </div>
                       </div>
-                      {!_.isEmpty(organizations) && (
-                        <div className="row">
-                          <div className="ibox float-e-margins">
-                            <div className="ibox-title">
-                              <h5>Organizations</h5>
-                            </div>
-                            {organizations.map(org => {
-                              return (
-                                <IboxContentOrganization
-                                  key={org._id}
-                                  title="Head of Engineering"
-                                  name={org.name}
-                                  startTime={new moment(org.startTime).format('MMMM YYYY')}
-                                  endTime={new moment(org.endTime).format('MMMM YYYY')}
-                                  noEmployees={org.employees.length}
-                                  overallPercent="60%"
-                                  imageUrl='/img/icare_benefits.png'
-                                />)
-                            })}
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
-            <div className="footer gray-bg">
+            <div className="gray-bg">
               <CopyRight />
             </div>
           </div>

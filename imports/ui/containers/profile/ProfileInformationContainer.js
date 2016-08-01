@@ -1,40 +1,71 @@
 import React, {Component} from 'react';
 import {createContainer} from 'meteor/react-meteor-data';
 
+// collections
 import {Profiles} from '/imports/api/profiles/index';
 import {Industries} from '/imports/api/industries/index';
 
+// methods
 import * as ProfileActions from '/imports/api/profiles/methods';
 import * as Notifications from '/imports/api/notifications/methods';
 
+// components
+import Spinner from '/imports/ui/common/Spinner';
 import ChosenIndustries from '/imports/ui/components/ChosenIndustries';
 import UploadImage from '/imports/ui/components/UploadImage';
-import Spinner from '/imports/ui/common/Spinner';
+import FormInputHorizontal from '/imports/ui/components/FormInputHorizontal';
+import FormTextArea from '/imports/ui/components/FormTextArea';
+import HrDashed from '/imports/ui/components/HrDashed';
 
-// EditProfile.propTypes = {
-//   loading: React.PropTypes.bool,
-//   profile: React.PropTypes.object,
-//   industries: React.PropTypes.object
-// };
 
 class EditProfile extends Component {
-  
+  constructor() {
+    super();
+
+    this.state = {
+      loading: true,
+      profile: {
+        firstName: '',
+        lastName: '',
+        title: '',
+        phoneNumber: '',
+        aboutMe: ''
+      },
+      industries: [],
+      error: {}
+    };
+  }
+
+  componentDidUpdate(prevProps) {
+    if(!_.isEqual(prevProps, this.props)) {
+      this.setState({
+        loading: false,
+        profile: this.props.profile,
+        industries: this.props.industries
+      });
+    }
+    console.log(this.state)
+  }
+
   onSave() {
-    const userId = Meteor.userId(),
-      firstName = this.refs.firstName.value,
-      lastName = this.refs.lastName.value,
-      industries = this.refs.selectedIndustries.getValue(),
-      phoneNumber = this.refs.phoneNumber.value,
-      aboutMe = this.refs.aboutMe.value
-      ;
-    ProfileActions.edit.call({userId, firstName, lastName, industries, phoneNumber, aboutMe}, (error) => {
+    const userId = Meteor.userId();
+    const {firstName, lastName, title, phoneNumber, aboutMe} = this.state.profile;
+    const industries = this.refs.selectedIndustries.getValue();
+    console.log({userId, firstName, lastName, title, industries, phoneNumber, aboutMe});
+    ProfileActions.edit.call({userId, firstName, lastName, title, industries, phoneNumber, aboutMe}, (error) => {
       if (!_.isEmpty(error)) {
+        const closeButton = true,
+          timeOut = 2000,
+          title = 'Edit profile',
+          message = `Error: ${error.reason}`
+          ;
+        Notifications.warning.call({closeButton, timeOut, title, message});
       } else {
         const closeButton = true,
           timeOut = 2000,
           title = 'Edit profile',
           message = 'Saved'
-        ;
+          ;
         Notifications.success.call({closeButton, timeOut, title, message});
       }
     });
@@ -49,14 +80,15 @@ class EditProfile extends Component {
           timeOut = 2000,
           title = 'Profile photo',
           message = 'Uploaded'
-        ;
+          ;
         Notifications.success.call({closeButton, timeOut, title, message});
       }
     });
   }
 
   render() {
-    const {loading, profile, industries} = this.props;
+    const {loading, error, profile, industries} = this.state;
+    // console.log(this.state)
     if (loading) {
       return (
         <div>
@@ -65,7 +97,7 @@ class EditProfile extends Component {
       );
     } else {
       return (
-        <div className="wrapper wrapper-content animated fadeInRight">
+        <div className="animated fadeInRight">
           <div className="row">
             <div className="col-md-4">
               <div className="ibox">
@@ -84,28 +116,37 @@ class EditProfile extends Component {
                   <h5>Edit your profile</h5>
                 </div>
                 <div className="ibox-content">
-                  <form 
-                    method="get" 
-                    className="form-horizontal" 
+                  <form
+                    method="get"
+                    className="form-horizontal"
                     onSubmit={(e) => {
                     e.preventDefault();
                     this.onSave();
                   }}>
-                    <div className="form-group">
-                      <label className="col-sm-3 control-label">First name</label>
-                      <div className="col-sm-9">
-                        <input ref="firstName" type="text" className="form-control"
-                               defaultValue={profile.firstName} placeholder=""/>
-                      </div>
-                    </div>
-                    <div className="form-group">
-                      <label className="col-sm-3 control-label">Last name</label>
-                      <div className="col-sm-9">
-                        <input ref="lastName" type="text" className="form-control"
-                               defaultValue={profile.lastName} placeholder="Khuu"/>
-                      </div>
-                    </div>
-                    <div className="hr-line-dashed"></div>
+                    <FormInputHorizontal
+                      label="First name"
+                      type="text"
+                      placeHolder=""
+                      defaultValue={profile.firstName}
+                      onChangeText={firstName => this.setState({profile: {...profile, firstName}})}
+                    />
+                    <HrDashed />
+                    <FormInputHorizontal
+                      label="Last name"
+                      type="text"
+                      placeHolder=""
+                      defaultValue={profile.lastName}
+                      onChangeText={lastName => this.setState({profile: {...profile, lastName}})}
+                    />
+                    <HrDashed />
+                    <FormInputHorizontal
+                      label="Title"
+                      type="text"
+                      placeHolder="... Head of Engineering"
+                      defaultValue={profile.title}
+                      onChangeText={title => this.setState({profile: {...profile, title}})}
+                    />
+                    <HrDashed />
                     <div className="form-group">
                       <label className="col-sm-3 control-label">Industries</label>
                       <div className="col-sm-9">
@@ -117,23 +158,22 @@ class EditProfile extends Component {
                         />
                       </div>
                     </div>
-                    <div className="hr-line-dashed"></div>
-                    <div className="form-group">
-                      <label className="col-sm-3 control-label">Phone number</label>
-                      <div className="col-sm-9">
-                        <input ref="phoneNumber" type="text" className="form-control" data-mask="(999) 999-9999"
-                               defaultValue={profile.phoneNumber} placeholder="(84) 90 338 0797"/>
-                      </div>
-                    </div>
-                    <div className="hr-line-dashed"></div>
-                    <div className="form-group">
-                      <label className="col-sm-3 control-label">About me</label>
-                      <div className="col-sm-9">
-                        <input ref="aboutMe" type="text" className="form-control"
-                               defaultValue={profile.aboutMe} placeholder="Tell us something about you ...."/>
-                      </div>
-                    </div>
-                    <div className="hr-line-dashed"></div>
+                    <HrDashed />
+                    <FormInputHorizontal
+                      label="Phone number"
+                      type="text"
+                      placeHolder="... 090 338 0797"
+                      defaultValue={profile.phoneNumber}
+                      onChangeText={phoneNumber => this.setState({profile: {...profile, phoneNumber}})}
+                    />
+                    <HrDashed />
+                    <FormTextArea
+                      label="About me"
+                      type="text"
+                      defaultValue={profile.aboutMe}
+                      onTextChange={aboutMe => this.setState({profile: {...profile, aboutMe}})}
+                    />
+                    <HrDashed />
                     <div className="form-group">
                       <div className="col-sm-4 col-sm-offset-3">
                         <button className="btn btn-primary" type="submit">

@@ -14,7 +14,6 @@ import {getPublicData}  from '/imports/api/profiles/methods';
 import CheckBox from '/imports/ui/components/CheckBox1';
 import Spinner from '/imports/ui/common/Spinner';
 
-// containers
 import ProfileDetail from '/imports/ui/components/ProfileDetail';
 import LeadershipProgress from '/imports/ui/components/LeadershipProgress';
 
@@ -31,6 +30,7 @@ class PreferencesProfile extends Component {
       about: null,
       picture: null,
       metrics: null,
+      allMetrics: null,
       publicData: null
     };
   }
@@ -57,7 +57,7 @@ class PreferencesProfile extends Component {
         summary: this.props.preferences.preferences.summary,
         about: this.props.preferences.preferences.about,
         picture: this.props.preferences.preferences.picture,
-        metrics: this.props.configs.configs.metrics
+        metrics: this.props.preferences.preferences.metrics
       });
     }
   }
@@ -73,7 +73,6 @@ class PreferencesProfile extends Component {
         picture: this.state.picture,
         metrics: this.state.metrics
       };
-    console.log(configs);
     updatePreferences.call({name, preferences}, (error) => {
       if (_.isEmpty(error)) {
         const
@@ -108,6 +107,7 @@ class PreferencesProfile extends Component {
       picture,
       about,
       metrics,
+      allMetrics,
       publicData
     } = this.state;
     if (loading) {
@@ -125,7 +125,7 @@ class PreferencesProfile extends Component {
             <div className="col-md-3">
               <div className="ibox float-e-margins">
                 <div className="ibox-title">
-                  <h5>Configure your public information</h5>
+                  <h5>Customize public information</h5>
                 </div>
                 <div className="ibox-content">
                   <form
@@ -138,23 +138,23 @@ class PreferencesProfile extends Component {
                     <div className="form-group" style={{margin: 0}}>
                       <label className="control-label">Profile</label>
                       <CheckBox
-                        label=" Name"
+                        label=" Basic"
                         checked={basic.name}
                         onChange={value => this.setState({ basic: { ...basic, name: value } })}
                         disabled={true}
                       />
                       <CheckBox
-                        label=" Industry"
+                        label=" Headline"
                         checked={basic.industry}
                         onChange={value => this.setState({ basic: { ...basic, industry: value } })}
                       />
                       <CheckBox
-                        label=" Phone"
+                        label=" Contact"
                         checked={contact.phone}
                         onChange={value => this.setState({ contact: { ...contact, phone: value } })}
                       />
                       <CheckBox
-                        label=" About"
+                        label=" Summary"
                         checked={about.aboutMe}
                         onChange={value => this.setState({ about: { ...about, aboutMe: value } })}
                       />
@@ -164,24 +164,38 @@ class PreferencesProfile extends Component {
                         onChange={value => this.setState({ picture: { ...picture, imageUrl: value } })}
                       />
                       <CheckBox
-                        label=" Number of Organizations"
+                        label=" About"
                         checked={summary.noOrg}
                         onChange={value => this.setState({ summary: { ...summary, noOrg: value } })}
                       />
                       <CheckBox
-                        label=" Number of Employees"
+                        label=" Organizations"
                         checked={summary.noEmployees}
                         onChange={value => this.setState({ summary: { ...summary, noEmployees: value } })}
                       />
-                      <CheckBox
-                        label=" Number of Feedbacks"
-                        checked={summary.noFeedbacks}
-                        onChange={value => this.setState({ summary: { ...summary, noFeedbacks: value } })}
-                      />
                     </div>
-                    <div className="hr-line-dashed"></div>
+                    <div className="hr-line-dashed" style={{marginTop: 10, marginBottom: 5}}></div>
                     <div className="form-group" style={{margin: 0}}>
                       <label className="control-label">Metrics</label>
+                      <CheckBox
+                        label=" All"
+                        checked={allMetrics}
+                        onChange={value =>
+                          this.setState({ metrics: {
+                            overall: value,
+                            purpose: value,
+                            mettings: value,
+                            rules: value,
+                            communications: value,
+                            leadership: value,
+                            workload: value,
+                            energy: value,
+                            stress: value,
+                            decision: value,
+                            respect: value,
+                            conflict: value
+                        }})}
+                      />
                       <CheckBox
                         label=" Overall"
                         checked={metrics.overall}
@@ -261,7 +275,26 @@ class PreferencesProfile extends Component {
 export default PreferencesProfileContainer = createContainer(({params}) => {
   // subscribe
   const subPreferences = Meteor.subscribe('preferences', {name: 'publicInfo'});
+  
+  // get public info
+  const alias = Session.get('alias');
+  getPublicData.call({alias}, (error, result) => {
+    if (_.isEmpty(error)) {
+      // this.setState({
+      //   loading: false,
+      //   publicInfo: result,
+      //   chartLabel: result.chart.label,
+      //   chartData: result.chart.overall
+      // });
 
+    } else {
+      // this.setState({
+      //   loading: false,
+      //   errors: error.reason
+      // });
+    }
+  });
+  
   // loading
   const loading = !subPreferences.ready() && (Preferences.find({}).count() < 1);
 
