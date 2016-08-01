@@ -4,7 +4,7 @@ import {createContainer} from 'meteor/react-meteor-data';
 // components
 import Box from '/imports/ui/components/Box';
 import EditProfileContainer from '/imports/ui/containers/profile/EditProfileContainer';
-import ConfigProfileContainer from '/imports/ui/containers/profile/ConfigProfileContainer';
+import ConfigProfileContainer from '/imports/ui/containers/profile/PreferencesProfileContainer';
 
 export default class Profile extends Component {
   render() {

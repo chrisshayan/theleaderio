@@ -113,6 +113,7 @@ class EditProfile extends Component {
                           ref="selectedIndustries"
                           options={industries}
                           selectedIndustries={profile.industries}
+                          isMultiple={true}
                         />
                       </div>
                     </div>

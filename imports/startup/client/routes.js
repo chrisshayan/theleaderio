@@ -3,6 +3,7 @@ import {FlowRouter} from 'meteor/kadira:flow-router';
 import React from 'react';
 import {mount} from 'react-mounter';
 
+// components
 import NoticeForm from '/imports/ui/common/NoticeForm';
 import WelcomePage from '/imports/ui/common/WelcomePage';
 import ThankyouPage from '/imports/ui/common/ThankyouPage';
@@ -30,7 +31,7 @@ import Dashboard from '/imports/ui/containers/dashboard/Dashboard';
 import Organizations from '/imports/ui/containers/organizations/Organizations';
 import SingleOrganization from '/imports/ui/containers/organizations/SingleOrganization';
 import Employees from '/imports/ui/containers/employees/Employees';
-
+// methods
 import * as Notifications from '/imports/api/notifications/methods';
 
 // Admin page
