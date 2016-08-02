@@ -125,17 +125,13 @@ export default class PublicProfile extends Component {
                     <h5>Public Profile</h5>
                   </div>
                 </div>
-                <div className="col-md-4 col-md-offset-1 col-xs-12 no-padding">
+                <div className="col-md-7 col-md-offset-1 col-xs-12 no-padding">
                   <div className="ibox-content gray-bg">
                     <div className="row">
                       <ProfileDetail
                         profile={{ basic, headline, contact, summary, picture, about }}
                       />
                     </div>
-                  </div>
-                </div>
-                <div className="col-md-6 col-xs-12 no-padding">
-                  <div className="ibox-content gray-bg">
                     <div className="row">
                       <LeadershipProgress
                         label="Leadership progress (no real data)"

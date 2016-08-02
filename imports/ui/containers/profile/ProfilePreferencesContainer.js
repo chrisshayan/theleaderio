@@ -77,12 +77,10 @@ class ProfilePreferences extends Component {
       return (
         <div className="wrapper wrapper-content animated fadeInRight">
           <div className="row">
-            <div className="col-md-4">
+            <div className="col-md-8">
               <ProfileDetail
                 profile={{ basic, headline, contact, summary, picture, about }}
               />
-            </div>
-            <div className="col-md-6">
               <LeadershipProgress
                 label="Leadership progress (no real data)"
                 chart={chart}
@@ -109,7 +107,7 @@ class ProfilePreferences extends Component {
                 </div>
               )}
             </div>
-            <div className="col-md-2 pull-right">
+            <div className="col-md-4 pull-right">
               <div className="ibox float-e-margins">
                 <div className="ibox-title">
                   <h5>Customize</h5>

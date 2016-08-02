@@ -9,7 +9,15 @@ export default class IboxContentOrganization extends Component {
     return (
       <div className="ibox-content">
         <div className="row">
-          <div className="col-xs-7">
+          <div className="col-md-4">
+            <ProfilePhoto
+              imageClass='img-thumbnail'
+              imageUrl={imageUrl}
+              width={220}
+              height={220}
+            />
+          </div>
+          <div className="col-md-8">
             <h4>{title}</h4>
             <p className="stats-label">{name}</p>
             <span className="vertical-date">
@@ -25,14 +33,6 @@ export default class IboxContentOrganization extends Component {
             <div className="progress progress-mini">
               <div className="progress-bar"></div>
             </div>
-          </div>
-          <div className="col-xs-4">
-            <ProfilePhoto
-              imageClass='img-thumbnail'
-              imageUrl={imageUrl}
-              width={100}
-              height={100}
-            />
           </div>
         </div>
       </div>
