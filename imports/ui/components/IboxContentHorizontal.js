@@ -10,7 +10,7 @@ import React, {Component} from 'react';
 
 export default class IboxContentHorizontal extends Component {
   render() {
-    const {ibcTitle, ibcContent, classGridLabel, classGridValue} = this.props;
+    const {ibcTitle, ibcContent = [], classGridLabel, classGridValue} = this.props;
     return (
       <div className="ibox-content">
         <h4><strong>{ibcTitle}</strong></h4>

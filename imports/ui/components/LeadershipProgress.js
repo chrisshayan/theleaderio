@@ -1,76 +1,88 @@
 import React, {Component} from 'react';
 
+// components 
+import IboxContentChartWithChosen from '/imports/ui/components/IboxContentChartWithChosen';
+import IboxContentInline from '/imports/ui/components/IboxContentInline';
+
 export default class LeadershipProgress extends Component {
+
+  constructor() {
+    super();
+
+    this.state = {
+    }
+  }
+
   render() {
+    const {label, chart, metrics} = this.props;
+
+    // content for metrics info
+    const metricsContent = [];
+    const group1 = {};
+    const group2 = {};
+    const group3 = {};
+    if (!!metrics.overall) {
+      group1.Overall = metrics.overall;
+    }
+    if (!!metrics.purpose) {
+      group1.Purpose = metrics.purpose;
+    }
+    if (!!metrics.mettings) {
+      group1.Mettings = metrics.mettings;
+    }
+    if (!!metrics.rules) {
+      group1.Rules = metrics.rules;
+    }
+    if (!!metrics.communications) {
+      group2.Communications = metrics.communications;
+    }
+    if (!!metrics.leadership) {
+      group2.Leadership = metrics.leadership;
+    }
+    if (!!metrics.workload) {
+      group2.Workload = metrics.workload;
+    }
+    if (!!metrics.energy) {
+      group2.Energy = metrics.energy;
+    }
+    if (!!metrics.stress) {
+      group3.Stress = metrics.stress;
+    }
+    if (!!metrics.decision) {
+      group3.Decision = metrics.decision;
+    }
+    if (!!metrics.respect) {
+      group3.Respect = metrics.respect;
+    }
+    if (!!metrics.conflict) {
+      group3.Conflict = metrics.conflict;
+    }
+    if (!_.isEmpty(group1)) {
+      metricsContent.push(group1);
+    }
+    if (!_.isEmpty(group2)) {
+      metricsContent.push(group2);
+    }
+    if (!_.isEmpty(group3)) {
+      metricsContent.push(group3);
+    }
+
     return (
-      <div className="ibox float-e-margins">
+      <div className="ibox float-e-margins" style={{marginBottom: 18}}>
         <div className="ibox-title">
-          <span className="label label-info pull-right">July 14, 2016</span>
-          <h5>Leadership progress (not implemented)</h5>
+          <h5>{label}</h5>
         </div>
-        <div className="ibox-content">
-          <div className="row">
-            <div className="col-xs-3">
-              <small className="stats-label">Overall</small>
-              <h4>1.8</h4>
-            </div>
-
-            <div className="col-xs-3">
-              <small className="stats-label">Purpose</small>
-              <h4>6.1</h4>
-            </div>
-            <div className="col-xs-3">
-              <small className="stats-label">Meetings</small>
-              <h4>2.0</h4>
-            </div>
-            <div className="col-xs-3">
-              <small className="stats-label">Rules</small>
-              <h4>2.0</h4>
-            </div>
-          </div>
-        </div>
-        <div className="ibox-content">
-          <div className="row">
-            <div className="col-xs-3">
-              <small className="stats-label">Communication</small>
-              <h4>1.1</h4>
-            </div>
-
-            <div className="col-xs-3">
-              <small className="stats-label">Leadership</small>
-              <h4>9.4</h4>
-            </div>
-            <div className="col-xs-3">
-              <small className="stats-label">Workload</small>
-              <h4>5.4</h4>
-            </div>
-            <div className="col-xs-3">
-              <small className="stats-label">Energy</small>
-              <h4>4.1</h4>
-            </div>
-          </div>
-        </div>
-        <div className="ibox-content">
-          <div className="row">
-            <div className="col-xs-3">
-              <small className="stats-label">Stress</small>
-              <h4>7.2</h4>
-            </div>
-
-            <div className="col-xs-3">
-              <small className="stats-label">Decision</small>
-              <h4>5.2</h4>
-            </div>
-            <div className="col-xs-3">
-              <small className="stats-label">Respect</small>
-              <h4>4.9</h4>
-            </div>
-            <div className="col-xs-3">
-              <small className="stats-label">Conflict</small>
-              <h4>3.1</h4>
-            </div>
-          </div>
-        </div>
+        <IboxContentChartWithChosen
+          label="Half-year Metric Progress Chart"
+          data={chart}
+        />
+        {metricsContent.map((content, key) => (
+          <IboxContentInline
+            key={key}
+            ibcContent={content}
+            classGrid="col-xs-3"
+          />
+        ))}
       </div>
     );
   }

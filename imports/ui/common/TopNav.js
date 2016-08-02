@@ -27,7 +27,7 @@ class TopNav extends Component {
     const {loggedIn} = this.state;
     return (
       <div className="">
-        <div className="col-sm-6">
+        <div className="col-xs-6">
           <a href="/">
             <div className="main-logo">
               <h2>theLeader.io</h2>
@@ -35,7 +35,7 @@ class TopNav extends Component {
             </div>
           </a>
         </div>
-        <div className="col-sm-6 pull-right">
+        <div className="col-xs-6 pull-right">
           <div className="account-info">
             <ul className="nav navbar-top-links navbar-right">
               {(loggedIn) && (

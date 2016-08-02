@@ -1,7 +1,6 @@
 export const DEFAULT_PUBLIC_INFO_PREFERENCES = {
   basic: {
     name: true,
-    title: true,
     industry: true
   },
   headline: {

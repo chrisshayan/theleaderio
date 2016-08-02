@@ -44,7 +44,6 @@ class EditProfile extends Component {
         industries: this.props.industries
       });
     }
-    console.log(this.state)
   }
 
   onSave() {
