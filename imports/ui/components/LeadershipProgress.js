@@ -87,8 +87,6 @@ export default class LeadershipProgress extends Component {
     if (!_.isEmpty(group3)) {
       metricsContent.push(group3);
     }
-    console.log(chartContent)
-    console.log(metricsContent)
 
     return (
       <div className="ibox float-e-margins" style={{marginBottom: 18}}>

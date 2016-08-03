@@ -118,6 +118,29 @@ class ProfilePreferences extends Component {
                     data={{chart, metrics}}
                   />
                 </div>
+                {(!_.isEmpty(organizations) && preferences.organizations.show) && (
+                  <div className="row">
+                    <div className="ibox float-e-margins">
+                      <div className="ibox-title">
+                        <h5>Organizations</h5>
+                      </div>
+                      {organizations.map(org => {
+                        console.log(org)
+                        return (
+                          <IboxContentOrganization
+                            key={org._id}
+                            title="Head of Engineering"
+                            name={org.name}
+                            startTime={new moment(org.startTime).format('MMMM YYYY')}
+                            endTime={new moment(org.endTime).format('MMMM YYYY')}
+                            noEmployees={org.employees.length}
+                            overallPercent="60%"
+                            imageUrl='/img/icare_benefits.png'
+                          />)
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
             <div className="col-md-3 pull-right">
@@ -209,9 +232,9 @@ class ProfilePreferences extends Component {
                     <div className="hr-line-dashed" style={{marginTop: 10, marginBottom: 5}}></div>
 
                     <div className="form-group" style={{margin: 0}}>
-                      <label className="control-label">Leadership metrics</label>
+                      <label className="control-label">Leadership progress</label>
                       <CheckBox
-                        label=" All"
+                        label=" All metrics"
                         checked={
                           preferences.metrics.overall |
                           preferences.metrics.purpose |
@@ -329,33 +352,11 @@ class ProfilePreferences extends Component {
                           />
                         </li>
                       </ul>
-
-                      <div className="hr-line-dashed" style={{marginTop: 10, marginBottom: 5}}></div>
-
-                      <div className="form-group" style={{margin: 0}}>
-                        <label className="control-label">Organizations</label>
-                        <CheckBox
-                          label=" All"
-                          checked={preferences.organizations.show}
-                          onChange={value => this.setState({ preferences: {...preferences, organizations: { ...preferences.organizations, show: value }} })}
-                        />
-                        <ul className="unstyled" style={ulStyle}>
-                          <li>
-                            <CheckBox
-                              label=" A"
-                              checked={preferences.contact.email}
-                              onChange={value => this.setState({ preferences: {...preferences, contact: { ...preferences.contact, email: value }} })}
-                            />
-                          </li>
-                          <li>
-                            <CheckBox
-                              label=" B"
-                              checked={preferences.contact.phone}
-                              onChange={value => this.setState({ preferences: {...preferences, contact: { ...preferences.contact, phone: value }} })}
-                            />
-                          </li>
-                        </ul>
-                      </div>
+                      <CheckBox
+                        label=" Organizations"
+                        checked={preferences.organizations.show}
+                        onChange={value => this.setState({ preferences: {...preferences, organizations: { ...preferences.organizations, show: value }} })}
+                      />
                     </div>
                     <div className="hr-line-dashed"></div>
                     <div className="form-group" style={{margin: 0}}>

@@ -139,8 +139,8 @@ export default class PublicProfile extends Component {
                     <div className="row">
                       <LeadershipProgress
                         label="Leadership progress (no real data)"
-                        chart={chart}
-                        metrics={metrics}
+                        preferences={preferences.metrics}
+                        data={{chart, metrics}}
                       />
                     </div>
                     {!_.isEmpty(organizations) && (
