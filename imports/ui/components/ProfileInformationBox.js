@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 // components
 import UserInfoBox from '/imports/ui/components/UserInfoBox';
 
-export default class ProfileBox extends Component {
+export default class ProfileInformationBox extends Component {
   render() {
     const {preferences, data} = this.props;
 

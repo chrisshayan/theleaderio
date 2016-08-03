@@ -4,7 +4,7 @@ import React, {Component} from 'react';
 import IboxContentChartWithChosen from '/imports/ui/components/IboxContentChartWithChosen';
 import IboxContentInline from '/imports/ui/components/IboxContentInline';
 
-export default class LeadershipProgress extends Component {
+export default class ProfileMetricsBox extends Component {
 
   constructor() {
     super();
@@ -17,13 +17,14 @@ export default class LeadershipProgress extends Component {
     const {label, preferences, data} = this.props;
     const {chart, metrics} = data;
 
-    const chartContent = {};
+    const chartContent = {
+      label: chart.label
+    };
     const metricsContent = [];
     const group1 = {};
     const group2 = {};
     const group3 = {};
     $.map(preferences, (value, key) => {
-      // console.log(`key: ${key}, value: ${value}`);
       if(value) {
         switch(key) {
           case 'overall': {
@@ -34,46 +35,61 @@ export default class LeadershipProgress extends Component {
           case 'purpose': {
             chartContent.purpose = chart.purpose;
             group1.purpose = metrics.purpose;
+            break;
           }
           case 'mettings': {
             chartContent.mettings = chart.mettings;
             group1.mettings = metrics.mettings;
+            break;
           }
           case 'rules': {
             chartContent.rules = chart.rules;
             group1.rules = metrics.rules;
+            break;
           }
           case 'communications': {
             chartContent.communications = chart.communications;
             group2.communications = metrics.communications;
+            break;
           }
           case 'leadership': {
             chartContent.leadership = chart.leadership;
             group2.leadership = metrics.leadership;
+            break;
           }
           case 'workload': {
             chartContent.workload = chart.workload;
             group2.workload = metrics.workload;
+            break;
           }
           case 'energy': {
             chartContent.energy = chart.energy;
             group2.energy = metrics.energy;
+            break;
           }
           case 'stress': {
             chartContent.stress = chart.stress;
             group3.stress = metrics.stress;
+            break;
           }
           case 'decision': {
             chartContent.decision = chart.decision;
             group3.decision = metrics.decision;
+            break;
           }
           case 'respect': {
             chartContent.respect = chart.respect;
             group3.respect = metrics.respect;
+            break;
           }
           case 'conflict': {
             chartContent.conflict = chart.conflict;
             group3.conflict = metrics.conflict;
+            break;
+          }
+          default: {
+            chartContent.overall = chart.overall;
+            group1.overall = metrics.overall;
           }
         }
       }
@@ -95,8 +111,8 @@ export default class LeadershipProgress extends Component {
         </div>
         <IboxContentChartWithChosen
           label="Half-year Metric Progress Chart"
-          data={chart}
-          value={chart.overall}
+          data={chartContent}
+          value={chartContent.overall}
         />
         {metricsContent.map((content, key) => (
           <IboxContentInline

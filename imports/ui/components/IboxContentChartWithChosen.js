@@ -35,7 +35,6 @@ export default class IboxContentChartWithChosen extends Component {
     const {label, data} = this.props;
     const {loading, chartData} = this.state;
 
-
     // Chosen metric options
     const options = [];
     $.map(data, (value, key) => {
@@ -47,7 +46,7 @@ export default class IboxContentChartWithChosen extends Component {
     if (!loading) {
       return (
         <div className="ibox-content">
-          <h5><strong>{label}</strong></h5>
+          <h4><strong>{label}</strong></h4>
           <Chosen
             options={options}
             selectedOptions={null}

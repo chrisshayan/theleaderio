@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {createContainer} from 'meteor/react-meteor-data';
+import {words as capitalize} from 'capitalize';
 
 // collections
 import {Preferences} from '/imports/api/users/index';
@@ -16,8 +17,8 @@ import * as Notifications from '/imports/api/notifications/methods';
 import Spinner from '/imports/ui/common/Spinner';
 import CheckBox from '/imports/ui/components/CheckBox1';
 
-import ProfileBox from '/imports/ui/components/ProfileBox';
-import LeadershipProgress from '/imports/ui/components/LeadershipProgress';
+import ProfileInformationBox from '/imports/ui/components/ProfileInformationBox';
+import ProfileMetricsBox from '/imports/ui/components/ProfileMetricsBox';
 import IboxContentOrganization from '/imports/ui/components/IboxContentOrganization';
 
 class ProfilePreferences extends Component {
@@ -98,13 +99,25 @@ class ProfilePreferences extends Component {
         metrics,
         chart
       } = this.state.publicInfo;
+      // console.log(this.state.preferences.metrics)
       const ulStyle = {margin: 0, paddingLeft: 15};
+
+      // initial preferences for organizations
+      // const orgPreferences = {
+      //   show: preferences.organizations.show,
+      //   list: preferences.organizations.list | []
+      // };
+      // if (organizations.length > 0 && _.isEmpty(orgPreferences.list)) {
+      //   organizations.map(org => {
+      //     orgPreferences.list.push({key: org.name, value: true});
+      //   });
+      // }
 
       return (
         <div className="wrapper wrapper-content animated fadeInRight">
           <div className="row">
             <div className="col-md-4">
-              <ProfileBox
+              <ProfileInformationBox
                 preferences={preferences}
                 data={{basic, headline, contact, summary, picture, about}}
               />
@@ -112,8 +125,8 @@ class ProfilePreferences extends Component {
             <div className="col-md-5">
               <div className="ibox-content no-padding">
                 <div className="row">
-                  <LeadershipProgress
-                    label="Leadership progress (no real data)"
+                  <ProfileMetricsBox
+                    label="Metrics (no real data)"
                     preferences={preferences.metrics}
                     data={{chart, metrics}}
                   />
@@ -231,9 +244,9 @@ class ProfilePreferences extends Component {
                     <div className="hr-line-dashed" style={{marginTop: 10, marginBottom: 5}}></div>
 
                     <div className="form-group" style={{margin: 0}}>
-                      <label className="control-label">Leadership progress</label>
+                      <label className="control-label">Metrics</label>
                       <CheckBox
-                        label=" All metrics"
+                        label=" All"
                         checked={
                           preferences.metrics.purpose |
                           preferences.metrics.mettings |
@@ -351,11 +364,13 @@ class ProfilePreferences extends Component {
                           />
                         </li>
                       </ul>
-                      <CheckBox
-                        label=" Organizations"
-                        checked={preferences.organizations.show}
-                        onChange={value => this.setState({ preferences: {...preferences, organizations: { ...preferences.organizations, show: value }} })}
-                      />
+                      {organizations.length > 0 && (
+                        <CheckBox
+                          label=" Organizations"
+                          checked={preferences.organizations.show}
+                          onChange={value => this.setState({ preferences: {...preferences, organizations: { ...preferences.organizations, show: value }} })}
+                        />
+                      )}
                     </div>
                     <div className="hr-line-dashed"></div>
                     <div className="form-group" style={{margin: 0}}>

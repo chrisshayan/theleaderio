@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {createContainer} from 'meteor/react-meteor-data';
-import {words as capitalize} from 'capitalize';
 import moment from 'moment';
 import {LinkedinButton, TwitterTweetButton, FacebookButton} from 'react-social-sharebuttons';
 
@@ -14,8 +13,8 @@ import NoticeForm from '/imports/ui/common/NoticeForm';
 import CopyRight from '/imports/ui/common/Copyright';
 import TopNav from '/imports/ui/common/TopNav';
 
-import ProfileBox from '/imports/ui/components/ProfileBox';
-import LeadershipProgress from '/imports/ui/components/LeadershipProgress';
+import ProfileInformationBox from '/imports/ui/components/ProfileInformationBox';
+import ProfileMetricsBox from '/imports/ui/components/ProfileMetricsBox';
 import IboxContentOrganization from '/imports/ui/components/IboxContentOrganization';
 
 
@@ -127,7 +126,7 @@ export default class PublicProfile extends Component {
                 <div className="col-md-3 col-md-offset-1 col-xs-12 no-padding">
                   <div className="ibox-content gray-bg">
                     <div className="row">
-                      <ProfileBox
+                      <ProfileInformationBox
                         preferences={preferences}
                         data={{basic, headline, contact, summary, picture, about}}
                       />
@@ -137,7 +136,7 @@ export default class PublicProfile extends Component {
                 <div className="col-md-7 col-xs-12 no-padding">
                   <div className="ibox-content gray-bg">
                     <div className="row">
-                      <LeadershipProgress
+                      <ProfileMetricsBox
                         label="Leadership progress (no real data)"
                         preferences={preferences.metrics}
                         data={{chart, metrics}}
