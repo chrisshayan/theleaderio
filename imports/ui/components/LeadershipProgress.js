@@ -14,49 +14,70 @@ export default class LeadershipProgress extends Component {
   }
 
   render() {
-    const {label, chart, metrics} = this.props;
+    const {label, preferences, data} = this.props;
+    const {chart, metrics} = data;
 
-    // content for metrics info
+    const chartContent = {};
     const metricsContent = [];
     const group1 = {};
     const group2 = {};
     const group3 = {};
-    if (!!metrics.overall) {
-      group1.Overall = metrics.overall;
-    }
-    if (!!metrics.purpose) {
-      group1.Purpose = metrics.purpose;
-    }
-    if (!!metrics.mettings) {
-      group1.Mettings = metrics.mettings;
-    }
-    if (!!metrics.rules) {
-      group1.Rules = metrics.rules;
-    }
-    if (!!metrics.communications) {
-      group2.Communications = metrics.communications;
-    }
-    if (!!metrics.leadership) {
-      group2.Leadership = metrics.leadership;
-    }
-    if (!!metrics.workload) {
-      group2.Workload = metrics.workload;
-    }
-    if (!!metrics.energy) {
-      group2.Energy = metrics.energy;
-    }
-    if (!!metrics.stress) {
-      group3.Stress = metrics.stress;
-    }
-    if (!!metrics.decision) {
-      group3.Decision = metrics.decision;
-    }
-    if (!!metrics.respect) {
-      group3.Respect = metrics.respect;
-    }
-    if (!!metrics.conflict) {
-      group3.Conflict = metrics.conflict;
-    }
+    $.map(preferences, (value, key) => {
+      // console.log(`key: ${key}, value: ${value}`);
+      if(value) {
+        switch(key) {
+          case 'overall': {
+            chartContent.overall = chart.overall;
+            group1.overall = metrics.overall;
+            break;
+          }
+          case 'purpose': {
+            chartContent.purpose = chart.purpose;
+            group1.purpose = metrics.purpose;
+          }
+          case 'mettings': {
+            chartContent.mettings = chart.mettings;
+            group1.mettings = metrics.mettings;
+          }
+          case 'rules': {
+            chartContent.rules = chart.rules;
+            group1.rules = metrics.rules;
+          }
+          case 'communications': {
+            chartContent.communications = chart.communications;
+            group2.communications = metrics.communications;
+          }
+          case 'leadership': {
+            chartContent.leadership = chart.leadership;
+            group2.leadership = metrics.leadership;
+          }
+          case 'workload': {
+            chartContent.workload = chart.workload;
+            group2.workload = metrics.workload;
+          }
+          case 'energy': {
+            chartContent.energy = chart.energy;
+            group2.energy = metrics.energy;
+          }
+          case 'stress': {
+            chartContent.stress = chart.stress;
+            group3.stress = metrics.stress;
+          }
+          case 'decision': {
+            chartContent.decision = chart.decision;
+            group3.decision = metrics.decision;
+          }
+          case 'respect': {
+            chartContent.respect = chart.respect;
+            group3.respect = metrics.respect;
+          }
+          case 'conflict': {
+            chartContent.conflict = chart.conflict;
+            group3.conflict = metrics.conflict;
+          }
+        }
+      }
+    });
     if (!_.isEmpty(group1)) {
       metricsContent.push(group1);
     }
@@ -66,6 +87,8 @@ export default class LeadershipProgress extends Component {
     if (!_.isEmpty(group3)) {
       metricsContent.push(group3);
     }
+    console.log(chartContent)
+    console.log(metricsContent)
 
     return (
       <div className="ibox float-e-margins" style={{marginBottom: 18}}>
@@ -75,6 +98,7 @@ export default class LeadershipProgress extends Component {
         <IboxContentChartWithChosen
           label="Half-year Metric Progress Chart"
           data={chart}
+          value={chart.overall}
         />
         {metricsContent.map((content, key) => (
           <IboxContentInline

@@ -70,15 +70,15 @@ export default class ProfileDetail extends Component {
     }
 
     // content for summary info
-    const summaryContent = {};
+    const summaryContent = [];
     if (!!summary.noOrg) {
-      summaryContent.Organizations = summary.noOrg;
+      summaryContent.push({label: 'Organizations', value: summary.noOrg});
     }
     if (!!summary.noEmployees) {
-      summaryContent.Employees = summary.noEmployees;
+      summaryContent.push({label: 'Employees', value: summary.noEmployees});
     }
     if (!!summary.noFeedbacks) {
-      summaryContent.Feedbacks = summary.noFeedbacks;
+      summaryContent.push({label: 'Feedbacks', value: summary.noFeedbacks});
     }
 
     // content for about info
@@ -89,46 +89,45 @@ export default class ProfileDetail extends Component {
 
     return (
       <div className="ibox float-e-margins" style={{marginBottom: 18}}>
+        <div className="ibox-title">
+          <h5>Information</h5>
+        </div>
         <div className="ibox-content">
-          <div className="row">
-            <div className="col-md-4">
+          <div className="row text-center">
+            <div className="ibox-content no-padding" style={{borderTopWidth: 0, borderBottomWidth: 0}}>
               <ProfilePhoto
                 imageClass='img-thumbnail'
                 imageUrl={picture.imageUrl}
-                width={220}
-                height={220}
+                width={260}
+                height={260}
               />
             </div>
-            <div className="col-md-8">
-              <IboxContentHorizontal
-                ibcTitle={capitalize(basic.name)}
-                ibcContent={basicContent}
-                classGridLabel='col-xs-12'
-                classGridValue='col-xs-0'
-              />
-              <IboxContentInline
-                ibcTitle="Summary"
-                ibcContent={summaryContent}
-                classGrid="col-xs-4"
-              />
-            </div>
+          </div>
+          <div className="row">
+            <IboxContentHorizontal
+              ibcTitle={capitalize(basic.name)}
+              ibcContent={basicContent}
+              classGridLabel='col-xs-12'
+              classGridValue='col-xs-0'
+            />
           </div>
           {!_.isEmpty(contactContent) && (
             <div className="row">
               <IboxContentHorizontal
                 ibcTitle="Contact"
                 ibcContent={contactContent}
-                classGridLabel='col-xs-4'
-                classGridValue='col-xs-8'
+                classGridLabel='col-xs-2'
+                classGridValue='col-xs-6'
               />
             </div>
           )}
           {!_.isEmpty(summaryContent) && (
             <div className="row">
-              <IboxContentInline
+              <IboxContentHorizontal
                 ibcTitle="Summary"
                 ibcContent={summaryContent}
-                classGrid="col-xs-4"
+                classGridLabel='col-xs-4'
+                classGridValue='col-xs-2 text-center'
               />
             </div>
           )}

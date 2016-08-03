@@ -18,7 +18,7 @@ export default class IboxContentChartWithChosen extends Component {
   componentWillMount() {
     this.setState({
       loading: false,
-      chartData: this.props.data.overall
+      chartData: this.props.value
     });
   }
 

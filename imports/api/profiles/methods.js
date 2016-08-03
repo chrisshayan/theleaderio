@@ -268,7 +268,8 @@ export const getPublicData = new ValidatedMethod({
             decision: null,
             respect: null,
             conflict: null
-          }
+          },
+          preferences: {}
         };
 
         // Get basic info - always show
@@ -289,6 +290,7 @@ export const getPublicData = new ValidatedMethod({
             preferences = DEFAULT_PUBLIC_INFO_PREFERENCES;
           } else {
             preferences = Preferences.find({userId: user._id}).fetch()[0].preferences;
+            result.preferences = preferences;
           }
           // Get preferences
           const {headline, contact, summary, picture, about, organizations} = preferences;

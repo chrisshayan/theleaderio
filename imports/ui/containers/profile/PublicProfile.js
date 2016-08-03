@@ -14,7 +14,7 @@ import NoticeForm from '/imports/ui/common/NoticeForm';
 import CopyRight from '/imports/ui/common/Copyright';
 import TopNav from '/imports/ui/common/TopNav';
 
-import ProfileDetail from '/imports/ui/components/ProfileDetail';
+import ProfileBox from '/imports/ui/components/ProfileBox';
 import LeadershipProgress from '/imports/ui/components/LeadershipProgress';
 import IboxContentOrganization from '/imports/ui/components/IboxContentOrganization';
 
@@ -26,9 +26,8 @@ export default class PublicProfile extends Component {
     this.state = {
       loading: null,
       alias: null,
-      publicInfo: null,
-      chartLabel: null,
-      chartData: null
+      publicInfo: {},
+      preferences: {}
     };
   }
 
@@ -47,8 +46,7 @@ export default class PublicProfile extends Component {
             this.setState({
               loading: false,
               publicInfo: result,
-              chartLabel: result.chart.label,
-              chartData: result.chart.overall
+              preferences: result.preferences
             });
 
           } else {
@@ -70,7 +68,7 @@ export default class PublicProfile extends Component {
   }
 
   render() {
-    const {publicInfo, loading, alias} = this.state;
+    const {loading, alias} = this.state;
     // console.log(this.state.chartData)
 
     if (loading) {
@@ -82,6 +80,7 @@ export default class PublicProfile extends Component {
     }
     if (alias) {
       const url = document.location.href;
+      const {publicInfo, preferences} = this.state;
 
       const {
         basic,
@@ -125,13 +124,18 @@ export default class PublicProfile extends Component {
                     <h5>Public Profile</h5>
                   </div>
                 </div>
-                <div className="col-md-7 col-md-offset-1 col-xs-12 no-padding">
+                <div className="col-md-3 col-md-offset-1 col-xs-12 no-padding">
                   <div className="ibox-content gray-bg">
                     <div className="row">
-                      <ProfileDetail
-                        profile={{ basic, headline, contact, summary, picture, about }}
+                      <ProfileBox
+                        preferences={preferences}
+                        data={{basic, headline, contact, summary, picture, about}}
                       />
                     </div>
+                  </div>
+                </div>
+                <div className="col-md-7 col-xs-12 no-padding">
+                  <div className="ibox-content gray-bg">
                     <div className="row">
                       <LeadershipProgress
                         label="Leadership progress (no real data)"
