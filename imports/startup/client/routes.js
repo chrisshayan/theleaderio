@@ -28,7 +28,8 @@ import PublicProfile from '/imports/ui/containers/profile/PublicProfile';
 import Profile from '/imports/ui/containers/profile/Profile';
 import Dashboard from '/imports/ui/containers/dashboard/Dashboard';
 import Organizations from '/imports/ui/containers/organizations/Organizations';
-import SingleOrganization from '/imports/ui/containers/organizations/SingleOrganization';
+import CreateOrganization from '/imports/ui/containers/organizations/CreateOrganization';
+import UpdateOrganization from '/imports/ui/containers/organizations/UpdateOrganization';
 import Employees from '/imports/ui/containers/employees/Employees';
 
 import * as Notifications from '/imports/api/notifications/methods';
@@ -360,7 +361,7 @@ appRoutes.route('/organizations/create', {
   action() {
     mount(MainLayout, {
       content() {
-        return <SingleOrganization />
+        return <CreateOrganization />
       }
     })
   }
@@ -374,7 +375,7 @@ appRoutes.route('/organizations/update/:_id', {
   action(params) {
     mount(MainLayout, {
       content() {
-        return <SingleOrganization _id={params._id}/>
+        return <UpdateOrganization _id={params._id}/>
       }
     })
   }

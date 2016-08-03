@@ -20,7 +20,8 @@ class SingleOrganizationAddEmployee extends Component {
 	}
 
 	_onCancel = e => {
-		e.preventDefault();
+		e && e.preventDefault();
+    this.reset();
 		this.props.onDismiss && this.props.onDismiss();
 	}
 
@@ -35,7 +36,7 @@ class SingleOrganizationAddEmployee extends Component {
 				const error = getErrors(err);
 				this.setState({ error });
 			} else {
-				this.props.onDismiss();
+				this._onCancel();
 			}
 		})
 	}

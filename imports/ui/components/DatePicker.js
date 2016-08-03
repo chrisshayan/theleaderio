@@ -4,6 +4,7 @@ import moment from 'moment';
 class DatePicker extends Component {
 
 	el = null;
+	isForce = false;
 
 	componentDidMount() {
 		if(!this.props.disabled) {
@@ -11,13 +12,23 @@ class DatePicker extends Component {
 		}
 	}
 
-	componentDidUpdate(prevProps) {
-		if(prevProps.disabled != this.props.disabled) {
-			if(this.props.disabled) {
+	componentWillReceiveProps(nextProps) {
+		if(this.props.disabled != nextProps.disabled) {
+			if(nextProps.disabled) {
 				$(this.refs.component).find(".input-group-addon").off();
 			} else {
 				this.initDatePicker();
 			}
+		}
+		let oldValue = this.props.value;
+		let value = nextProps.value;
+		if(nextProps.isDateObject) {
+			oldValue = oldValue.getTime();
+			value = value.getTime();
+		}
+		if(oldValue != value) {
+			this.isForce = true;
+			$(this.refs.component).datepicker('update', nextProps.value);
 		}
 	}
 
@@ -25,7 +36,11 @@ class DatePicker extends Component {
 		this.el = $(this.refs.component);
 		const option = this.props.option || {};
 		this.el.datepicker(option).on('input change', _.debounce(e => {
-			this._onChange(e.target.value);
+			if(this.isForce) {
+				this.isForce = false;
+			} else {
+				this._onChange(e.target.value);
+			}
 		}, 200));
 	}
 
@@ -38,12 +53,13 @@ class DatePicker extends Component {
 		if (isDateObject) {
 			onChange(moment(val, 'MM/DD/YYYY').toDate());
 		} else {
-			onChange(value);
+			onChange(val);
 		}
 	}
 
 	render() {
 		const { label = '', value = '', error, isDateObject = false, disabled } = this.props;
+		const dateObj = moment(value);
 		return (
 			<div className={error ? 'form-group has-error' : 'form-group'}>
 				<label className="font-noraml">
@@ -57,7 +73,7 @@ class DatePicker extends Component {
 						type="text" 
 						className="form-control" 
 						disabled={disabled}
-						defaultValue={isDateObject ? new moment(value).format('MM/DD/YYYY') : value}
+						defaultValue={isDateObject ? dateObj.format('MM/DD/YYYY') : value}
 					/>
 				</div>
 				{error  
