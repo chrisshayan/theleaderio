@@ -125,7 +125,6 @@ class ProfilePreferences extends Component {
                         <h5>Organizations</h5>
                       </div>
                       {organizations.map(org => {
-                        console.log(org)
                         return (
                           <IboxContentOrganization
                             key={org._id}
@@ -146,7 +145,7 @@ class ProfilePreferences extends Component {
             <div className="col-md-3 pull-right">
               <div className="ibox float-e-margins">
                 <div className="ibox-title">
-                  <h5>Customize</h5>
+                  <h5>Customize your public profile</h5>
                 </div>
                 <div className="ibox-content">
                   <form
@@ -236,7 +235,6 @@ class ProfilePreferences extends Component {
                       <CheckBox
                         label=" All metrics"
                         checked={
-                          preferences.metrics.overall |
                           preferences.metrics.purpose |
                           preferences.metrics.mettings |
                           preferences.metrics.rules |
@@ -252,6 +250,7 @@ class ProfilePreferences extends Component {
                         onChange={value => this.setState({ preferences: {
                           ...preferences,
                           metrics: {
+                            overall: true,
                             purpose: value,
                             mettings: value,
                             rules: value,
