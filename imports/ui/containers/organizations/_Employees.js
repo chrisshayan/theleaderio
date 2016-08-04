@@ -10,6 +10,8 @@ import SingleOrganizationAddEmployee from '/imports/ui/components/SingleOrganiza
 import SingleOrgEmployee from '/imports/ui/containers/organizations/_SingleOrgEmployee';
 
 import Papa from 'papaparse';
+import * as Notifications from '/imports/api/notifications/methods';
+
 
 class OrganizationEmployees extends Component {
 	state = {
@@ -33,7 +35,20 @@ class OrganizationEmployees extends Component {
 		img.onchange = (ev) => {
 			let files = ev.target.files;
 			if (files[0]) {
-				this.importEmployees(files[0]);
+				const supportTypes = ['text/csv', 'text/plain'];
+				if (_.indexOf(supportTypes, files[0].type) >= 0) {
+					this.importEmployees(files[0]);
+				} else {
+					const
+						closeButton = false,
+						title = 'Error',
+						message = 'CSV file is invalid';
+					Notifications.error.call({
+						closeButton,
+						title,
+						message
+					});
+				}
 			}
 		};
 		img.click();
@@ -83,8 +98,30 @@ class OrganizationEmployees extends Component {
 								organizationId,
 								employees
 							}, err => {
-								console.log(err);
+								if (err) {
+
+								} else {
+									const
+										closeButton = false,
+										title = 'Import Successfully',
+										message = '';
+									Notifications.success.call({
+										closeButton,
+										title,
+										message
+									});
+								}
 							})
+						} else {
+							const
+								closeButton = false,
+								title = 'Error',
+								message = 'There is no contact in your file';
+							Notifications.error.call({
+								closeButton,
+								title,
+								message
+							});
 						}
 					}
 				});
@@ -109,7 +146,7 @@ class OrganizationEmployees extends Component {
     				<button className="btn btn-default btn-block" onClick={this._onClickShowImportDialog}>
     					<i className="fa fa-cloud-upload" />
     					{' '}
-    					Import
+    					Import (.csv)
     				</button>
     			</div>
     			<div className="col-md-3">
@@ -120,36 +157,52 @@ class OrganizationEmployees extends Component {
     				</button>
     			</div>
     		</div>
-    		<table className="table">
-			  	<thead>
-			  		<tr>
-			  			<th>#</th>
-			  			<th>First name</th>
-			  			<th>Last name</th>
-			  			<th width="40%">Email</th>
-			  			<th>Status</th>
-			  			<th></th>
-			  		</tr>
-			  	</thead>
-			    <tbody>
-			      { employees.map((employee, key) => (
-			      	<SingleOrgEmployee 
-			      		key={key} 
-			      		position={key + 1} 
-			      		employee={employee}
-			      		orgId={this.props.orgId}
-		      		/>
-			      ))}
-			    </tbody>
-			  </table>
-				<SingleOrganizationAddEmployee 
+
+    		{ employees.length ? (
+    			<table className="table">
+				  	<thead>
+				  		<tr>
+				  			<th>#</th>
+				  			<th>First name</th>
+				  			<th>Last name</th>
+				  			<th width="40%">Email</th>
+				  			<th>Status</th>
+				  			<th></th>
+				  		</tr>
+				  	</thead>
+				    <tbody>
+				      { employees.map((employee, key) => (
+				      	<SingleOrgEmployee 
+				      		key={key} 
+				      		position={key + 1} 
+				      		employee={employee}
+				      		orgId={this.props.orgId}
+			      		/>
+				      ))}
+				    </tbody>
+				  </table>
+    			) : (
+    			<div style={{
+						width: '100%',
+						border: '2px dashed #ddd',
+						borderRadius: '6px',
+						textAlign: 'center',
+						margin: '20px 0',
+						padding: '40px'
+    			}}>
+    				<i className="fa fa-inbox" style={{fontSize: 50}} />
+    				<h2>There is no employees</h2>
+    			</div>
+		)
+	}
+
+	<SingleOrganizationAddEmployee 
 					show={this.state.showAddDialog}
 					onDismiss={this._onDismissDialog}
 					organizationId={this.props.orgId}
-				/>
-			</div>
-		);
-	}
+				/> < /div>
+);
+}
 }
 
 const styles = {

@@ -52,16 +52,20 @@ const create = (data) => {
 }
 
 const update = (_id, data) => {
-	return (dispatch) => {
+	const dispatch = Meteor.AppState.dispatch;
+	return new Promise((resolve, reject) => {
 		dispatch({ type: SUBMIT_REQUEST, doc: data });
 		Actions.update.call({...data, _id}, (err) => {
 			if(err) {
-				return dispatch({ type: SUBMIT_FAILED, error: getErrors(err) });
+				const error = getErrors(err);
+				dispatch({ type: SUBMIT_FAILED, error });
+				return reject(error);
 			} else {
-				return dispatch({ type: SUBMIT_SUCCESS });
+				dispatch({ type: SUBMIT_SUCCESS });
+				return resolve();
 			}
 		});
-	}
+	});
 }
 
 const fetchDetails = _id => {

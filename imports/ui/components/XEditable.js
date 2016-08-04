@@ -105,7 +105,7 @@ class XEditable extends Component {
 					ref="txt"
 		  		type="text"
 		  		className={className.join(' ')}
-		  		value={ value }
+		  		value={ value || '' }
 		  		disabled={isLoading}
 		  		onChange={this.onChange}
 		  		onBlur={this.onBlur}

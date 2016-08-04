@@ -17,6 +17,23 @@ import OrganizationInfoForm from './_OrganizationInformationForm';
 
 class CreateOrganization extends Component {
 
+	componentDidMount() {
+		setPageHeading({
+			title: 'Create new organization',
+			breadcrumb: [{
+				label: 'Organizations',
+				route: 'app.organizations'
+			}, {
+				label: 'create',
+				active: true
+			}]
+		});
+	}
+
+	componentWillUnmount() {
+		resetPageHeading();
+	}
+
 	componentWillReceiveProps(nextProps) {
 		if(nextProps.success === true) {
 			Meteor.AppState.dispatch(orgActions.reset());

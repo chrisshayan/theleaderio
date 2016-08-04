@@ -27,13 +27,11 @@ class SingleOrgEmployee extends Component {
 
 	_onDeactive = e => {
 		e.preventDefault();
-		console.log(1122);
 		const data = {
 			employeeId: this.props.employee._id,
 			status: STATUS_DEACTIVE
 		};
 		orgActions.toggleStatusEmployee.call(data, err => {
-			console.log(err);
 			if(err) {
 				
 			}

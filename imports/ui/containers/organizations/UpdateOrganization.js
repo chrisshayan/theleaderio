@@ -18,23 +18,32 @@ import Spinner from '/imports/ui/common/Spinner';
 import OrganizationInfoForm from './_OrganizationInformationForm';
 import OrganizationEmployees from './_Employees';
 
+import * as Notifications from '/imports/api/notifications/methods';
+
+
 class UpdateOrganization extends Component {
 	static propTypes = {
 		_id: PropTypes.string,
 	}
 
 	componentDidMount() {
+		setPageHeading({
+			title: 'Update organization',
+			breadcrumb: [{
+				label: 'Organizations',
+				route: 'app.organizations'
+			}, {
+				label: 'update',
+				active: true
+			}]
+		});
+
 		Meteor.AppState.dispatch(orgActions.fetchDetails(this.props._id));
 	}
 
 	componentWillUnmount() {
 		Meteor.AppState.dispatch(orgActions.reset());
-	}
-
-	componentWillReceiveProps(nextProps) {
-		if(nextProps.success === true) {
-			// show toast success
-		}
+		resetPageHeading();
 	}
 
 	/**
@@ -48,17 +57,23 @@ class UpdateOrganization extends Component {
 	 * on form submit on tab info
 	 */
 	_onFormSubmit = doc => {
-		Meteor.AppState.dispatch(orgActions.update(this.props._id, doc));
+		orgActions.update(this.props._id, doc)
+			.then(() => {
+				const
+					closeButton = false,
+					title = 'Saved',
+					message = '';
+				Notifications.success.call({ closeButton, title, message });
+			})
 	}
 
 	getTabs() {
 		const { onCancel, doc, error, isLoading } = this.props;
-		return [
-			{
-				key: 'info',
-				title: 'Information',
-				component: (
-					<OrganizationInfoForm
+		return [{
+			key: 'info',
+			title: 'Information',
+			component: (
+				<OrganizationInfoForm
 						doc={doc}
 						error={error}
 						isLoading={isLoading}
@@ -66,20 +81,18 @@ class UpdateOrganization extends Component {
 						onSubmit={this._onFormSubmit}
 						onCancel={onCancel}
 					/>
-				)
-			},
-			{
-				key: 'employees',
-				title: 'Employees',
-				component: <OrganizationEmployees />
-			},
-		];
+			)
+		}, {
+			key: 'employees',
+			title: 'Employees',
+			component: <OrganizationEmployees />
+		}, ];
 	}
 
 	render() {
 		const { loaded, isLoading } = this.props;
 
-		if(isLoading && !loaded) {
+		if (isLoading && !loaded) {
 			return <Spinner />;
 		}
 		return (
@@ -108,7 +121,7 @@ const mapMeteorToProps = params => {
 		currentTab = FlowRouter.getQueryParam('t') || 'info',
 		onSave = () => null,
 		onSaveSuccess = (orgId) => {
-			FlowRouter.go('app.organizations.update', {_id: orgId }, { t: 'employees' });
+			FlowRouter.go('app.organizations.update', { _id: orgId }, { t: 'employees' });
 		},
 		onCancel = () => {
 			FlowRouter.go('app.organizations');
