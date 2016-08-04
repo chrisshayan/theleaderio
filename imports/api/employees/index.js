@@ -6,7 +6,7 @@ import EmployeesCollection from './collection';
  * Constant
  */
 export const STATUS_ACTIVE = 'ACTIVE';
-export const STATUS_INACTIVE = 'DEACTIVE';
+export const STATUS_DEACTIVE = 'DEACTIVE';
 
 /**
  * Collection
@@ -29,12 +29,18 @@ Employees.schema = new SimpleSchema({
   },
   status: {
     type: String,
-    allowedValues: [ STATUS_ACTIVE, STATUS_INACTIVE ],
+    allowedValues: [ STATUS_ACTIVE, STATUS_DEACTIVE ],
     defaultValue: STATUS_ACTIVE
   },
   imageUrl: {
     type: String,
     optional: true
+  },
+  organizationId: {
+    type: String
+  },
+  leaderId: {
+    type: String
   }
 });
 

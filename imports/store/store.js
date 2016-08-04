@@ -36,7 +36,7 @@ export class AppState {
 			chain = middlewares.map(middleware => middleware(middlewareAPI));
 			_dispatch = this[_COMPOSE](...chain)(_dispatch);
 			_dispatch(action);
-		}
+		}.bind(this);
 
 	}
 

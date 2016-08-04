@@ -10,7 +10,7 @@ Meteor.publish('organizations.list', function({ page = 1, q = '' }) {
 	check(page, Match.Optional(Number));
 
 	let selector = {
-		owner: this.userId
+		leaderId: this.userId
 	};
 
 	let option = {

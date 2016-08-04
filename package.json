@@ -13,12 +13,14 @@
     "lodash": "^4.13.1",
     "meteor-node-stubs": "^0.2.3",
     "moment": "^2.14.1",
+    "papaparse": "^4.1.2",
     "randomcolor": "^0.4.4",
     "react": "^15.2.1",
     "react-addons-pure-render-mixin": "^15.2.1",
     "react-bootstrap": "^0.29.5",
     "react-bootstrap-modal": "^2.1.0",
     "react-dom": "^15.2.1",
+    "react-dropzone": "^3.5.3",
     "react-filepicker": "^0.6.0",
     "react-mounter": "^1.2.0",
     "react-scroll-box": "^0.3.3-beta",
@@ -27,6 +29,7 @@
     "react-social-sharebuttons": "^2.0.0",
     "react-spinner": "^0.2.6",
     "redux-logger": "^2.6.1",
+    "redux-thunk": "^2.1.0",
     "validate.js": "^0.10.0"
   },
   "devDependencies": {

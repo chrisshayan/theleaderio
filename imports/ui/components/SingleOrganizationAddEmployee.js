@@ -3,6 +3,8 @@ import { SkyLightStateless } from 'react-skylight';
 import FormInput from '/imports/ui/components/FormInput';
 import * as orgActions from '/imports/api/organizations/methods';
 import { getErrors } from '/imports/utils';
+import * as Notifications from '/imports/api/notifications/methods';
+
 const initialState = {
 	doc: {
 		firstName: '',
@@ -20,7 +22,8 @@ class SingleOrganizationAddEmployee extends Component {
 	}
 
 	_onCancel = e => {
-		e.preventDefault();
+		e && e.preventDefault();
+    this.reset();
 		this.props.onDismiss && this.props.onDismiss();
 	}
 
@@ -35,7 +38,12 @@ class SingleOrganizationAddEmployee extends Component {
 				const error = getErrors(err);
 				this.setState({ error });
 			} else {
-				this.props.onDismiss();
+        const
+          closeButton = false,
+          title = 'Employee',
+          message = 'Added';
+        Notifications.success.call({ closeButton, title, message });
+				this._onCancel();
 			}
 		})
 	}

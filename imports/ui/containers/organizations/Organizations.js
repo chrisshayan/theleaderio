@@ -28,7 +28,7 @@ class Organizations extends Component {
 				active: true
 			}],
 			actions,
-		})
+		});
 	}
 
 	componentWillUnmount() {

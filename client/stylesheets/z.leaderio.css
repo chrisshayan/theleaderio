@@ -633,3 +633,35 @@ nav.left-nav ul li a span {
   }
 }
 
+.inline-editor {
+  border: none;
+}
+
+.inline-editor:hover, .inline-editor:focus {
+  border: 1px solid #e5e6e7 !important;
+}
+
+.inline-editor.error:focus {
+  border: 1px solid #ec4758 !important;
+}
+
+.inline-editor-box {
+  position: relative;
+}
+
+.inline-editor-box .error-msg {
+  position: absolute;
+  bottom: -13px;
+  left: 0;
+  width: 100%;
+  background: #ec4758;
+  color: #fff;
+  padding: 0 10px;
+  font-size: 10px;
+  display: none;
+}
+
+.inline-editor:hover ~ .error-msg {
+  display: block;
+}
+

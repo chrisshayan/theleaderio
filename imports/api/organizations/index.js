@@ -20,6 +20,10 @@ Organizations.schema = new SimpleSchema({
   name: {
     type: String
   },
+  jobTitle: {
+    type: String,
+    optional: true,
+  },
   industries: {
     type: [String],
     optional: true
@@ -59,7 +63,7 @@ Organizations.schema = new SimpleSchema({
     type: Date,
     optional: true,
   },
-  owner: {
+  leaderId: {
     type: String,
     optional: true,
   },
@@ -84,7 +88,7 @@ Organizations.publicFields = {
   startTime: 1,
   endTime: 1,
   isPresent: 1,
-  owner: 1,
+  leaderId: 1,
   createdAt: 1,
   updatedAt: 1,
   employees: 1,
