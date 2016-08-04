@@ -21,7 +21,7 @@
     "react-bootstrap-modal": "^2.1.0",
     "react-dom": "^15.2.1",
     "react-dropzone": "^3.5.3",
-    "react-filepicker": "^0.6.0",
+    "react-filepicker": "^0.8.1",
     "react-mounter": "^1.2.0",
     "react-scroll-box": "^0.3.3-beta",
     "react-scrollbar": "^0.4.1",

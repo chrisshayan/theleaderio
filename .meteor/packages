@@ -46,6 +46,6 @@ chrismbeckett:toastr
 reywood:publish-composite
 percolate:migrations
 momentjs:moment
-http
-spiderable
+http@1.2.8
+spiderable@1.0.13
 mrt:headly

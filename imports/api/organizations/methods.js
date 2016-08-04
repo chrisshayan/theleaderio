@@ -35,7 +35,7 @@ const constraints = {
 export const create = new ValidatedMethod({
   name: 'organizations.create',
   validate: validate.methodValidator(constraints),
-  run({ name, jobTitle, description, startTime, endTime, isPresent }) {
+  run({ name, jobTitle, description, imageUrl, startTime, endTime, isPresent }) {
     if (!Meteor.userId()) throw new Meteor.Error(ERROR_CODE.UNAUTHORIZED);
     // validate startTime and endTime
     // IF isPresent is true, just check startTime < now
@@ -73,6 +73,7 @@ export const create = new ValidatedMethod({
         name,
         jobTitle,
         description,
+        imageUrl,
         startTime,
         endTime,
         isPresent
@@ -91,7 +92,7 @@ export const update = new ValidatedMethod({
       presence: true
     }
   }),
-  run({ _id, name, jobTitle, description, startTime, endTime, isPresent }) {
+  run({ _id, name, jobTitle, description, imageUrl, startTime, endTime, isPresent }) {
     if (!Meteor.userId())
       throw new Meteor.Error(ERROR_CODE.UNAUTHORIZED);
 
@@ -133,7 +134,8 @@ export const update = new ValidatedMethod({
           description,
           startTime,
           endTime,
-          isPresent
+          isPresent,
+          imageUrl
         }
       };
 

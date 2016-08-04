@@ -20,7 +20,6 @@ import OrganizationEmployees from './_Employees';
 
 import * as Notifications from '/imports/api/notifications/methods';
 
-
 class UpdateOrganization extends Component {
 	static propTypes = {
 		_id: PropTypes.string,
@@ -31,7 +30,7 @@ class UpdateOrganization extends Component {
 			title: 'Update organization',
 			breadcrumb: [{
 				label: 'Organizations',
-				route: 'app.organizations'
+				route: FlowRouter.url('app.organizations')
 			}, {
 				label: 'update',
 				active: true
@@ -59,6 +58,7 @@ class UpdateOrganization extends Component {
 	_onFormSubmit = doc => {
 		orgActions.update(this.props._id, doc)
 			.then(() => {
+				Meteor.AppState.dispatch(orgActions.fetchDetails(this.props._id));
 				const
 					closeButton = false,
 					title = 'Saved',
@@ -74,13 +74,14 @@ class UpdateOrganization extends Component {
 			title: 'Information',
 			component: (
 				<OrganizationInfoForm
-						doc={doc}
-						error={error}
-						isLoading={isLoading}
-						onChange={this._onFormChange}
-						onSubmit={this._onFormSubmit}
-						onCancel={onCancel}
-					/>
+					_id={doc._id}
+					doc={doc}
+					error={error}
+					isLoading={isLoading}
+					onChange={this._onFormChange}
+					onSubmit={this._onFormSubmit}
+					onCancel={onCancel}
+				/>
 			)
 		}, {
 			key: 'employees',
@@ -96,7 +97,7 @@ class UpdateOrganization extends Component {
 			return <Spinner />;
 		}
 		return (
-			<div className="col-md-10 col-sm-12 col-xs-12">
+			<div className="col-md-11 col-sm-12 col-xs-12">
 				<Box>
 					<h2>Organization</h2>
 					<div />

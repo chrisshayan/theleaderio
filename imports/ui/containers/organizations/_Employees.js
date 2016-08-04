@@ -139,10 +139,10 @@ class OrganizationEmployees extends Component {
 		return (
 			<div>
 				<div className="row">
-    			<div className="col-md-7">
+    			<div className="col-md-6">
     				
     			</div>
-    			<div className="col-md-2">
+    			<div className="col-md-3">
     				<button className="btn btn-default btn-block" onClick={this._onClickShowImportDialog}>
     					<i className="fa fa-cloud-upload" />
     					{' '}
