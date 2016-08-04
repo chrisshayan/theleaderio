@@ -7,6 +7,8 @@ import FormInput from '/imports/ui/components/FormInput';
 import DatePicker from '/imports/ui/components/DatePicker';
 import CheckBox from '/imports/ui/components/CheckBox';
 import ReactFilepicker from 'react-filepicker';
+import { DEFAULT_ORGANIZATION_PHOTO } from '/imports/utils/defaults';
+
 
 class OrganizationInformationForm extends Component {
 
@@ -80,7 +82,7 @@ class OrganizationInformationForm extends Component {
 
 	render() {
 		const { _id, doc, error, isLoading, onSubmit, onDelete, onCancel } = this.props;
-		const imageUrl = doc.imageUrl || 'https://www.hakkalabs.co/assets/placeholder-co.png';
+		const imageUrl = doc.imageUrl || DEFAULT_ORGANIZATION_PHOTO;
 		return (
 			<form onSubmit={this._onSubmit}>
 				<div className="row">

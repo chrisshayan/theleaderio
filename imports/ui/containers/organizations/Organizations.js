@@ -11,6 +11,16 @@ import { actions as orgActions  } from '/imports/store/modules/organizations';
 import NoOrganization from './NoOrganization';
 import Box from '/imports/ui/components/Box';
 
+function getShortDescription(str) {
+	if(!str) return  '';
+	let words = str.split(' ');
+	if(words.length > 18) {
+		words = words.splice(0, 18);
+		words.push('...');
+	}
+	return words.join(' ');
+}
+
 class Organizations extends Component {
 	componentWillMount() {
 		const actions = (
@@ -51,11 +61,11 @@ class Organizations extends Component {
 				{/* Organization list */}
 				<div className="row">
 					{organizations.map((org, key) => (
-						<div className="col-md-4" key={key}>
+						<div className="col-md-4" key={key} style={{height: '310px'}}>
 						  <Box title={ org.name } tools={<a className="fa fa-edit" href={org.editUrl()}></a>}>
 						  	<h4>{ org.jobTitle }</h4>
 						    {/* Description */}
-						    <p>{ org.description }</p>
+						    <p>{ getShortDescription(org.description) }</p>
 						    <div className="team-members">
 						      <a href="#" style={{marginRight: '3px'}}><img alt="member" className="img-circle" src="/img/a1.jpg" /></a>
 						      <a href="#" style={{marginRight: '3px'}}><img alt="member" className="img-circle" src="/img/a2.jpg" /></a>
