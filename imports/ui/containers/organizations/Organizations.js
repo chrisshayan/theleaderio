@@ -51,40 +51,42 @@ class Organizations extends Component {
 				{/* Organization list */}
 				<div className="row">
 					{organizations.map((org, key) => (
-
-						<div className="col-md-6" key={key}>
-							<Box title={ org.name } tools={<a className="fa fa-edit" href={org.editUrl()}></a>}>
-								<div className="row">
-									<div className="col-md-12">
-									  <div className="profile-image">
-									    <img src={org.imageUrl || 'https://www.hakkalabs.co/assets/placeholder-co.png'} className="img-rounded m-b-md" alt="profile" />
-									  </div>
-									  <div className="profile-info">
-									    <div className="">
-									      <div>
-									        <h4>{ org.jobTitle }</h4>
-									        <small>{ org.description }</small>
-									      </div>
-									    </div>
-									  </div>
-									</div>
-								</div>
-
-								<div className="row  m-t-sm">
-								  <div className="col-sm-4">
-								    <div className="font-bold">EMPLOYEES</div>
-								    { org.employees && org.employees.length ? org.employees.length : 0 }
-								  </div>
-								  <div className="col-sm-4">
-								    <div className="font-bold">FEEDBACK</div>
-								    22
-								  </div>
-								  <div className="col-sm-4 text-right">
-								    <div className="font-bold">OVERALL</div>
-								    3.5 <i className="fa fa-level-up text-navy"></i>
-								  </div>
-								</div>
-							</Box>
+						<div className="col-md-4" key={key}>
+						  <Box title={ org.name } tools={<a className="fa fa-edit" href={org.editUrl()}></a>}>
+						  	<h4>{ org.jobTitle }</h4>
+						    {/* Description */}
+						    <p>{ org.description }</p>
+						    <div className="team-members">
+						      <a href="#" style={{marginRight: '3px'}}><img alt="member" className="img-circle" src="/img/a1.jpg" /></a>
+						      <a href="#" style={{marginRight: '3px'}}><img alt="member" className="img-circle" src="/img/a2.jpg" /></a>
+						      <a href="#" style={{marginRight: '3px'}}><img alt="member" className="img-circle" src="/img/a3.jpg" /></a>
+						      <a href="#" style={{marginRight: '3px'}}><img alt="member" className="img-circle" src="/img/a4.jpg" /></a>
+						      <a href="#" style={{marginRight: '3px'}}><img alt="member" className="img-circle" src="/img/a5.jpg" /></a>
+						    </div>
+						    {/* Status of response */}
+						    <div>
+						      <span>Status of current month:</span>
+						      <div className="stat-percent">48%</div>
+						      <div className="progress progress-mini">
+						        <div style={{width: '48%'}} className="progress-bar"></div>
+						      </div>
+						    </div>
+						    {/* Some numbers*/}
+						    <div className="row  m-t-sm">
+						      <div className="col-sm-4">
+						        <div className="font-bold">EMPLOYEES</div>
+						        { org.employees && org.employees.length ? org.employees.length : 0 }
+						      </div>
+						      <div className="col-sm-4">
+						        <div className="font-bold">FEEDBACK</div>
+						        23
+						      </div>
+						      <div className="col-sm-4 text-right">
+						        <div className="font-bold">OVERALL</div>
+						        3.4 <i className="fa fa-level-up text-navy"></i>
+						      </div>
+						    </div>
+						  </Box>
 						</div>
 					))}
 				</div>
