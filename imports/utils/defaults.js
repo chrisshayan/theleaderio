@@ -40,3 +40,7 @@ export const DEFAULT_PUBLIC_INFO_PREFERENCES = {
     conflict: true
   }
 };
+
+export const DEFAULT_PROFILE_PHOTO = '/img/default-profile-pic.png';
+
+export const DEFAULT_ORGANIZATION_PHOTO = '/img/default_firm.jpg';

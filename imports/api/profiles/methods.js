@@ -12,7 +12,7 @@ import {Industries} from '/imports/api/industries/index';
 import {Preferences} from '/imports/api/users/index';
 
 import {IDValidator} from '/imports/utils';
-import {DEFAULT_PUBLIC_INFO_PREFERENCES} from '/imports/utils/default_user_preferences';
+import {DEFAULT_PUBLIC_INFO_PREFERENCES} from '/imports/utils/defaults';
 
 // methods
 import {addPreferences} from '/imports/api/users/methods';
@@ -314,12 +314,22 @@ export const getPublicData = new ValidatedMethod({
           // Get summary info
           // noOrg
           if (summary.noOrg && typeof summary.noOrg !== 'undefined') {
-            const noOrg = Organizations.find({owner: user._id}).count();
+            const noOrg = Organizations.find({leaderId: user._id}).count();
             result.summary.noOrg = !!noOrg ? noOrg : null;
           }
           // noEmployees
           if (summary.noEmployees && typeof summary.noEmployees !== 'undefined') {
-            result.summary.noEmployees = 149;
+            if (Organizations.find({leaderId: user._id}).count() > 0) {
+              const modifier = {
+                fields: {employees: true}
+              };
+              const employeesList = Organizations.find({leaderId: user._id}, modifier).fetch();
+              let noEmployees = 0;
+              employeesList.map(employees => {
+                noEmployees += employees.employees.length;
+              });
+              result.summary.noEmployees = noEmployees;
+            }
           }
           // noFeedbacks
           if (summary.noFeedbacks && typeof summary.noFeedbacks !== 'undefined') {
@@ -339,12 +349,12 @@ export const getPublicData = new ValidatedMethod({
 
           // Get Organizations
           if (organizations.show) {
-            if (Organizations.find({owner: user._id}).count() > 0) {
+            if (Organizations.find({leaderId: user._id}).count() > 0) {
               const modifier = {
-                fields: {name: true, startTime: true, endTime: true, isPresent: true, employees: true},
+                fields: {name: true, startTime: true, endTime: true, jobTitle: true, isPresent: true, employees: true},
                 sort: {startTime: -1}
               };
-              const orgInfo = Organizations.find({owner: user._id}, modifier).fetch();
+              const orgInfo = Organizations.find({leaderId: user._id}, modifier).fetch();
               result.organizations = !_.isEmpty(orgInfo) ? orgInfo : [];
             }
           }
