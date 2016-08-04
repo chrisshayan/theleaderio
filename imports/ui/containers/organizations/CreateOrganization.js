@@ -22,7 +22,7 @@ class CreateOrganization extends Component {
 			title: 'Create new organization',
 			breadcrumb: [{
 				label: 'Organizations',
-				route: 'app.organizations'
+				route: FlowRouter.url('app.organizations')
 			}, {
 				label: 'create',
 				active: true
@@ -85,7 +85,7 @@ class CreateOrganization extends Component {
 
 	render() {
 		return (
-			<div className="col-md-9 col-sm-12 col-xs-12">
+			<div className="col-md-11 col-sm-12 col-xs-12">
 				<Box>
 					<h2>Organization</h2>
 					<div />

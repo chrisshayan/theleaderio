@@ -92,6 +92,8 @@ Organizations.publicFields = {
   createdAt: 1,
   updatedAt: 1,
   employees: 1,
+  jobTitle: 1,
+  imageUrl: 1,
 };
 
 /**
