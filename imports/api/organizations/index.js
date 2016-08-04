@@ -1,6 +1,7 @@
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import OrganizationsCollection from './collection';
+import { DEFAULT_ORGANIZATION_PHOTO } from '/imports/utils/defaults';
 
 /**
  * Constant
@@ -102,5 +103,9 @@ Organizations.publicFields = {
 Organizations.helpers({
   editUrl() {
     return FlowRouter.url('app.organizations.update', {_id: this._id});
+  },
+
+  picture() {
+    return this.imageUrl || DEFAULT_ORGANIZATION_PHOTO;
   }
 });
