@@ -204,9 +204,12 @@ export const getPublicData = new ValidatedMethod({
   validate: new SimpleSchema({
     alias: {
       type: String
+    },
+    isGetAll: {
+      type: Boolean
     }
   }).validator(),
-  run({alias}) {
+  run({alias, isGetAll}) {
     if (!this.isSimulation) {
       const user = Accounts.findUserByUsername(alias);
       if (!_.isEmpty(user)) {
@@ -265,7 +268,8 @@ export const getPublicData = new ValidatedMethod({
             decision: null,
             respect: null,
             conflict: null
-          }
+          },
+          preferences: {}
         };
 
         // Get basic info - always show
@@ -281,7 +285,13 @@ export const getPublicData = new ValidatedMethod({
 
         // others
         if (Preferences.find({userId: user._id}).count() > 0) {
-          const preferences = Preferences.find({userId: user._id}).fetch()[0].preferences;
+          let preferences = {};
+          if(isGetAll) {
+            preferences = DEFAULT_PUBLIC_INFO_PREFERENCES;
+          } else {
+            preferences = Preferences.find({userId: user._id}).fetch()[0].preferences;
+            result.preferences = preferences;
+          }
           // Get preferences
           const {headline, contact, summary, picture, about, organizations} = preferences;
 
@@ -341,18 +351,18 @@ export const getPublicData = new ValidatedMethod({
           
           // Get chart info
           result.chart.label = ["February", "March", "April", "May", "June", "July"];
-          result.chart.overall = [2.5, 3.2, 4.0, 3.9, 4.9, 4.5, 4];
-          result.chart.purpose = [3.5, 2.2, 3.0, 4.9, 3.9, 5, 3];
-          result.chart.mettings = [3.5, 3.2, 3.0, 3.9, 4.9, 4, 4.3];
-          result.chart.rules = [3.5, 2.7, 4.6, 3.9, 3.2, 4, 3];
-          result.chart.communications = [3.5, 4.2, 2.0, 3.9, 4.9, 4, 4];
-          result.chart.leadership = [2.5, 3.2, 4.0, 3.9, 4.9, 4, 4];
-          result.chart.workload = [4.5, 3.2, 2.0, 3.9, 4.9, 2.3, 3];
-          result.chart.energy = [3.8, 2.7, 3.3, 4.6, 3.7, 4.5, 3.6];
-          result.chart.stress = [3.4, 3.3, 3.5, 4.2, 4.9, 5, 4];
-          result.chart.decision = [3.5, 2.6, 3.8, 4.2, 3.4, 3.4, 3.7];
-          result.chart.respect = [3.5, 4.2, 5.0, 3.9, 2.9, 4.5, 4];
-          result.chart.conflict = [3.3, 2.8, 2.0, 4.9, 4.9, 4.7, 4.4];
+          result.chart.overall = [3.2, 4.0, 3.9, 4.9, 4.5, 4];
+          result.chart.purpose = [2.2, 3.0, 4.9, 3.9, 5, 3];
+          result.chart.mettings = [3.2, 3.0, 3.9, 4.9, 4, 4.3];
+          result.chart.rules = [2.7, 4.6, 3.9, 3.2, 4, 3];
+          result.chart.communications = [4.2, 2.0, 3.9, 4.9, 4, 4];
+          result.chart.leadership = [3.2, 4.0, 3.9, 4.9, 4, 4];
+          result.chart.workload = [3.2, 2.0, 3.9, 4.9, 2.3, 3];
+          result.chart.energy = [2.7, 3.3, 4.6, 3.7, 4.5, 3.6];
+          result.chart.stress = [3.3, 3.5, 4.2, 4.9, 5, 4];
+          result.chart.decision = [2.6, 3.8, 4.2, 3.4, 3.4, 3.7];
+          result.chart.respect = [4.2, 5.0, 3.9, 2.9, 4.5, 4];
+          result.chart.conflict = [2.8, 2.0, 4.9, 4.9, 4.7, 4.4];
 
           // Get metrics
           const userId = user._id;
@@ -375,6 +385,7 @@ export const getPublicData = new ValidatedMethod({
               conflict: 4.9
           };
         }
+        // console.log(result)
         return result;
       }
     }

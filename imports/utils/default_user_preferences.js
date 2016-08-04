@@ -1,15 +1,14 @@
 export const DEFAULT_PUBLIC_INFO_PREFERENCES = {
   basic: {
     name: true,
-    title: true,
     industry: true
   },
   headline: {
     title: true
   },
   contact: {
-    phone: false,
-    email: false
+    phone: true,
+    email: true
   },
   summary: {
     noOrg: true,

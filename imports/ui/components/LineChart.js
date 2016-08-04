@@ -55,6 +55,8 @@ export default class LineChart extends Component {
         responsive: true,
       };
       const ctx = canvas.getContext("2d");
+      // console.log(lineData)
+      // console.log(lineOptions)
       const metricChart = new Chart(ctx).Line(lineData, lineOptions);
     }
   }

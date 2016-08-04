@@ -26,7 +26,7 @@ import SetPasswordPage from '/imports/ui/containers/password/SetPasswordPage';
 import ForgotAliasPage from '/imports/ui/containers/alias/ForgotAliasPage';
 
 import PublicProfile from '/imports/ui/containers/profile/PublicProfile';
-import Profile from '/imports/ui/containers/profile/Profile';
+import Profile from '/imports/ui/containers/profile/EditProfile';
 import Dashboard from '/imports/ui/containers/dashboard/Dashboard';
 import Organizations from '/imports/ui/containers/organizations/Organizations';
 import SingleOrganization from '/imports/ui/containers/organizations/SingleOrganization';

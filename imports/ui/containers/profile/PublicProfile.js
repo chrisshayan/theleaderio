@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {createContainer} from 'meteor/react-meteor-data';
-import {words as capitalize} from 'capitalize';
 import moment from 'moment';
 import {LinkedinButton, TwitterTweetButton, FacebookButton} from 'react-social-sharebuttons';
 
@@ -13,12 +12,10 @@ import Spinner from '/imports/ui/common/Spinner';
 import NoticeForm from '/imports/ui/common/NoticeForm';
 import CopyRight from '/imports/ui/common/Copyright';
 import TopNav from '/imports/ui/common/TopNav';
-import IboxContentHorizontal from '/imports/ui/components/IboxContentHorizontal';
-import IboxContentPhoto from '/imports/ui/components/IboxContentPhoto';
-import IboxContentInline from '/imports/ui/components/IboxContentInline';
+
+import ProfileInformationBox from '/imports/ui/components/ProfileInformationBox';
+import ProfileMetricsBox from '/imports/ui/components/ProfileMetricsBox';
 import IboxContentOrganization from '/imports/ui/components/IboxContentOrganization';
-import LineChart from '/imports/ui/components/LineChart';
-import Chosen from '/imports/ui/components/Chosen';
 
 
 export default class PublicProfile extends Component {
@@ -28,9 +25,8 @@ export default class PublicProfile extends Component {
     this.state = {
       loading: null,
       alias: null,
-      publicInfo: null,
-      chartLabel: null,
-      chartData: null
+      publicInfo: {},
+      preferences: {}
     };
   }
 
@@ -44,13 +40,12 @@ export default class PublicProfile extends Component {
         this.setState({
           alias: true
         });
-        getPublicData.call({alias}, (error, result) => {
+        getPublicData.call({alias, isGetAll: false}, (error, result) => {
           if (_.isEmpty(error)) {
             this.setState({
               loading: false,
               publicInfo: result,
-              chartLabel: result.chart.label,
-              chartData: result.chart.overall
+              preferences: result.preferences
             });
 
           } else {
@@ -71,47 +66,8 @@ export default class PublicProfile extends Component {
 
   }
 
-  onChooseMetric(selected) {
-    if (selected === 'overall') {
-      this.setState({chartData: this.state.publicInfo.chart.overall});
-    }
-    if (selected === 'purpose') {
-      this.setState({chartData: this.state.publicInfo.chart.purpose});
-    }
-    if (selected === 'mettings') {
-      this.setState({chartData: this.state.publicInfo.chart.mettings});
-    }
-    if (selected === 'rules') {
-      this.setState({chartData: this.state.publicInfo.chart.rules});
-    }
-    if (selected === 'communications') {
-      this.setState({chartData: this.state.publicInfo.chart.communications});
-    }
-    if (selected === 'leadership') {
-      this.setState({chartData: this.state.publicInfo.chart.leadership});
-    }
-    if (selected === 'workload') {
-      this.setState({chartData: this.state.publicInfo.chart.workload});
-    }
-    if (selected === 'energy') {
-      this.setState({chartData: this.state.publicInfo.chart.energy});
-    }
-    if (selected === 'stress') {
-      this.setState({chartData: this.state.publicInfo.chart.stress});
-    }
-    if (selected === 'decision') {
-      this.setState({chartData: this.state.publicInfo.chart.decision});
-    }
-    if (selected === 'respect') {
-      this.setState({chartData: this.state.publicInfo.chart.respect});
-    }
-    if (selected === 'conflict') {
-      this.setState({chartData: this.state.publicInfo.chart.conflict});
-    }
-  }
-
   render() {
-    const {publicInfo, loading, alias} = this.state;
+    const {loading, alias} = this.state;
     // console.log(this.state.chartData)
 
     if (loading) {
@@ -123,7 +79,7 @@ export default class PublicProfile extends Component {
     }
     if (alias) {
       const url = document.location.href;
-      console.log(url)
+      const {publicInfo, preferences} = this.state;
 
       const {
         basic,
@@ -133,240 +89,86 @@ export default class PublicProfile extends Component {
         picture,
         about,
         organizations,
-        metrics
+        metrics,
+        chart
       } = publicInfo;
 
-      // content for basic info
-      const basicContent = [];
-      if (!!headline.title) {
-        basicContent.push({label: capitalize(headline.title), value: ''});
-      }
-      if (!!basic.industry) {
-        basicContent.push({label: basic.industry, value: ''});
-      }
-
-      // content for contact info
-      const contactContent = [];
-      if (!!contact.email) {
-        contactContent.push({label: 'Email', value: contact.email});
-      }
-      if (!!contact.phone) {
-        contactContent.push({label: 'Phone', value: contact.phone});
-      }
-
-      // content for summary info
-      const summaryContent = {};
-      if (!!summary.noOrg) {
-        summaryContent.Organizations = summary.noOrg;
-      }
-      if (!!summary.noEmployees) {
-        summaryContent.Employees = summary.noEmployees;
-      }
-      if (!!summary.noFeedbacks) {
-        summaryContent.Feedbacks = summary.noFeedbacks;
-      }
-
-      // content for about info
-      const aboutContent = [];
-      if (!!about.aboutMe) {
-        aboutContent.push({label: '', value: about.aboutMe});
-      }
-
-      // metrics chart
-      const {chartLabel, chartData} = this.state;
-      const metricOptions = [];
-      $.map(metrics, (value, key) => {
-        metricOptions.push(key);
-      });
-
-      // content for metrics info
-      const metricsContent = [];
-      const group1 = {};
-      const group2 = {};
-      const group3 = {};
-      if (!!metrics.overall) {
-        group1.Overall = metrics.overall;
-      }
-      if (!!metrics.purpose) {
-        group1.Purpose = metrics.purpose;
-      }
-      if (!!metrics.mettings) {
-        group1.Mettings = metrics.mettings;
-      }
-      if (!!metrics.rules) {
-        group1.Rules = metrics.rules;
-      }
-      if (!!metrics.communications) {
-        group2.Communications = metrics.communications;
-      }
-      if (!!metrics.leadership) {
-        group2.Leadership = metrics.leadership;
-      }
-      if (!!metrics.workload) {
-        group2.Workload = metrics.workload;
-      }
-      if (!!metrics.energy) {
-        group2.Energy = metrics.energy;
-      }
-      if (!!metrics.stress) {
-        group3.Stress = metrics.stress;
-      }
-      if (!!metrics.decision) {
-        group3.Decision = metrics.decision;
-      }
-      if (!!metrics.respect) {
-        group3.Respect = metrics.respect;
-      }
-      if (!!metrics.conflict) {
-        group3.Conflict = metrics.conflict;
-      }
-      if (!_.isEmpty(group1)) {
-        metricsContent.push(group1);
-      }
-      if (!_.isEmpty(group2)) {
-        metricsContent.push(group2);
-      }
-      if (!_.isEmpty(group3)) {
-        metricsContent.push(group3);
-      }
-
-
       return (
-        <div id="page-top">
-          <div id="wrapper">
-            <nav id="left-nav" className="left-nav">
-            </nav>
-          </div>
-          <div id="page-wrapper" className="gray-bg">
-            <TopNav
-              navClass="row border-bottom"
-              imageUrl={picture.imageUrl}
-              name={capitalize(basic.name)}
-            />
-            <div className="wrapper wrapper-content">
-              <div className="row">
-                <div className="ibox float-e-margins">
-                  <div className="col-xs-10 col-xs-offset-1 no-padding">
-                    <div className="ibox-title">
-                      <ul className="list-inline social-icon pull-right">
-                        <li>
-                          <LinkedinButton
-                            url={url}
-                          />
-                        </li>
-                        <li>
-                          <TwitterTweetButton
-                            url={url}
-                          />
-                        </li>
-                      </ul>
-                      <h5>Public Profile</h5>
+        <div className="gray-bg">
+          <div className="container gray-bg">
+            <div className="row">
+              <div className="col-md-10 col-md-offset-1 col-xs-12">
+                <TopNav
+                  imageUrl={picture.imageUrl}
+                />
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="ibox float-e-margins">
+                <div className="col-md-10 col-md-offset-1 no-padding">
+                  <div className="ibox-title">
+                    <ul className="list-inline social-icon pull-right">
+                      <li>
+                        <LinkedinButton
+                          url={url}
+                        />
+                      </li>
+                      <li>
+                        <TwitterTweetButton
+                          url={url}
+                        />
+                      </li>
+                    </ul>
+                    <h5>Public Profile</h5>
+                  </div>
+                </div>
+                <div className="col-md-3 col-md-offset-1 col-xs-12 no-padding">
+                  <div className="ibox-content gray-bg">
+                    <div className="row">
+                      <ProfileInformationBox
+                        preferences={preferences}
+                        data={{basic, headline, contact, summary, picture, about}}
+                      />
                     </div>
                   </div>
-                  <div className="col-xs-4 col-xs-offset-1 no-padding">
-                    <div className="ibox-content gray-bg">
+                </div>
+                <div className="col-md-7 col-xs-12 no-padding">
+                  <div className="ibox-content gray-bg">
+                    <div className="row">
+                      <ProfileMetricsBox
+                        label="Leadership progress (no real data)"
+                        preferences={preferences.metrics}
+                        data={{chart, metrics}}
+                      />
+                    </div>
+                    {!_.isEmpty(organizations) && (
                       <div className="row">
                         <div className="ibox float-e-margins">
-                          <IboxContentPhoto
-                            imageClass="img-thumbnail"
-                            imageUrl={picture.imageUrl}
-                            width={360}
-                            height={360}
-                          />
-                          <IboxContentHorizontal
-                            ibcTitle={capitalize(basic.name)}
-                            ibcContent={basicContent}
-                            classGridLabel='col-xs-12'
-                            classGridValue='col-xs-0'
-                          />
-
-                          {!_.isEmpty(contactContent) && (
-                            <IboxContentHorizontal
-                              ibcTitle="Contact"
-                              ibcContent={contactContent}
-                              classGridLabel='col-xs-4'
-                              classGridValue='col-xs-8'
-                            />
-                          )}
-                          {!_.isEmpty(summaryContent) && (
-                            <IboxContentInline
-                              ibcTitle="Summary"
-                              ibcContent={summaryContent}
-                              classGrid="col-xs-4"
-                            />
-                          )}
-                          {!_.isEmpty(aboutContent) && (
-                            <IboxContentHorizontal
-                              ibcTitle='About'
-                              ibcContent={aboutContent}
-                              classGridLabel='col-xs-0'
-                              classGridValue='col-xs-12'
-                            />
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-xs-6 no-padding">
-                    <div className="ibox-content gray-bg">
-                      <div className="row">
-                        <div className="ibox float-e-margins" style={{marginBottom: 18}}>
                           <div className="ibox-title">
-                            <h5>Leadership progress (no real data)</h5>
+                            <h5>Organizations</h5>
                           </div>
-                          <div className="ibox-content">
-                            <h5><strong>Half-year Metric Progress Chart</strong></h5>
-                            <Chosen
-                              ref="chosenMetric"
-                              options={metricOptions}
-                              selectedOptions={null}
-                              chosenClass="chosen-select"
-                              isMultiple={false}
-                              placeHolder='Choose one option ...'
-                              onChange={this.onChooseMetric.bind(this)}
-                            />
-                            <LineChart
-                              label={chartLabel}
-                              data={chartData}
-                            />
-                          </div>
-                          {metricsContent.map((content, key) => (
-                            <IboxContentInline
-                              key={key}
-                              ibcContent={content}
-                              classGrid="col-xs-3"
-                            />
-                          ))}
+                          {organizations.map(org => {
+                            return (
+                              <IboxContentOrganization
+                                key={org._id}
+                                title="Head of Engineering"
+                                name={org.name}
+                                startTime={new moment(org.startTime).format('MMMM YYYY')}
+                                endTime={new moment(org.endTime).format('MMMM YYYY')}
+                                noEmployees={org.employees.length}
+                                overallPercent="60%"
+                                imageUrl='/img/icare_benefits.png'
+                              />)
+                          })}
                         </div>
                       </div>
-                      {!_.isEmpty(organizations) && (
-                        <div className="row">
-                          <div className="ibox float-e-margins">
-                            <div className="ibox-title">
-                              <h5>Organizations</h5>
-                            </div>
-                            {organizations.map(org => {
-                              return (
-                                <IboxContentOrganization
-                                  key={org._id}
-                                  title="Head of Engineering"
-                                  name={org.name}
-                                  startTime={new moment(org.startTime).format('MMMM YYYY')}
-                                  endTime={new moment(org.endTime).format('MMMM YYYY')}
-                                  noEmployees={org.employees.length}
-                                  overallPercent="60%"
-                                  imageUrl='/img/icare_benefits.png'
-                                />)
-                            })}
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
-            <div className="footer gray-bg">
+            <div className="gray-bg">
               <CopyRight />
             </div>
           </div>

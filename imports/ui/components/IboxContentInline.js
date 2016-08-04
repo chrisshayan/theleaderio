@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {words as capitalize} from 'capitalize';
 
 export default class IboxContentMetric extends Component {
   render() {
@@ -10,7 +11,7 @@ export default class IboxContentMetric extends Component {
           {$.map(ibcContent, function (value, key) {
             return (
               <div key={key} className={classGrid}>
-                <p className="stats-label">{key}</p>
+                <p className="stats-label">{capitalize(key)}</p>
                 <h5>{value}</h5>
               </div>
             );
