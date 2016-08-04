@@ -48,6 +48,8 @@ import {resetPageHeading} from '/imports/store/modules/pageHeading';
 // this domain should get from settings
 export const DOMAIN = 'devtheleader.io:9000';
 
+Meteor.subscribe('profiles');
+
 /**
  * Change root url to make flow router understand subdomain
  */

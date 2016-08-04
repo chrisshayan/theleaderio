@@ -96,3 +96,9 @@ Profiles.schema = new SimpleSchema({
 });
 
 Profiles.attachSchema(Profiles.schema);
+
+Profiles.helpers({
+  getPicture() {
+    return this.imageUrl || '/img/default-profile-pic.png';
+  }
+});

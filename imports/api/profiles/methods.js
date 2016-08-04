@@ -17,6 +17,9 @@ import {DEFAULT_PUBLIC_INFO_PREFERENCES} from '/imports/utils/defaults';
 // methods
 import {addPreferences} from '/imports/api/users/methods';
 
+// constants
+import {USER_NOT_FOUND} from '/imports/utils/error_code';
+
 /**
  * CUD user profiles (Create, Update, Deactivate)
  * Methods:
@@ -398,6 +401,43 @@ export const getPublicData = new ValidatedMethod({
         // console.log(result)
         return result;
       }
+    }
+  }
+});
+
+// get profile information
+export const getProfileInfo = new ValidatedMethod({
+  name: 'profiles.getProfileInfo',
+  validate: new SimpleSchema({
+    alias: {
+      type: String
+    },
+    requestField: {
+      type: String,
+      optional: true
+    }
+  }).validator(),
+  run({alias, requestField}) {
+    if(!this.isSimulation) {
+      const user = Accounts.findUserByUsername(alias);
+      if(!_.isEmpty(user)) {
+        const profile = Profiles.findOne({userId: user._id});
+        if(!_.isEmpty(profile)) {
+          switch (requestField) {
+            case 'name': {
+              return `${profile.firstName} ${profile.lastName}`
+            }
+            default: {
+              return profile.imageUrl
+            }
+          }
+        } else {
+          throw Meteor.Error(USER_NOT_FOUND);
+        }
+      } else {
+        throw Meteor.Error(USER_NOT_FOUND);
+      }
+
     }
   }
 });

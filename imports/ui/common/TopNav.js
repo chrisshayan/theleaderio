@@ -23,7 +23,8 @@ class TopNav extends Component {
   }
 
   render() {
-    const {imageUrl="/img/default-profile-pic.png"} = this.props;
+    const { currentUser, userProfile } = this.props;
+
     const {loggedIn} = this.state;
     return (
       <div className="">
@@ -38,17 +39,19 @@ class TopNav extends Component {
         <div className="col-xs-6 pull-right">
           <div className="account-info">
             <ul className="nav navbar-top-links navbar-right">
-              {(loggedIn) && (
+              { currentUser ? (
                 <li id="fat-menu" className="dropdown" style={{marginRight: 0}}>
                   <a id="user-info" href="#" className="dropdown-toggle" data-toggle="dropdown" role="button"
                      aria-haspopup="true" aria-expanded="false">
                   <span>
+                    {userProfile && (
                       <img
-                        src={imageUrl || '/img/default-profile-pic.png'}
+                        src={ userProfile.getPicture() }
                         className="img-rounded"
                         width="32"
                         height="32"
                       />
+                    )}
                   </span>
                     <span className="caret"></span>
                   </a>
@@ -59,8 +62,7 @@ class TopNav extends Component {
                     <li><a href={FlowRouter.url('app.logout')}>Sign out</a></li>
                   </ul>
                 </li>
-              )}
-              {(!loggedIn) && (
+              ) : (
                 <li>
                   <a href={FlowRouter.url('SignInPage', {action: 'account'})}>
                     <i className="fa fa-sign-in"></i> Sign in

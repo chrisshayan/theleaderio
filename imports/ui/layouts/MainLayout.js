@@ -7,14 +7,20 @@ import Navigation from '/imports/ui/common/Navigation';
 import TopNav from '/imports/ui/common/TopNav';
 import PageHeading from '/imports/ui/common/PageHeading';
 
+import { Profiles } from '/imports/api/profiles';
+
 class MainLayout extends Component {
   render() {
-    const {content = () => null, activeRoute, pageHeading} = this.props;
+    const {content = () => null, activeRoute, pageHeading, currentUser, userProfile} = this.props;
+    
     return (
       <div id="wrapper">
         <Navigation activeRoute={activeRoute} />
         <div id="page-wrapper" className="gray-bg">
-          <TopNav />
+          <TopNav
+            currentUser={currentUser}
+            userProfile={userProfile}
+          />
 
           {/* Show page heading IF title not null */}
           {pageHeading.title && <PageHeading {...pageHeading} />}
@@ -30,10 +36,13 @@ class MainLayout extends Component {
 }
 
 const meteorData = params => {
+  
   var state = Meteor.AppState.get('pageHeading');
   return {
     activeRoute: FlowRouter.getRouteName(),
-    pageHeading: state
+    pageHeading: state,
+    currentUser: Meteor.user(),
+    userProfile: Profiles.findOne({userId: Meteor.userId()})
   }
 }
 
