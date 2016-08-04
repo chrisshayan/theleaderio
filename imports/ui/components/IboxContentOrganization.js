@@ -3,21 +3,38 @@ import React, {Component} from 'react';
 // components
 import ProfilePhoto from '/imports/ui/components/ProfilePhoto';
 
+// constants
+import {DEFAULT_ORGANIZATION_PHOTO} from '/imports/utils/defaults';
+
 export default class IboxContentOrganization extends Component {
   render() {
-    const {title, name, startTime, endTime, noEmployees, overallPercent, imageUrl} = this.props;
+    const {
+      imageUrl,
+      imageClass,
+      dataClass,
+      imageWidth = 100, 
+      imageHeight = 100
+    } = this.props;
+    
+    const {
+      title,
+      name,
+      startTime,
+      endTime,
+      noEmployees
+    } = this.props.data;
     return (
       <div className="ibox-content">
         <div className="row">
-          <div className="col-md-4">
+          <div className={imageClass}>
             <ProfilePhoto
               imageClass='img-thumbnail'
-              imageUrl={imageUrl}
-              width={220}
-              height={220}
+              imageUrl={imageUrl || DEFAULT_ORGANIZATION_PHOTO}
+              width={imageWidth}
+              height={imageHeight}
             />
           </div>
-          <div className="col-md-8">
+          <div className={dataClass}>
             <h4>{title}</h4>
             <p className="stats-label">{name}</p>
             <span className="vertical-date">
@@ -28,11 +45,6 @@ export default class IboxContentOrganization extends Component {
                 <strong>{noEmployees}</strong> Employees
               </p>
             )}
-            <p className="stats-label">Overall</p>
-            <div className="stat-percent">{overallPercent}</div>
-            <div className="progress progress-mini">
-              <div className="progress-bar"></div>
-            </div>
           </div>
         </div>
       </div>

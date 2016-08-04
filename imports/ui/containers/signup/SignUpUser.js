@@ -12,7 +12,7 @@ import { addPreferences } from '/imports/api/users/methods';
 
 // constants
 import {DOMAIN} from '/imports/startup/client/routes';
-import { DEFAULT_PUBLIC_INFO_PREFERENCES } from '/imports/utils/default_user_preferences';
+import { DEFAULT_PUBLIC_INFO_PREFERENCES } from '/imports/utils/defaults';
 
 export default class SignUpUser extends Component {
   constructor() {

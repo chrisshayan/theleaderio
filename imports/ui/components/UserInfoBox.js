@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
 import {words as capitalize} from 'capitalize';
 
+// constants
+import {DEFAULT_PROFILE_PHOTO} from '/imports/utils/defaults';
+
 // components
 import ProfilePhoto from '/imports/ui/components/ProfilePhoto';
 import IboxContentHorizontal from '/imports/ui/components/IboxContentHorizontal';
@@ -23,6 +26,7 @@ export default class UserInfoBox extends Component {
       return (
         <div className="ibox-content no-padding" style={{borderTopWidth: 0, borderBottomWidth: 0}}>
           <ProfilePhoto
+            imageUrl={DEFAULT_PROFILE_PHOTO}
             imageClass='img-thumbnail'
             width={260}
             height={260}

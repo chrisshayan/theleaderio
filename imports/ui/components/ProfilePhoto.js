@@ -1,12 +1,14 @@
 import React, {Component} from 'react';
 
+// constants
+import {DEFAULT_PROFILE_PHOTO} from '/imports/utils/defaults';
+
 export default class ProfilePhoto extends Component {
   render() {
-    const defaultPhoto = '/img/default-profile-pic.png';
     const {imageUrl, imageClass = 'img-circle', width = 200, height = 200} = this.props;
     return (
         <img
-          src={!!imageUrl ? imageUrl : defaultPhoto}
+          src={!!imageUrl ? imageUrl : DEFAULT_PROFILE_PHOTO}
           alt="profile photo"
           className={imageClass}
           style={{
