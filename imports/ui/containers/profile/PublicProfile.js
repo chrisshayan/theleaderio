@@ -152,13 +152,16 @@ export default class PublicProfile extends Component {
                             return (
                               <IboxContentOrganization
                                 key={org._id}
-                                title="Head of Engineering"
-                                name={org.name}
-                                startTime={new moment(org.startTime).format('MMMM YYYY')}
-                                endTime={new moment(org.endTime).format('MMMM YYYY')}
-                                noEmployees={org.employees.length}
-                                overallPercent="60%"
-                                imageUrl='/img/icare_benefits.png'
+                                data={{
+                                  title: org.jobTitle,
+                                  name: org.name,
+                                  startTime: new moment(org.startTime).format('MMMM YYYY'),
+                                  endTime: new moment(org.endTime).format('MMMM YYYY'),
+                                  noEmployees: org.employees.length
+                                }}
+                                imageClass="col-md-3"
+                                dataClass="col-md-8"
+                                imageUrl={org.imageUrl}
                               />)
                           })}
                         </div>

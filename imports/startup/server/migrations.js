@@ -1,5 +1,5 @@
 import {Preferences} from '/imports/api/users/index';
-import { DEFAULT_PUBLIC_INFO_PREFERENCES } from '/imports/utils/default_user_preferences';
+import { DEFAULT_PUBLIC_INFO_PREFERENCES } from '/imports/utils/defaults';
 
 Migrations.add({
   version: 1,

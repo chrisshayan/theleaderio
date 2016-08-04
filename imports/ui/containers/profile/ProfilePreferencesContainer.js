@@ -6,7 +6,7 @@ import {words as capitalize} from 'capitalize';
 import {Preferences} from '/imports/api/users/index';
 
 // constants
-import {DEFAULT_PUBLIC_INFO_PREFERENCES} from '/imports/utils/default_user_preferences';
+import {DEFAULT_PUBLIC_INFO_PREFERENCES} from '/imports/utils/defaults';
 
 // methods
 import {getPublicData}  from '/imports/api/profiles/methods';
@@ -60,6 +60,7 @@ class ProfilePreferences extends Component {
       });
     }
   }
+  
 
   onSave() {
     const
@@ -141,13 +142,16 @@ class ProfilePreferences extends Component {
                         return (
                           <IboxContentOrganization
                             key={org._id}
-                            title="Head of Engineering"
-                            name={org.name}
-                            startTime={new moment(org.startTime).format('MMMM YYYY')}
-                            endTime={new moment(org.endTime).format('MMMM YYYY')}
-                            noEmployees={org.employees.length}
-                            overallPercent="60%"
-                            imageUrl='/img/icare_benefits.png'
+                            data={{
+                              title: org.jobTitle,
+                              name: org.name,
+                              startTime: new moment(org.startTime).format('MMMM YYYY'),
+                              endTime: new moment(org.endTime).format('MMMM YYYY'),
+                              noEmployees: org.employees.length
+                            }}
+                            imageClass="col-md-4"
+                            dataClass="col-md-8"
+                            imageUrl={org.imageUrl}
                           />)
                       })}
                     </div>

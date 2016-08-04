@@ -23,6 +23,7 @@ export default class UserInfoBox extends Component {
       return (
         <div className="ibox-content no-padding" style={{borderTopWidth: 0, borderBottomWidth: 0}}>
           <ProfilePhoto
+            imageUrl={data.imageUrl}
             imageClass='img-thumbnail'
             width={260}
             height={260}
