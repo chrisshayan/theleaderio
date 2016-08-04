@@ -314,12 +314,22 @@ export const getPublicData = new ValidatedMethod({
           // Get summary info
           // noOrg
           if (summary.noOrg && typeof summary.noOrg !== 'undefined') {
-            const noOrg = Organizations.find({owner: user._id}).count();
+            const noOrg = Organizations.find({leaderId: user._id}).count();
             result.summary.noOrg = !!noOrg ? noOrg : null;
           }
           // noEmployees
           if (summary.noEmployees && typeof summary.noEmployees !== 'undefined') {
-            result.summary.noEmployees = 149;
+            if (Organizations.find({leaderId: user._id}).count() > 0) {
+              const modifier = {
+                fields: {employees: true}
+              };
+              const employeesList = Organizations.find({leaderId: user._id}, modifier).fetch();
+              let noEmployees = 0;
+              employeesList.map(employees => {
+                noEmployees += employees.employees.length;
+              });
+              result.summary.noEmployees = noEmployees;
+            }
           }
           // noFeedbacks
           if (summary.noFeedbacks && typeof summary.noFeedbacks !== 'undefined') {

@@ -100,19 +100,8 @@ class ProfilePreferences extends Component {
         metrics,
         chart
       } = this.state.publicInfo;
-      // console.log(this.state.preferences.metrics)
+      
       const ulStyle = {margin: 0, paddingLeft: 15};
-
-      // initial preferences for organizations
-      // const orgPreferences = {
-      //   show: preferences.organizations.show,
-      //   list: preferences.organizations.list | []
-      // };
-      // if (organizations.length > 0 && _.isEmpty(orgPreferences.list)) {
-      //   organizations.map(org => {
-      //     orgPreferences.list.push({key: org.name, value: true});
-      //   });
-      // }
 
       return (
         <div className="wrapper wrapper-content animated fadeInRight">
