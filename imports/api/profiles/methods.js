@@ -354,7 +354,15 @@ export const getPublicData = new ValidatedMethod({
           if (organizations.show) {
             if (Organizations.find({leaderId: user._id}).count() > 0) {
               const modifier = {
-                fields: {name: true, startTime: true, endTime: true, jobTitle: true, isPresent: true, employees: true},
+                fields: {
+                  name: true,
+                  startTime: true,
+                  endTime: true,
+                  jobTitle: true,
+                  isPresent: true,
+                  employees: true,
+                  imageUrl: true
+                },
                 sort: {startTime: -1}
               };
               const orgInfo = Organizations.find({leaderId: user._id}, modifier).fetch();
