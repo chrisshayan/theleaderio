@@ -8,6 +8,7 @@ import DatePicker from '/imports/ui/components/DatePicker';
 import CheckBox from '/imports/ui/components/CheckBox';
 import ReactFilepicker from 'react-filepicker';
 import { DEFAULT_ORGANIZATION_PHOTO } from '/imports/utils/defaults';
+import ButtonUpload from '/imports/ui/components/ButtonUpload';
 
 
 class OrganizationInformationForm extends Component {
@@ -99,11 +100,12 @@ class OrganizationInformationForm extends Component {
 							}}
 							className="img-rounded"
 						/>
-						<ReactFilepicker
-	            apikey={"AIa2uMZpGStiCqHEXwVulz"}
-	            defaultWidget={true}
-	            onSuccess={this._onPickFile}
-	          />
+						<ButtonUpload
+							buttonText='Upload new photo'
+							buttonClass='btn btn-primary'
+							mimeType='image/*'
+							onUploaded={this._onPickFile}
+						/>
 					</div>
 					<div className="col-md-9">
 						<FormInput 

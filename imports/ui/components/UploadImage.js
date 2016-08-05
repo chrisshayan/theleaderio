@@ -1,29 +1,18 @@
 import React, {Component} from 'react';
 import ReactFilepicker from 'react-filepicker';
 
+// components
 import ProfilePhoto from '/imports/ui/components/ProfilePhoto';
+import ButtonUpload from '/imports/ui/components/ButtonUpload';
 
 export default class UploadImage extends Component {
 
-  _onSuccess(fpfiles) {
+  _onUploaded({url}) {
     // console.log(this.props);
-    this.props.onUploadedImage(fpfiles.url);
-  }
-
-  getImageUrl() {
-    return !!(this.state.imageUrl !== "") ? this.state.imageUrl : this.props.imageUrl;
+    this.props.onUploadedImage(url);
   }
 
   render() {
-    // File Picker Options
-    // File Stack API key, this should be in settings with theleader.io's account
-    const datFpApikey = "AIa2uMZpGStiCqHEXwVulz";
-    const options = {
-      buttonText: 'Upload new photo',
-      buttonClass: 'btn btn-primary',
-      mimetype: 'image/*',
-    };
-
 
     const {imageUrl} = this.props;
     return (
@@ -37,11 +26,11 @@ export default class UploadImage extends Component {
           />
         </div>
         <div className="ibox-content form-group">
-          <ReactFilepicker
-            apikey={datFpApikey}
-            defaultWidget={false}
-            options={options}
-            onSuccess={this._onSuccess.bind(this)}
+          <ButtonUpload
+            buttonText='Upload new photo'
+            buttonClass='btn btn-primary'
+            mimeType='image/*'
+            onUploaded={this._onUploaded.bind(this)}
           />
         </div>
       </div>
