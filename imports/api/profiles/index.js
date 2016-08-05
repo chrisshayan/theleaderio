@@ -28,6 +28,10 @@ Profiles.schema = new SimpleSchema({
     type: String,
     optional: true
   },
+  title: {
+    type: String,
+    optional: true
+  },
   industries: {
     type: [String],
     optional: true
@@ -92,3 +96,9 @@ Profiles.schema = new SimpleSchema({
 });
 
 Profiles.attachSchema(Profiles.schema);
+
+Profiles.helpers({
+  getPicture() {
+    return this.imageUrl || '/img/default-profile-pic.png';
+  }
+});

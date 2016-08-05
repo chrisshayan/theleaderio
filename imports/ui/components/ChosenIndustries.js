@@ -14,14 +14,14 @@ export default class ChosenIndustries extends Component {
   }
 
   render() {
-    const { options, selectedIndustries } = this.props;
+    const { options, selectedIndustries, isMultiple } = this.props;
     return (
       <div>
         <select ref="industries"
                 data-placeholder="Choose your industries..."
                 className="chosen-select form-control"
                 defaultValue={selectedIndustries}
-                multiple
+                multiple={isMultiple}
         >
           {options.map(option => (
             <option

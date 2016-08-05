@@ -1,13 +1,14 @@
 import React, {Component} from 'react';
 
+// constants
+import {DEFAULT_PROFILE_PHOTO} from '/imports/utils/defaults';
+
 export default class ProfilePhoto extends Component {
   render() {
-    const defaultPhoto = '/img/default-profile-pic.png';
-    const {imageUrl, imageClass = 'img-circle', width = 100, height = 100} = this.props;
+    const {imageUrl, imageClass = 'img-circle', width = 200, height = 200} = this.props;
     return (
-      <div>
         <img
-          src={!!imageUrl ? imageUrl : defaultPhoto}
+          src={!!imageUrl ? imageUrl : DEFAULT_PROFILE_PHOTO}
           alt="profile photo"
           className={imageClass}
           style={{
@@ -16,7 +17,6 @@ export default class ProfilePhoto extends Component {
           margin: '0 auto'
         }}
         />
-      </div>
     );
   }
 }

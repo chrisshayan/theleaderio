@@ -13,7 +13,7 @@ class CheckBox extends Component {
       <div>​
         <input
           type="checkbox"
-          className="checkbox-success"
+          className="checkbox-primary"
           onChange={e => onChange(e.target.checked)}
           checked={checked}
           disabled={!!disabled}

@@ -11,7 +11,7 @@ import {IDValidator} from '/imports/utils';
 
 // collection
 import {Tokens} from '/imports/api/tokens/index';
-import { Configs } from '/imports/api/users/index';
+import { Preferences } from '/imports/api/users/index';
 
 /**
  *  @summary set alias for account which will use Account username as alias
@@ -181,11 +181,11 @@ export const confirm = new ValidatedMethod({
  *  @summary add configuration for user
  *  @param name, configs
  */
-export const addConfig = new ValidatedMethod({
-  name: 'users.addConfig',
+export const addPreferences = new ValidatedMethod({
+  name: 'users.addPreferences',
   validate: null,
-  run({name, configs}) {
-    Configs.insert({name, configs});
+  run({name, preferences}) {
+    Preferences.insert({name, preferences});
   }
 });
 
@@ -193,14 +193,14 @@ export const addConfig = new ValidatedMethod({
  *  @summary add configuration for user
  *  @param name, configs
  */
-export const updateConfig = new ValidatedMethod({
-  name: 'users.updateConfig',
+export const updatePreferences = new ValidatedMethod({
+  name: 'users.updatePreferences',
   validate: null,
-  run({name, configs}) {
+  run({name, preferences}) {
     const selector = {
       userId: Meteor.userId(),
       name
     };
-    Configs.update(selector, { $set: {configs}});
+    Preferences.update(selector, { $set: {preferences}});
   }
 });

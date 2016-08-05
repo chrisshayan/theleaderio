@@ -1,9 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
 // collection
-import { Configs } from '../index';
+import { Preferences } from '../index';
 
-Meteor.publish('configs', function({name}) {
-  return Configs.find({userId: this.userId, name});
+Meteor.publish('preferences', function({name}) {
+  return Preferences.find({userId: this.userId, name});
 });
-

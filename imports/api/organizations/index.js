@@ -1,6 +1,7 @@
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import OrganizationsCollection from './collection';
+import { DEFAULT_ORGANIZATION_PHOTO } from '/imports/utils/defaults';
 
 /**
  * Constant
@@ -19,6 +20,10 @@ export const Organizations = new OrganizationsCollection('organizations');
 Organizations.schema = new SimpleSchema({
   name: {
     type: String
+  },
+  jobTitle: {
+    type: String,
+    optional: true,
   },
   industries: {
     type: [String],
@@ -59,7 +64,7 @@ Organizations.schema = new SimpleSchema({
     type: Date,
     optional: true,
   },
-  owner: {
+  leaderId: {
     type: String,
     optional: true,
   },
@@ -84,10 +89,12 @@ Organizations.publicFields = {
   startTime: 1,
   endTime: 1,
   isPresent: 1,
-  owner: 1,
+  leaderId: 1,
   createdAt: 1,
   updatedAt: 1,
   employees: 1,
+  jobTitle: 1,
+  imageUrl: 1,
 };
 
 /**
@@ -96,5 +103,9 @@ Organizations.publicFields = {
 Organizations.helpers({
   editUrl() {
     return FlowRouter.url('app.organizations.update', {_id: this._id});
+  },
+
+  picture() {
+    return this.imageUrl || DEFAULT_ORGANIZATION_PHOTO;
   }
 });

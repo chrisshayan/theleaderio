@@ -1,6 +1,7 @@
 import {Meteor} from 'meteor/meteor';
 import {ValidatedMethod} from 'meteor/mdg:validated-method';
 import {SimpleSchema} from 'meteor/aldeed:simple-schema';
+import {Accounts} from 'meteor/accounts-base';
 import _ from 'lodash';
 
 // collections
@@ -8,9 +9,16 @@ import {Profiles, STATUS_ACTIVE, STATUS_INACTIVE} from './index';
 import {Organizations} from '/imports/api/organizations/index';
 import {Employees} from '/imports/api/employees/index';
 import {Industries} from '/imports/api/industries/index';
-import {Configs} from '/imports/api/users/index';
+import {Preferences} from '/imports/api/users/index';
 
 import {IDValidator} from '/imports/utils';
+import {DEFAULT_PUBLIC_INFO_PREFERENCES} from '/imports/utils/defaults';
+
+// methods
+import {addPreferences} from '/imports/api/users/methods';
+
+// constants
+import {USER_NOT_FOUND} from '/imports/utils/error_code';
 
 /**
  * CUD user profiles (Create, Update, Deactivate)
@@ -57,6 +65,10 @@ export const edit = new ValidatedMethod({
       type: String,
       optional: true
     },
+    title: {
+      type: String,
+      optional: true
+    },
     industries: {
       type: [String],
       optional: true
@@ -74,7 +86,7 @@ export const edit = new ValidatedMethod({
       optional: true
     }
   }).validator(),
-  run({userId, firstName, lastName, industries, imageUrl, phoneNumber, aboutMe}) {
+  run({userId, firstName, lastName, title, industries, imageUrl, phoneNumber, aboutMe}) {
     const selector = {userId};
     const modifier = {};
     if (typeof firstName !== "undefined") {
@@ -82,6 +94,9 @@ export const edit = new ValidatedMethod({
     }
     if (typeof lastName !== "undefined") {
       modifier['lastName'] = lastName;
+    }
+    if (typeof title !== "undefined") {
+      modifier['title'] = title;
     }
     if (typeof industries !== "undefined") {
       modifier['industries'] = industries;
@@ -192,77 +207,245 @@ export const getPublicData = new ValidatedMethod({
   validate: new SimpleSchema({
     alias: {
       type: String
+    },
+    isGetAll: {
+      type: Boolean
     }
   }).validator(),
-  run({alias}) {
+  run({alias, isGetAll}) {
     if (!this.isSimulation) {
       const user = Accounts.findUserByUsername(alias);
       if (!_.isEmpty(user)) {
+        if (Preferences.find({userId: user._id, name: 'publicInfo'}).count() == 0) {
+          addPreferences.call({name: 'publicInfo', preferences: DEFAULT_PUBLIC_INFO_PREFERENCES});
+        }
         let result = {
-          profile: {
+          basic: {
             name: null,
-            orgName: null,
-            industry: null,
-            phoneNumber: null,
-            aboutMe: null,
-            picture: null,
+            industry: null
+          },
+          headline: {
+            title: null
+          },
+          contact: {
+            phone: null,
+            email: null
+          },
+          summary: {
             noOrg: null,
             noEmployees: null,
             noFeedbacks: null
-          }
+          },
+          picture: {
+            imageUrl: null
+          },
+          about: {
+            aboutMe: null
+          },
+          organizations: [],
+          chart: {
+            label: [],
+            overall: [],
+            purpose: [],
+            mettings: [],
+            rules: [],
+            communications: [],
+            leadership: [],
+            workload: [],
+            energy: [],
+            stress: [],
+            decision: [],
+            respect: [],
+            conflict: []
+          },
+          metrics: {
+            overall: null,
+            purpose: null,
+            mettings: null,
+            rules: null,
+            communications: null,
+            leadership: null,
+            workload: null,
+            energy: null,
+            stress: null,
+            decision: null,
+            respect: null,
+            conflict: null
+          },
+          preferences: {}
         };
 
-        // Always public the name
+        // Get basic info - always show
+        // name
         const profile = Profiles.findOne({userId: user._id});
-        if (!!profile.firstName || profile.lastName) {
-          result.profile.name = `${profile.firstName} ${profile.lastName}`;
+        if (!!profile.firstName || !!profile.lastName) {
+          result.basic.name = `${profile.firstName} ${profile.lastName}`;
         }
-        if(Configs.find({userId: user._id}).count() > 0) {
-          const configs = Configs.find({userId: user._id}).fetch()[0].configs;
-          // Get public information
-          // Profile
-          const profileConfigs = configs.profile;
-          // orgName
-          if(profileConfigs.orgName && typeof profileConfigs.orgName !== 'undefined') {
-            if (Organizations.find({owner: user._id}).count() > 0) {
-              const orgName = Organizations.find({owner: user._id}, {"sort": ['endTime', 'desc']}).fetch()[0].name;
-              result.profile.orgName = !!orgName ? orgName : null;
-            }
+        // industry
+        if (!!profile.industries) {
+          result.basic.industry = Industries.findOne({_id: {$in: profile.industries}}).name;
+        }
+
+        // others
+        if (Preferences.find({userId: user._id}).count() > 0) {
+          let preferences = {};
+          if(isGetAll) {
+            preferences = DEFAULT_PUBLIC_INFO_PREFERENCES;
+          } else {
+            preferences = Preferences.find({userId: user._id}).fetch()[0].preferences;
+            result.preferences = preferences;
           }
-          // industry
-          if(profileConfigs.industry && typeof profileConfigs.industry !== 'undefined') {
-            if (!!profile.industries) {
-              result.profile.industry = Industries.findOne({_id: {$in: profile.industries}}).name;
-            }
+          // Get preferences
+          const {headline, contact, summary, picture, about, organizations} = preferences;
+
+          // Get headline info
+          // title
+          if (headline.title && typeof headline.title !== 'undefined') {
+            result.headline.title = !!profile.title ? profile.title : null;
           }
+
+          // Get contact info
           // phoneNumber
-          if(profileConfigs.phoneNumber && typeof profileConfigs.phoneNumber !== 'undefined') {
-            result.profile.phoneNumber = !!profile.phoneNumber ? profile.phoneNumber : null;
+          if (contact.phone && typeof contact.phone !== 'undefined') {
+            result.contact.phone = !!profile.phoneNumber ? profile.phoneNumber : null;
           }
-          // aboutMe
-          if(profileConfigs.aboutMe && typeof profileConfigs.aboutMe !== 'undefined') {
-            result.profile.aboutMe = !!profile.aboutMe ? profile.aboutMe : null;
+          // email
+          if (contact.email && typeof contact.email !== 'undefined') {
+            result.contact.email = user.emails[0].address;
           }
-          // picture
-          if(profileConfigs.picture && typeof profileConfigs.picture !== 'undefined') {
-            result.profile.picture = !!profile.imageUrl ? profile.imageUrl : null;
-          }
+
+          // Get summary info
           // noOrg
-          if(profileConfigs.noOrg && typeof profileConfigs.noOrg !== 'undefined') {
-            const noOrg = Organizations.find({owner: user._id}).count();
-            result.profile.noOrg = !!noOrg ? noOrg : null;
+          if (summary.noOrg && typeof summary.noOrg !== 'undefined') {
+            const noOrg = Organizations.find({leaderId: user._id}).count();
+            result.summary.noOrg = !!noOrg ? noOrg : null;
           }
           // noEmployees
-          if(profileConfigs.noEmployees && typeof profileConfigs.noEmployees !== 'undefined') {
-            result.profile.noEmployees = 149;
+          if (summary.noEmployees && typeof summary.noEmployees !== 'undefined') {
+            if (Organizations.find({leaderId: user._id}).count() > 0) {
+              const modifier = {
+                fields: {employees: true}
+              };
+              const employeesList = Organizations.find({leaderId: user._id}, modifier).fetch();
+              let noEmployees = 0;
+              employeesList.map(employees => {
+                noEmployees += employees.employees.length;
+              });
+              result.summary.noEmployees = noEmployees;
+            }
           }
           // noFeedbacks
-          if(profileConfigs.noFeedbacks && typeof profileConfigs.noFeedbacks !== 'undefined') {
-            result.profile.noFeedbacks = 240;
+          if (summary.noFeedbacks && typeof summary.noFeedbacks !== 'undefined') {
+            result.summary.noFeedbacks = 240;
           }
+
+          // Get picture
+          if (picture.imageUrl && typeof picture.imageUrl !== 'undefined') {
+            result.picture.imageUrl = !!profile.imageUrl ? profile.imageUrl : null;
+          }
+
+          // Get about info
+          // AboutMe
+          if (about.aboutMe && typeof about.aboutMe !== 'undefined') {
+            result.about.aboutMe = !!profile.aboutMe ? profile.aboutMe : null;
+          }
+
+          // Get Organizations
+          if (organizations.show) {
+            if (Organizations.find({leaderId: user._id}).count() > 0) {
+              const modifier = {
+                fields: {
+                  name: true,
+                  startTime: true,
+                  endTime: true,
+                  jobTitle: true,
+                  isPresent: true,
+                  employees: true,
+                  imageUrl: true
+                },
+                sort: {startTime: -1}
+              };
+              const orgInfo = Organizations.find({leaderId: user._id}, modifier).fetch();
+              result.organizations = !_.isEmpty(orgInfo) ? orgInfo : [];
+            }
+          }
+          
+          // Get chart info
+          result.chart.label = ["February", "March", "April", "May", "June", "July"];
+          result.chart.overall = [3.2, 4.0, 3.9, 4.9, 4.5, 4];
+          result.chart.purpose = [2.2, 3.0, 4.9, 3.9, 5, 3];
+          result.chart.mettings = [3.2, 3.0, 3.9, 4.9, 4, 4.3];
+          result.chart.rules = [2.7, 4.6, 3.9, 3.2, 4, 3];
+          result.chart.communications = [4.2, 2.0, 3.9, 4.9, 4, 4];
+          result.chart.leadership = [3.2, 4.0, 3.9, 4.9, 4, 4];
+          result.chart.workload = [3.2, 2.0, 3.9, 4.9, 2.3, 3];
+          result.chart.energy = [2.7, 3.3, 4.6, 3.7, 4.5, 3.6];
+          result.chart.stress = [3.3, 3.5, 4.2, 4.9, 5, 4];
+          result.chart.decision = [2.6, 3.8, 4.2, 3.4, 3.4, 3.7];
+          result.chart.respect = [4.2, 5.0, 3.9, 2.9, 4.5, 4];
+          result.chart.conflict = [2.8, 2.0, 4.9, 4.9, 4.7, 4.4];
+
+          // Get metrics
+          const userId = user._id;
+          // modifier for finding public metrics
+          const metricsModifier = {
+            fields: preferences.metrics
+          };
+          result.metrics = {
+            overall: 4.4,
+              purpose: 3.6,
+              mettings: 4.7,
+              rules: 5,
+              communications: 4.2,
+              leadership: 3.9,
+              workload: 2.5,
+              energy: 3.8,
+              stress: 3.7,
+              decision: 4.2,
+              respect: 4,
+              conflict: 4.9
+          };
         }
+        // console.log(result)
         return result;
       }
+    }
+  }
+});
+
+// get profile information
+export const getProfileInfo = new ValidatedMethod({
+  name: 'profiles.getProfileInfo',
+  validate: new SimpleSchema({
+    alias: {
+      type: String
+    },
+    requestField: {
+      type: String,
+      optional: true
+    }
+  }).validator(),
+  run({alias, requestField}) {
+    if(!this.isSimulation) {
+      const user = Accounts.findUserByUsername(alias);
+      if(!_.isEmpty(user)) {
+        const profile = Profiles.findOne({userId: user._id});
+        if(!_.isEmpty(profile)) {
+          switch (requestField) {
+            case 'name': {
+              return `${profile.firstName} ${profile.lastName}`
+            }
+            default: {
+              return profile.imageUrl
+            }
+          }
+        } else {
+          throw Meteor.Error(USER_NOT_FOUND);
+        }
+      } else {
+        throw Meteor.Error(USER_NOT_FOUND);
+      }
+
     }
   }
 });

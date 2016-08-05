@@ -5,11 +5,12 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import _ from 'lodash';
 import moment from 'moment';
 
-import { Organizations, STATUS_ACTIVE, STATUS_INACTIVE } from './index';
-import { Employees } from '/imports/api/employees';
+import { Organizations } from './index';
+import { Employees, STATUS_ACTIVE, STATUS_DEACTIVE } from '/imports/api/employees';
 import { IDValidator } from '/imports/utils';
 import * as ERROR_CODE from '/imports/utils/error_code';
 import validate from '/imports/utils/validate';
+import { UserLoggedInMixin, MethodValidatorMixin } from '/imports/utils/mixins';
 
 const constraints = {
   name: {
@@ -34,20 +35,49 @@ const constraints = {
 export const create = new ValidatedMethod({
   name: 'organizations.create',
   validate: validate.methodValidator(constraints),
-  run(doc) {
+  run({ name, jobTitle, description, imageUrl, startTime, endTime, isPresent }) {
     if (!Meteor.userId()) throw new Meteor.Error(ERROR_CODE.UNAUTHORIZED);
     // validate startTime and endTime
-    if (doc.startTime && doc.endTime) {
-      if (doc.startTime.getTime() >= doc.endTime.getTime()) {
+    // IF isPresent is true, just check startTime < now
+    // ELSE startTime < endTime and endTime < now 
+    if (isPresent) {
+      if (startTime && startTime.getTime() > Date.now()) {
         throw new ValidationError([{
-          name: 'endTime',
-          type: 'ORGANIZATION_INVALID_RANGE',
-          reason: 'End time should greater than start time'
+          name: 'startTime',
+          type: 'ORGANIZATION_INVALID_DATE_TIME',
+          reason: 'Start time should less than now'
         }]);
       }
+    } else {
+      if (!startTime || !endTime) {
+        throw new Meteor.Error('INVALID_PARAMETER', 'Start time or end time invalid');
+      } else {
+        if (startTime.getTime() >= endTime.getTime()) {
+          throw new ValidationError([{
+            name: 'endTime',
+            type: 'ORGANIZATION_INVALID_RANGE',
+            reason: 'End time should greater than start time'
+          }]);
+        } else if (endTime.getTime() > Date.now()) {
+          throw new ValidationError([{
+            name: 'endTime',
+            type: 'ORGANIZATION_INVALID_RANGE',
+            reason: 'End time should less than now'
+          }]);
+        }
+      }
     }
+
     if (!this.isSimulation) {
-      return Organizations.insert(doc);
+      return Organizations.insert({
+        name,
+        jobTitle,
+        description,
+        imageUrl,
+        startTime,
+        endTime,
+        isPresent
+      });
     }
   }
 });
@@ -55,59 +85,65 @@ export const create = new ValidatedMethod({
 // Edit Organization's name, description, imageUrl, address
 export const update = new ValidatedMethod({
   name: 'organizations.update',
-  validate: new SimpleSchema({
-    ...IDValidator,
-    name: {
-      type: String,
-      optional: true
-    },
-    description: {
-      type: String,
-      optional: true
-    },
-    startTime: {
-      type: Date,
-      optional: true,
-    },
-    endTime: {
-      type: Date,
-      optional: true,
-    },
-    isPresent: {
-      type: Boolean,
-      optional: true,
-    },
-    imageUrl: {
-      type: String,
-      optional: true
+  validate: validate.methodValidator({
+    ...constraints,
+    _id: {
+      type: 'string',
+      presence: true
     }
-  }).validator(),
-  run(doc) {
+  }),
+  run({ _id, name, jobTitle, description, imageUrl, startTime, endTime, isPresent }) {
     if (!Meteor.userId())
       throw new Meteor.Error(ERROR_CODE.UNAUTHORIZED);
 
-    // check time
-    if (doc.startTime && doc.endTime) {
-      if (doc.startTime.getTime() >= doc.endTime.getTime()) {
+    if (isPresent) {
+      if (startTime && startTime.getTime() > Date.now()) {
         throw new ValidationError([{
-          name: 'endTime',
-          type: 'ORGANIZATION_INVALID_RANGE',
-          reason: 'End time should greater than start time'
+          name: 'startTime',
+          type: 'ORGANIZATION_INVALID_DATE_TIME',
+          reason: 'Start time should less than now'
         }]);
+      }
+    } else {
+      if (!startTime || !endTime) {
+        throw new Meteor.Error('INVALID_PARAMETER', 'Start time or end time invalid');
+      } else {
+        if (startTime.getTime() >= endTime.getTime()) {
+          throw new ValidationError([{
+            name: 'endTime',
+            type: 'ORGANIZATION_INVALID_RANGE',
+            reason: 'End time should greater than start time'
+          }]);
+        } else if (endTime.getTime() > Date.now()) {
+          throw new ValidationError([{
+            name: 'endTime',
+            type: 'ORGANIZATION_INVALID_RANGE',
+            reason: 'End time should less than now'
+          }]);
+        }
       }
     }
 
     if (!this.isSimulation) {
-      var selector = { _id: doc._id };
+      Meteor._sleepForMs(1000);
+      var selector = { _id: _id };
       var modifier = {
-        $set: _.omit(doc, '_id')
+        $set: {
+          name,
+          jobTitle,
+          description,
+          startTime,
+          endTime,
+          isPresent,
+          imageUrl
+        }
       };
 
-      var org = Organizations.findOne({ _id: doc._id });
+      var org = Organizations.findOne({ _id: _id });
 
       if (!org) {
         throw new Meteor.Error(404, 'Organization not found');
-      } else if (org.owner != Meteor.userId()) {
+      } else if (org.leaderId != Meteor.userId()) {
         throw new Meteor.Error(403, 'Permission Denied');
       } else if (!_.isEmpty(modifier)) {
         return Organizations.update(selector, modifier);
@@ -136,7 +172,7 @@ export const remove = new ValidatedMethod({
 
       if (!org) {
         throw new Meteor.Error(ERROR_CODE.RESOURCE_NOT_FOUND, 'Organization not found');
-      } else if (org.owner != Meteor.userId()) {
+      } else if (org.leaderId != Meteor.userId()) {
         throw new Meteor.Error(ERROR_CODE.PERMISSION_DENIED, 'Permission Denied');
       } else {
         return Organizations.remove(selector);
@@ -145,12 +181,56 @@ export const remove = new ValidatedMethod({
   }
 });
 
+export const details = new ValidatedMethod({
+  name: 'organizations.details',
+  validate: validate.methodValidator({
+    _id: {
+      type: 'string',
+      presence: true,
+    }
+  }),
+  run({ _id }) {
+    if (!Meteor.userId()) {
+      throw new Meteor.Error(ERROR_CODE.UNAUTHORIZED);
+    }
+    const org = Organizations.findOne(_id);
+    if (!org) {
+
+    } else {
+      if (org.leaderId != Meteor.userId()) {
+        throw new Meteor.Error(ERROR_CODE.PERMISSION_DENIED);
+      } else {
+        return org;
+      }
+    }
+  }
+});
+
+/**
+ * Method to add employee into organization
+ *
+ * @param { string } organizationId (required)
+ * @param { string } email (required)
+ * @param { string } firstName (required)
+ * @param { string } lastName
+ *
+ * @return { string| bool }
+ */
 export const addEmployee = new ValidatedMethod({
   name: 'organizations.addEmployee',
-  validate: validate.methodValidator({
+  mixins: [MethodValidatorMixin, UserLoggedInMixin],
+  rules: {
     organizationId: {
       type: 'string',
       presence: true,
+      exists: {
+        collection: 'Organizations',
+        extraSelector() {
+          return {
+            leaderId: Meteor.userId()
+          }
+        }
+      }
     },
     firstName: {
       presence: true,
@@ -164,21 +244,217 @@ export const addEmployee = new ValidatedMethod({
       type: 'string',
       email: true,
     }
-  }),
-  run(data) {
-    const org = Organizations.findOne(data.organizationId);
-    if(!org) return false;
-    let employerId;
-    const employee = Employees.findOne({email: data.email});
-    if(employee) {
-      employerId = employee._id;
-    } else {
-      employerId = Employees.insert(_.omit(data, 'organizationId'));
-    }
-    return Organizations.update({_id: org._id}, {
-      $addToSet: {
-        employees: employerId
+  },
+  run({ organizationId, firstName, lastName, email }) {
+    if (!this.isSimulation) {
+      let leaderId = Meteor.userId();
+      let employeeId;
+
+      const org = Organizations.findOne(organizationId);
+      const employee = Employees.findOne({ email, organizationId, leaderId });
+      if (employee) {
+        throw new ValidationError([{
+          name: 'email',
+          type: 'exists',
+          reason: 'This employee already exists'
+        }]);
+      } else {
+        return Employees.insert({ leaderId, organizationId, firstName, lastName, email });
       }
-    })
-  } 
+    }
+  }
+});
+
+/**
+ * Method to add employee into organization
+ *
+ * @param { string } organizationId (required)
+ * @param { string } email (required)
+ * @param { string } firstName (required)
+ * @param { string } lastName
+ *
+ * @return { string| bool }
+ */
+export const importEmployees = new ValidatedMethod({
+  name: 'organizations.importEmployees',
+  mixins: [MethodValidatorMixin, UserLoggedInMixin],
+  rules: {
+    organizationId: {
+      type: 'string',
+      presence: true,
+      exists: {
+        collection: 'Organizations',
+        extraSelector() {
+          return {
+            leaderId: Meteor.userId()
+          }
+        }
+      }
+    },
+    employees: {
+      presence: true,
+      type: 'array'
+    }
+  },
+  run({ organizationId, employees }) {
+    if (!this.isSimulation) {
+      let leaderId = Meteor.userId();
+      _.each(employees, e => {
+        const { firstName, lastName, email } = e;
+        const employee = Employees.findOne({ email, organizationId, leaderId });
+        if (!employee) {
+          return Employees.insert({ leaderId, organizationId, firstName, lastName, email });
+        }
+      });
+    }
+  }
+});
+
+
+/**
+ * Method to update employee single field
+ *
+ * If field is firstName, rule is string, required
+ *          is lastName, rule is string
+ *          is email, rule is string, valid email address, required
+ *
+ * @param { string } employeeId must exists and you must be owner
+ * @param { string } field is employee's field name. firstName|lastName|email
+ * @param { any } value is data of that field need to update
+ */
+export const updateEmployeeSingleField = new ValidatedMethod({
+  name: 'employees.updateSingleField',
+  mixins: [MethodValidatorMixin, UserLoggedInMixin],
+  rules: {
+    organizationId: {
+      type: 'string',
+      exists: {
+        collection: 'Organizations',
+        extraSelector() {
+          return {
+            leaderId: Meteor.userId()
+          };
+        }
+      }
+    },
+    employeeId: {
+      type: 'string',
+      exists: {
+        collection: 'Employees',
+        extraSelector() {
+          return {
+            leaderId: Meteor.userId()
+          };
+        }
+      }
+    },
+    field: {
+      presence: true,
+      type: 'string',
+      inclusion: ['firstName', 'lastName', 'email'],
+    },
+    value: {
+
+    }
+  },
+  run({ organizationId, employeeId, field, value }) {
+    let rule;
+    switch (field) {
+      case 'firstName':
+        rule = {
+          presence: true,
+          type: 'string'
+        };
+        break;
+
+      case 'lastName':
+        rule = {
+          type: 'string'
+        };
+        break;
+
+      case 'email':
+        rule = {
+          presence: true,
+          email: true,
+        };
+        break;
+    }
+
+    const error = validate.execute({
+      [field]: value
+    }, {
+      [field]: rule
+    });
+    if (error) throw new ValidationError(error);
+
+    if (!this.isSimulation) {
+      const leaderId = Meteor.userId();
+
+      if (field == 'email') {
+        let employee = Employees.findOne({ email: value, leaderId, organizationId });
+        if (employee && employee._id != employeeId) {
+          throw new ValidationError([{
+            name: 'email',
+            type: 'INVALID_PARAMETER',
+            reason: 'Email address already in use!'
+          }]);
+        }
+      }
+      return Employees.update({ _id: employeeId }, {
+        $set: {
+          [field]: value
+        }
+      });
+    }
+  }
+});
+
+export const toggleStatusEmployee = new ValidatedMethod({
+  name: 'employees.toggleStatus',
+  mixins: [MethodValidatorMixin, UserLoggedInMixin],
+  rules: {
+    employeeId: {
+      presence: true,
+      type: 'string',
+      exists: {
+        collection: 'Employees',
+        extraSelector() {
+          return {
+            leaderId: Meteor.userId()
+          };
+        }
+      }
+    },
+    status: {
+      presence: true,
+      type: 'string',
+      inclusion: [STATUS_ACTIVE, STATUS_DEACTIVE]
+    }
+  },
+  run({ employeeId, status }) {
+    return Employees.update({ _id: employeeId }, { $set: { status: status } });
+  }
+});
+
+export const removeEmployee = new ValidatedMethod({
+  name: 'organization.removeEmployee',
+  mixins: [MethodValidatorMixin, UserLoggedInMixin],
+  rules: {
+    employeeId: {
+      presence: true,
+      type: 'string',
+      exists: {
+        collection: 'Employees',
+        extraSelector() {
+          return {
+            leaderId: Meteor.userId()
+          };
+        }
+      }
+    }
+  },
+  run({ employeeId }) {
+    return Employees.remove({ _id: employeeId });
+  }
 });

@@ -3,6 +3,7 @@ import {FlowRouter} from 'meteor/kadira:flow-router';
 import React from 'react';
 import {mount} from 'react-mounter';
 
+// components
 import NoticeForm from '/imports/ui/common/NoticeForm';
 import WelcomePage from '/imports/ui/common/WelcomePage';
 import ThankyouPage from '/imports/ui/common/ThankyouPage';
@@ -25,12 +26,13 @@ import SetPasswordPage from '/imports/ui/containers/password/SetPasswordPage';
 import ForgotAliasPage from '/imports/ui/containers/alias/ForgotAliasPage';
 
 import PublicProfile from '/imports/ui/containers/profile/PublicProfile';
-import Profile from '/imports/ui/containers/profile/Profile';
+import Profile from '/imports/ui/containers/profile/EditProfile';
 import Dashboard from '/imports/ui/containers/dashboard/Dashboard';
 import Organizations from '/imports/ui/containers/organizations/Organizations';
-import SingleOrganization from '/imports/ui/containers/organizations/SingleOrganization';
+import CreateOrganization from '/imports/ui/containers/organizations/CreateOrganization';
+import UpdateOrganization from '/imports/ui/containers/organizations/UpdateOrganization';
 import Employees from '/imports/ui/containers/employees/Employees';
-
+// methods
 import * as Notifications from '/imports/api/notifications/methods';
 
 // Admin page
@@ -45,6 +47,8 @@ import {resetPageHeading} from '/imports/store/modules/pageHeading';
 
 // this domain should get from settings
 export const DOMAIN = 'devtheleader.io:9000';
+
+Meteor.subscribe('profiles');
 
 /**
  * Change root url to make flow router understand subdomain
@@ -360,7 +364,7 @@ appRoutes.route('/organizations/create', {
   action() {
     mount(MainLayout, {
       content() {
-        return <SingleOrganization />
+        return <CreateOrganization />
       }
     })
   }
@@ -374,7 +378,7 @@ appRoutes.route('/organizations/update/:_id', {
   action(params) {
     mount(MainLayout, {
       content() {
-        return <SingleOrganization _id={params._id}/>
+        return <UpdateOrganization _id={params._id}/>
       }
     })
   }

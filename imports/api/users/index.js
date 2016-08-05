@@ -1,6 +1,6 @@
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 
 // collections
-import ConfigsColleciton from './collection';
+import PreferencesCollection from './collection';
 
-export const Configs = new ConfigsColleciton('configs');
+export const Preferences = new PreferencesCollection('preferences');

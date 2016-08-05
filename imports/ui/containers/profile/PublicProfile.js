@@ -1,19 +1,22 @@
 import React, {Component} from 'react';
 import {createContainer} from 'meteor/react-meteor-data';
+import moment from 'moment';
+import {LinkedinButton, TwitterTweetButton, FacebookButton} from 'react-social-sharebuttons';
 
-import {Profiles} from '/imports/api/profiles/index';
-import {Industries} from '/imports/api/industries/index';
+// methods
 import {getPublicData}  from '/imports/api/profiles/methods';
+import {verify as verifyAlias} from '/imports/api/users/methods';
 
+// components
 import Spinner from '/imports/ui/common/Spinner';
 import NoticeForm from '/imports/ui/common/NoticeForm';
-
+import CopyRight from '/imports/ui/common/Copyright';
 import TopNav from '/imports/ui/common/TopNav';
-import ProfileDetail from '/imports/ui/components/ProfileDetail';
-import LeadershipProgress from '/imports/ui/components/LeadershipProgress';
-import Activities from '/imports/ui/components/Activities';
 
-import * as UserActions from '/imports/api/users/methods';
+import ProfileInformationBox from '/imports/ui/components/ProfileInformationBox';
+import ProfileMetricsBox from '/imports/ui/components/ProfileMetricsBox';
+import IboxContentOrganization from '/imports/ui/components/IboxContentOrganization';
+
 
 export default class PublicProfile extends Component {
   constructor() {
@@ -22,7 +25,8 @@ export default class PublicProfile extends Component {
     this.state = {
       loading: null,
       alias: null,
-      publicInfo: null
+      publicInfo: {},
+      preferences: {}
     };
   }
 
@@ -31,17 +35,19 @@ export default class PublicProfile extends Component {
       loading: true
     });
     const alias = Session.get('alias');
-    UserActions.verify.call({alias}, (error) => {
+    verifyAlias.call({alias}, (error) => {
       if (_.isEmpty(error)) {
         this.setState({
           alias: true
         });
-        getPublicData.call({alias}, (error, result) => {
+        getPublicData.call({alias, isGetAll: false}, (error, result) => {
           if (_.isEmpty(error)) {
             this.setState({
               loading: false,
-              publicInfo: result
+              publicInfo: result,
+              preferences: result.preferences
             });
+
           } else {
             this.setState({
               loading: false,
@@ -57,11 +63,13 @@ export default class PublicProfile extends Component {
         });
       }
     });
+
   }
 
   render() {
-    const { publicInfo, errors, loading, alias } = this.state;
-    console.log(publicInfo)
+    const {loading, alias} = this.state;
+    // console.log(this.state.chartData)
+
     if (loading) {
       return (
         <div>
@@ -70,42 +78,117 @@ export default class PublicProfile extends Component {
       );
     }
     if (alias) {
+      const url = document.location.href;
+      const {publicInfo, preferences} = this.state;
+
+      const {
+        basic,
+        headline,
+        contact,
+        summary,
+        picture,
+        about,
+        organizations,
+        metrics,
+        chart
+      } = publicInfo;
+
       return (
-        <div id="page-top" className="gray-bg">
-          <TopNav />
-          <div className="wrapper wrapper-content">
-            <div className="row animated fadeInRight">
-              <div className="col-md-4">
-                <ProfileDetail
-                  profile={publicInfo.profile}
+        <div className="gray-bg">
+          <div className="container gray-bg">
+            <div className="row">
+              <div className="col-md-10 col-md-offset-1 col-xs-12">
+                <TopNav
+                  imageUrl={picture.imageUrl}
                 />
               </div>
-              <div className="col-md-8">
-                <LeadershipProgress />
+            </div>
+
+            <div className="row">
+              <div className="ibox float-e-margins">
+                <div className="col-md-10 col-md-offset-1 no-padding">
+                  <div className="ibox-title">
+                    <ul className="list-inline social-icon pull-right">
+                      <li>
+                        <LinkedinButton
+                          url={url}
+                        />
+                      </li>
+                      <li>
+                        <TwitterTweetButton
+                          url={url}
+                        />
+                      </li>
+                    </ul>
+                    <h5>Public Profile</h5>
+                  </div>
+                </div>
+                <div className="col-md-3 col-md-offset-1 col-xs-12 no-padding">
+                  <div className="ibox-content gray-bg">
+                    <div className="row">
+                      <ProfileInformationBox
+                        preferences={preferences}
+                        data={{basic, headline, contact, summary, picture, about}}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-7 col-xs-12 no-padding">
+                  <div className="ibox-content gray-bg">
+                    <div className="row">
+                      <ProfileMetricsBox
+                        label="Leadership progress (no real data)"
+                        preferences={preferences.metrics}
+                        data={{chart, metrics}}
+                      />
+                    </div>
+                    {!_.isEmpty(organizations) && (
+                      <div className="row">
+                        <div className="ibox float-e-margins">
+                          <div className="ibox-title">
+                            <h5>Organizations</h5>
+                          </div>
+                          {organizations.map(org => {
+                            return (
+                              <IboxContentOrganization
+                                key={org._id}
+                                data={{
+                                  title: org.jobTitle,
+                                  name: org.name,
+                                  startTime: new moment(org.startTime).format('MMMM YYYY'),
+                                  endTime: new moment(org.endTime).format('MMMM YYYY'),
+                                  noEmployees: org.employees.length
+                                }}
+                                imageClass="col-md-3"
+                                dataClass="col-md-8"
+                                imageUrl={org.imageUrl}
+                              />)
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
-              <div className="col-md-8">
-                <Activities />
-              </div>
+            </div>
+            <div className="gray-bg">
+              <CopyRight />
             </div>
           </div>
         </div>
       );
     } else if (!alias) {
       return (
-        <div id="page-top" className="gray-bg">
-          <NoticeForm
-            code='404'
-            message="Alias doesn't exists"
-            description='Sorry, but the page you are looking for has note been found. Try checking the URL for error, then hit the refresh button on your browser or try found something else in our app.'
-            buttonLabel='Come back to HomePage'
-          />
-        </div>
+        <NoticeForm
+          code='404'
+          message="Alias doesn't exists"
+          description='Sorry, but the page you are looking for has note been found. Try checking the URL for error, then hit the refresh button on your browser or try found something else in our app.'
+          buttonLabel='Come back to HomePage'
+        />
       );
     } else {
       return (
-        <div>
-          <Spinner />
-        </div>
+        <Spinner />
       );
     }
   }
