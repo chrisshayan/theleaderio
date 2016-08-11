@@ -28,7 +28,7 @@ import {USER_NOT_FOUND} from '/imports/utils/error_code';
  * # editIndustries
  * # setStatus
  */
-// Create User Profile
+// Create User Preferences
 // with basics information: userId, firstName, lastName, publicFields
 export const create = new ValidatedMethod({
   name: 'profiles.create',
@@ -50,7 +50,7 @@ export const create = new ValidatedMethod({
   }
 });
 
-// Edit User Profile's Inforamtion
+// Edit User Preferences's Inforamtion
 export const edit = new ValidatedMethod({
   name: 'profiles.edit',
   validate: new SimpleSchema({

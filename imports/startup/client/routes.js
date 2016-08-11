@@ -25,13 +25,17 @@ import PasswordPage from '/imports/ui/containers/password/PasswordPage';
 import SetPasswordPage from '/imports/ui/containers/password/SetPasswordPage';
 import ForgotAliasPage from '/imports/ui/containers/alias/ForgotAliasPage';
 
-import PublicProfile from '/imports/ui/containers/profile/PublicProfile';
-import Profile from '/imports/ui/containers/profile/EditProfile';
+import PublicProfile from '/imports/ui/containers/PublicProfile';
+import Preferences from '/imports/ui/containers/preferences/Preferences';
+
 import Dashboard from '/imports/ui/containers/dashboard/Dashboard';
 import Organizations from '/imports/ui/containers/organizations/Organizations';
 import CreateOrganization from '/imports/ui/containers/organizations/CreateOrganization';
 import UpdateOrganization from '/imports/ui/containers/organizations/UpdateOrganization';
 import Employees from '/imports/ui/containers/employees/Employees';
+
+import SchedulerContainer from '/imports/ui/containers/scheduler/SchedulerContainer';
+
 // methods
 import * as Notifications from '/imports/api/notifications/methods';
 
@@ -46,7 +50,7 @@ import {resetPageHeading} from '/imports/store/modules/pageHeading';
  */
 
 // this domain should get from settings
-export const DOMAIN = 'devtheleader.io:9000';
+export const DOMAIN = Meteor.settings.public.domain;
 
 Meteor.subscribe('profiles');
 
@@ -152,8 +156,8 @@ signUpRoutes.route('/:action', {
     }
     // create new alias
     if (params.action == 'confirm') {
-      mount(ConfirmEmail);
-    }
+        mount(ConfirmEmail);
+      }
   }
 });
 
@@ -313,7 +317,7 @@ const adminRoutes = FlowRouter.group({
 });
 
 /**
- * Route: Dashboard
+ * Route: Admin industries
  */
 adminRoutes.route('/industries', {
   name: 'admin.industries',
@@ -327,14 +331,14 @@ adminRoutes.route('/industries', {
 });
 
 /**
- * Route: profile
+ * Route: Preferences
  */
-appRoutes.route('/profile', {
-  name: 'app.profile',
+appRoutes.route('/preferences', {
+  name: 'app.preferences',
   action() {
     mount(MainLayout, {
       content() {
-        return <Profile />
+        return <Preferences />
       }
     })
   }

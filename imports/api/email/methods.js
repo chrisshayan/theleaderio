@@ -1,6 +1,7 @@
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { Email } from 'meteor/email';
 import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
 import * as EmailActions from '/imports/api/email/functions';
 
@@ -38,7 +39,11 @@ export const send = new ValidatedMethod({
             subject: `theLeader.io`,
             html: html
           };
-          Email.send(options);
+
+          Meteor.defer(() => {
+            Email.send(options);
+          });
+          return true;
         }
 
       } catch(error) {

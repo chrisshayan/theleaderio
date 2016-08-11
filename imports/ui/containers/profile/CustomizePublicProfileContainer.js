@@ -66,7 +66,6 @@ class ProfilePreferences extends Component {
     const
       name = 'publicInfo',
       preferences = this.state.preferences;
-    // console.log({name, preferences});
     updatePreferences.call({name, preferences}, (error) => {
       if (_.isEmpty(error)) {
         const

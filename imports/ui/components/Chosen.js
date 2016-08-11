@@ -25,6 +25,7 @@ export default class Chosen extends Component {
       placeHolder=' Choose one option ...',
       onChange=() => null
     } = this.props;
+    console.log(this.props)
     return (
       <div>
         <select ref="selector"
