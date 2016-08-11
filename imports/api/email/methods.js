@@ -27,7 +27,7 @@ export const send = new ValidatedMethod({
             };
             Email.send(options);
           } else {
-            throw new Error('user not found');
+            throw new Meteor.Error('user not found');
           }
         } else {
           // Forgot / Reset password

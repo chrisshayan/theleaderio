@@ -5,3 +5,4 @@ import '/imports/api/users/register.server';
 import '/imports/api/email/register.server';
 import '/imports/api/organizations/register.server';
 import '/imports/api/scheduler/register.server';
+import '/imports/api/jobs/register.server';
