@@ -16,7 +16,7 @@ export default class ButtonUpload extends Component {
       mimeType = 'image/*',
       onUploaded = () => null
     } = this.props;
-    const apikey = "AIa2uMZpGStiCqHEXwVulz";
+    const apikey = Meteor.settings.public.filepicker.apikey;
     const options = {
       buttonText: buttonText,
       buttonClass: buttonClass,
