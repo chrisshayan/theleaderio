@@ -6,3 +6,4 @@ import '/imports/api/email/register.server';
 import '/imports/api/organizations/register.server';
 import '/imports/api/scheduler/register.server';
 import '/imports/api/jobs/register.server';
+import '/imports/api/message_queue/register.server';

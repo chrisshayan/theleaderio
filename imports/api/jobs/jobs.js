@@ -1,11 +1,11 @@
 import {MetricsJobs} from './collections';
 import {later} from 'meteor/mrt:later';
 
-const createMetricRequestsJob = function() {
-  const metricRequestsJob = new Job(MetricsJobs, 'metricsRequests', {});
+const createMetricSurveysJob = function() {
+  const metricSurveysJob = new Job(MetricsJobs, 'metricsSurveys', {});
 
-  const runTime = Meteor.settings.jobs.runTime.metricEmailRequest;
-  metricRequestsJob.priority('high')
+  const runTime = Meteor.settings.jobs.runTime.metricEmailSurvey;
+  metricSurveysJob.priority('high')
     .repeat({
       schedule: MetricsJobs.later.parse.text('every 20 seconds')
       // schedule: MetricsJobs.later.parse.recur().on(runTime).time()
@@ -14,8 +14,8 @@ const createMetricRequestsJob = function() {
 }
 
 export const jobs = {
-  metricsRequests: {
-    create: createMetricRequestsJob,
-    delete: () => null
+  metricsSurveys: {
+    create: createMetricSurveysJob,
+    remove: () => null
   }
 };

@@ -1,42 +1,33 @@
 import {MetricsJobs} from './collections';
 import moment from 'moment';
 
-// job's functions
-import {createMetricRequestsJob} from './jobs';
-
 // collections
 import {Organizations} from '/imports/api/organizations/index';
 import {Employees} from '/imports/api/employees/index';
 
+// methods
+import {enqueue} from '/imports/api/message_queue/methods';
+
 // constants
 const LOG_LEVEL = {
-  WARNING: "WARNING",
-  CRITICAL: "CRITICAL",
-  INFO: "INFO"
+  INFO: "info",
+  SUCCESS: "success",
+  WARNING: "warning",
+  CRITICAL: "danger"
 };
 
-
 /**
- * Enqueue metric email requests
- *
- */
-const enqueue = (data) => {
-  console.log(`enqueue data into message queue`);
-  console.log(data);
-}
-
-/**
- * Enqueue Metrics Email Request
+ * Enqueue Metrics Email Survey
  * @param job
  * @param cb
  */
-const enqueueMetricEmailRequest = function(job, cb) {
+const enqueueMetricEmailSurvey = function(job, cb) {
   try {
     let jobMessage = "";
     // get data from scheduler
     // metric, leaderId, runDate = moment.now()
-    const runDate = moment().format();
-    const metricEmailRequestList = [
+    const runDate = new Date();
+    const metricEmailSurveyList = [
       {
         metric: 'purpose',
         leaderId: 'FtnQNEttMb3jMGCJH',
@@ -44,13 +35,13 @@ const enqueueMetricEmailRequest = function(job, cb) {
       }
     ];
 
-    if(_.isEmpty(metricEmailRequestList)) {
+    if(_.isEmpty(metricEmailSurveyList)) {
       jobMessage = `No request for today: ${runDate}`;
       job.log(jobMessage, {level: LOG_LEVEL.INFO});
       job.done();
     } else {
-      metricEmailRequestList.map(requests => {
-        const {metric, leaderId, runDate} = requests;
+      metricEmailSurveyList.map(surveys => {
+        const {metric, leaderId, runDate} = surveys;
         const selector = {leaderId, isPresent: true};
         const organizationList = Organizations.find(selector).fetch();
         if(_.isEmpty(organizationList)) {
@@ -69,15 +60,20 @@ const enqueueMetricEmailRequest = function(job, cb) {
                 const employee = Employees.findOne({_id: employeeId});
                 const queueData = {
                   employeeId,
-                  employeeName: `${employee.firstName} ${employee.lastName}`,
-                  employeeEmail: employee.email,
                   leaderId,
                   organizationId: org._id,
-                  metric,
-                  runDate
+                  metric
                 };
                 if(!_.isEmpty(queueData)) {
-                  enqueue(queueData); // should have call back
+                  enqueue.call({date: runDate, data: queueData}, (error) => {
+                    if(_.isEmpty(error)) {
+                      jobMessage = `Enqueue mail ${metric} to ${employee.email} on ${runDate}`;
+                      job.log(jobMessage, {level: LOG_LEVEL.INFO});
+                    } else {
+                      jobMessage = `Enqueue mail ${metric} to ${employee.email} on ${runDate} has error: ${error.reason}`;
+                      job.log(jobMessage, {level: LOG_LEVEL.WARNING});
+                    }
+                  });
                 }
               });
             }
@@ -94,14 +90,14 @@ const enqueueMetricEmailRequest = function(job, cb) {
   cb();
 }
 
-const startMetricsRequestsJob = () => {
-  MetricsJobs.processJobs('metricsRequests', enqueueMetricEmailRequest)
+const startMetricsSurveysJob = () => {
+  MetricsJobs.processJobs('metricsRequests', enqueueMetricEmailSurvey)
 };
 
 
 export const workers = {
-  metricsRequests: {
-    start: startMetricsRequestsJob,
+  metricsSurveys: {
+    start: startMetricsSurveysJob,
     stop: () => null,
   }
 };

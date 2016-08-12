@@ -12,3 +12,10 @@ export const get = function ({ templateName, firstName, url, alias }) {
   //Generate e-mail with data
   return emailTemplateBuilder.generate(data, template);
 }
+
+export const buildHtml = function({template, data})  {
+  if(template == 'survey') {
+    const mailTemplate = Assets.getText(`email_templates/metrics/${template}.html`);
+    return emailTemplateBuilder.generate(data, mailTemplate);
+  }
+}

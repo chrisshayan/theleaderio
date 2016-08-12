@@ -1,1 +1,1 @@
-export const MetricsJobs = new JobCollection('metric_job');
+export const MetricsJobs = new JobCollection('metric_emails');

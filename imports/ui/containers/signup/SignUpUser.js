@@ -57,13 +57,13 @@ export default class SignUpUser extends Component {
                 // route to Welcome page with a message to verify user's email
                 const verifyUrl = FlowRouter.path('signUpPage', {action: 'confirm'}, {token: tokenId});
                 const url = `http://${DOMAIN}${verifyUrl}`;
-                const mailOptions = {
+                const template = 'welcome';
+                const data = {
                   email: email,
                   firstName: firstName,
-                  url: url,
-                  templateName: 'welcome'
+                  url: url
                 };
-                EmailActions.send.call(mailOptions);
+                EmailActions.send.call({template, data});
               }
             });
             FlowRouter.go('signUpPage', {action: 'alias'});

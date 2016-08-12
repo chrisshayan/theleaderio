@@ -81,3 +81,20 @@ export const DEFAULT_SCHEDULER = [
     quarter: QUARTER.QUARTER_4
   }
 ];
+
+export const EMAIL_TEMPLATE_CONTENT = {
+  metrics: {
+    survey: {
+      title: "",
+      message: ""
+    },
+    feedback: {
+      title: "",
+      message: ""
+    },
+    error: {
+      title: "",
+      message: ""
+    }
+  },
+};
