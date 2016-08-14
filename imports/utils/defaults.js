@@ -1,5 +1,7 @@
 import {METRICS, QUARTER} from '/imports/api/scheduler/index';
 
+
+// the content of this file should be import into database
 export const DEFAULT_METRICS = [
   "purpose",
   "mettings",
@@ -86,7 +88,19 @@ export const EMAIL_TEMPLATE_CONTENT = {
   metrics: {
     survey: {
       title: "",
-      message: ""
+      message: {
+        purpose: `Purpose is a important metric for blah blah blah, reply this email with the number of score`,
+        mettings: "",
+        rules: "",
+        communications: "",
+        leadership: "",
+        workload: "",
+        energy: "",
+        stress: "",
+        decision: "",
+        respect: "",
+        conflict: ""
+      }
     },
     feedback: {
       title: "",
