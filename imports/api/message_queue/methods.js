@@ -4,6 +4,9 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 // collections
 import {QueueCollection} from '/imports/api/message_queue/index';
 
+import {jobs} from '/imports/api/jobs/jobs';
+import {workers} from '/imports/api/jobs/workers';
+
 /**
  *  Enqueue methods
  *  params: date, data
@@ -23,9 +26,11 @@ import {QueueCollection} from '/imports/api/message_queue/index';
 export const enqueue = new ValidatedMethod({
   name: 'mq.enqueue',
   validate: null,
-  run({date, data}) {
+  run({data}) {
     if(!this.isSimulation) {
-      QueueCollection.insert({date, data});
+      const {employeeId, leaderId, organizationId, metric, date, timezone } = data;
+      jobs.queue.create({type: "sendSurveyEmail", data: {employeeId, leaderId, organizationId, metric, date, timezone}});
+      workers.sendSurveys.start();
     }
   }
 });

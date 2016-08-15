@@ -89,8 +89,8 @@ export const EMAIL_TEMPLATE_CONTENT = {
     survey: {
       title: "",
       message: {
-        purpose: `Purpose is a important metric for blah blah blah, reply this email with the number of score`,
-        mettings: "",
+        purpose: `Purpose is an important metric for blah blah blah, reply this email with the number of score`,
+        mettings: "Mettings is a core metric, which will estimate the ability of a leader. Reply this email with the number of score for scoring your leader.",
         rules: "",
         communications: "",
         leadership: "",
