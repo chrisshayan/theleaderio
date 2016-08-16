@@ -42,11 +42,14 @@ export const create = new ValidatedMethod({
     lastName: {
       type: String,
       optional: true
+    },
+    timezone: {
+      type: String
     }
   }).validator(),
-  run({userId, firstName, lastName}) {
+  run({userId, firstName, lastName, timezone}) {
     // console.log({userId, firstName, lastName});
-    return Profiles.insert({userId, firstName, lastName});
+    return Profiles.insert({userId, firstName, lastName, timezone});
   }
 });
 

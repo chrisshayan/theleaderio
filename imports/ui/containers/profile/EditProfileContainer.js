@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {createContainer} from 'meteor/react-meteor-data';
+import moment from 'moment-timezone';
 
 // collections
 import {Profiles} from '/imports/api/profiles/index';
@@ -34,6 +35,7 @@ class EditProfile extends Component {
       industries: [],
       error: {}
     };
+
   }
 
   componentDidUpdate(prevProps) {
@@ -44,6 +46,8 @@ class EditProfile extends Component {
         industries: this.props.industries
       });
     }
+    console.log(`test moment timezone`);
+    console.log(moment.tz.guess())
   }
 
   onSave() {

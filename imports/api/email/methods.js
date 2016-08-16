@@ -42,7 +42,7 @@ export const send = new ValidatedMethod({
             const alias = user.username;
             const loginUrl = `http://${alias}.${url}`;
             // Get email html
-            const html = EmailFunctions.get({templateName, firstName, url: loginUrl, alias});
+            const html = EmailFunctions.get({template, firstName, url: loginUrl, alias});
             const options = {
               to: email,
               from: 'chris@mail.mailgun.com',

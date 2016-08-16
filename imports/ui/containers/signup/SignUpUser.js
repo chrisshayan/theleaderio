@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import Copyright from '/imports/ui/common/Copyright';
 import {Accounts} from 'meteor/accounts-base';
 import moment from 'moment';
+import momentTZ from 'moment-timezone';
 
 import SignUpForm from '/imports/ui/components/SignUpForm';
 
@@ -35,7 +36,8 @@ export default class SignUpUser extends Component {
     Accounts.createUser({email, password}, (error) => {
       if (!error) {
         const userId = Accounts.userId();
-        ProfileActions.create.call({userId, firstName, lastName}, (error) => {
+        const timezone = momentTZ.tz.guess();
+        ProfileActions.create.call({userId, firstName, lastName, timezone}, (error) => {
           if (error) {
             this.setState({
               loading: false,
