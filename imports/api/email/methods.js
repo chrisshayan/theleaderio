@@ -12,10 +12,13 @@ import {Employees} from '/imports/api/employees/index';
 // functions
 import * as EmailFunctions from '/imports/api/email/functions';
 
+// methods
+import {get as getDefaults} from '/imports/api/defaults/methods';
+
 // constants
 import * as ERROR_CODE from '/imports/utils/error_code';
 const {domain, mailDomain} = Meteor.settings.public;
-import {EMAIL_TEMPLATE_CONTENT} from '/imports/utils/defaults';
+// import {EMAIL_TEMPLATE_CONTENT} from '/imports/utils/defaults';
 
 /**
  * send email use mailgun
@@ -125,6 +128,7 @@ function getSurveyEmailOptions({template, data}) {
   const url = `http://${alias}.${domain}`;
 
   // get message for every type of metrics
+  const EMAIL_TEMPLATE_CONTENT = getDefaults.call({name: 'EMAIL_TEMPLATE_CONTENT'}).content;
   let message = "";
   switch (metric) {
     case "purpose":
@@ -183,10 +187,11 @@ function getSurveyEmailOptions({template, data}) {
       break;
     }
   }
+  console.log(message)
   html = EmailFunctions.buildHtml({
     template, data: {
       name: `${capitalize(employee.firstName)} ${capitalize(employee.lastName)}`,
-      title: `Help your leader ${capitalize(leader.firstName)} ${capitalize(leader.lastName)} to improve his/her ${capitalize(metric)}`,
+      title: `Help your leader "${capitalize(leader.firstName)} ${capitalize(leader.lastName)}" to improve his/her ${capitalize(metric)}`,
       message: message,
       url
     }

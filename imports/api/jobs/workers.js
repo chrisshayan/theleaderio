@@ -4,10 +4,14 @@ import moment from 'moment';
 // collections
 import {Organizations} from '/imports/api/organizations/index';
 import {Employees} from '/imports/api/employees/index';
+import {SendingPlans} from '/imports/api/sending_plans/index';
 
 // methods
 import {enqueue} from '/imports/api/message_queue/methods';
 import * as EmailActions from '/imports/api/email/methods';
+import {getSendingPlans} from '/imports/api/sending_plans/methods';
+
+
 
 // constants
 const LOG_LEVEL = {
@@ -28,16 +32,19 @@ const enqueueMetricEmailSurvey = function (job, cb) {
     // get data from scheduler
     // metric, leaderId, date = moment.now()
     // example data which date will be next 2 minutes
-    const date = new Date(moment().add(2, 'minutes').format());
-    const metricEmailSurveyList = [
-      {
-        metric: 'mettings',
-        leaderId: 'FtnQNEttMb3jMGCJH',
-        date,
-        timezone: "America/New_York"
-      }
-    ];
-    console.log(`run job`)
+    // const date = new Date(moment().add(2, 'minutes').format());
+    const date = new Date(2016, 8, 17);
+    const metricEmailSurveyList = getSendingPlans.call({date});
+    // const metricEmailSurveyList = [
+    //   {
+    //     metric: 'mettings',
+    //     leaderId: 'FtnQNEttMb3jMGCJH',
+    //     date,
+    //     timezone: "America/New_York"
+    //   }
+    // ];
+    console.log(`run job`);
+    console.log(metricEmailSurveyList)
 
     if (_.isEmpty(metricEmailSurveyList)) {
       jobMessage = `No request for today: ${date}`;
@@ -45,7 +52,7 @@ const enqueueMetricEmailSurvey = function (job, cb) {
       job.done();
     } else {
       metricEmailSurveyList.map(surveys => {
-        const {metric, leaderId, date, timezone} = surveys;
+        const {metric, leaderId, sendDate, timezone} = surveys;
         const selector = {leaderId, isPresent: true};
         const organizationList = Organizations.find(selector).fetch();
         if (_.isEmpty(organizationList)) {
@@ -67,7 +74,7 @@ const enqueueMetricEmailSurvey = function (job, cb) {
                   leaderId,
                   organizationId: org._id,
                   metric,
-                  date,
+                  date: sendDate,
                   timezone
                 };
                 if (!_.isEmpty(queueData)) {
@@ -135,22 +142,30 @@ const sendSurveyEmail = function (job, cb) {
 
 }
 
+// Metrics Surveys Job
 const startMetricsSurveysJob = () => {
   MetricsJobs.processJobs('metricsSurveys', enqueueMetricEmailSurvey);
 };
+const stopMetricsSurveysJob = () => {
+  MetricsJobs.processJobs('metricsSurveys', enqueueMetricEmailSurvey);
+};
 
+// Send Surveys Job
 const startSendSurveysJob = () => {
   QueueJobs.processJobs('sendSurveyEmail', sendSurveyEmail);
 }
+const stopSendSurveysJob = () => {
+  QueueJobs.processJobs('sendSurveyEmail', sendSurveyEmail);
+}
 
-
+// workers
 export const workers = {
   metricsSurveys: {
     start: startMetricsSurveysJob,
-    stop: () => null,
+    stop: stopMetricsSurveysJob,
   },
   sendSurveys: {
     start: startSendSurveysJob,
-    stop: () => null,
+    stop: stopSendSurveysJob,
   }
 };

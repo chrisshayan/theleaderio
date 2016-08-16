@@ -52,7 +52,11 @@ import {resetPageHeading} from '/imports/store/modules/pageHeading';
 // this domain should get from settings
 export const DOMAIN = Meteor.settings.public.domain;
 
+/**
+ * Subscriptions
+ */
 Meteor.subscribe('profiles');
+Meteor.subscribe('defaults');
 
 /**
  * Change root url to make flow router understand subdomain

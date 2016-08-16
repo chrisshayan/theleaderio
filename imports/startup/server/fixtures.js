@@ -1,16 +1,23 @@
-import { Meteor } from 'meteor/meteor';
+import {Meteor} from 'meteor/meteor';
+import {EJSON} from 'meteor/ejson';
 
-import { EJSON } from 'meteor/ejson';
+// collections
+import {Industries} from '/imports/api/industries/index';
+import {Defaults} from '/imports/api/defaults/index';
 
-import { Industries } from '/imports/api/industries/index';
+// methods
 import * as IndustriesActions from '/imports/api/industries/methods';
+import * as DefaultsActions from '/imports/api/defaults/methods';
+
+// constants
+import {METRICS, QUARTER} from '/imports/api/scheduler/index';
 
 function setupIndustries() {
-  if(Industries.find().count() > 0) return;
+  if (Industries.find().count() > 0) return;
 
   const rawJson = Assets.getText("industries.json");
   const data = EJSON.parse(rawJson);
-  _.each(data.industries, function(i) {
+  _.each(data.industries, function (i) {
     const _item = {
       name: i.label
     };
@@ -18,6 +25,173 @@ function setupIndustries() {
   });
 }
 
+function createDefaults() {
+  let selector = {},
+    modifier = {}
+    ;
+
+  // METRICS
+  selector = {name: "METRICS"}
+  if (Defaults.find(selector).count() == 0) {
+    const name = "METRICS",
+      content = [
+        "purpose",
+        "mettings",
+        "rules",
+        "communications",
+        "leadership",
+        "workload",
+        "energy",
+        "stress",
+        "decision",
+        "respect",
+        "conflict"
+      ]
+      ;
+    DefaultsActions.add.call({name, content});
+  }
+
+  // SCORES
+  selector = {name: "SCORES"}
+  if (Defaults.find(selector).count() == 0) {
+    const name = "SCORES",
+      content = [0, 1, 2, 3, 4, 5];
+    DefaultsActions.add.call({name, content});
+  }
+
+  // PUBLIC_INFO_PREFERENCES
+  selector = {name: "PUBLIC_INFO_PREFERENCES"}
+  if (Defaults.find(selector).count() == 0) {
+    const name = "PUBLIC_INFO_PREFERENCES",
+      content = {
+        basic: {
+          name: true,
+          industry: true
+        },
+        headline: {
+          title: true
+        },
+        contact: {
+          phone: true,
+          email: true
+        },
+        summary: {
+          noOrg: true,
+          noEmployees: true,
+          noFeedbacks: true
+        },
+        picture: {
+          imageUrl: true
+        },
+        about: {
+          aboutMe: true
+        },
+        organizations: {
+          show: true,
+          list: []
+        },
+        metrics: {
+          overall: true,
+          purpose: true,
+          mettings: true,
+          rules: true,
+          communications: true,
+          leadership: true,
+          workload: true,
+          energy: true,
+          stress: true,
+          decision: true,
+          respect: true,
+          conflict: true
+        }
+      }
+      ;
+    console.log({name, content})
+    DefaultsActions.add.call({name, content});
+  }
+
+  // PROFILE_PHOTO
+  selector = {name: "PROFILE_PHOTO"}
+  if (Defaults.find(selector).count() == 0) {
+    const name = "PROFILE_PHOTO",
+      content = '/img/default-profile-pic.png';
+    DefaultsActions.add.call({name, content});
+  }
+
+  // ORGANIZATION_PHOTO
+  selector = {name: "ORGANIZATION_PHOTO"}
+  if (Defaults.find(selector).count() == 0) {
+    const name = "ORGANIZATION_PHOTO",
+      content = '/img/default_firm.png';
+    DefaultsActions.add.call({name, content});
+  }
+
+  // SCHEDULER
+  selector = {name: "SCHEDULER"}
+  if (Defaults.find(selector).count() == 0) {
+    const name = "SCHEDULER",
+      content = [
+        {
+          metrics: [METRICS.PURPOSE, METRICS.MEETINGS, METRICS.RULES],
+          quarter: QUARTER.QUARTER_1
+        },
+        {
+          metrics: [METRICS.COMMUNICATIONS, METRICS.LEADERSHIP, METRICS.WORKLOAD],
+          quarter: QUARTER.QUARTER_2
+        },
+        {
+          metrics: [METRICS.ENERGY, METRICS.STRESS, METRICS.DECISION],
+          quarter: QUARTER.QUARTER_3
+        },
+        {
+          metrics: [METRICS.RESPECT, METRICS.CONFLICT],
+          quarter: QUARTER.QUARTER_4
+        }
+      ];
+    DefaultsActions.add.call({name, content});
+  }
+
+  // EMAIL_TEMPLATE_CONTENT
+  selector = {name: "EMAIL_TEMPLATE_CONTENT"}
+  if (Defaults.find(selector).count() == 0) {
+    const name = "EMAIL_TEMPLATE_CONTENT",
+      content = {
+        metrics: {
+          survey: {
+            title: "",
+            message: {
+              purpose: `Purpose is an important metric for blah blah blah, reply this email with the number of score`,
+              mettings: "Mettings is a core metric, which will estimate the ability of a leader. Reply this email with the number of score for scoring your leader.",
+              rules: "",
+              communications: "",
+              leadership: "",
+              workload: "",
+              energy: "",
+              stress: "",
+              decision: "",
+              respect: "",
+              conflict: ""
+            }
+          },
+          feedback: {
+            title: "",
+            message: ""
+          },
+          error: {
+            title: "",
+            message: ""
+          }
+        },
+      };
+    DefaultsActions.add.call({name, content});
+  }
+
+}
+
 Meteor.startup(() => {
   setupIndustries();
+
+  // create defaults for app
+  createDefaults();
 });
+

@@ -7,4 +7,6 @@ import '/imports/api/organizations/register.server';
 import '/imports/api/scheduler/register.server';
 import '/imports/api/jobs/register.server';
 import '/imports/api/message_queue/register.server';
-import '/imports/api/time/functions';
+import '/imports/api/time/register.server';
+import '/imports/api/defaults/register.server';
+import '/imports/api/sending_plans/register.server';
