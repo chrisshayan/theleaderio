@@ -33,18 +33,10 @@ const enqueueMetricEmailSurvey = function (job, cb) {
     // metric, leaderId, date = moment.now()
     // example data which date will be next 2 minutes
     // const date = new Date(moment().add(2, 'minutes').format());
-    const date = new Date(2016, 8, 17);
+    const date = new Date(2016, 7, 17);
     const metricEmailSurveyList = getSendingPlans.call({date});
-    // const metricEmailSurveyList = [
-    //   {
-    //     metric: 'mettings',
-    //     leaderId: 'FtnQNEttMb3jMGCJH',
-    //     date,
-    //     timezone: "America/New_York"
-    //   }
-    // ];
     console.log(`run job`);
-    console.log(metricEmailSurveyList)
+    // console.log(metricEmailSurveyList)
 
     if (_.isEmpty(metricEmailSurveyList)) {
       jobMessage = `No request for today: ${date}`;
@@ -53,6 +45,7 @@ const enqueueMetricEmailSurvey = function (job, cb) {
     } else {
       metricEmailSurveyList.map(surveys => {
         const {metric, leaderId, sendDate, timezone} = surveys;
+        const planId = surveys._id;
         const selector = {leaderId, isPresent: true};
         const organizationList = Organizations.find(selector).fetch();
         if (_.isEmpty(organizationList)) {
@@ -70,6 +63,7 @@ const enqueueMetricEmailSurvey = function (job, cb) {
               employeeList.map(employeeId => {
                 const employee = Employees.findOne({_id: employeeId});
                 const queueData = {
+                  planId,
                   employeeId,
                   leaderId,
                   organizationId: org._id,
@@ -78,7 +72,8 @@ const enqueueMetricEmailSurvey = function (job, cb) {
                   timezone
                 };
                 if (!_.isEmpty(queueData)) {
-                  enqueue.call({data: queueData}, (error) => {
+                  // console.log(queueData)
+                  enqueue.call({type: "sendSurveyEmail", data: queueData}, (error) => {
                     if (_.isEmpty(error)) {
                       jobMessage = `Enqueue mail ${metric} to ${employee.email} on ${date}`;
                       job.log(jobMessage, {level: LOG_LEVEL.INFO});
@@ -110,7 +105,7 @@ const enqueueMetricEmailSurvey = function (job, cb) {
  */
 const sendSurveyEmail = function (job, cb) {
   try {
-    const {employeeId, leaderId, organizationId, metric} = job.data;
+    const {planId, employeeId, leaderId, organizationId, metric} = job.data;
     let jobMessage = "";
     if (_.isEmpty(job.data)) {
       jobMessage = `No data to send Survey Email for job: ${job}`;
@@ -120,6 +115,7 @@ const sendSurveyEmail = function (job, cb) {
       // console.log({employeeId, leaderId, organizationId, metric});
       const template = 'survey';
       const data = {
+        planId,
         employeeId,
         leaderId,
         organizationId,
@@ -151,7 +147,7 @@ const stopMetricsSurveysJob = () => {
 };
 
 // Send Surveys Job
-const startSendSurveysJob = () => {
+const startSendSurveysJob = (type, action) => {
   QueueJobs.processJobs('sendSurveyEmail', sendSurveyEmail);
 }
 const stopSendSurveysJob = () => {

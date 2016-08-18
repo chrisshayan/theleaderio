@@ -17,10 +17,10 @@ const createMetricSurveysJob = function() {
 }
 
 const createQueueJob = ({type, data}) => {
-  const {date, timezone, employeeId, leaderId, organizationId, metric} = data;
+  const {date, timezone, planId, employeeId, leaderId, organizationId, metric} = data;
   const runTime = getLocalDate(date, timezone);
 
-  const jobData = {employeeId, leaderId, organizationId, metric};
+  const jobData = {planId, employeeId, leaderId, organizationId, metric};
   const queueJob = new Job(QueueJobs, type, jobData);
   queueJob.priority('normal')
     .after(new Date(runTime))

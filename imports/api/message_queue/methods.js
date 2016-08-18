@@ -26,11 +26,18 @@ import {workers} from '/imports/api/jobs/workers';
 export const enqueue = new ValidatedMethod({
   name: 'mq.enqueue',
   validate: null,
-  run({data}) {
+  run({type, data}) {
     if(!this.isSimulation) {
-      const {employeeId, leaderId, organizationId, metric, date, timezone } = data;
-      jobs.queue.create({type: "sendSurveyEmail", data: {employeeId, leaderId, organizationId, metric, date, timezone}});
-      workers.sendSurveys.start();
+      switch(type) {
+        case "sendSurveyEmail": {
+          const {planId, employeeId, leaderId, organizationId, metric, date, timezone } = data;
+          jobs.queue.create({type, data: {planId, employeeId, leaderId, organizationId, metric, date, timezone}});
+          workers.sendSurveys.start();
+        }
+        case "sendErrorScoreEmail": {
+          
+        }
+      }
     }
   }
 });

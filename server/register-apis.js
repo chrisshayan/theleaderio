@@ -10,3 +10,4 @@ import '/imports/api/message_queue/register.server';
 import '/imports/api/time/register.server';
 import '/imports/api/defaults/register.server';
 import '/imports/api/sending_plans/register.server';
+import '/imports/api/metrics/register.server';

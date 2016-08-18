@@ -1,5 +1,6 @@
 import './fixtures.js';
 import './migrations';
+import './routes';
 import {MetricsJobs, QueueJobs} from '/imports/api/jobs/collections';
 
 

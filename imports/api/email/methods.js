@@ -79,6 +79,12 @@ export const send = new ValidatedMethod({
           Email.send(options);
           break;
         }
+        case 'scoring_error':
+        {
+          const options = getscoringErrorOptions({template, data});
+          Email.send(options);
+          break;
+        }
         default:
         {
 
@@ -94,7 +100,7 @@ export const send = new ValidatedMethod({
  * @param data
  */
 function getSurveyEmailOptions({template, data}) {
-  const {employeeId, leaderId, organizationId, metric} = data;
+  const {planId, employeeId, leaderId, organizationId, metric} = data;
   let
     from = "",
     to = "",
@@ -119,7 +125,7 @@ function getSurveyEmailOptions({template, data}) {
     return new Meteor.Error(ERROR_CODE.RESOURCE_NOT_FOUND, `organization ${organizationId} not found`);
   }
 
-  from = `${leaderId}-${organizationId}-${template}@${mailDomain}`;
+  from = `${planId}-${organizationId}-${template}@${mailDomain}`;
   to = employee.email;
   subject = `How many score about "${capitalize(metric)}" for ${capitalize(leader.firstName)} ${capitalize(leader.lastName)}?`;
 
@@ -187,7 +193,7 @@ function getSurveyEmailOptions({template, data}) {
       break;
     }
   }
-  console.log(message)
+  // console.log(message)
   html = EmailFunctions.buildHtml({
     template, data: {
       name: `${capitalize(employee.firstName)} ${capitalize(employee.lastName)}`,
@@ -198,4 +204,13 @@ function getSurveyEmailOptions({template, data}) {
   });
 
   return {from, to, subject, html};
+}
+
+/**
+ * Function to collect content data for response to unformat reply of survey email
+ * @param template
+ * @param data
+ */
+function getscoringErrorOptions({template, data}) {
+  
 }

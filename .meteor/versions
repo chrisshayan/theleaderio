@@ -68,6 +68,7 @@ mongo@1.1.10
 mongo-id@1.0.5
 mrt:headly@0.1.1
 mrt:later@1.6.1
+nimble:restivus@0.8.11
 npm-bcrypt@0.8.7
 npm-mongo@1.5.45
 observe-sequence@1.0.12
@@ -87,6 +88,7 @@ routepolicy@1.0.11
 service-configuration@1.0.10
 session@1.1.6
 sha@1.0.8
+simple:json-routes@2.1.0
 spacebars@1.0.12
 spacebars-compiler@1.0.12
 spiderable@1.0.13

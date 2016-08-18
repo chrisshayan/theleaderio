@@ -34,6 +34,10 @@ Metrics.schema = new SimpleSchema({
   },
   date: {
     type: Date
+  },
+  data: {
+    type: Object,
+    optional: true
   }
 });
 
