@@ -1,4 +1,4 @@
-import {MetricsJobs, QueueJobs} from './collections';
+import {DailyJobs, QueueJobs} from './collections';
 import moment from 'moment';
 
 // collections
@@ -10,6 +10,7 @@ import {SendingPlans} from '/imports/api/sending_plans/index';
 import {enqueue} from '/imports/api/message_queue/methods';
 import * as EmailActions from '/imports/api/email/methods';
 import {getSendingPlans} from '/imports/api/sending_plans/methods';
+import {getLocalDate} from '/imports/api/time/functions';
 
 
 
@@ -26,26 +27,27 @@ const LOG_LEVEL = {
  * @param job
  * @param cb
  */
-const enqueueMetricEmailSurvey = function (job, cb) {
+const enqueueSurveys = function (job, cb) {
   try {
     let jobMessage = "";
+    const {type} = job.data;
     // get data from scheduler
     // metric, leaderId, date = moment.now()
     // example data which date will be next 2 minutes
     // const date = new Date(moment().add(2, 'minutes').format());
     const date = new Date(2016, 7, 17);
-    const metricEmailSurveyList = getSendingPlans.call({date});
+    const sendingPlansList = getSendingPlans.call({date});
     console.log(`run job`);
-    // console.log(metricEmailSurveyList)
+    // console.log(sendingPlansList)
 
-    if (_.isEmpty(metricEmailSurveyList)) {
+    if (_.isEmpty(sendingPlansList)) {
       jobMessage = `No request for today: ${date}`;
       job.log(jobMessage, {level: LOG_LEVEL.INFO});
       job.done();
     } else {
-      metricEmailSurveyList.map(surveys => {
-        const {metric, leaderId, sendDate, timezone} = surveys;
-        const planId = surveys._id;
+      sendingPlansList.map(sendingPlans => {
+        const {metric, leaderId, sendDate, timezone} = sendingPlans;
+        const planId = sendingPlans._id;
         const selector = {leaderId, isPresent: true};
         const organizationList = Organizations.find(selector).fetch();
         if (_.isEmpty(organizationList)) {
@@ -72,8 +74,11 @@ const enqueueMetricEmailSurvey = function (job, cb) {
                   timezone
                 };
                 if (!_.isEmpty(queueData)) {
-                  // console.log(queueData)
-                  enqueue.call({type: "sendSurveyEmail", data: queueData}, (error) => {
+                  const attributes = {
+                    priority: "normal",
+                    after: new Date(getLocalDate(date, timezone))
+                  };
+                  enqueue.call({type: "send_surveys", attributes, data: queueData}, (error) => {
                     if (_.isEmpty(error)) {
                       jobMessage = `Enqueue mail ${metric} to ${employee.email} on ${date}`;
                       job.log(jobMessage, {level: LOG_LEVEL.INFO});
@@ -103,7 +108,7 @@ const enqueueMetricEmailSurvey = function (job, cb) {
  * @param job
  * @param cb
  */
-const sendSurveyEmail = function (job, cb) {
+const sendSurveys = function (job, cb) {
   try {
     const {planId, employeeId, leaderId, organizationId, metric} = job.data;
     let jobMessage = "";
@@ -138,30 +143,31 @@ const sendSurveyEmail = function (job, cb) {
 
 }
 
-// Metrics Surveys Job
-const startMetricsSurveysJob = () => {
-  MetricsJobs.processJobs('metricsSurveys', enqueueMetricEmailSurvey);
-};
-const stopMetricsSurveysJob = () => {
-  MetricsJobs.processJobs('metricsSurveys', enqueueMetricEmailSurvey);
-};
-
-// Send Surveys Job
-const startSendSurveysJob = (type, action) => {
-  QueueJobs.processJobs('sendSurveyEmail', sendSurveyEmail);
+// Start Job
+function startJob(type) {
+  switch(type) {
+    case "enqueue_surveys": {
+      DailyJobs.processJobs(type, enqueueSurveys);
+    }
+    case "send_surveys": {
+      QueueJobs.processJobs(type, sendSurveys);
+    }
+  }
 }
-const stopSendSurveysJob = () => {
-  QueueJobs.processJobs('sendSurveyEmail', sendSurveyEmail);
+
+// Stop Job
+function stopJob() {
+
+}
+
+// Restart Job
+function restartJob() {
+
 }
 
 // workers
-export const workers = {
-  metricsSurveys: {
-    start: startMetricsSurveysJob,
-    stop: stopMetricsSurveysJob,
-  },
-  sendSurveys: {
-    start: startSendSurveysJob,
-    stop: stopSendSurveysJob,
-  }
+export const Workers = {
+  start: startJob,
+  stop: stopJob,
+  restart: restartJob
 };

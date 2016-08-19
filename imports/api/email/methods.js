@@ -79,9 +79,15 @@ export const send = new ValidatedMethod({
           Email.send(options);
           break;
         }
-        case 'scoring_error':
+        case 'survey_error':
         {
-          const options = getscoringErrorOptions({template, data});
+          const options = getSurveyEmailOptions({template, data});
+          Email.send(options);
+          break;
+        }
+        case 'feedback':
+        {
+          const options = getSurveyEmailOptions({template, data});
           Email.send(options);
           break;
         }
@@ -107,7 +113,6 @@ function getSurveyEmailOptions({template, data}) {
     subject = "",
     html = ""
     ;
-
   const employee = Employees.findOne({_id: employeeId});
   if (_.isEmpty(employee)) {
     return new Meteor.Error(ERROR_CODE.RESOURCE_NOT_FOUND, `employee ${employeeId} not found`);
@@ -127,73 +132,141 @@ function getSurveyEmailOptions({template, data}) {
 
   from = `${planId}-${organizationId}-${template}@${mailDomain}`;
   to = employee.email;
-  subject = `How many score about "${capitalize(metric)}" for ${capitalize(leader.firstName)} ${capitalize(leader.lastName)}?`;
-
   const alias = leaderData.username;
   // this could be a url to tutorial video which guide to score the metric
   const url = `http://${alias}.${domain}`;
 
+
   // get message for every type of metrics
   const EMAIL_TEMPLATE_CONTENT = getDefaults.call({name: 'EMAIL_TEMPLATE_CONTENT'}).content;
   let message = "";
-  switch (metric) {
-    case "purpose":
-    {
-      message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.purpose;
-      break;
-    }
-    case "mettings":
-    {
-      message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.mettings;
-      break;
-    }
-    case "rules":
-    {
-      message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.rules;
-      break;
-    }
-    case "communications":
-    {
-      message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.communications;
-      break;
-    }
-    case "leadership":
-    {
-      message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.leadership;
-      break;
-    }
-    case "workload":
-    {
-      message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.workload;
-      break;
-    }
-    case "energy":
-    {
-      message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.energy;
-      break;
-    }
-    case "stress":
-    {
-      message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.stress;
-      break;
-    }
-    case "decision":
-    {
-      message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.decision;
-      break;
-    }
-    case "respect":
-    {
-      message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.respect;
-      break;
-    }
-    case "conflict":
-    {
-      message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.conflict;
-      break;
+
+  // get subject and message
+  if(template == "survey") {
+    subject = `How many score about "${capitalize(metric)}" for ${capitalize(leader.firstName)} ${capitalize(leader.lastName)}?`;
+    console.log({from, to, subject, html})
+    switch (metric) {
+      case "purpose":
+      {
+        message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.purpose;
+        break;
+      }
+      case "mettings":
+      {
+        message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.mettings;
+        break;
+      }
+      case "rules":
+      {
+        message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.rules;
+        break;
+      }
+      case "communications":
+      {
+        message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.communications;
+        break;
+      }
+      case "leadership":
+      {
+        message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.leadership;
+        break;
+      }
+      case "workload":
+      {
+        message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.workload;
+        break;
+      }
+      case "energy":
+      {
+        message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.energy;
+        break;
+      }
+      case "stress":
+      {
+        message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.stress;
+        break;
+      }
+      case "decision":
+      {
+        message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.decision;
+        break;
+      }
+      case "respect":
+      {
+        message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.respect;
+        break;
+      }
+      case "conflict":
+      {
+        message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.conflict;
+        break;
+      }
     }
   }
-  // console.log(message)
+  if(template == "survey_error") {
+    subject = `Please correct the score about "${capitalize(metric)}" for ${capitalize(leader.firstName)} ${capitalize(leader.lastName)}.`;
+    switch (metric) {
+      case "purpose":
+      {
+        message = EMAIL_TEMPLATE_CONTENT.metrics.survey_error.message.purpose;
+        break;
+      }
+      case "mettings":
+      {
+        message = EMAIL_TEMPLATE_CONTENT.metrics.survey_error.message.mettings;
+        break;
+      }
+      case "rules":
+      {
+        message = EMAIL_TEMPLATE_CONTENT.metrics.survey_error.message.rules;
+        break;
+      }
+      case "communications":
+      {
+        message = EMAIL_TEMPLATE_CONTENT.metrics.survey_error.message.communications;
+        break;
+      }
+      case "leadership":
+      {
+        message = EMAIL_TEMPLATE_CONTENT.metrics.survey_error.message.leadership;
+        break;
+      }
+      case "workload":
+      {
+        message = EMAIL_TEMPLATE_CONTENT.metrics.survey_error.message.workload;
+        break;
+      }
+      case "energy":
+      {
+        message = EMAIL_TEMPLATE_CONTENT.metrics.survey_error.message.energy;
+        break;
+      }
+      case "stress":
+      {
+        message = EMAIL_TEMPLATE_CONTENT.metrics.survey_error.message.stress;
+        break;
+      }
+      case "decision":
+      {
+        message = EMAIL_TEMPLATE_CONTENT.metrics.survey_error.message.decision;
+        break;
+      }
+      case "respect":
+      {
+        message = EMAIL_TEMPLATE_CONTENT.metrics.survey_error.message.respect;
+        break;
+      }
+      case "conflict":
+      {
+        message = EMAIL_TEMPLATE_CONTENT.metrics.survey_error.message.conflict;
+        break;
+      }
+    }
+  }
+  if(template == "feedback") {
+    subject = `How could "${capitalize(leader.firstName)} ${capitalize(leader.lastName)}" improve the ${metric} for higher score?`;
+  }
+
   html = EmailFunctions.buildHtml({
     template, data: {
       name: `${capitalize(employee.firstName)} ${capitalize(employee.lastName)}`,
@@ -202,15 +275,5 @@ function getSurveyEmailOptions({template, data}) {
       url
     }
   });
-
   return {from, to, subject, html};
-}
-
-/**
- * Function to collect content data for response to unformat reply of survey email
- * @param template
- * @param data
- */
-function getscoringErrorOptions({template, data}) {
-  
 }

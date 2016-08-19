@@ -55,7 +55,11 @@ function createDefaults() {
   selector = {name: "SCORES"}
   if (Defaults.find(selector).count() == 0) {
     const name = "SCORES",
-      content = [0, 1, 2, 3, 4, 5];
+      content = {
+        minScore: 0,
+        maxScore: 5,
+        averageScore: 3
+      };
     DefaultsActions.add.call({name, content});
   }
 
@@ -158,6 +162,22 @@ function createDefaults() {
       content = {
         metrics: {
           survey: {
+            title: "",
+            message: {
+              purpose: `Purpose is an important metric for blah blah blah, reply this email with the number of score`,
+              mettings: "Mettings is a core metric, which will estimate the ability of a leader. Reply this email with the number of score for scoring your leader.",
+              rules: "",
+              communications: "",
+              leadership: "",
+              workload: "",
+              energy: "",
+              stress: "",
+              decision: "",
+              respect: "",
+              conflict: ""
+            }
+          },
+          survey_error: {
             title: "",
             message: {
               purpose: `Purpose is an important metric for blah blah blah, reply this email with the number of score`,

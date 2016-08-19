@@ -14,8 +14,27 @@ export const get = function ({ templateName, firstName, url, alias }) {
 }
 
 export const buildHtml = function({template, data})  {
-  if(template == 'survey') {
-    const mailTemplate = Assets.getText(`email_templates/metrics/${template}.html`);
-    return emailTemplateBuilder.generate(data, mailTemplate);
+  switch(template) {
+    case "survey": {
+      const mailTemplate = Assets.getText(`email_templates/metrics/${template}.html`);
+      return emailTemplateBuilder.generate(data, mailTemplate);
+      break;
+    }
+    case "survey_error": {
+      const mailTemplate = Assets.getText(`email_templates/metrics/${template}.html`);
+      return emailTemplateBuilder.generate(data, mailTemplate);
+      break;
+    }
+    default: {
+      const template = Assets.getText(`email_templates/${templateName}.html`);
+      const data = {
+        firstName: firstName,
+        url: url,
+        alias: alias
+      };
+      // console.log(`data: templateName: ${templateName}, firstName: ${firstName}, url: ${url}, alias: ${alias}`);
+      //Generate e-mail with data
+      return emailTemplateBuilder.generate(data, template);
+    }
   }
 }

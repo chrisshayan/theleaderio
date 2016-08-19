@@ -4,8 +4,8 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 // collections
 import {QueueCollection} from '/imports/api/message_queue/index';
 
-import {jobs} from '/imports/api/jobs/jobs';
-import {workers} from '/imports/api/jobs/workers';
+import {Jobs} from '/imports/api/jobs/jobs';
+import {Workers} from '/imports/api/jobs/workers';
 
 /**
  *  Enqueue methods
@@ -26,16 +26,16 @@ import {workers} from '/imports/api/jobs/workers';
 export const enqueue = new ValidatedMethod({
   name: 'mq.enqueue',
   validate: null,
-  run({type, data}) {
+  run({type, attributes, data}) {
     if(!this.isSimulation) {
       switch(type) {
-        case "sendSurveyEmail": {
-          const {planId, employeeId, leaderId, organizationId, metric, date, timezone } = data;
-          jobs.queue.create({type, data: {planId, employeeId, leaderId, organizationId, metric, date, timezone}});
-          workers.sendSurveys.start();
+        case "send_surveys": {
+          // const {planId, employeeId, leaderId, organizationId, metric, date, timezone } = data;
+          Jobs.create(type, attributes, data);
+          Workers.start(type);
         }
-        case "sendErrorScoreEmail": {
-          
+        case "resend_surveys": {
+
         }
       }
     }

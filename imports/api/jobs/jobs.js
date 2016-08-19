@@ -1,39 +1,71 @@
+import {Meteor} from 'meteor/meteor';
 import {later} from 'meteor/mrt:later';
 
 // Job Collections
-import {MetricsJobs, QueueJobs} from './collections';
+import {DailyJobs, QueueJobs} from './collections';
+
+// functions
 import {getLocalDate} from '/imports/api/time/functions';
 
-const createMetricSurveysJob = function() {
-  const metricSurveysJob = new Job(MetricsJobs, 'metricsSurveys', {});
+// constants
+import * as ERROR_CODE from '/imports/utils/error_code';
 
-  const runTime = Meteor.settings.jobs.runTime.metricEmailSurvey;
-  metricSurveysJob.priority('high')
-    .repeat({
-      schedule: MetricsJobs.later.parse.text('every 5 minutes')
-      // schedule: MetricsJobs.later.parse.recur().on(runTime).time()
-    })
-    .save();
-}
+function createJob(type, attributes, data) {
+  if (Meteor.isServer) {
+    let job;
+    switch(type) {
+      case "enqueue_surveys": {
+        job = new Job(DailyJobs, type, data);
+        break;
+      }
+      case "send_surveys": {
+        job = new Job(QueueJobs, type, data);
+        break;
+      }
+    }
+    const currentDate = new Date();
+    const {
+      depends = [],
+      priority = "",
+      retry = {},
+      repeat = {},
+      delay = 0,
+      after = currentDate
+    } = attributes;
 
-const createQueueJob = ({type, data}) => {
-  const {date, timezone, planId, employeeId, leaderId, organizationId, metric} = data;
-  const runTime = getLocalDate(date, timezone);
-
-  const jobData = {planId, employeeId, leaderId, organizationId, metric};
-  const queueJob = new Job(QueueJobs, type, jobData);
-  queueJob.priority('normal')
-    .after(new Date(runTime))
-    .save();
-}
-
-export const jobs = {
-  metricsSurveys: {
-    create: createMetricSurveysJob,
-    remove: () => null
-  },
-  queue: {
-    create: createQueueJob,
-    remove: () => null
+    if (!_.isEmpty(depends)) {
+      job.depends(depends);
+    }
+    if (priority !== "") {
+      job.priority(priority);
+    }
+    if (!_.isEmpty(retry)) {
+      job.retry(retry);
+    }
+    if (!_.isEmpty(repeat)) {
+      job.repeat(repeat);
+    }
+    if (delay > 0) {
+      job.delay(delay);
+    }
+    if (after - currentDate > 0) {
+      job.after(after);
+    }
+    return job.save();
+  } else {
+    return ERROR_CODE.PERMISSION_DENIED;
   }
+}
+
+function removeJob() {
+
+}
+
+function pauseJob() {
+
+}
+
+export const Jobs = {
+  create: createJob,
+  remove: removeJob
 };

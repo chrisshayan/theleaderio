@@ -10,6 +10,10 @@ const SCORES = Defaults.findOne({name: "SCORES"}).content;
 
 export const Metrics = new MetricsCollections('metrics');
 
+const scoresList = [];
+for(let i = SCORES.minScore; i <= SCORES.maxScore; i++) {
+  scoresList.push(i);
+}
 Metrics.schema = new SimpleSchema({
   name: {
     type: String,
@@ -17,7 +21,7 @@ Metrics.schema = new SimpleSchema({
   },
   score: {
     type: Number,
-    allowedValues: SCORES,
+    allowedValues: scoresList,
     defaultValue: 0
   },
   planId: {

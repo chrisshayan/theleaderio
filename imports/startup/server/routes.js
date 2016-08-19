@@ -34,6 +34,7 @@ Api.addRoute('metrics/:action', {authRequired: false}, {
       switch(action) {
         case "score": {
           result = scoringLeader({recipient, sender, Subject, timestamp, content});
+          console.log(result);
           break;
         }
         case "feedback": {
@@ -41,11 +42,11 @@ Api.addRoute('metrics/:action', {authRequired: false}, {
           break;
         }
         default: {
-          
+
         }
       }
 
-      this.response.write(result);
+      // this.response.write(result);
       this.done();
     }
   }

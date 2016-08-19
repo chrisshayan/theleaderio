@@ -1,7 +1,7 @@
 import './fixtures.js';
 import './migrations';
 import './routes';
-import {MetricsJobs, QueueJobs} from '/imports/api/jobs/collections';
+import {DailyJobs, QueueJobs} from '/imports/api/jobs/collections';
 
 
 Meteor.startup(function () {
@@ -11,7 +11,7 @@ Meteor.startup(function () {
   // Migrations.migrateTo('latest');
 
   // jobs
-  MetricsJobs.startJobServer();
+  DailyJobs.startJobServer();
   QueueJobs.startJobServer();
 
 });
