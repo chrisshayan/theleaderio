@@ -29,12 +29,13 @@ Api.addRoute('metrics/:action', {authRequired: false}, {
         timestamp,
       } = this.request.body;
       const content = this.request.body["stripped-text"];
+      // console.log(this.request.body)
       let result = "";
 
       switch(action) {
         case "score": {
           result = scoringLeader({recipient, sender, Subject, timestamp, content});
-          console.log(result);
+          // console.log(result);
           break;
         }
         case "feedback": {

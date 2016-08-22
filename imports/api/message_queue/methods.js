@@ -51,6 +51,6 @@ export const dequeue = new ValidatedMethod({
   validate: null,
   run() {
     const emailList = QueueCollection.find({}).fetch();
-    console.log(emailList);
+    // console.log(emailList);
   }
 });

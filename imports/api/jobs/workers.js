@@ -20,6 +20,7 @@ const LOG_LEVEL = {
   WARNING: "warning",
   CRITICAL: "danger"
 };
+import {STATUS_ACTIVE} from '/imports/api/employees/index';
 
 /**
  * Enqueue Metrics Email Survey
@@ -36,7 +37,7 @@ const enqueueSurveys = function (job, cb) {
     // const date = new Date(moment().add(2, 'minutes').format());
     const date = new Date(2016, 7, 17);
     const sendingPlansList = getSendingPlans.call({date});
-    console.log(`run job`);
+    // console.log(`run job`);
     // console.log(sendingPlansList)
 
     if (_.isEmpty(sendingPlansList)) {
@@ -47,7 +48,7 @@ const enqueueSurveys = function (job, cb) {
       sendingPlansList.map(sendingPlans => {
         const {metric, leaderId, sendDate, timezone} = sendingPlans;
         const planId = sendingPlans._id;
-        const selector = {leaderId, isPresent: true};
+        const selector = {leaderId, isPresent: true, status: STATUS_ACTIVE};
         const organizationList = Organizations.find(selector).fetch();
         if (_.isEmpty(organizationList)) {
           jobMessage = `Organizations of leader ${leaderId} not found`;
@@ -62,17 +63,17 @@ const enqueueSurveys = function (job, cb) {
               // get enqueue data
               // name, email, metric, schedulerId
               employeeList.map(employeeId => {
-                const employee = Employees.findOne({_id: employeeId});
-                const queueData = {
-                  planId,
-                  employeeId,
-                  leaderId,
-                  organizationId: org._id,
-                  metric,
-                  date: sendDate,
-                  timezone
-                };
-                if (!_.isEmpty(queueData)) {
+                const employee = Employees.findOne({_id: employeeId, status: STATUS_ACTIVE});
+                if (!_.isEmpty(employee)) {
+                  const queueData = {
+                    planId,
+                    employeeId,
+                    leaderId,
+                    organizationId: org._id,
+                    metric,
+                    date: sendDate,
+                    timezone
+                  };
                   const attributes = {
                     priority: "normal",
                     after: new Date(getLocalDate(date, timezone))

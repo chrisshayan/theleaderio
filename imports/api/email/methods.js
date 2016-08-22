@@ -34,6 +34,8 @@ export const send = new ValidatedMethod({
           break;
         }
         case 'thankyou': {
+          const options = getSurveyEmailOptions({template, data});
+          Email.send(options);
           break;
         }
         case 'forgot_alias': {
@@ -136,12 +138,14 @@ function getSurveyEmailOptions({template, data}) {
 
   // get message for every type of metrics
   const EMAIL_TEMPLATE_CONTENT = getDefaults.call({name: 'EMAIL_TEMPLATE_CONTENT'}).content;
-  let message = "";
+  let
+    title = "",
+    message = "";
 
   // get subject and message
   if(template == "survey") {
     subject = `How many score about "${capitalize(metric)}" for ${capitalize(leader.firstName)} ${capitalize(leader.lastName)}?`;
-    console.log({from, to, subject, html})
+    // console.log({from, to, subject, html})
     switch (metric) {
       case "purpose":
       {
@@ -263,6 +267,11 @@ function getSurveyEmailOptions({template, data}) {
   if(template == "feedback") {
     subject = `How could "${capitalize(leader.firstName)} ${capitalize(leader.lastName)}" improve the ${metric} for higher score?`;
     message = EMAIL_TEMPLATE_CONTENT.metrics.feedback.message;
+  }
+  if(template == "thankyou") {
+    const {type} = data;
+    subject = `Thank you for your ${type}`;
+    message = EMAIL_TEMPLATE_CONTENT.metrics.thankyou.message;
   }
 
   html = EmailFunctions.buildHtml({

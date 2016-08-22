@@ -18,12 +18,18 @@ export const buildHtml = function({template, data})  {
     case "survey": {
       const mailTemplate = Assets.getText(`email_templates/metrics/${template}.html`);
       return emailTemplateBuilder.generate(data, mailTemplate);
-      break;
     }
     case "survey_error": {
       const mailTemplate = Assets.getText(`email_templates/metrics/${template}.html`);
       return emailTemplateBuilder.generate(data, mailTemplate);
-      break;
+    }
+    case "feedback": {
+      const mailTemplate = Assets.getText(`email_templates/metrics/${template}.html`);
+      return emailTemplateBuilder.generate(data, mailTemplate);
+    }
+    case "thankyou": {
+      const mailTemplate = Assets.getText(`email_templates/metrics/${template}.html`);
+      return emailTemplateBuilder.generate(data, mailTemplate);
     }
     default: {
       const template = Assets.getText(`email_templates/${templateName}.html`);

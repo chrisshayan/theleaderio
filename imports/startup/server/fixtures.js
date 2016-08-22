@@ -193,12 +193,12 @@ export function createDefaults() {
           },
           feedback: {
             title: "",
-            message: "Your feedback will help the leader to improve their ability."
+            message: "Your feedback will help the leader to improve their ability. Please reply this email with idea or comment for helping your leader."
           },
-          error: {
-            title: "",
-            message: ""
-          }
+          thankyou: {
+            title: "Thank you for helping your leader.",
+            message: "We could improve together"
+          },
         },
       };
     DefaultsActions.add.call({name, content});

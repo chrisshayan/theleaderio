@@ -5,6 +5,6 @@ export const add = new ValidatedMethod({
   name: "metrics.add",
   validate: null,
   run({name, score, planId, leaderId, organizationId, employeeId, date, data}) {
-    console.log({name, score, planId, leaderId, organizationId, employeeId, date, data});
+    Metrics.insert({name, score, planId, leaderId, organizationId, employeeId, date, data});
   }
 });
