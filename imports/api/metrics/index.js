@@ -4,24 +4,28 @@ import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 import MetricsCollections from './collections';
 import {Defaults } from '/imports/api/defaults/index';
 
-// constants
-const METRICS = Defaults.findOne({name: "METRICS"}).content;
-const SCORES = Defaults.findOne({name: "SCORES"}).content;
-
 export const Metrics = new MetricsCollections('metrics');
 
-const scoresList = [];
-for(let i = SCORES.minScore; i <= SCORES.maxScore; i++) {
-  scoresList.push(i);
-}
 Metrics.schema = new SimpleSchema({
   name: {
     type: String,
-    allowedValues: METRICS
+    allowedValues: [
+      'purpose',
+      'mettings',
+      'rules',
+      'communications',
+      'leadership',
+      'workload',
+      'energy',
+      'stress',
+      'decision',
+      'respect',
+      'conflict'
+    ]
   },
   score: {
     type: Number,
-    allowedValues: scoresList,
+    allowedValues: [0, 1, 2, 3, 4, 5],
     defaultValue: 0
   },
   planId: {

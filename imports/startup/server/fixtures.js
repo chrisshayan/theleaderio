@@ -25,7 +25,7 @@ function setupIndustries() {
   });
 }
 
-function createDefaults() {
+export function createDefaults() {
   let selector = {},
     modifier = {}
     ;
@@ -108,9 +108,7 @@ function createDefaults() {
           respect: true,
           conflict: true
         }
-      }
-      ;
-    console.log({name, content})
+      };
     DefaultsActions.add.call({name, content});
   }
 
@@ -166,36 +164,36 @@ function createDefaults() {
             message: {
               purpose: `Purpose is an important metric for blah blah blah, reply this email with the number of score`,
               mettings: "Mettings is a core metric, which will estimate the ability of a leader. Reply this email with the number of score for scoring your leader.",
-              rules: "",
-              communications: "",
-              leadership: "",
-              workload: "",
-              energy: "",
-              stress: "",
-              decision: "",
-              respect: "",
-              conflict: ""
+              rules: "rules is an important metric for blah blah blah, reply this email with the number of score",
+              communications: "communications is an important metric for blah blah blah, reply this email with the number of score",
+              leadership: "leadership is an important metric for blah blah blah, reply this email with the number of score",
+              workload: "workload is an important metric for blah blah blah, reply this email with the number of score",
+              energy: "energy is an important metric for blah blah blah, reply this email with the number of score",
+              stress: "stress is an important metric for blah blah blah, reply this email with the number of score",
+              decision: "decision is an important metric for blah blah blah, reply this email with the number of score",
+              respect: "respect is an important metric for blah blah blah, reply this email with the number of score",
+              conflict: "conflict is an important metric for blah blah blah, reply this email with the number of score"
             }
           },
           survey_error: {
             title: "",
             message: {
-              purpose: `Purpose is an important metric for blah blah blah, reply this email with the number of score`,
+              purpose: `purpose is a core metric, which will estimate the ability of a leader. Reply this email with the number of score for scoring your leader.`,
               mettings: "Mettings is a core metric, which will estimate the ability of a leader. Reply this email with the number of score for scoring your leader.",
-              rules: "",
-              communications: "",
-              leadership: "",
-              workload: "",
-              energy: "",
-              stress: "",
-              decision: "",
-              respect: "",
-              conflict: ""
+              rules: "rules is a core metric, which will estimate the ability of a leader. Reply this email with the number of score for scoring your leader.",
+              communications: "communications is a core metric, which will estimate the ability of a leader. Reply this email with the number of score for scoring your leader.",
+              leadership: "leadership is a core metric, which will estimate the ability of a leader. Reply this email with the number of score for scoring your leader.",
+              workload: "workload is a core metric, which will estimate the ability of a leader. Reply this email with the number of score for scoring your leader.",
+              energy: "energy is a core metric, which will estimate the ability of a leader. Reply this email with the number of score for scoring your leader.",
+              stress: "stress is a core metric, which will estimate the ability of a leader. Reply this email with the number of score for scoring your leader.",
+              decision: "decision is a core metric, which will estimate the ability of a leader. Reply this email with the number of score for scoring your leader.",
+              respect: "respect is a core metric, which will estimate the ability of a leader. Reply this email with the number of score for scoring your leader.",
+              conflict: "conflict is a core metric, which will estimate the ability of a leader. Reply this email with the number of score for scoring your leader."
             }
           },
           feedback: {
             title: "",
-            message: ""
+            message: "Your feedback will help the leader to improve their ability."
           },
           error: {
             title: "",
@@ -205,7 +203,6 @@ function createDefaults() {
       };
     DefaultsActions.add.call({name, content});
   }
-
 }
 
 Meteor.startup(() => {

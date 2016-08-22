@@ -2,10 +2,10 @@ import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 
 // Collections
 import SendingPlansCollection from './collections';
-import {Defaults} from '/imports/api/defaults/index';
+// import {Defaults} from '/imports/api/defaults/index';
 
 // Constants
-const METRICS = Defaults.findOne({name: "METRICS"}).content;
+// const METRICS = Defaults.findOne({name: "METRICS"}).content;
 const TIMEZONES = moment.tz.names();
 const DEFAULT_TIMEZONES = Meteor.settings.public.localTimezone;
 

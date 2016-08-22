@@ -4,7 +4,6 @@ import moment from 'moment';
 // collections
 import {Organizations} from '/imports/api/organizations/index';
 import {Employees} from '/imports/api/employees/index';
-import {SendingPlans} from '/imports/api/sending_plans/index';
 
 // methods
 import {enqueue} from '/imports/api/message_queue/methods';

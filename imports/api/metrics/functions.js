@@ -11,7 +11,6 @@ import {add as addScore} from './methods';
 
 // constants
 import * as ERROR_CODE from '/imports/utils/error_code';
-const SCORES = Defaults.findOne({name: "SCORES"}).content;
 
 function getRecipientInfo({recipient, sender}) {
   if(typeof recipient == "undefined") {
@@ -57,6 +56,7 @@ function onScoringFailed({recipient, sender}) {
 }
 
 function onScoringSuccess({recipient, sender, timestamp, score}) {
+  const SCORES = Defaults.findOne({name: "SCORES"}).content;
   const {planId, employeeId, leaderId, organizationId, metric} = getRecipientInfo({recipient, sender});
   const date = new Date(timestamp * 1000);
   const data = {};
@@ -74,12 +74,12 @@ function onScoringSuccess({recipient, sender, timestamp, score}) {
           organizationId,
           metric
         };
-        // EmailActions.send.call({template, data}, (error) => {
-        //   if (!_.isEmpty(error)) {
-        //     console.log(error)
-        //     return error.reason;
-        //   }
-        // });
+        EmailActions.send.call({template, data}, (error) => {
+          if (!_.isEmpty(error)) {
+            console.log(error)
+            return error.reason;
+          }
+        });
         return `scoring for leader: ${leaderId} on plan: ${planId} - done with good score`;
       } else {
         const template = 'feedback';
@@ -90,12 +90,12 @@ function onScoringSuccess({recipient, sender, timestamp, score}) {
           organizationId,
           metric
         };
-        // EmailActions.send.call({template, data}, (error) => {
-        //   if (!_.isEmpty(error)) {
-        //     console.log(error)
-        //     return error.reason;
-        //   }
-        // });
+        EmailActions.send.call({template, data}, (error) => {
+          if (!_.isEmpty(error)) {
+            console.log(error)
+            return error.reason;
+          }
+        });
         return `scoring for leader: ${leaderId} on plan: ${planId} - done waiting for feedback`;
       }
 

@@ -30,12 +30,13 @@ export const send = new ValidatedMethod({
   run({template, data}) {
     if (!this.isSimulation) {
       switch (template) {
-        case 'welcome':
-        {
-
+        case 'welcome': {
+          break;
         }
-        case 'forgot_alias':
-        {
+        case 'thankyou': {
+          break;
+        }
+        case 'forgot_alias': {
           const {email, firstName, url} = data;
           const user = Accounts.findUserByEmail(email);
           if (!_.isEmpty(user)) {
@@ -55,8 +56,7 @@ export const send = new ValidatedMethod({
           }
           break;
         }
-        case 'forgot_password':
-        {
+        case 'forgot_password': {
           // Forgot / Reset password
           // Get email html
           const {email, url} = data;
@@ -73,20 +73,17 @@ export const send = new ValidatedMethod({
           });
           break;
         }
-        case 'survey':
-        {
+        case 'survey': {
           const options = getSurveyEmailOptions({template, data});
           Email.send(options);
           break;
         }
-        case 'survey_error':
-        {
+        case 'survey_error': {
           const options = getSurveyEmailOptions({template, data});
           Email.send(options);
           break;
         }
-        case 'feedback':
-        {
+        case 'feedback': {
           const options = getSurveyEmailOptions({template, data});
           Email.send(options);
           break;
@@ -265,6 +262,7 @@ function getSurveyEmailOptions({template, data}) {
   }
   if(template == "feedback") {
     subject = `How could "${capitalize(leader.firstName)} ${capitalize(leader.lastName)}" improve the ${metric} for higher score?`;
+    message = EMAIL_TEMPLATE_CONTENT.metrics.feedback.message;
   }
 
   html = EmailFunctions.buildHtml({
