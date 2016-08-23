@@ -34,8 +34,6 @@ import CreateOrganization from '/imports/ui/containers/organizations/CreateOrgan
 import UpdateOrganization from '/imports/ui/containers/organizations/UpdateOrganization';
 import Employees from '/imports/ui/containers/employees/Employees';
 
-import SchedulerContainer from '/imports/ui/containers/scheduler/SchedulerContainer';
-
 // methods
 import * as Notifications from '/imports/api/notifications/methods';
 

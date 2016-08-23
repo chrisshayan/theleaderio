@@ -1,12 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import { Scheduler } from '../index';
 
-Meteor.publish('scheduler', function() {
+Meteor.publish('Scheduler.list', function(year) {
   if (!this.userId) {
     return this.ready();
   }
 
+  check(year, Number);
+
   return Scheduler.find({
-    userId: this.userId
+    userId: this.userId,
+    year
   });
 });
