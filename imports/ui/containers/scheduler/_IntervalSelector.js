@@ -10,7 +10,7 @@ class IntervalSelector extends Component {
 
   get canInterval2Weeks() {
     const { scheduler } = this.props;
-    return schedulerUtils.validate(scheduler.quarter, 3, 'EVERY_TWO_WEEKS');
+    return schedulerUtils.validate(scheduler.quarter, 3, 'EVERY_2_WEEKS');
   }
 
   get canInterval1Month() {

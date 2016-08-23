@@ -3,7 +3,7 @@ import moment from 'moment';
 
 const intervalDay = {
   'EVERY_WEEK': 7,
-  'EVERY_TWO_WEEKS': 14,
+  'EVERY_2_WEEKS': 14,
   'EVERY_MONTH': 30
 };
 
@@ -29,17 +29,12 @@ const getQuarter = () => {
 export const getScheduleAvailable = (
   start, end, interval = 'EVERY_WEEK', result = []
   ) => {
-  const intervalDay = {
-    'EVERY_WEEK': 7,
-    'EVERY_TWO_WEEKS': 14,
-    'EVERY_MONTH': 30
-  };
   let startTime = new moment(start);
   let endTime = new moment(end);
   let nextTime = startTime.clone();
   nextTime.add(intervalDay[interval], 'day');
   if(nextTime.valueOf() <= endTime.valueOf()) {
-    result.push(nextTime.toDate());
+    result.push(startTime.toDate());
     return getScheduleAvailable(nextTime.toDate(), end, interval, result);
   }
   return result;
@@ -47,9 +42,17 @@ export const getScheduleAvailable = (
 
 export const generateSendingPlan = (quarter, interval) => {
   const quarters = getQuarter();
-  const start = quarters[quarter];
-  const end = start.clone();
+  const now = new moment();
+  let start = quarters[quarter];
+  let end = start.clone();
   end.add(3, 'month');
+
+  if(now.isAfter(end)) {
+    return [];
+  } else if(now.isBetween(start, end)) {
+    start = now.clone();
+    start.add(1, 'day');
+  }
   return getScheduleAvailable(start.toDate(), end.toDate(), interval);
 }
 
