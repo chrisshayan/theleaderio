@@ -146,132 +146,20 @@ function getSurveyEmailOptions({template, data}) {
   if(template == "survey") {
     subject = `How many score about "${capitalize(metric)}" for ${capitalize(leader.firstName)} ${capitalize(leader.lastName)}?`;
     // console.log({from, to, subject, html})
-    switch (metric) {
-      case "purpose":
-      {
-        message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.purpose;
-        break;
-      }
-      case "mettings":
-      {
-        message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.mettings;
-        break;
-      }
-      case "rules":
-      {
-        message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.rules;
-        break;
-      }
-      case "communications":
-      {
-        message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.communications;
-        break;
-      }
-      case "leadership":
-      {
-        message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.leadership;
-        break;
-      }
-      case "workload":
-      {
-        message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.workload;
-        break;
-      }
-      case "energy":
-      {
-        message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.energy;
-        break;
-      }
-      case "stress":
-      {
-        message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.stress;
-        break;
-      }
-      case "decision":
-      {
-        message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.decision;
-        break;
-      }
-      case "respect":
-      {
-        message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.respect;
-        break;
-      }
-      case "conflict":
-      {
-        message = EMAIL_TEMPLATE_CONTENT.metrics.survey.message.conflict;
-        break;
-      }
-    }
+    message = EMAIL_TEMPLATE_CONTENT.metrics[template].message[metric];
   }
   if(template == "survey_error") {
     subject = `Please correct the score about "${capitalize(metric)}" for ${capitalize(leader.firstName)} ${capitalize(leader.lastName)}.`;
-    switch (metric) {
-      case "purpose":
-      {
-        message = EMAIL_TEMPLATE_CONTENT.metrics.survey_error.message.purpose;
-        break;
-      }
-      case "mettings":
-      {
-        message = EMAIL_TEMPLATE_CONTENT.metrics.survey_error.message.mettings;
-        break;
-      }
-      case "rules":
-      {
-        message = EMAIL_TEMPLATE_CONTENT.metrics.survey_error.message.rules;
-        break;
-      }
-      case "communications":
-      {
-        message = EMAIL_TEMPLATE_CONTENT.metrics.survey_error.message.communications;
-        break;
-      }
-      case "leadership":
-      {
-        message = EMAIL_TEMPLATE_CONTENT.metrics.survey_error.message.leadership;
-        break;
-      }
-      case "workload":
-      {
-        message = EMAIL_TEMPLATE_CONTENT.metrics.survey_error.message.workload;
-        break;
-      }
-      case "energy":
-      {
-        message = EMAIL_TEMPLATE_CONTENT.metrics.survey_error.message.energy;
-        break;
-      }
-      case "stress":
-      {
-        message = EMAIL_TEMPLATE_CONTENT.metrics.survey_error.message.stress;
-        break;
-      }
-      case "decision":
-      {
-        message = EMAIL_TEMPLATE_CONTENT.metrics.survey_error.message.decision;
-        break;
-      }
-      case "respect":
-      {
-        message = EMAIL_TEMPLATE_CONTENT.metrics.survey_error.message.respect;
-        break;
-      }
-      case "conflict":
-      {
-        message = EMAIL_TEMPLATE_CONTENT.metrics.survey_error.message.conflict;
-        break;
-      }
-    }
+    message = EMAIL_TEMPLATE_CONTENT.metrics[template].message[metric];
   }
   if(template == "feedback") {
     subject = `How could "${capitalize(leader.firstName)} ${capitalize(leader.lastName)}" improve the ${metric} for higher score?`;
-    message = EMAIL_TEMPLATE_CONTENT.metrics.feedback.message;
+    message = EMAIL_TEMPLATE_CONTENT.metrics[template].message;
   }
   if(template == "thankyou") {
     const {type} = data;
     subject = `Thank you for your ${type}`;
-    message = EMAIL_TEMPLATE_CONTENT.metrics.thankyou.message;
+    message = EMAIL_TEMPLATE_CONTENT.metrics[template].message;
   }
 
   html = EmailFunctions.buildHtml({

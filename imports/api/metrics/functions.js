@@ -3,11 +3,12 @@ import {Meteor} from 'meteor/meteor';
 // collections
 import {SendingPlans} from '/imports/api/sending_plans/index';
 import {Employees} from '/imports/api/employees/index';
-import {Defaults } from '/imports/api/defaults/index';
+import {Defaults} from '/imports/api/defaults/index';
 
 // methods
 import * as EmailActions from '/imports/api/email/methods';
-import {add as addScore} from './methods';
+import {add as addScore, checkExists as checkExistsScore} from './methods';
+import {add as addFeedback, checkExists as checkExistsFeedback} from '/imports/api/feedbacks/methods';
 
 // constants
 import * as ERROR_CODE from '/imports/utils/error_code';
@@ -17,7 +18,7 @@ function removeWebGmailClientContent(content) {
 }
 
 function getRecipientInfo({recipient, sender}) {
-  if(typeof recipient == "undefined") {
+  if (typeof recipient == "undefined") {
     return false;
   }
   const recipientElements = recipient.split("-");
@@ -28,7 +29,7 @@ function getRecipientInfo({recipient, sender}) {
     ;
 
   const sendingPlan = SendingPlans.findOne({_id: planId});
-  if(!_.isEmpty(sendingPlan)) {
+  if (!_.isEmpty(sendingPlan)) {
     const {
       leaderId,
       metric,
@@ -36,7 +37,7 @@ function getRecipientInfo({recipient, sender}) {
     } = sendingPlan;
 
     const employee = Employees.findOne({leaderId, organizationId, email: sender});
-    if(!_.isEmpty(employee)) {
+    if (!_.isEmpty(employee)) {
       const employeeId = employee._id;
       return {planId, employeeId, leaderId, organizationId, metric};
     } else {
@@ -49,7 +50,7 @@ function getRecipientInfo({recipient, sender}) {
 
 function onScoringFailed({recipient, sender}) {
   const recipientInfo = getRecipientInfo({recipient, sender});
-  if(recipientInfo) {
+  if (recipientInfo) {
     const {planId, employeeId, leaderId, organizationId, metric} = recipientInfo;
 
     const template = 'survey_error';
@@ -75,20 +76,65 @@ function onScoringFailed({recipient, sender}) {
 
 function onScoringSuccess({recipient, sender, timestamp, score}) {
   const recipientInfo = getRecipientInfo({recipient, sender});
-  if(recipientInfo) {
+  if (recipientInfo) {
     // console.log({name: `recipient info`, recipientInfo})
     const {planId, employeeId, leaderId, organizationId, metric} = recipientInfo;
     const SCORES = Defaults.findOne({name: "SCORES"}).content;
     const date = new Date(timestamp * 1000);
     const data = {};
 
-    console.log({name: metric, score, planId, leaderId, organizationId, employeeId, date, data})
-    // scoring for leader
-    addScore.call({name: metric, score, planId, leaderId, organizationId, employeeId, date, data}, (error) => {
+    // check score for metric exists
+    checkExistsScore.call({planId, organizationId}, (error, result) => {
       if(!_.isEmpty(error)) {
-        return error.reason;
+        console.log(error);
       } else {
-        if(score > SCORES.averageScore) {
+        // score of metric doesn't exists
+        if(!result) {
+          // scoring for leader
+          addScore.call({metric, score, planId, leaderId, organizationId, employeeId, date, data},
+            (error) => {
+            if (!_.isEmpty(error)) {
+              return error.reason;
+            } else {
+              if (score > SCORES.averageScore) {
+                const template = 'thankyou';
+                const data = {
+                  type: "scoring",
+                  planId,
+                  employeeId,
+                  leaderId,
+                  organizationId,
+                  metric
+                };
+                EmailActions.send.call({template, data}, (error) => {
+                  if (!_.isEmpty(error)) {
+                    console.log(error)
+                    return error.reason;
+                  }
+                });
+                return `scoring for leader: ${leaderId} on plan: ${planId} - done with good score`;
+              } else {
+                const template = 'feedback';
+                const data = {
+                  planId,
+                  employeeId,
+                  leaderId,
+                  organizationId,
+                  metric
+                };
+                EmailActions.send.call({template, data}, (error) => {
+                  if (!_.isEmpty(error)) {
+                    console.log(error)
+                    return error.reason;
+                  }
+                });
+                return `scoring for leader: ${leaderId} on plan: ${planId} - done waiting for feedback`;
+              }
+
+            }
+
+          });
+        } else {
           const template = 'thankyou';
           const data = {
             type: "scoring",
@@ -104,28 +150,12 @@ function onScoringSuccess({recipient, sender, timestamp, score}) {
               return error.reason;
             }
           });
-          return `scoring for leader: ${leaderId} on plan: ${planId} - done with good score`;
-        } else {
-          const template = 'feedback';
-          const data = {
-            planId,
-            employeeId,
-            leaderId,
-            organizationId,
-            metric
-          };
-          EmailActions.send.call({template, data}, (error) => {
-            if (!_.isEmpty(error)) {
-              console.log(error)
-              return error.reason;
-            }
-          });
-          return `scoring for leader: ${leaderId} on plan: ${planId} - done waiting for feedback`;
+          return `feedback for leader: ${leaderId} on plan: ${planId} - failed - feedback exists`;
         }
-
       }
-
     });
+
+
   } else {
     return ERROR_CODE.RESOURCE_NOT_FOUND;
   }
@@ -133,7 +163,7 @@ function onScoringSuccess({recipient, sender, timestamp, score}) {
 
 function onFeedbackSuccess({recipient, sender, timestamp, score}) {
   const recipientInfo = getRecipientInfo({recipient, sender});
-  if(recipientInfo) {
+  if (recipientInfo) {
     const {planId, employeeId, leaderId, organizationId, metric} = recipientInfo;
 
     const template = 'feedback';
@@ -170,7 +200,64 @@ export const scoringLeader = function ({recipient, sender, Subject, timestamp, c
 }
 
 export const feedbackLeader = function ({recipient, sender, Subject, timestamp, content}) {
-  const feedback = removeWebGmailClientContent(content)[0];
-  console.log({recipient, sender, Subject, timestamp, content, feedback});
-  return `send thank you email`;
+  const recipientInfo = getRecipientInfo({recipient, sender});
+  if (recipientInfo) {
+    const {planId, employeeId, leaderId, organizationId, metric} = recipientInfo;
+
+    // check feedback exists
+    checkExistsFeedback.call({planId, organizationId}, (error, result) => {
+      if(!_.isEmpty(error)) {
+        console.log(error);
+      } else {
+        // feedback doesn't exists
+        if(!result) {
+          const date = new Date(timestamp * 1000);
+          const feedback = removeWebGmailClientContent(content)[0];
+
+          addFeedback.call({planId, leaderId, organizationId, employeeId, metric, feedback, date}, (error) => {
+            if (!_.isEmpty(error)) {
+              return error.reason;
+            } else {
+              const template = 'thankyou';
+              const data = {
+                type: "feedback",
+                planId,
+                employeeId,
+                leaderId,
+                organizationId,
+                metric
+              };
+              EmailActions.send.call({template, data}, (error) => {
+                if (!_.isEmpty(error)) {
+                  console.log(error)
+                  return error.reason;
+                }
+              });
+              return `feedback for leader: ${leaderId} on plan: ${planId} - done`;
+            }
+          });
+        } else {
+          const template = 'thankyou';
+          const data = {
+            type: "feedback",
+            planId,
+            employeeId,
+            leaderId,
+            organizationId,
+            metric
+          };
+          EmailActions.send.call({template, data}, (error) => {
+            if (!_.isEmpty(error)) {
+              console.log(error)
+              return error.reason;
+            }
+          });
+          return `feedback for leader: ${leaderId} on plan: ${planId} - failed - feedback exists`;
+        }
+      }
+    });
+
+  } else {
+    return ERROR_CODE.RESOURCE_NOT_FOUND;
+  }
 }

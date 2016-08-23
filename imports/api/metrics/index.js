@@ -4,30 +4,14 @@ import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 import MetricsCollections from './collections';
 import {Defaults } from '/imports/api/defaults/index';
 
+// constants
+import {DEFAULT_METRICS} from '/imports/utils/defaults'
+
 export const Metrics = new MetricsCollections('metrics');
 
+Metrics.publicFields = {};
+
 Metrics.schema = new SimpleSchema({
-  name: {
-    type: String,
-    allowedValues: [
-      'purpose',
-      'mettings',
-      'rules',
-      'communications',
-      'leadership',
-      'workload',
-      'energy',
-      'stress',
-      'decision',
-      'respect',
-      'conflict'
-    ]
-  },
-  score: {
-    type: Number,
-    allowedValues: [0, 1, 2, 3, 4, 5],
-    defaultValue: 0
-  },
   planId: {
     type: String
   },
@@ -38,7 +22,17 @@ Metrics.schema = new SimpleSchema({
     type: String
   },
   employeeId: {
-    type: String
+    type: String,
+    optional: true
+  },
+  metric: {
+    type: String,
+    allowedValues: DEFAULT_METRICS
+  },
+  score: {
+    type: Number,
+    allowedValues: [0, 1, 2, 3, 4, 5],
+    defaultValue: 0
   },
   date: {
     type: Date
