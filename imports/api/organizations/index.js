@@ -107,5 +107,9 @@ Organizations.helpers({
 
   picture() {
     return this.imageUrl || DEFAULT_ORGANIZATION_PHOTO;
+  },
+
+  noEmployees() {
+    return this.employees.length;
   }
 });

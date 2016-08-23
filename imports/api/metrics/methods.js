@@ -2,7 +2,7 @@ import {ValidatedMethod} from 'meteor/mdg:validated-method';
 import {Metrics} from './index';
 
 // constants
-import {DEFAULT_METRICS, MONTH_OF_QUARTER} from '/imports/utils/defaults';
+import {DEFAULT_METRICS} from '/imports/utils/defaults';
 
 // functions
 import {arraySum} from '/imports/utils/index';

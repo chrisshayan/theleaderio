@@ -16,6 +16,13 @@ export const DEFAULT_METRICS = [
   "conflict"
 ];
 
+export const MONTH_OF_QUARTER = {
+  QUARTER_1: [0, 1, 2],
+  QUARTER_2: [3, 4, 5],
+  QUARTER_3: [6, 7, 8],
+  QUARTER_4: [9, 10, 11],
+};
+
 export const SCHEDULE_INTERVAL = ["every week", ]
 
 export const DEFAULT_PUBLIC_INFO_PREFERENCES = {

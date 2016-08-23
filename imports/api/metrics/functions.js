@@ -150,7 +150,7 @@ function onScoringSuccess({recipient, sender, timestamp, score}) {
               return error.reason;
             }
           });
-          return `feedback for leader: ${leaderId} on plan: ${planId} - failed - feedback exists`;
+          return `scoring for leader: ${leaderId} on plan: ${planId} - failed - score exists`;
         }
       }
     });
@@ -161,30 +161,30 @@ function onScoringSuccess({recipient, sender, timestamp, score}) {
   }
 }
 
-function onFeedbackSuccess({recipient, sender, timestamp, score}) {
-  const recipientInfo = getRecipientInfo({recipient, sender});
-  if (recipientInfo) {
-    const {planId, employeeId, leaderId, organizationId, metric} = recipientInfo;
-
-    const template = 'feedback';
-    const data = {
-      planId,
-      employeeId,
-      leaderId,
-      organizationId,
-      metric
-    };
-    EmailActions.send.call({template, data}, (error) => {
-      if (!_.isEmpty(error)) {
-        console.log(error)
-        return error.reason;
-      }
-    });
-    return `sent feedback email to employee ${employeeId} on plan: ${planId};`
-  } else {
-    return ERROR_CODE.RESOURCE_NOT_FOUND;
-  }
-}
+// function onFeedbackSuccess({recipient, sender, timestamp, score}) {
+//   const recipientInfo = getRecipientInfo({recipient, sender});
+//   if (recipientInfo) {
+//     const {planId, employeeId, leaderId, organizationId, metric} = recipientInfo;
+//
+//     const template = 'feedback';
+//     const data = {
+//       planId,
+//       employeeId,
+//       leaderId,
+//       organizationId,
+//       metric
+//     };
+//     EmailActions.send.call({template, data}, (error) => {
+//       if (!_.isEmpty(error)) {
+//         console.log(error)
+//         return error.reason;
+//       }
+//     });
+//     return `sent feedback email to employee ${employeeId} on plan: ${planId};`
+//   } else {
+//     return ERROR_CODE.RESOURCE_NOT_FOUND;
+//   }
+// }
 
 export const scoringLeader = function ({recipient, sender, Subject, timestamp, content}) {
   const score = Number(removeWebGmailClientContent(content)[0]);
