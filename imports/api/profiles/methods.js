@@ -16,9 +16,13 @@ import {DEFAULT_PUBLIC_INFO_PREFERENCES} from '/imports/utils/defaults';
 
 // methods
 import {addPreferences} from '/imports/api/users/methods';
+import {getMetricsOfMonth} from '/imports/api/metrics/methods';
+
+// functions
+import {addMonths} from '/imports/utils/index';
 
 // constants
-import {USER_NOT_FOUND} from '/imports/utils/error_code';
+import * as ERROR_CODE from '/imports/utils/error_code';
 
 /**
  * CUD user profiles (Create, Update, Deactivate)
@@ -28,7 +32,7 @@ import {USER_NOT_FOUND} from '/imports/utils/error_code';
  * # editIndustries
  * # setStatus
  */
-// Create User Profile
+// Create User Preferences
 // with basics information: userId, firstName, lastName, publicFields
 export const create = new ValidatedMethod({
   name: 'profiles.create',
@@ -42,15 +46,18 @@ export const create = new ValidatedMethod({
     lastName: {
       type: String,
       optional: true
+    },
+    timezone: {
+      type: String
     }
   }).validator(),
-  run({userId, firstName, lastName}) {
+  run({userId, firstName, lastName, timezone}) {
     // console.log({userId, firstName, lastName});
-    return Profiles.insert({userId, firstName, lastName});
+    return Profiles.insert({userId, firstName, lastName, timezone});
   }
 });
 
-// Edit User Profile's Inforamtion
+// Edit User Preferences's Inforamtion
 export const edit = new ValidatedMethod({
   name: 'profiles.edit',
   validate: new SimpleSchema({
@@ -289,7 +296,7 @@ export const getPublicData = new ValidatedMethod({
         // others
         if (Preferences.find({userId: user._id}).count() > 0) {
           let preferences = {};
-          if(isGetAll) {
+          if (isGetAll) {
             preferences = DEFAULT_PUBLIC_INFO_PREFERENCES;
           } else {
             preferences = Preferences.find({userId: user._id}).fetch()[0].preferences;
@@ -369,8 +376,60 @@ export const getPublicData = new ValidatedMethod({
               result.organizations = !_.isEmpty(orgInfo) ? orgInfo : [];
             }
           }
-          
+
           // Get chart info
+          // result.chart = {
+          //   label: [],
+          //   overall: [],
+          //   purpose: [],
+          //   mettings: [],
+          //   rules: [],
+          //   communications: [],
+          //   leadership: [],
+          //   workload: [],
+          //   energy: [],
+          //   stress: [],
+          //   decision: [],
+          //   respect: [],
+          //   conflict: []
+          // };
+          // const date = new Date();
+          // const months = [
+          //   {
+          //     month: date.getMonth(),
+          //     name: moment(date).format('MMMM'),
+          //     year: date.getFullYear()
+          //   }
+          // ];
+          // for (var i = 1; i < 6; i++) {
+          //   var previousMonth = new Date(moment().subtract(i, 'month'));
+          //   var element = {
+          //     month: previousMonth.getMonth(),
+          //     name: moment(previousMonth).format('MMMM'),
+          //     year: previousMonth.getFullYear()
+          //   };
+          //   months.push(element);
+          // }
+          //
+          // for(var i in months) {
+          //   let data = [];
+          //   result.chart.label.push(months[i].name);
+          //   getMetricsOfMonth.call({leaderId, month, year}, (error, result) => {
+          //     if(!error) {
+          //       console.log(result)
+          //     }
+          //   });
+          // }
+          // months.map(monthData => {
+          //   const leaderId = user._id;
+          //   const {month, year} = monthData;
+          //   getMetricsOfMonth.call({leaderId, month, year}, (error, result) => {
+          //     if(!error) {
+          //       console.log(result)
+          //     }
+          //   });
+          // });
+
           result.chart.label = ["February", "March", "April", "May", "June", "July"];
           result.chart.overall = [3.2, 4.0, 3.9, 4.9, 4.5, 4];
           result.chart.purpose = [2.2, 3.0, 4.9, 3.9, 5, 3];
@@ -393,17 +452,17 @@ export const getPublicData = new ValidatedMethod({
           };
           result.metrics = {
             overall: 4.4,
-              purpose: 3.6,
-              mettings: 4.7,
-              rules: 5,
-              communications: 4.2,
-              leadership: 3.9,
-              workload: 2.5,
-              energy: 3.8,
-              stress: 3.7,
-              decision: 4.2,
-              respect: 4,
-              conflict: 4.9
+            purpose: 3.6,
+            mettings: 4.7,
+            rules: 5,
+            communications: 4.2,
+            leadership: 3.9,
+            workload: 2.5,
+            energy: 3.8,
+            stress: 3.7,
+            decision: 4.2,
+            respect: 4,
+            conflict: 4.9
           };
         }
         // console.log(result)
@@ -426,24 +485,26 @@ export const getProfileInfo = new ValidatedMethod({
     }
   }).validator(),
   run({alias, requestField}) {
-    if(!this.isSimulation) {
+    if (!this.isSimulation) {
       const user = Accounts.findUserByUsername(alias);
-      if(!_.isEmpty(user)) {
+      if (!_.isEmpty(user)) {
         const profile = Profiles.findOne({userId: user._id});
-        if(!_.isEmpty(profile)) {
+        if (!_.isEmpty(profile)) {
           switch (requestField) {
-            case 'name': {
+            case 'name':
+            {
               return `${profile.firstName} ${profile.lastName}`
             }
-            default: {
+            default:
+            {
               return profile.imageUrl
             }
           }
         } else {
-          throw Meteor.Error(USER_NOT_FOUND);
+          throw Meteor.Error(ERROR_CODE.RESOURCE_NOT_FOUND);
         }
       } else {
-        throw Meteor.Error(USER_NOT_FOUND);
+        throw Meteor.Error(ERROR_CODE.RESOURCE_NOT_FOUND);
       }
 
     }

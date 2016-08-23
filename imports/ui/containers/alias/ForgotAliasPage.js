@@ -34,12 +34,13 @@ export default class ForgotAliasPage extends Component {
     UserActions.verify.call({email}, (error) => {
       if(_.isEmpty(error)) {
         const url = `${DOMAIN}${FlowRouter.path('SignInPage',{action: 'account'})}`;
-        const mailOptions = {
+        const template = 'forgot_alias';
+        const data = {
           email: email,
           url: url,
           templateName: 'forgot_alias'
         };
-        EmailActions.send.call(mailOptions, (error) => {
+        EmailActions.send.call({template, data}, (error) => {
           if (!_.isEmpty(error)) {
             this.setState({
               loading: false,

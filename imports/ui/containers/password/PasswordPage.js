@@ -61,12 +61,12 @@ export default class PasswordPage extends Component {
             // route to Welcome page with a message to verify user's email
             const setPassUrl = FlowRouter.path('passwordPage', {action: 'set'}, {token: tokenId});
             const url = `http://${document.location.hostname}:9000${setPassUrl}`;
-            const mailOptions = {
+            const template = 'forgot_password';
+            const data = {
               email: email,
-              url: url,
-              templateName: 'forgot_password'
+              url,
             };
-            EmailActions.send.call(mailOptions, (error) => {
+            EmailActions.send.call({template, data}, (error) => {
               if (!_.isEmpty(error)) {
                 this.setState({
                   loading: false,

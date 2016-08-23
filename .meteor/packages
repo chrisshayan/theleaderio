@@ -49,3 +49,6 @@ momentjs:moment
 http@1.2.8
 spiderable@1.0.13
 mrt:headly
+vsivsi:job-collection
+aldeed:moment-timezone
+nimble:restivus
