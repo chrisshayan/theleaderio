@@ -18,7 +18,10 @@ import {get as getDefaults} from '/imports/api/defaults/methods';
 // constants
 import * as ERROR_CODE from '/imports/utils/error_code';
 const {domain, mailDomain} = Meteor.settings.public;
-// import {EMAIL_TEMPLATE_CONTENT} from '/imports/utils/defaults';
+
+// constant
+const SITE_NAME = Meteor.settings.public.name;
+
 
 /**
  * send email use mailgun
@@ -48,7 +51,7 @@ export const send = new ValidatedMethod({
             const html = EmailFunctions.get({template, firstName, url: loginUrl, alias});
             const options = {
               to: email,
-              from: 'chris@mail.mailgun.com',
+              from: `"${SITE_NAME}" <chris@mail.mailgun.com>`,
               subject: `theLeader.io`,
               html: html
             };
@@ -65,7 +68,7 @@ export const send = new ValidatedMethod({
           const html = EmailFunctions.get({template, url});
           const options = {
             to: email,
-            from: 'chris@mail.theleader.io',
+            from: `"${SITE_NAME}" <chris@mail.theleader.io>`,
             subject: `theLeader.io`,
             html: html
           };
@@ -129,7 +132,8 @@ function getSurveyEmailOptions({template, data}) {
     return new Meteor.Error(ERROR_CODE.RESOURCE_NOT_FOUND, `organization ${organizationId} not found`);
   }
 
-  from = `${planId}-${organizationId}-${template}@${mailDomain}`;
+  const leaderName = `${capitalize(leader.firstName)} ${capitalize(leader.lastName)}`;
+  const employeeName = `${capitalize(employee.firstName)} ${capitalize(employee.lastName)}`;
   to = employee.email;
   const alias = leaderData.username;
   // this could be a url to tutorial video which guide to score the metric
@@ -143,29 +147,38 @@ function getSurveyEmailOptions({template, data}) {
     message = "";
 
   // get subject and message
-  if(template == "survey") {
-    subject = `How many score about "${capitalize(metric)}" for ${capitalize(leader.firstName)} ${capitalize(leader.lastName)}?`;
-    // console.log({from, to, subject, html})
-    message = EMAIL_TEMPLATE_CONTENT.metrics[template].message[metric];
-  }
-  if(template == "survey_error") {
-    subject = `Please correct the score about "${capitalize(metric)}" for ${capitalize(leader.firstName)} ${capitalize(leader.lastName)}.`;
-    message = EMAIL_TEMPLATE_CONTENT.metrics[template].message[metric];
-  }
-  if(template == "feedback") {
-    subject = `How could "${capitalize(leader.firstName)} ${capitalize(leader.lastName)}" improve the ${metric} for higher score?`;
-    message = EMAIL_TEMPLATE_CONTENT.metrics[template].message;
-  }
-  if(template == "thankyou") {
-    const {type} = data;
-    subject = `Thank you for your ${type}`;
-    message = EMAIL_TEMPLATE_CONTENT.metrics[template].message;
+  switch (template) {
+    case "survey": {
+      from = `"${SITE_NAME}" <${planId}-${organizationId}-survey@${mailDomain}>`;
+      subject = `How many score about "${capitalize(metric)}" for ${leaderName}?`;
+      message = EMAIL_TEMPLATE_CONTENT.metrics[template][metric].message;
+      break;
+    }
+    case "survey_error": {
+      from = `"${SITE_NAME}" <${planId}-${organizationId}-survey@${mailDomain}>`;
+      subject = `Please correct the score about "${capitalize(metric)}" for ${leaderName}.`;
+      message = EMAIL_TEMPLATE_CONTENT.metrics[template][metric].message;
+      break;
+    }
+    case "feedback": {
+      from = `"${SITE_NAME}" <${planId}-${organizationId}-feedback@${mailDomain}>`;
+      subject = `How could "${leaderName}" improve the ${metric} for higher score?`;
+      message = EMAIL_TEMPLATE_CONTENT.metrics[template].message;
+      break;
+    }
+    case "thankyou": {
+      const {type} = data;
+      from = `"${SITE_NAME}" <${planId}-${organizationId}-thankyou@${mailDomain}>`;
+      subject = `Thank you for your ${type}`;
+      message = EMAIL_TEMPLATE_CONTENT.metrics[template].message;
+      break;
+    }
   }
 
   html = EmailFunctions.buildHtml({
     template, data: {
-      name: `${capitalize(employee.firstName)} ${capitalize(employee.lastName)}`,
-      title: `Help your leader "${capitalize(leader.firstName)} ${capitalize(leader.lastName)}" to improve his/her ${capitalize(metric)}`,
+      name: `${employeeName}`,
+      title: `Help your leader "${leaderName}" to improve "${capitalize(metric)}" skill`,
       message: message,
       url
     }

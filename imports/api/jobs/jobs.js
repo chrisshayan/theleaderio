@@ -4,9 +4,6 @@ import {later} from 'meteor/mrt:later';
 // Job Collections
 import {DailyJobs, QueueJobs} from './collections';
 
-// functions
-import {getLocalDate} from '/imports/api/time/functions';
-
 // constants
 import * as ERROR_CODE from '/imports/utils/error_code';
 

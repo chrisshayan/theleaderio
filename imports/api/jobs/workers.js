@@ -35,7 +35,7 @@ const enqueueSurveys = function (job, cb) {
     // metric, leaderId, date = moment.now()
     // example data which date will be next 2 minutes
     // const date = new Date(moment().add(2, 'minutes').format());
-    const date = new Date(2016, 7, 17);
+    const date = new Date();
     const sendingPlansList = getSendingPlans.call({date});
     // console.log(`run job`);
     // console.log(sendingPlansList)
@@ -128,8 +128,11 @@ const sendSurveys = function (job, cb) {
       };
       EmailActions.send.call({template, data}, (error) => {
         if(_.isEmpty(error)) {
+          console.log(`update status of plan to SENT`);
           job.done();
         } else {
+          console.log(`update status of plan to FAILED`);
+          console.log(error);
           jobMessage = error.reason;
           job.log(jobMessage, {level: LOG_LEVEL.WARNING});
           job.done();

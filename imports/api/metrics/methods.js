@@ -10,7 +10,7 @@ import {arraySum} from '/imports/utils/index';
 export const add = new ValidatedMethod({
   name: "metrics.add",
   validate: null,
-  run({metric, score, planId, leaderId, organizationId, employeeId, date, data}) {
+  run({metric, score, planId, leaderId, organizationId, employeeId, date}) {
     const doc = {
       planId,
       leaderId,
@@ -26,9 +26,6 @@ export const add = new ValidatedMethod({
     if(typeof score !== 'undefined') {
       doc.score = score;
     }
-    if(typeof data !== 'undefined') {
-      doc.data = data;
-    }
     Metrics.insert(doc);
   }
 });
@@ -36,10 +33,10 @@ export const add = new ValidatedMethod({
 export const checkExists = new ValidatedMethod({
   name: "metrics.checkExists",
   validate: null,
-  run({planId, organizationId}) {
-    const metric = Metrics.findOne({planId, organizationId});
-    if(!_.isEmpty(metric)) {
-      return metric.date;
+  run({planId, organizationId, employeeId}) {
+    const metricData = Metrics.findOne({planId, organizationId, employeeId});
+    if(!_.isEmpty(metricData)) {
+      return metricData.date;
     } else {
       return false;
     }

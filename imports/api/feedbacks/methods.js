@@ -29,10 +29,10 @@ export const add = new ValidatedMethod({
 export const checkExists = new ValidatedMethod({
   name: "feedbacks.checkExists",
   validate: null,
-  run({planId, organizationId}) {
-    const feedback = Feedbacks.findOne({planId, organizationId});
-    if(!_.isEmpty(feedback)) {
-      return feedback.date;
+  run({planId, organizationId, employeeId}) {
+    const feedbackData = Feedbacks.findOne({planId, organizationId, employeeId});
+    if(!_.isEmpty(feedbackData)) {
+      return feedbackData.date;
     } else {
       return false;
     }
