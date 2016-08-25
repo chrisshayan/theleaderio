@@ -1,31 +1,25 @@
+import {Meteor} from 'meteor/meteor';
 import React, {Component} from 'react';
 
+// constants
+import {DEFAULT_PROFILE_PHOTO} from '/imports/utils/defaults';
+
 class TopNav extends Component {
-
-  constructor() {
-    super();
-
-    this.state = {
-      loggedIn: null
-    };
-  }
-
-  componentWillMount() {
-    if (Meteor.loggingIn() || Meteor.userId()) {
-      this.setState({
-        loggedIn: true
-      });
-    }
-  }
 
   _onClickMinimalize() {
 
   }
 
   render() {
-    const { currentUser, userProfile } = this.props;
-
-    const {loggedIn} = this.state;
+    const {userProfile} = this.props;
+    let profilePhoto = DEFAULT_PROFILE_PHOTO;
+    if(!_.isEmpty(userProfile)) {
+      profilePhoto = userProfile.imageUrl;
+    } else {
+      profilePhoto = this.props.imageUrl;
+    }
+    const currentUser = this.props.currentUser || Meteor.user();
+    
     return (
       <div className="">
         <div className="col-xs-6">
@@ -39,19 +33,17 @@ class TopNav extends Component {
         <div className="col-xs-6 pull-right">
           <div className="account-info">
             <ul className="nav navbar-top-links navbar-right">
-              { currentUser ? (
+              { (!Meteor.loggingIn() || currentUser) ? (
                 <li id="fat-menu" className="dropdown" style={{marginRight: 0}}>
                   <a id="user-info" href="#" className="dropdown-toggle" data-toggle="dropdown" role="button"
                      aria-haspopup="true" aria-expanded="false">
                   <span>
-                    {userProfile && (
                       <img
-                        src={ userProfile.getPicture() }
+                        src={ profilePhoto }
                         className="img-rounded"
                         width="32"
                         height="32"
                       />
-                    )}
                   </span>
                     <span className="caret"></span>
                   </a>
