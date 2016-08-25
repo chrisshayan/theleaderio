@@ -84,3 +84,93 @@ export const edit = new ValidatedMethod({
     }
   }
 });
+
+
+export const addMetricToQuarter = new ValidatedMethod({
+  name: 'scheduler.addMetricToQuarter',
+  mixins: [MethodValidatorMixin, UserLoggedInMixin],
+  rules: {
+    schedulerId: {
+      type: 'string',
+      presence: true
+    },
+    metric: {
+      type: 'string',
+      presence: true
+    }
+  },
+  run({ schedulerId, metric }) {
+    if(!this.isSimulation) {
+      const selector = {_id: schedulerId};
+      const modifier = {
+        $addToSet: {
+          metrics: metric
+        }
+      };
+      const scheduler = Scheduler.findOne(selector);
+      if(!scheduler) throw new Meteor.Error(404, 'Scheduler not found');
+      return Scheduler.update(selector, modifier);
+    }
+    return true;
+  }
+});
+
+
+export const removeMetricOfQuarter = new ValidatedMethod({
+  name: 'scheduler.removeMetricOfQuarter',
+  mixins: [MethodValidatorMixin, UserLoggedInMixin],
+  rules: {
+    schedulerId: {
+      type: 'string',
+      presence: true
+    },
+    metric: {
+      type: 'string',
+      presence: true
+    }
+  },
+  run({ schedulerId, metric }) {
+    if(!this.isSimulation) {
+      const selector = {_id: schedulerId};
+      const modifier = {
+        $pull: {
+          metrics: metric
+        }
+      };
+      const scheduler = Scheduler.findOne(selector);
+      if(!scheduler) throw new Meteor.Error(404, 'Scheduler not found');
+      return Scheduler.update(selector, modifier);
+    }
+    return true;
+  }
+});
+
+
+export const changeInterval = new ValidatedMethod({
+  name: 'scheduler.changeInterval',
+  mixins: [MethodValidatorMixin, UserLoggedInMixin],
+  rules: {
+    schedulerId: {
+      type: 'string',
+      presence: true
+    },
+    interval: {
+      type: 'string',
+      presence: true
+    }
+  },
+  run({ schedulerId, interval }) {
+    if(!this.isSimulation) {
+      const selector = {_id: schedulerId};
+      const modifier = {
+        $set: {
+          interval
+        }
+      };
+      const scheduler = Scheduler.findOne(selector);
+      if(!scheduler) throw new Meteor.Error(404, 'Scheduler not found');
+      return Scheduler.update(selector, modifier);
+    }
+    return true;
+  }
+});

@@ -1,215 +1,68 @@
-import {Meteor} from 'meteor/meteor';
-import React, {Component} from 'react';
-import {createContainer} from 'meteor/react-meteor-data';
-import {words as capitalize} from 'capitalize';
+import React, { Component } from 'react';
+import { createContainer } from 'meteor/react-meteor-data';
+import { setPageHeading, resetPageHeading } from '/imports/store/modules/pageHeading';
+import { SkyLightStateless } from 'react-skylight';
+import { INTERVAL, Scheduler as SchedulerCollection } from '/imports/api/scheduler';
+import LoadingIndicator from '/imports/ui/common/LoadingIndicator';
+import * as schedulerUtils from '/imports/utils/scheduler';
 
-// collections
-import {Scheduler, INTERVAL, METRICS, QUARTER} from '/imports/api/scheduler/index';
+import SchedulerQuarter from './SchedulerQuarter';
+import SchedulerMetricDialog from './SchedulerMetricDialog';
 
-// constants
-import {DEFAULT_METRICS} from '/imports/utils/defaults';
+class Scheduler extends Component {
 
-// components
-import Spinner from '/imports/ui/common/Spinner';
-import Chosen from '/imports/ui/components/Chosen';
-
-class SchedulerComponent extends Component {
-
-  _onIntervalSelected() {
-
+  state = {
+    metricDialog: undefined,
   }
 
-  _onStart() {
-
+  _onClickAddMetric = metric => {
+    this.setState({ metricDialog: metric });
   }
 
-  _onEdit() {
+  _onDismissAddMetric = e => {
+    e && e.preventDefault();
+    this.setState({ metricDialog: undefined });
+  }
 
+  getQuarter = (quarter) => {
+    const quarters = this.props.quarters || [];
+    return _.find(quarters, r => r.quarter === quarter);
   }
 
   render() {
-    const {loading, scheduler, metrics, interval} = this.props;
-    console.log(metrics);
-
-    if (!loading) {
-      return (
-        <div className="wrapper wrapper-content  animated fadeInRight">
+    const { isLoading, quarters } = this.props;
+    return (
+      <div>
+        <div className="row">
+          {isLoading && (<LoadingIndicator />)}
+        </div>
+        
+        {quarters.length == 4 && (
           <div className="row">
-            <div className="col-lg-3" style={{paddingLeft: 10, paddingRight: 10}}>
-              <div className="ibox">
-                <div className="ibox-content">
-                  <h3>Quarter 1</h3>
-                  <p className="small"><i className="fa fa-hand-o-up"></i> Choose the interval for sending email</p>
-                  <Chosen
-                    options={interval}
-                    selectedOptions={null}
-                    chosenClass="chosen-select"
-                    isMultiple={false}
-                    placeHolder=''
-                    onChange={this._onIntervalSelected.bind(this)}
-                  />
-                  <div className="input-group">
-                    <input type="text" placeholder="Add new task. " className="input input-sm form-control"/>
-                                <span className="input-group-btn">
-                                        <button type="button" className="btn btn-sm btn-white"> <i
-                                          className="fa fa-plus"></i> Add task</button>
-                                </span>
-                  </div>
-
-                  <ul className="sortable-list connectList agile-list" id="todo">
-                    <li className="warning-element" id="task1">
-                      Simply dummy text of the printing and typesetting industry.
-                      <div className="agile-detail">
-                        <a href="#" className="pull-right btn btn-xs btn-white">Tag</a>
-                        <i className="fa fa-clock-o"></i> 12.10.2015
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-3" style={{paddingLeft: 10, paddingRight: 10}}>
-              <div className="ibox">
-                <div className="ibox-content">
-                  <h3>Quarter 2</h3>
-                  <p className="small"><i className="fa fa-hand-o-up"></i> Choose the interval for sending email</p>
-                  <Chosen
-                    options={interval}
-                    selectedOptions={null}
-                    chosenClass="chosen-select"
-                    isMultiple={false}
-                    placeHolder=''
-                    onChange={this._onIntervalSelected.bind(this)}
-                  />
-                  <div className="input-group">
-                    <input type="text" placeholder="Add new task. " className="input input-sm form-control"/>
-                                <span className="input-group-btn">
-                                        <button type="button" className="btn btn-sm btn-white"> <i
-                                          className="fa fa-plus"></i> Add task</button>
-                                </span>
-                  </div>
-
-                  <ul className="sortable-list connectList agile-list" id="todo">
-                    <li className="warning-element" id="task1">
-                      Simply dummy text of the printing and typesetting industry.
-                      <div className="agile-detail">
-                        <a href="#" className="pull-right btn btn-xs btn-white">Tag</a>
-                        <i className="fa fa-clock-o"></i> 12.10.2015
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-3" style={{paddingLeft: 10, paddingRight: 10}}>
-              <div className="ibox">
-                <div className="ibox-content">
-                  <h3>Quarter 3</h3>
-                  <p className="small"><i className="fa fa-hand-o-up"></i> Choose the interval for sending email</p>
-                  <Chosen
-                    options={interval}
-                    selectedOptions={null}
-                    chosenClass="chosen-select"
-                    isMultiple={false}
-                    placeHolder=''
-                    onChange={this._onIntervalSelected.bind(this)}
-                  />
-                  <div className="input-group">
-                    <input type="text" placeholder="Add new task. " className="input input-sm form-control"/>
-                                <span className="input-group-btn">
-                                        <button type="button" className="btn btn-sm btn-white"> <i
-                                          className="fa fa-plus"></i> Add task</button>
-                                </span>
-                  </div>
-
-                  <ul className="sortable-list connectList agile-list" id="todo">
-                    <li className="warning-element" id="task1">
-                      Simply dummy text of the printing and typesetting industry.
-                      <div className="agile-detail">
-                        <a href="#" className="pull-right btn btn-xs btn-white">Tag</a>
-                        <i className="fa fa-clock-o"></i> 12.10.2015
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-3" style={{paddingLeft: 10, paddingRight: 10}}>
-              <div className="ibox">
-                <div className="ibox-content">
-                  <h3>Quarter 4</h3>
-                  <p className="small"><i className="fa fa-hand-o-up"></i> Choose the interval for sending email</p>
-                  <Chosen
-                    options={interval}
-                    selectedOptions={null}
-                    chosenClass="chosen-select"
-                    isMultiple={false}
-                    placeHolder=''
-                    onChange={this._onIntervalSelected.bind(this)}
-                  />
-                  <div className="input-group">
-                    <input type="text" placeholder="Add new task. " className="input input-sm form-control"/>
-                                <span className="input-group-btn">
-                                        <button type="button" className="btn btn-sm btn-white"> <i
-                                          className="fa fa-plus"></i> Add task</button>
-                                </span>
-                  </div>
-
-                  <ul className="sortable-list connectList agile-list" id="todo">
-                    <li className="warning-element" id="task1">
-                      Simply dummy text of the printing and typesetting industry.
-                      <div className="agile-detail">
-                        <a href="#" className="pull-right btn btn-xs btn-white">Tag</a>
-                        <i className="fa fa-clock-o"></i> 12.10.2015
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
+            <SchedulerQuarter name="1st Quarter" scheduler={this.getQuarter('QUARTER_1')} onClickAddMetric={this._onClickAddMetric} />
+            <SchedulerQuarter name="2th Quarter" scheduler={this.getQuarter('QUARTER_2')} onClickAddMetric={this._onClickAddMetric}/>
+            <SchedulerQuarter name="3th Quarter" scheduler={this.getQuarter('QUARTER_3')} onClickAddMetric={this._onClickAddMetric}/>
+            <SchedulerQuarter name="4th Quarter" scheduler={this.getQuarter('QUARTER_4')} onClickAddMetric={this._onClickAddMetric}/>
           </div>
-        </div>
-      );
-    } else {
-      return (
-        <div>
-          <Spinner />
-        </div>
-      );
-    }
+        )}
+  
+        <SchedulerMetricDialog
+          show={!!this.state.metricDialog}
+          metric={this.state.metricDialog}
+          onDismiss={this._onDismissAddMetric}
+        />
+      </div>
+    );
   }
 }
 
-export default SchedulerContainer = createContainer((params) => {
-  // subscribe
-  const subScheduler = Meteor.subscribe('scheduler');
-
-  // loading
-  const loading = !subScheduler.ready() || !Meteor.userId() || Meteor.loggingIn();
-
-  // data
-  const userId = Meteor.userId();
-  const selector = {};
-  const scheduler = Scheduler.find(selector).fetch();
-  const schedulerExists = !loading;
-
-  // list metrics
-  const metrics = [];
-  $.map(METRICS, (value) => {
-    metrics.push(capitalize(value.toLowerCase()));
-  });
-  
-  // interval
-  const interval = [];
-  $.map(INTERVAL, (value) => {
-    interval.push(capitalize(value.toLowerCase()));
-  });
-
+const mapMeteorToProps = () => {
+  const year = moment().year();
+  const sub = Meteor.subscribe('Scheduler.list', year);
   return {
-    loading,
-    scheduler: schedulerExists ? scheduler : {},
-    metrics,
-    interval
+    isLoading: !sub.ready(),
+    quarters: SchedulerCollection.find({ year }).fetch()
   };
+}
 
-}, SchedulerComponent);
+export default createContainer(mapMeteorToProps, Scheduler);

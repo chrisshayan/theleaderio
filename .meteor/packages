@@ -6,7 +6,7 @@
 
 meteor-base@1.0.4             # Packages every Meteor app needs to have
 mobile-experience@1.0.4       # Packages for a great mobile UX
-mongo@1.1.12                   # The database Meteor supports right now
+mongo@1.1.12
 static-html@1.1.12
 reactive-var@1.0.10            # Reactive variable for tracker
 reactive-dict@1.1.8            # Reactive variable for tracker

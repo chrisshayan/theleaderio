@@ -1,8 +1,7 @@
-import {SimpleSchema} from 'meteor/aldeed:simple-schema';
+import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 
 // Collections
 import SendingPlansCollection from './collections';
-// import {Defaults} from '/imports/api/defaults/index';
 
 // Constants
 // const METRICS = Defaults.findOne({name: "METRICS"}).content;
@@ -15,20 +14,23 @@ SendingPlans.schema = new SimpleSchema({
   leaderId: {
     type: String
   },
+  schedulerId: {
+    type: String,
+  },
   metric: {
     type: String,
     allowedValues: [
-      'purpose',
-      'mettings',
-      'rules',
-      'communications',
-      'leadership',
-      'workload',
-      'energy',
-      'stress',
-      'decision',
-      'respect',
-      'conflict'
+      "PURPOSE",
+      "MEETINGS",
+      "RULES",
+      "COMMUNICATIONS",
+      "LEADERSHIP",
+      "WORKLOAD",
+      "ENERGY",
+      "STRESS",
+      "DECISION",
+      "RESPECT",
+      "CONFLICT",
     ]
   },
   timezone: {
@@ -38,6 +40,10 @@ SendingPlans.schema = new SimpleSchema({
   },
   sendDate: {
     type: Date
+  },
+  status: {
+    type: String,
+    allowedValues: ['READY', 'SENT', 'FAILED']
   }
 });
 
