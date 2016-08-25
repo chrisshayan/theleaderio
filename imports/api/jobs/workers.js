@@ -10,6 +10,7 @@ import {enqueue} from '/imports/api/message_queue/methods';
 import * as EmailActions from '/imports/api/email/methods';
 import {getSendingPlans} from '/imports/api/sending_plans/methods';
 import {getLocalDate} from '/imports/api/time/functions';
+import {setStatus as setSendingPlanStatus} from '/imports/api/sending_plans/methods';
 
 
 
@@ -37,8 +38,6 @@ const enqueueSurveys = function (job, cb) {
     // const date = new Date(moment().add(2, 'minutes').format());
     const date = new Date();
     const sendingPlansList = getSendingPlans.call({date});
-    console.log(`run job`);
-    console.log(sendingPlansList)
 
     if (_.isEmpty(sendingPlansList)) {
       jobMessage = `No request for today: ${date}`;
@@ -70,7 +69,7 @@ const enqueueSurveys = function (job, cb) {
                     employeeId,
                     leaderId,
                     organizationId: org._id,
-                    metric: capitalize(metric.toLowerCase()),
+                    metric: metric.toLowerCase(),
                     date: sendDate,
                     timezone
                   };
@@ -128,10 +127,10 @@ const sendSurveys = function (job, cb) {
       };
       EmailActions.send.call({template, data}, (error) => {
         if(_.isEmpty(error)) {
-          console.log(`update status of plan to SENT`);
+          setSendingPlanStatus.call({_id: planId, status: "SENT"});
           job.done();
         } else {
-          console.log(`update status of plan to FAILED`);
+          setSendingPlanStatus.call({_id: planId, status: "FAILED"});
           console.log(error);
           jobMessage = error.reason;
           job.log(jobMessage, {level: LOG_LEVEL.WARNING});

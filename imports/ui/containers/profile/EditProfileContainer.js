@@ -46,8 +46,6 @@ class EditProfile extends Component {
         industries: this.props.industries
       });
     }
-    console.log(`test moment timezone`);
-    console.log(moment.tz.guess())
   }
 
   onSave() {

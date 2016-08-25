@@ -48,6 +48,14 @@ export const remove = new ValidatedMethod({
   }
 });
 
+export const setStatus = new ValidatedMethod({
+  name: "sendingPlans.setStatus",
+  validate: null,
+  run({_id, status}) {
+    return SendingPlans.update({_id}, {$set: {status}});
+  }
+});
+
 export const getSendingPlans = new ValidatedMethod({
   name: "sendingPlans.getSendingPlans",
   validate: null,

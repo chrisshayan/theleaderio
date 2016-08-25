@@ -32,6 +32,7 @@ export const send = new ValidatedMethod({
   validate: null,
   run({template, data}) {
     if (!this.isSimulation) {
+      // console.log(template, data)
       switch (template) {
         case 'welcome': {
           break;
@@ -183,5 +184,6 @@ function getSurveyEmailOptions({template, data}) {
       url
     }
   });
+  // console.log({from, to, subject, html})
   return {from, to, subject, html};
 }
