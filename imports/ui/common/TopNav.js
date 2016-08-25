@@ -19,7 +19,7 @@ class TopNav extends Component {
       profilePhoto = this.props.imageUrl;
     }
     const currentUser = this.props.currentUser || Meteor.user();
-    
+
     return (
       <div className="">
         <div className="col-xs-6">
@@ -33,7 +33,7 @@ class TopNav extends Component {
         <div className="col-xs-6 pull-right">
           <div className="account-info">
             <ul className="nav navbar-top-links navbar-right">
-              { (!Meteor.loggingIn() || currentUser) ? (
+              { (Meteor.loggingIn() || currentUser) ? (
                 <li id="fat-menu" className="dropdown" style={{marginRight: 0}}>
                   <a id="user-info" href="#" className="dropdown-toggle" data-toggle="dropdown" role="button"
                      aria-haspopup="true" aria-expanded="false">
