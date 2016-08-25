@@ -1,5 +1,5 @@
 import {DailyJobs, QueueJobs} from './collections';
-import moment from 'moment';
+import {words as capitalize} from 'capitalize';
 
 // collections
 import {Organizations} from '/imports/api/organizations/index';
@@ -37,8 +37,8 @@ const enqueueSurveys = function (job, cb) {
     // const date = new Date(moment().add(2, 'minutes').format());
     const date = new Date();
     const sendingPlansList = getSendingPlans.call({date});
-    // console.log(`run job`);
-    // console.log(sendingPlansList)
+    console.log(`run job`);
+    console.log(sendingPlansList)
 
     if (_.isEmpty(sendingPlansList)) {
       jobMessage = `No request for today: ${date}`;
@@ -70,7 +70,7 @@ const enqueueSurveys = function (job, cb) {
                     employeeId,
                     leaderId,
                     organizationId: org._id,
-                    metric,
+                    metric: capitalize(metric.toLowerCase()),
                     date: sendDate,
                     timezone
                   };

@@ -1,7 +1,12 @@
+import {Meteor} from 'meteor/meteor';
+import {later} from 'meteor/mrt:later';
+
 import './fixtures.js';
 import './migrations';
 import './routes';
 import {DailyJobs, QueueJobs} from '/imports/api/jobs/collections';
+import {Jobs} from '/imports/api/jobs/jobs';
+import {Workers} from '/imports/api/jobs/workers';
 
 Meteor.startup(function () {
   process.env.MAIL_URL = Meteor.settings.MAILGUN_URL;
@@ -12,5 +17,22 @@ Meteor.startup(function () {
   // jobs
   DailyJobs.startJobServer();
   QueueJobs.startJobServer();
+
+  // create & start daily job
+  // sending survey email job
+
+  if(!DailyJobs.find({type: "enqueue_surveys"}).count()) {
+    const type = "enqueue_surveys";
+    let attributes = {};
+    if(Meteor.settings.public.env === "dev") {
+      console.log(`dev environment`)
+      attributes = {priority: "high", repeat: {schedule: later.parse.text("every 5 minutes")}};
+    } else {
+      attributes = {priority: "high", repeat: {schedule: later.parse.text(Meteor.settings.jobs.runTime.metricEmailSurvey)}};
+    }
+    const data = {type};
+    Jobs.create(type, attributes, data);
+    Workers.start(type);
+  }
 
 });
