@@ -134,6 +134,7 @@ function getSurveyEmailOptions({template, data}) {
   }
 
   const leaderName = `${capitalize(leader.firstName)} ${capitalize(leader.lastName)}`;
+  const orgName = `${capitalize(organization.name)}`;
   const employeeName = `${capitalize(employee.firstName)} ${capitalize(employee.lastName)}`;
   to = employee.email;
   const alias = leaderData.username;
@@ -151,13 +152,13 @@ function getSurveyEmailOptions({template, data}) {
   switch (template) {
     case "survey": {
       from = `"${SITE_NAME}" <${planId}-${organizationId}-survey@${mailDomain}>`;
-      subject = `How many score about "${capitalize(metric)}" for ${leaderName}?`;
+      subject = `How many score about "${capitalize(metric)}" for ${leaderName} in ${orgName}?`;
       message = EMAIL_TEMPLATE_CONTENT.metrics[template][metric].message;
       break;
     }
     case "survey_error": {
       from = `"${SITE_NAME}" <${planId}-${organizationId}-survey@${mailDomain}>`;
-      subject = `Please correct the score about "${capitalize(metric)}" for ${leaderName}.`;
+      subject = `Please correct the score about "${capitalize(metric)}" for ${leaderName} in ${orgName}.`;
       message = EMAIL_TEMPLATE_CONTENT.metrics[template][metric].message;
       break;
     }
