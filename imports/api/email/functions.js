@@ -91,7 +91,7 @@ export const  getRecipientInfo = ({recipient, sender}) => {
     const employee = Employees.findOne({leaderId, organizationId, email: sender});
     if (!_.isEmpty(employee)) {
       const employeeId = employee._id;
-      return {planId, employeeId, leaderId, organizationId, metric};
+      return {planId, employeeId, leaderId, organizationId, metric: metric.toLowerCase()};
     } else {
       return false;
     }

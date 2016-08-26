@@ -68,7 +68,7 @@ Api.addRoute('metrics/:action', {authRequired: false}, {
               } else {
                 // feedback doesn't exists
                 if (!result) {
-                  const feedback = Number(removeWebGmailClientContent(content)[0]);
+                  const feedback = removeWebGmailClientContent(content)[0];
                   feedbackLeader({planId, employeeId, leaderId, organizationId, metric, timestamp, feedback});
                 } else {
                   console.log(`feedback exists`);
