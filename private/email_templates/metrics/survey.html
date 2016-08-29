@@ -4,7 +4,7 @@
 <head>
     <meta name="viewport" content="width=device-width"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>Scoring your leader</title>
+    <title>{{employeeName}}, How "{{leaderName}}" can improve {{leaderGender}} score on {{metric}} Management?</title>
 
 </head>
 
@@ -46,27 +46,38 @@
                                             text-align: center;
                                             cursor: pointer;
                                             display: inline-block;
-                                            border-radius: 5px;
-                                            text-transform: capitalize;"
-                                           href="http://theleader.io"
+                                            border-radius: 5px;"
+                                           href={{siteUrl}}
                                         >
-                                            theLeader.io
+                                            {{siteName}}
                                         </a>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td style="padding: 0 0 20px;">
-                                        <h3>Hi, {{name}}!</h3>
+                                    <td style="padding: 10px 0 5px;">
+                                        <h3>Hi, {{employeeName}}!</h3>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 0 0 5px;">
+                                        {{description}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 0 0 5px;">
+                                        {{message}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 0 0 5px;">
+                                        <h4 style="margin-bottom: 5px; margin-top: 10px;">
+                                            {{replyGuideHeader}}
+                                        </h4>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="padding: 0 0 20px;">
-                                        {{title}}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 0 0 20px;">
-                                        {{{message}}}
+                                        {{replyGuideMessage}}
                                     </td>
                                 </tr>
                             </table>
@@ -90,4 +101,3 @@
 
 </body>
 </html>
-

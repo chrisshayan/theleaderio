@@ -4,7 +4,7 @@
 <head>
     <meta name="viewport" content="width=device-width"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>Scoring your leader</title>
+    <title>Thank you for your {{action}}</title>
 
 </head>
 
@@ -46,27 +46,53 @@
                                             text-align: center;
                                             cursor: pointer;
                                             display: inline-block;
-                                            border-radius: 5px;
-                                            text-transform: capitalize;"
-                                           href="http://theleader.io"
+                                            border-radius: 5px;"
+                                               href={{siteUrl}}
                                         >
-                                            theLeader.io
+                                            {{siteName}}
                                         </a>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="padding: 0 0 20px;">
-                                        <h3>Hi, {{name}}!</h3>
+                                        <h3>Hi, {{employeeName}}!</h3>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="padding: 0 0 20px;">
-                                        {{title}}
+                                        {{thankYouMessage}}
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="padding: 0 0 20px;">
-                                        {{{message}}}
+                                        {{thankYouDescription}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 0 0 5px;">
+                                        <h4 style="margin-bottom: 5px; margin-top: 10px;">
+                                            {{viewLeaderProfileHeader}}
+                                        </h4>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 0 0 20px; text-align: center;">
+                                        <a style="text-decoration: none;
+                                            color: #FFF;
+                                            background-color: #1ab394;
+                                            border: solid #1ab394;
+                                            border-width: 5px 10px;
+                                            line-height: 2;
+                                            font-weight: bold;
+                                            text-align: center;
+                                            cursor: pointer;
+                                            display: inline-block;
+                                            border-radius: 5px;
+                                            text-transform: capitalize;"
+                                           href={{url}}
+                                        >
+                                            View {{leaderName}} profile
+                                        </a>
                                     </td>
                                 </tr>
                             </table>
