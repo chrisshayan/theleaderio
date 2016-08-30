@@ -1,9 +1,12 @@
+import {Mongo} from 'meteor/mongo';
 import {DailyJobs, QueueJobs} from './collections';
-import {words as capitalize} from 'capitalize';
+import moment from 'moment';
+import _ from 'lodash';
 
 // collections
 import {Organizations} from '/imports/api/organizations/index';
 import {Employees} from '/imports/api/employees/index';
+import {Metrics} from '/imports/api/metrics/index';
 
 // methods
 import {enqueue} from '/imports/api/message_queue/methods';
@@ -12,7 +15,9 @@ import {getSendingPlans} from '/imports/api/sending_plans/methods';
 import {getLocalDate} from '/imports/api/time/functions';
 import {setStatus as setSendingPlanStatus} from '/imports/api/sending_plans/methods';
 
-
+// functions
+import {measure} from '/imports/api/measures/functions';
+import {arraySum} from '/imports/utils/index';
 
 // constants
 const LOG_LEVEL = {
@@ -22,6 +27,7 @@ const LOG_LEVEL = {
   CRITICAL: "danger"
 };
 import {STATUS_ACTIVE} from '/imports/api/employees/index';
+import {DEFAULT_METRICS} from '/imports/utils/defaults';
 
 /**
  * Enqueue Metrics Email Survey
@@ -126,7 +132,7 @@ const sendSurveys = function (job, cb) {
         metric
       };
       EmailActions.send.call({template, data}, (error) => {
-        if(_.isEmpty(error)) {
+        if (_.isEmpty(error)) {
           setSendingPlanStatus.call({_id: planId, status: "SENT"});
           job.done();
         } else {
@@ -145,13 +151,130 @@ const sendSurveys = function (job, cb) {
 
 }
 
+const measureMetrics = (job, cb) => {
+  try {
+    // create mini mongo collection
+    const MiniMongo = new Mongo.Collection(null);
+    MiniMongo.remove({});
+    const
+    // {} = job.data,
+      runDate = new Date(),
+      year = runDate.getFullYear(),
+      month = runDate.getMonth(),
+      nextMonth = month + 1
+      ;
+    let
+      jobMessage = "",
+      selector = {},
+      modifier = {},
+      leaderList = [],
+      result = false
+      ;
+
+    // Get list of leaders
+    selector = {
+      date: {
+        $gte: new Date(year, month, 1),
+        $lt: new Date(year, nextMonth, 1)
+      }
+    }; // only get data in current month
+    modifier = {
+      fields: {
+        _id: 0,
+        leaderId: 1,
+        organizationId: 1,
+        metric: 1,
+        score: 1
+      }
+    }; // only return necessary fields
+
+    // get leaders data in current month
+    const docs = Metrics.find(selector, modifier).fetch();
+    if(!_.isEmpty(docs)) {
+
+      docs.map(doc => {
+        MiniMongo.insert(doc);
+        leaderList.push(doc.leaderId);
+      });
+      leaderList = _.uniq(leaderList); // get unique leader only
+
+      // get average score for every leader
+      leaderList.map(leaderId => {
+        var orgList = [];
+        var leaderDocs = MiniMongo.find({leaderId}).fetch();
+
+        //get list of organization for specific leader
+        leaderDocs.map(leaderDoc => {
+          orgList.push(leaderDoc.organizationId);
+          orgList = _.uniq(orgList);
+        });
+        // get list of metric for specific organization
+        orgList.map(organizationId => {
+          var metricList = [];
+          var orgDocs = MiniMongo.find({leaderId, organizationId}).fetch();
+          // console.log(MiniMongo.find().fetch());
+          orgDocs.map(orgDoc => {
+            metricList.push(orgDoc.metric);
+            metricList = _.uniq(metricList);
+          });
+          // get list of score for specific metric
+          metricList.map(metric => {
+            var scoreList = [];
+            var measureDoc = {}; // data of measure for leader
+            var metricDocs = MiniMongo.find({leaderId, organizationId, metric}).fetch();
+            metricDocs.map(metricDoc => {
+              scoreList.push(metricDoc.score);
+            });
+
+            // calculate average score of metric
+            var averageScore = arraySum(scoreList) / scoreList.length;
+            averageScore = Number(averageScore.toFixed(1));
+
+            measureDoc = {
+              leaderId,
+              organizationId,
+              type: "metric",
+              interval: "monthly",
+              year,
+              month,
+              key: metric,
+              value: averageScore
+            };
+
+            measure({data: measureDoc});
+          });
+        });
+      });
+      jobMessage = `measured metrics for ${leaderList.length} leaders`;
+      job.log(jobMessage, {level: LOG_LEVEL.INFO});
+      job.done();
+    } else {
+      jobMessage = `No data to measure for job: ${job}`;
+      job.log(jobMessage, {level: LOG_LEVEL.WARNING});
+      job.done();
+    }
+
+  } catch (error) {
+    job.log(error, {level: LOG_LEVEL.CRITICAL});
+    job.fail();
+  }
+}
+
 // Start Job
 function startJob(type) {
-  switch(type) {
-    case "enqueue_surveys": {
+  switch (type) {
+    // daily jobs
+    case "enqueue_surveys":
+    {
       DailyJobs.processJobs(type, enqueueSurveys);
     }
-    case "send_surveys": {
+    case "measure_metric":
+    {
+      DailyJobs.processJobs(type, measureMetrics);
+    }
+    // queue jobs
+    case "send_surveys":
+    {
       QueueJobs.processJobs(type, sendSurveys);
     }
   }
