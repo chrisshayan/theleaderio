@@ -44,17 +44,11 @@ export const buildHtml = function ({template, data}) {
   const metricTemplate = ["survey", "survey_error", "feedback", "thankyou"];
   if (_.indexOf(metricTemplate, template) !== -1) {
     const mailTemplate = Assets.getText(`email_templates/metrics/${template}.html`);
-    console.log({data, mailTemplate})
     return emailTemplateBuilder.generate(data, mailTemplate);
   } else {
     {
-      const template = Assets.getText(`email_templates/${templateName}.html`);
-      const data = {
-        firstName: firstName,
-        url: url,
-        alias: alias
-      };
-      return emailTemplateBuilder.generate(data, template);
+      const mailTemplate = Assets.getText(`email_templates/${template}.html`);
+      return emailTemplateBuilder.generate(data, mailTemplate);
     }
   }
 }
@@ -128,7 +122,8 @@ export const getSurveyEmailOptions = ({template, data}) => {
       replyGuideMessage: "",
       message: "",
       description: "",
-      metric: ""
+      metric: "",
+      viewLeaderProfileHeader: ""
     };
 
   let
@@ -173,30 +168,32 @@ export const getSurveyEmailOptions = ({template, data}) => {
 
   // get from, subject and message
   switch (template) {
-    case "survey" || "survey_error":
+    case "survey":
     {
-      console.log(mailData)
       mailData.replyGuideHeader = EMAIL_TEMPLATE_CONTENT.metrics.replyGuideHeader;
       mailData.replyGuideMessage = EMAIL_TEMPLATE_CONTENT.metrics.replyGuideMessage;
-      mailData.message = `Please help your leader "${mailData.leaderName}" to improve 
-                                      "${mailData.metric}" management by giving ${mailData.leaderGender} a score.`;
+      mailData.message = `Please help your leader "${mailData.leaderName}" to improve "${mailData.metric}" management by giving ${mailData.leaderGender} a score.`;
       mailData.description = EMAIL_TEMPLATE_CONTENT.metrics[metric];
-      if (template === "survey") {
-        senderSuffix = template;
-        subject = `${mailData.employeeName}, How "${mailData.leaderName}" can improve 
-                    ${mailData.leaderGender} score on ${mailData.metric} Management?`;
-      } else {
-        senderSuffix = "survey";
-        subject = `Please correct the score about "${mailData.metric}" 
-                          for ${mailData.leaderName} in ${mailData.orgName}.`;
-      }
+      senderSuffix = template;
+      subject = `${mailData.employeeName}, How "${mailData.leaderName}" can improve ${mailData.leaderGender} score on ${mailData.metric} Management?`;
+
+      break;
+    }
+    case "survey_error":
+    {
+      mailData.replyGuideHeader = EMAIL_TEMPLATE_CONTENT.metrics.replyGuideHeader;
+      mailData.replyGuideMessage = EMAIL_TEMPLATE_CONTENT.metrics.replyGuideMessage;
+      mailData.message = `Please help your leader "${mailData.leaderName}" to improve "${mailData.metric}" management by giving ${mailData.leaderGender} a score.`;
+      mailData.description = EMAIL_TEMPLATE_CONTENT.metrics[metric];
+      senderSuffix = "survey";
+      subject = `Please correct the score about "${mailData.metric}" for ${mailData.leaderName} in ${mailData.orgName}.`;
+
       break;
     }
     case "feedback":
     {
       mailData.replyGuideHeader = EMAIL_TEMPLATE_CONTENT[template].replyGuideHeader;
-      mailData.replyGuideMessage = `Simply reply this email with your suggestion for ${mailData.leaderName} 
-                                    to improve ${mailData.leaderGender} ${mailData.metric} Management.`;
+      mailData.replyGuideMessage = `Simply reply this email with your suggestion for ${mailData.leaderName}  to improve ${mailData.leaderGender} ${mailData.metric} Management.`;
       mailData.message = `Help your leader "${mailData.leaderName}" to improve "${mailData.metric}" Management.`;
       mailData.description = EMAIL_TEMPLATE_CONTENT[template].description;
       senderSuffix = template;
@@ -206,6 +203,9 @@ export const getSurveyEmailOptions = ({template, data}) => {
     case "thankyou":
     {
       const {type} = data;
+      mailData.message = `Thank you very much for your ${type} to "${mailData.leaderName}" about ${mailData.leaderGender} "${mailData.metric}" Management.`;
+      mailData.description = `Your ${type} will help the leader to improve ${mailData.leaderGender} ability.`;
+      mailData.viewLeaderProfileHeader = `Want to view ${mailData.leaderName} profile?`;
       senderSuffix = template;
       subject = `Thank you for your ${type}`;
       break;

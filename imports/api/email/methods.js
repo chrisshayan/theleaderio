@@ -7,6 +7,7 @@ import {Meteor} from 'meteor/meteor';
 import * as EmailFunctions from '/imports/api/email/functions';
 
 // constant
+const {domain, mailDomain} = Meteor.settings.public;
 const SITE_NAME = Meteor.settings.public.name;
 
 
@@ -20,26 +21,54 @@ export const send = new ValidatedMethod({
   run({template, data}) {
     if (!this.isSimulation) {
       switch (template) {
-        case 'welcome': {
+        case 'welcome':
+        {
+          const {email, firstName, url} = data,
+          mailData = {
+            siteUrl: `http://${domain}`,
+            siteName: SITE_NAME,
+            url,
+            leaderName: ""
+          };
+
+          mailData.leaderName = firstName;
+
+          const html = EmailFunctions.buildHtml({template, data: mailData});
+          const options = {
+            to: email,
+            from: `"${mailData.siteName}" <no-reply@mail.mailgun.com>`,
+            subject: `Welcome to ${mailData.siteName}`,
+            html: html
+          };
+          Email.send(options);
           break;
         }
-        case 'thankyou': {
+        case 'thankyou':
+        {
           const options = EmailFunctions.getSurveyEmailOptions({template, data});
           Email.send(options);
           break;
         }
-        case 'forgot_alias': {
-          const {email, firstName, url} = data;
+        case 'forgot_alias':
+        {
+          const {email, url} = data,
+            mailData = {
+            siteUrl: `http://${domain}`,
+            siteName: SITE_NAME,
+            url: "",
+            alias: ""
+          };
           const user = Accounts.findUserByEmail(email);
           if (!_.isEmpty(user)) {
-            const alias = user.username;
-            const loginUrl = `http://${alias}.${url}`;
+            mailData.alias = user.username;
+            mailData.url = `http://${mailData.alias}.${url}`;
             // Get email html
-            const html = EmailFunctions.get({template, firstName, url: loginUrl, alias});
+            // const html = EmailFunctions.get({template, firstName, url: loginUrl, alias});
+            const html = EmailFunctions.buildHtml({template, data: mailData});
             const options = {
               to: email,
-              from: `"${SITE_NAME}" <chris@mail.mailgun.com>`,
-              subject: `theLeader.io`,
+              from: `"${mailData.siteName}" <no-reply@mail.mailgun.com>`,
+              subject: `Get your alias`,
               html: html
             };
             Email.send(options);
@@ -48,15 +77,28 @@ export const send = new ValidatedMethod({
           }
           break;
         }
-        case 'forgot_password': {
+        case 'forgot_password':
+        {
           // Forgot / Reset password
           // Get email html
-          const {email, url} = data;
-          const html = EmailFunctions.get({template, url});
+          const {email, url} = data,
+            mailData = {
+              siteUrl: `http://${domain}`,
+              siteName: SITE_NAME,
+              actionWarning: `You told us you forgot your password`,
+              actionMessage: `If you didn't mean to reset your password, then you can just ignore this email, your password will not change.`,
+              actionGuide: `If you really did, click here to choose a new one:`,
+              actionButtonLabel: `Choose a new password`,
+              resetPasswordUrl: url
+            };
+
+
+          // const html = EmailFunctions.get({template, url});
+          const html = EmailFunctions.buildHtml({template, data: mailData});
           const options = {
             to: email,
-            from: `"${SITE_NAME}" <chris@mail.theleader.io>`,
-            subject: `theLeader.io`,
+            from: `"${mailData.siteName}" <no-reply@mail.theleader.io>`,
+            subject: `Forgot password`,
             html: html
           };
 
@@ -65,18 +107,21 @@ export const send = new ValidatedMethod({
           });
           break;
         }
-        case 'survey': {
+        case 'survey':
+        {
           const options = EmailFunctions.getSurveyEmailOptions({template, data});
           console.log(options)
           Email.send(options);
           break;
         }
-        case 'survey_error': {
+        case 'survey_error':
+        {
           const options = EmailFunctions.getSurveyEmailOptions({template, data});
           Email.send(options);
           break;
         }
-        case 'feedback': {
+        case 'feedback':
+        {
           const options = EmailFunctions.getSurveyEmailOptions({template, data});
           Email.send(options);
           break;
