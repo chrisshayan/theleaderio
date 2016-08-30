@@ -95,7 +95,6 @@ export default class ProfileMetricsBox extends Component {
       }
     });
     if (!_.isEmpty(group1)) {
-      console.log(group1)
       metricsContent.push(group1);
     }
     if (!_.isEmpty(group2)) {

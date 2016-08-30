@@ -665,3 +665,32 @@ nav.left-nav ul li a span {
   display: block;
 }
 
+.scheduler-metric-dialog__item {
+  border: 1px solid #ddd;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.scheduler-metric-dialog__item.enable:hover {
+  border: 1px solid #18a689;
+}
+
+.scheduler-metric-dialog__item.disabled {
+  cursor: not-allowed;
+  background: #eee;
+}
+
+.btn-remove-metric {
+  position: absolute;
+  top: 0;
+  right: 5px;
+  display: none;
+}
+
+.scheduler-metric-item {
+  padding: 5px 10px !important;
+}
+
+.scheduler-metric-item:hover .btn-remove-metric {
+  display: block;
+}

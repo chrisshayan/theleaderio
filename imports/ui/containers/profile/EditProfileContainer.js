@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {createContainer} from 'meteor/react-meteor-data';
+import moment from 'moment-timezone';
 
 // collections
 import {Profiles} from '/imports/api/profiles/index';
@@ -34,6 +35,7 @@ class EditProfile extends Component {
       industries: [],
       error: {}
     };
+
   }
 
   componentDidUpdate(prevProps) {
@@ -50,7 +52,6 @@ class EditProfile extends Component {
     const userId = Meteor.userId();
     const {firstName, lastName, title, phoneNumber, aboutMe} = this.state.profile;
     const industries = this.refs.selectedIndustries.getValue();
-    console.log({userId, firstName, lastName, title, industries, phoneNumber, aboutMe});
     ProfileActions.edit.call({userId, firstName, lastName, title, industries, phoneNumber, aboutMe}, (error) => {
       if (!_.isEmpty(error)) {
         const closeButton = true,
@@ -77,7 +78,7 @@ class EditProfile extends Component {
       } else {
         const closeButton = true,
           timeOut = 2000,
-          title = 'Profile photo',
+          title = 'Preferences photo',
           message = 'Uploaded'
           ;
         Notifications.success.call({closeButton, timeOut, title, message});
@@ -87,7 +88,6 @@ class EditProfile extends Component {
 
   render() {
     const {loading, error, profile, industries} = this.state;
-    // console.log(this.state)
     if (loading) {
       return (
         <div>
@@ -100,9 +100,6 @@ class EditProfile extends Component {
           <div className="row">
             <div className="col-md-4">
               <div className="ibox">
-                <div className="ibox-title">
-                  <h5>Profile photo</h5>
-                </div>
                 <UploadImage
                   imageUrl={profile.imageUrl}
                   onUploadedImage={this.onUploadedImage.bind(this)}
@@ -112,7 +109,7 @@ class EditProfile extends Component {
             <div className="col-lg-8">
               <div className="ibox float-e-margins">
                 <div className="ibox-title">
-                  <h5>Edit your profile</h5>
+                  <h5>Your information</h5>
                 </div>
                 <div className="ibox-content">
                   <form

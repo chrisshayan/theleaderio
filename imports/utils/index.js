@@ -33,3 +33,17 @@ export const getRandomColor = () => {
 	}
 	return color;
 }
+
+export const arraySum = (array) => {
+	if(_.isEmpty(array)) {
+		return 0;
+	}
+	return array.reduce(function(a, b){return a+b;});
+}
+
+export const addMonths = (date, months) => {
+	date.setMonth(date.getMonth() + months);
+	return date;
+}
+
+

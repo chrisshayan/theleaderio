@@ -1,18 +1,20 @@
 import React, {Component} from 'react';
 import Copyright from '/imports/ui/common/Copyright';
 import {Accounts} from 'meteor/accounts-base';
+import moment from 'moment';
+import momentTZ from 'moment-timezone';
 
 import SignUpForm from '/imports/ui/components/SignUpForm';
 
-// actions
+// methods
 import * as ProfileActions from '/imports/api/profiles/methods';
 import * as TokenActions from '/imports/api/tokens/methods';
 import * as EmailActions from '/imports/api/email/methods';
-import { addPreferences } from '/imports/api/users/methods';
+import { create as createScheduler } from '/imports/api/scheduler/methods';
 
 // constants
 import {DOMAIN} from '/imports/startup/client/routes';
-import { DEFAULT_PUBLIC_INFO_PREFERENCES } from '/imports/utils/defaults';
+import { DEFAULT_SCHEDULER } from '/imports/utils/defaults';
 
 export default class SignUpUser extends Component {
   constructor() {
@@ -34,15 +36,22 @@ export default class SignUpUser extends Component {
     Accounts.createUser({email, password}, (error) => {
       if (!error) {
         const userId = Accounts.userId();
-        ProfileActions.create.call({userId, firstName, lastName}, (error) => {
+        const timezone = momentTZ.tz.guess();
+        ProfileActions.create.call({userId, firstName, lastName, timezone}, (error) => {
           if (error) {
             this.setState({
               loading: false,
               errors: error.reason
             });
           } else {
-            // add default user settings
-            // addPreferences.call({name: 'publicInfo', configs: DEFAULT_PUBLIC_INFO_PREFERENCES});
+
+            // create default user scheduler
+            DEFAULT_SCHEDULER.map(scheduler => {
+              const year = moment().year();
+              const {quarter, metrics} = scheduler;
+              createScheduler.call({year, quarter, metrics});
+            });
+
             // Send confirmation email to user
             const tokenId = TokenActions.generate.call({email, action: 'email'}, (error) => {
               if (!error) {
@@ -50,13 +59,13 @@ export default class SignUpUser extends Component {
                 // route to Welcome page with a message to verify user's email
                 const verifyUrl = FlowRouter.path('signUpPage', {action: 'confirm'}, {token: tokenId});
                 const url = `http://${DOMAIN}${verifyUrl}`;
-                const mailOptions = {
+                const template = 'welcome';
+                const data = {
                   email: email,
                   firstName: firstName,
-                  url: url,
-                  templateName: 'welcome'
+                  url: url
                 };
-                EmailActions.send.call(mailOptions);
+                EmailActions.send.call({template, data});
               }
             });
             FlowRouter.go('signUpPage', {action: 'alias'});

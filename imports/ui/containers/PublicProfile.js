@@ -17,7 +17,6 @@ import ProfileInformationBox from '/imports/ui/components/ProfileInformationBox'
 import ProfileMetricsBox from '/imports/ui/components/ProfileMetricsBox';
 import IboxContentOrganization from '/imports/ui/components/IboxContentOrganization';
 
-
 export default class PublicProfile extends Component {
   constructor() {
     super();

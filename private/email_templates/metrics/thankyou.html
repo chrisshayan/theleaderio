@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta name="viewport" content="width=device-width"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Thank you for your {{action}}</title>
+
+</head>
+
+<body>
+
+<table style="background-color: #f6f6f6; width: 100%;">
+    <tr>
+        <td></td>
+        <td style="display: block !important;
+                max-width: 600px !important;
+                margin: 0 auto !important;
+                /* makes it centered */
+                clear: both !important;"
+            width="600">
+            <div style="max-width: 600px;
+                    margin: 0 auto;
+                    display: block;
+                    padding: 20px;"
+            >
+                <table style="background: #fff;
+                        border: 1px solid #e9e9e9;
+                        border-radius: 3px;"
+                       width="100%"
+                       cellpadding="0"
+                       cellspacing="0"
+                >
+                    <tr>
+                        <td style="padding: 20px;">
+                            <table cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td>
+                                        <a style="text-decoration: none;
+                                            color: #FFF;
+                                            background-color: #1ab394;
+                                            border: solid #1ab394;
+                                            border-width: 5px 10px;
+                                            line-height: 2;
+                                            font-weight: bold;
+                                            text-align: center;
+                                            cursor: pointer;
+                                            display: inline-block;
+                                            border-radius: 5px;"
+                                               href={{siteUrl}}
+                                        >
+                                            {{siteName}}
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 0 0 20px;">
+                                        <h3>Hi, {{employeeName}}!</h3>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 0 0 20px;">
+                                        {{message}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 0 0 20px;">
+                                        {{description}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 0 0 5px;">
+                                        <h4 style="margin-bottom: 5px; margin-top: 10px;">
+                                            {{viewLeaderProfileHeader}}
+                                        </h4>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 0 0 20px; text-align: center;">
+                                        <a style="text-decoration: none;
+                                            color: #FFF;
+                                            background-color: #1ab394;
+                                            border: solid #1ab394;
+                                            border-width: 5px 10px;
+                                            line-height: 2;
+                                            font-weight: bold;
+                                            text-align: center;
+                                            cursor: pointer;
+                                            display: inline-block;
+                                            border-radius: 5px;
+                                            text-transform: capitalize;"
+                                           href={{leaderProfileUrl}}
+                                        >
+                                            View {{leaderName}} profile
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+                <div style="width: 100%;
+                        clear: both;
+                        color: #999;
+                        padding: 20px;"
+                >
+                    <p style="margin-top: 15px; text-align: center;">
+                        <small>theLeader.io, strive for great leadership &copy; 2016</small>
+                    </p>
+                </div>
+            </div>
+        </td>
+        <td></td>
+    </tr>
+</table>
+
+</body>
+</html>
+
