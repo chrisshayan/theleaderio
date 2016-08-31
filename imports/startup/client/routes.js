@@ -28,7 +28,7 @@ import ForgotAliasPage from '/imports/ui/containers/alias/ForgotAliasPage';
 import PublicProfile from '/imports/ui/containers/PublicProfile';
 import Preferences from '/imports/ui/containers/preferences/Preferences';
 
-import Dashboard from '/imports/ui/containers/dashboard/Dashboard';
+import DashboardContainer from '/imports/ui/containers/dashboard/DashboardContainer';
 import Organizations from '/imports/ui/containers/organizations/Organizations';
 import CreateOrganization from '/imports/ui/containers/organizations/CreateOrganization';
 import UpdateOrganization from '/imports/ui/containers/organizations/UpdateOrganization';
@@ -291,14 +291,14 @@ appRoutes.route('/logout', {
 });
 
 /**
- * Route: Dashboard
+ * Route: DashboardContainer
  */
 appRoutes.route('/', {
   name: 'app.dashboard',
   action() {
     mount(MainLayout, {
       content() {
-        return <Dashboard />
+        return <DashboardContainer />
       }
     })
   }

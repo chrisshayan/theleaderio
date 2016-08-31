@@ -15,9 +15,16 @@ function createJob(type, attributes, data) {
         job = new Job(DailyJobs, type, data);
         break;
       }
+      case "measure_metric": {
+        job = new Job(DailyJobs, type, data);
+        break;
+      }
       case "send_surveys": {
         job = new Job(QueueJobs, type, data);
         break;
+      }
+      default: {
+        return `Unknown job type: ${type}`
       }
     }
     const currentDate = new Date();

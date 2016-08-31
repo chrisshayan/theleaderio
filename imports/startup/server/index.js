@@ -18,17 +18,34 @@ Meteor.startup(function () {
   DailyJobs.startJobServer();
   QueueJobs.startJobServer();
 
-  // create & start daily job
+  /**
+   * DailyJobs
+   * @job: enqueue_surveys
+   * @job: measure metric
+   */
   // sending survey email job
-
   if(!DailyJobs.find({type: "enqueue_surveys"}).count()) {
-    const type = "enqueue_surveys";
+    var type = "enqueue_surveys";
     let attributes = {};
     if(Meteor.settings.public.env === "dev") {
       console.log(`dev environment`)
-      attributes = {priority: "high", repeat: {schedule: later.parse.text("every 5 minutes")}};
+      attributes = {priority: "normal", repeat: {schedule: later.parse.text("every 5 minutes")}};
     } else {
-      attributes = {priority: "high", repeat: {schedule: later.parse.text(Meteor.settings.jobs.runTime.metricEmailSurvey)}};
+      attributes = {priority: "normal", repeat: {schedule: later.parse.text(Meteor.settings.jobs.runTime.metricEmailSurvey)}};
+    }
+    var data = {type};
+    Jobs.create(type, attributes, data);
+    Workers.start(type);
+  }
+  // measure score of metric job
+  if(!DailyJobs.find({type: "measure_metric"}).count()) {
+    var type = "measure_metric";
+    let attributes = {};
+    if(Meteor.settings.public.env === "dev") {
+      console.log(`dev environment`)
+      attributes = {priority: "normal", repeat: {schedule: later.parse.text("every 5 minutes")}};
+    } else {
+      attributes = {priority: "normal", repeat: {schedule: later.parse.text(Meteor.settings.jobs.runTime.measureMetric)}};
     }
     const data = {type};
     Jobs.create(type, attributes, data);

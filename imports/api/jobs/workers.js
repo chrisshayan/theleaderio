@@ -1,5 +1,7 @@
+import {Mongo} from 'meteor/mongo';
 import {DailyJobs, QueueJobs} from './collections';
-import {words as capitalize} from 'capitalize';
+import moment from 'moment';
+import _ from 'lodash';
 
 // collections
 import {Organizations} from '/imports/api/organizations/index';
@@ -12,7 +14,8 @@ import {getSendingPlans} from '/imports/api/sending_plans/methods';
 import {getLocalDate} from '/imports/api/time/functions';
 import {setStatus as setSendingPlanStatus} from '/imports/api/sending_plans/methods';
 
-
+// functions
+import {measureMonthlyMetricScore} from '/imports/api/measures/functions';
 
 // constants
 const LOG_LEVEL = {
@@ -126,7 +129,7 @@ const sendSurveys = function (job, cb) {
         metric
       };
       EmailActions.send.call({template, data}, (error) => {
-        if(_.isEmpty(error)) {
+        if (_.isEmpty(error)) {
           setSendingPlanStatus.call({_id: planId, status: "SENT"});
           job.done();
         } else {
@@ -145,13 +148,39 @@ const sendSurveys = function (job, cb) {
 
 }
 
+const measureMetrics = (job, cb) => {
+  try {
+    const measure = measureMonthlyMetricScore();
+    if(measure) {
+      jobMessage = `measured metrics for ${leaderList.length} leaders`;
+      job.log(jobMessage, {level: LOG_LEVEL.INFO});
+      job.done();
+    } else {
+      jobMessage = `No data to measure for job: ${job}`;
+      job.log(jobMessage, {level: LOG_LEVEL.WARNING});
+      job.done();
+    }
+  } catch (error) {
+    job.log(error, {level: LOG_LEVEL.CRITICAL});
+    job.fail();
+  }
+}
+
 // Start Job
 function startJob(type) {
-  switch(type) {
-    case "enqueue_surveys": {
+  switch (type) {
+    // daily jobs
+    case "enqueue_surveys":
+    {
       DailyJobs.processJobs(type, enqueueSurveys);
     }
-    case "send_surveys": {
+    case "measure_metric":
+    {
+      DailyJobs.processJobs(type, measureMetrics);
+    }
+    // queue jobs
+    case "send_surveys":
+    {
       QueueJobs.processJobs(type, sendSurveys);
     }
   }
