@@ -41,7 +41,6 @@ function createJob(type, attributes, data) {
       job.depends(depends);
     }
     if (priority !== "") {
-      console.log(priority)
       job.priority(priority);
     }
     if (!_.isEmpty(retry)) {
