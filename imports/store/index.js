@@ -14,7 +14,7 @@ export const createStore = () => {
 	return new Promise((resolve, reject) => {
 
 		// Apply middlewares
-		const middlewares = [thunk, logger];
+		const middlewares = [thunk];
 		Meteor.AppState = new AppState({ middlewares });
 
 		// register modules
