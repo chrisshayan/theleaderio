@@ -81,6 +81,12 @@ class OrganizationInformationForm extends Component {
 		}
 	}
 
+	_onClickDelete = e => {
+		e.preventDefault();
+		const { onRemove, doc } = this.props;
+		onRemove && onRemove(doc);
+	}
+
 	render() {
 		const { _id, doc, error, isLoading, onSubmit, onDelete, onCancel } = this.props;
 		const imageUrl = doc.imageUrl || DEFAULT_ORGANIZATION_PHOTO;
