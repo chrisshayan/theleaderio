@@ -94,7 +94,7 @@ export default class SigninAliasPage extends Component {
                 aliasAllowed={this.state.aliasAllowed}
                 errors={ this.state.errors }
                 onSubmit={ this._inputSubmit.bind(this) }
-                onKeyUp={ this._onKeyUp.bind(this) }
+                onKeyUp={ _.debounce(this._onKeyUp.bind(this), 300) }
               />
               <a href={forgotAliasUrl}>
                 <small>Forgot your alias?</small>
