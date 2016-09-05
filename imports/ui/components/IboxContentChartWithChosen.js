@@ -24,7 +24,7 @@ export default class IboxContentChartWithChosen extends Component {
 
   onChooseMetric(selected) {
     $.map(this.props.data, (value, key) => {
-      if(selected === key) {
+      if (selected === key) {
         this.setState({chartData: value});
       }
     });
@@ -38,7 +38,7 @@ export default class IboxContentChartWithChosen extends Component {
     // Chosen metric options
     const options = [];
     $.map(data, (value, key) => {
-      if(key !== 'label') {
+      if (key !== 'label') {
         options.push(key);
       }
     });
@@ -46,7 +46,14 @@ export default class IboxContentChartWithChosen extends Component {
     if (!loading) {
       return (
         <div className="ibox-content">
-          <h4><strong>{label}</strong></h4>
+          <span className="pull-right text-right">
+            <small>Average score in the last 6 months in: <strong>Icare benefits</strong></small>
+            <br/>
+            Employees: 162,862
+          </span>
+          <h3 className="font-bold no-margins">
+            {label}
+          </h3>
           <Chosen
             options={options}
             selectedOptions={null}

@@ -9,7 +9,6 @@ import {Profiles, STATUS_ACTIVE, STATUS_INACTIVE} from './index';
 import {Organizations} from '/imports/api/organizations/index';
 import {Industries} from '/imports/api/industries/index';
 import {Preferences} from '/imports/api/users/index';
-import {Measures} from '/imports/api/measures/index';
 import {Feedbacks} from '/imports/api/feedbacks/index';
 
 import {IDValidator} from '/imports/utils';
@@ -17,6 +16,9 @@ import {DEFAULT_PUBLIC_INFO_PREFERENCES} from '/imports/utils/defaults';
 
 // methods
 import {addPreferences} from '/imports/api/users/methods';
+
+// functions
+import {getChartData} from '/imports/api/measures/functions';
 
 // constants
 import * as ERROR_CODE from '/imports/utils/error_code';
@@ -264,21 +266,7 @@ export const getPublicData = new ValidatedMethod({
               aboutMe: null
             },
             organizations: [],
-            chart: {
-              label: [],
-              overall: [],
-              purpose: [],
-              mettings: [],
-              rules: [],
-              communications: [],
-              leadership: [],
-              workload: [],
-              energy: [],
-              stress: [],
-              decision: [],
-              respect: [],
-              conflict: []
-            },
+            chart: {},
             metrics: {
               overall: null,
               purpose: null,
@@ -295,8 +283,7 @@ export const getPublicData = new ValidatedMethod({
             },
             preferences: {}
           },
-          PreferencesData = {},
-          MeasuresData = []
+          PreferencesData = {}
           ;
 
         // add default preferences for user if don't have
@@ -387,54 +374,19 @@ export const getPublicData = new ValidatedMethod({
         }
 
         // Chart
-        result.chart = {
-          label: [],
-          overall: [],
-          purpose: [],
-          mettings: [],
-          rules: [],
-          communications: [],
-          leadership: [],
-          workload: [],
-          energy: [],
-          stress: [],
-          decision: [],
-          respect: [],
-          conflict: []
-        };
-        // chart labels
-        for (var i = 1; i < 6; i++) {
-          var previousMonth = new Date(moment().subtract(i, 'month'));
-          var element = {
-            month: previousMonth.getMonth(),
-            name: moment(previousMonth).format('MMMM'),
-            year: previousMonth.getFullYear()
-          };
-          months.push(element);
-        }
-        for(var i = 0, max = months.length; i < max; i++) {
-          let data = [];
-          result.chart.label.push(months[i].name);
-        }
-        result.chart.label = _.reverse(result.chart.label);
-        months.map(month => {
-          var selector = {leaderId: User._id, year: month.year, month: month.month};
-          MeasuresData = Measures.find(selector).fetch();
-          console.log({month, MeasuresData})
-        });
-
-        result.chart.overall = [3.2, 4.0, 3.9, 4.9, 4.5, 4];
-        result.chart.purpose = [2.2, 3.0, 4.9, 3.9, 5, 3];
-        result.chart.mettings = [3.2, 3.0, 3.9, 4.9, 4, 4.3];
-        result.chart.rules = [2.7, 4.6, 3.9, 3.2, 4, 3];
-        result.chart.communications = [4.2, 2.0, 3.9, 4.9, 4, 4];
-        result.chart.leadership = [3.2, 4.0, 3.9, 4.9, 4, 4];
-        result.chart.workload = [3.2, 2.0, 3.9, 4.9, 2.3, 3];
-        result.chart.energy = [2.7, 3.3, 4.6, 3.7, 4.5, 3.6];
-        result.chart.stress = [3.3, 3.5, 4.2, 4.9, 5, 4];
-        result.chart.decision = [2.6, 3.8, 4.2, 3.4, 3.4, 3.7];
-        result.chart.respect = [4.2, 5.0, 3.9, 2.9, 4.5, 4];
-        result.chart.conflict = [2.8, 2.0, 4.9, 4.9, 4.7, 4.4];
+        // result.chart.overall = [3.2, 4.0, 3.9, 4.9, 4.5, 4];
+        // result.chart.purpose = [2.2, 3.0, 4.9, 3.9, 5, 3];
+        // result.chart.mettings = [3.2, 3.0, 3.9, 4.9, 4, 4.3];
+        // result.chart.rules = [2.7, 4.6, 3.9, 3.2, 4, 3];
+        // result.chart.communications = [4.2, 2.0, 3.9, 4.9, 4, 4];
+        // result.chart.leadership = [3.2, 4.0, 3.9, 4.9, 4, 4];
+        // result.chart.workload = [3.2, 2.0, 3.9, 4.9, 2.3, 3];
+        // result.chart.energy = [2.7, 3.3, 4.6, 3.7, 4.5, 3.6];
+        // result.chart.stress = [3.3, 3.5, 4.2, 4.9, 5, 4];
+        // result.chart.decision = [2.6, 3.8, 4.2, 3.4, 3.4, 3.7];
+        // result.chart.respect = [4.2, 5.0, 3.9, 2.9, 4.5, 4];
+        // result.chart.conflict = [2.8, 2.0, 4.9, 4.9, 4.7, 4.4];
+        result.chart = getChartData({leaderId: User._id, organizationId: "zGhjioY8kbsjwNcLB", date: new Date(), noOfMonths: 6});
 
         // Metrics
         result.metrics = {
