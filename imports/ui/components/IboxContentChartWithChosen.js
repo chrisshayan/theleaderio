@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 // components
 import LineChart from '/imports/ui/components/LineChart';
 import Chosen from '/imports/ui/components/Chosen';
+import EmptyBox from '/imports/ui/components/EmptyBox';
 
 export default class IboxContentChartWithChosen extends Component {
 
@@ -32,42 +33,54 @@ export default class IboxContentChartWithChosen extends Component {
 
   render() {
     // metrics chart
-    const {label, data} = this.props;
-    const {loading, chartData} = this.state;
+    const
+      {label, data} = this.props,
+      {loading, chartData} = this.state
+      ;
 
-    // Chosen metric options
-    const options = [];
-    $.map(data, (value, key) => {
-      if (key !== 'label') {
-        options.push(key);
-      }
-    });
 
     if (!loading) {
-      return (
-        <div className="ibox-content">
-          <span className="pull-right text-right">
-            <small>Average score in the last 6 months in: <strong>Icare benefits</strong></small>
-            <br/>
-            Employees: 162,862
-          </span>
-          <h3 className="font-bold no-margins">
-            {label}
-          </h3>
-          <Chosen
-            options={options}
-            selectedOptions={null}
-            chosenClass="chosen-select"
-            isMultiple={false}
-            placeHolder='Choose one option ...'
-            onChange={this.onChooseMetric.bind(this)}
-          />
-          <LineChart
-            label={data.label}
-            data={chartData}
-          />
-        </div>
-      );
+      if (!_.isEmpty(data)) {
+        // Chosen metric options
+        const options = [];
+        $.map(data, (value, key) => {
+          if (key !== 'label') {
+            options.push(key);
+          }
+        });
+
+        return (
+          <div className="ibox-content">
+            <h3 className="font-bold no-margins">
+              {label}
+            </h3>
+            <Chosen
+              options={options}
+              selectedOptions={null}
+              chosenClass="chosen-select"
+              isMultiple={false}
+              placeHolder='Choose one option ...'
+              onChange={this.onChooseMetric.bind(this)}
+            />
+            <LineChart
+              label={data.label}
+              data={chartData}
+            />
+          </div>
+        );
+      } else {
+        return (
+          <div className="ibox-content">
+            <h3 className="font-bold no-margins">
+              {label}
+            </h3>
+            <EmptyBox
+              icon="fa fa-area-chart"
+              message="No Chart Data"
+            />
+          </div>
+        );
+      }
     } else {
       return (
         <div className="ibox-content">
@@ -75,6 +88,7 @@ export default class IboxContentChartWithChosen extends Component {
         </div>
       );
     }
+
 
   }
 }

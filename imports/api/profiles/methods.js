@@ -16,9 +16,7 @@ import {DEFAULT_PUBLIC_INFO_PREFERENCES} from '/imports/utils/defaults';
 
 // methods
 import {addPreferences} from '/imports/api/users/methods';
-
-// functions
-import {getChartData} from '/imports/api/measures/functions';
+import {getChartData} from '/imports/api/measures/methods';
 
 // constants
 import * as ERROR_CODE from '/imports/utils/error_code';
@@ -51,7 +49,6 @@ export const create = new ValidatedMethod({
     }
   }).validator(),
   run({userId, firstName, lastName, timezone}) {
-    // console.log({userId, firstName, lastName});
     return Profiles.insert({userId, firstName, lastName, timezone});
   }
 });
@@ -228,10 +225,12 @@ export const getPublicData = new ValidatedMethod({
       const User = Accounts.findUserByUsername(alias);
       if (!_.isEmpty(User)) {
         const
-          noOfPreferences = Preferences.find({userId: User._id, name: 'publicInfo'}).count(),
-          ProfileData = Profiles.findOne({userId: User._id}),
-          OrganizationsData = Organizations.find({leaderId: User._id}, {sort: {startTime: -1}}).fetch(),
-          FeedbacksData = Feedbacks.find({leaderId: User._id}).fetch(),
+          userId = User._id,
+          leaderId = User._id,
+          noOfPreferences = Preferences.find({userId, name: 'publicInfo'}).count(),
+          ProfileData = Profiles.findOne({userId}),
+          OrganizationsData = _.orderBy(Organizations.find({leaderId}).fetch(), ['startTime'], ['desc']),
+          FeedbacksData = Feedbacks.find({leaderId}).fetch(),
           date = new Date(),
           months = [
             {
@@ -374,19 +373,17 @@ export const getPublicData = new ValidatedMethod({
         }
 
         // Chart
-        // result.chart.overall = [3.2, 4.0, 3.9, 4.9, 4.5, 4];
-        // result.chart.purpose = [2.2, 3.0, 4.9, 3.9, 5, 3];
-        // result.chart.mettings = [3.2, 3.0, 3.9, 4.9, 4, 4.3];
-        // result.chart.rules = [2.7, 4.6, 3.9, 3.2, 4, 3];
-        // result.chart.communications = [4.2, 2.0, 3.9, 4.9, 4, 4];
-        // result.chart.leadership = [3.2, 4.0, 3.9, 4.9, 4, 4];
-        // result.chart.workload = [3.2, 2.0, 3.9, 4.9, 2.3, 3];
-        // result.chart.energy = [2.7, 3.3, 4.6, 3.7, 4.5, 3.6];
-        // result.chart.stress = [3.3, 3.5, 4.2, 4.9, 5, 4];
-        // result.chart.decision = [2.6, 3.8, 4.2, 3.4, 3.4, 3.7];
-        // result.chart.respect = [4.2, 5.0, 3.9, 2.9, 4.5, 4];
-        // result.chart.conflict = [2.8, 2.0, 4.9, 4.9, 4.7, 4.4];
-        result.chart = getChartData({leaderId: User._id, organizationId: "zGhjioY8kbsjwNcLB", date: new Date(), noOfMonths: 6});
+        getChartData.call({
+          leaderId,
+          organizationId: OrganizationsData[0]._id,
+          date: new Date(), noOfMonths: 6
+        }, (error, chartData) => {
+          if(!error) {
+            result.chart = chartData;
+          } else {
+            console.log(error)
+          }
+        });
 
         // Metrics
         result.metrics = {

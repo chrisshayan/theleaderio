@@ -92,6 +92,9 @@ export default class PublicProfile extends Component {
         chart
       } = publicInfo;
 
+      console.log(preferences.metrics);
+      console.log(metrics);
+
       return (
         <div className="gray-bg">
           <div className="container gray-bg">
@@ -136,7 +139,7 @@ export default class PublicProfile extends Component {
                   <div className="ibox-content gray-bg">
                     <div className="row">
                       <ProfileMetricsBox
-                        label="Leadership progress (no real data)"
+                        label="Leadership progress"
                         preferences={preferences.metrics}
                         data={{chart, metrics}}
                       />
