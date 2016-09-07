@@ -3,7 +3,6 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { ValidationError } from 'meteor/mdg:validation-error';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import _ from 'lodash';
-import moment from 'moment';
 
 import { Organizations } from './index';
 import { Employees, STATUS_ACTIVE, STATUS_DEACTIVE } from '/imports/api/employees';
@@ -456,5 +455,22 @@ export const removeEmployee = new ValidatedMethod({
   },
   run({ employeeId }) {
     return Employees.remove({ _id: employeeId });
+  }
+});
+
+/**
+ * Method get present organizations
+ * @return {Array} list of present organizationId ordered by the latest startTime
+ */
+export const getPresentOrganizations = new ValidatedMethod({
+  name: "organization.getPresentOrganizations",
+  validate: null,
+  run({leaderId, isPresent}) {
+    const
+      query = {leaderId, isPresent, status: "ACTIVE"},
+      projection = {name: 1, jobTitle: 1, description: 1}
+      ;
+
+    return Organizations.find(query, {projection}).fetch();
   }
 });

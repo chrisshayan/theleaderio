@@ -28,11 +28,10 @@ import ForgotAliasPage from '/imports/ui/containers/alias/ForgotAliasPage';
 import PublicProfile from '/imports/ui/containers/PublicProfile';
 import Preferences from '/imports/ui/containers/preferences/Preferences';
 
-import DashboardContainer from '/imports/ui/containers/dashboard/DashboardContainer';
+import Dashboard from '/imports/ui/containers/dashboard/Dashboard';
 import Organizations from '/imports/ui/containers/organizations/Organizations';
 import CreateOrganization from '/imports/ui/containers/organizations/CreateOrganization';
 import UpdateOrganization from '/imports/ui/containers/organizations/UpdateOrganization';
-import Employees from '/imports/ui/containers/employees/Employees';
 
 // methods
 import * as Notifications from '/imports/api/notifications/methods';
@@ -291,14 +290,14 @@ appRoutes.route('/logout', {
 });
 
 /**
- * Route: DashboardContainer
+ * Route: Dashboard
  */
 appRoutes.route('/', {
   name: 'app.dashboard',
   action() {
     mount(MainLayout, {
       content() {
-        return <DashboardContainer />
+        return <Dashboard />
       }
     })
   }
@@ -385,20 +384,6 @@ appRoutes.route('/organizations/update/:_id', {
     mount(MainLayout, {
       content() {
         return <UpdateOrganization _id={params._id}/>
-      }
-    })
-  }
-});
-
-/**
- * Route for manage employees
- */
-appRoutes.route('/employees', {
-  name: 'app.employees',
-  action(params) {
-    mount(MainLayout, {
-      content() {
-        return <Employees />
       }
     })
   }

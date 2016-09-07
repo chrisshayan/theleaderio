@@ -38,7 +38,7 @@ Measures.schema = new SimpleSchema({
     type: String
   },
   value: {
-    type: String
+    type: {Object}
   }
 });
 

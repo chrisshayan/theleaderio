@@ -1,3 +1,5 @@
+import moment from 'moment';
+import _ from 'lodash';
 
 // collections
 import {Measures} from './index';
@@ -17,20 +19,23 @@ export const measure = ({data}) => {
     query = {},
     update = {},
     options = {}
-  ;
+    ;
 
   switch (type) {
-    case "metric": {
+    case "metric":
+    {
       query = {leaderId, organizationId, type, interval, year, month, key};
       update = {$set: {value}};
       options = {upsert: true};
       break;
     }
-    case "feedback": {
+    case "feedback":
+    {
 
       break;
     }
-    default: {
+    default:
+    {
       return `unknown type: ${type}`;
     }
   }
@@ -40,7 +45,7 @@ export const measure = ({data}) => {
 
 /**
  * @summary collect measure data of a month for metric
- * @description collect all score in current month, 
+ * @description collect all score in current month,
  * @description get average score for every metric in every organization of every leader
  * @return true if success, false if failed
  */
@@ -82,7 +87,7 @@ export const measureMonthlyMetricScore = () => {
 
   // get leaders data in current month
   const docs = Metrics.find(selector, modifier).fetch();
-  if(!_.isEmpty(docs)) {
+  if (!_.isEmpty(docs)) {
 
     docs.map(doc => {
       MiniMongo.insert(doc);
@@ -92,8 +97,8 @@ export const measureMonthlyMetricScore = () => {
 
     // get average score for every leader
     leaderList.map(leaderId => {
-      var orgList = [];
-      var leaderDocs = MiniMongo.find({leaderId}).fetch();
+      const leaderDocs = MiniMongo.find({leaderId}).fetch();
+      let orgList = [];
 
       //get list of organization for specific leader
       leaderDocs.map(leaderDoc => {
@@ -102,24 +107,33 @@ export const measureMonthlyMetricScore = () => {
       });
       // get list of metric for specific organization
       orgList.map(organizationId => {
-        var metricList = [];
-        var orgDocs = MiniMongo.find({leaderId, organizationId}).fetch();
+        let
+          metricList = [],
+          orgDocs = MiniMongo.find({leaderId, organizationId}).fetch()
+        ;
         orgDocs.map(orgDoc => {
           metricList.push(orgDoc.metric);
           metricList = _.uniq(metricList);
         });
         // get list of score for specific metric
         metricList.map(metric => {
-          var scoreList = [];
-          var measureDoc = {}; // data of measure for leader
-          var metricDocs = MiniMongo.find({leaderId, organizationId, metric}).fetch();
-          metricDocs.map(metricDoc => {
-            scoreList.push(metricDoc.score);
-          });
+          const metricDocs = MiniMongo.find({leaderId, organizationId, metric}).fetch();
+          let
+            scoreList = [],
+            noOfGoodScores = 0, // count the number of score from 4 to 5
+            noOfBadScores = 0, // count the number of score from 1 to 3
+            measureDoc = {} // data of measure for leader
+            ;
 
-          // calculate average score of metric
-          var averageScore = arraySum(scoreList) / scoreList.length;
-          averageScore = Number(averageScore.toFixed(1));
+          metricDocs.map(metricDoc => {
+            const {score} = metricDoc;
+            if(score > 3) {
+              noOfGoodScores++;
+            } else {
+              noOfBadScores++;
+            }
+            scoreList.push(score);
+          });
 
           measureDoc = {
             leaderId,
@@ -129,9 +143,14 @@ export const measureMonthlyMetricScore = () => {
             year,
             month,
             key: metric,
-            value: averageScore
+            value: {
+              averageScore: Number((arraySum(scoreList) / scoreList.length).toFixed(1)),
+              noOfScores: scoreList.length,
+              noOfGoodScores,
+              noOfBadScores
+            }
           };
-
+          console.log(measureDoc)
           measure({data: measureDoc});
         });
       });
@@ -141,4 +160,3 @@ export const measureMonthlyMetricScore = () => {
     return false;
   }
 }
-
