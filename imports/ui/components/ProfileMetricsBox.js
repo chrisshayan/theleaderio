@@ -127,13 +127,6 @@ export default class ProfileMetricsBox extends Component {
             data={chartContent}
             value={chartContent.overall}
           />
-          {metricsContent.map((content, key) => (
-            <IboxContentInline
-              key={key}
-              ibcContent={content}
-              classGrid="col-xs-3"
-            />
-          ))}
         </div>
       );
     } else {

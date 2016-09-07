@@ -16,6 +16,7 @@ import BlankLayout from '/imports/ui/layouts/BlankLayout';
 
 import LandingPage from '/imports/ui/containers/LandingPage';
 
+import SignUp from '/imports/ui/containers/signup/SignUp';
 import SignUpUser from '/imports/ui/containers/signup/SignUpUser';
 import SignUpAlias from '/imports/ui/containers/signup/SignUpAlias';
 
@@ -161,6 +162,12 @@ signUpRoutes.route('/:action', {
       }
   }
 });
+// signUpRoutes.route('/:action', {
+//   name: 'signUpPage',
+//   action() {
+//     mount(SignUp);
+//   }
+// });
 
 /**
  * @summary lists of signin routes
@@ -188,7 +195,8 @@ signInRoutes.route('/:action', {
     }
     // sign in to user's account
     if (params.action == 'account') {
-      if (Meteor.isLoggingIn || Meteor.userId()) {
+      if (Meteor.loggingIn() || Meteor.userId()) {
+        console.log({logingIn: Meteor.loggingIn(), userId: Meteor.userId()})
         FlowRouter.go('app.dashboard');
       } else {
         mount(SignInAccount);

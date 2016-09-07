@@ -127,7 +127,7 @@ export default class Dashboard extends Component {
           ;
         Notifications.warning.call({closeButton, title, message});
         FlowRouter.go('app.organizations');
-        return <div></div>
+        return (<div></div>);
       }
     } else {
       return (
