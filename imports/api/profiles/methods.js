@@ -20,6 +20,7 @@ import {getChartData} from '/imports/api/measures/methods';
 
 // constants
 import * as ERROR_CODE from '/imports/utils/error_code';
+import {DEFAULT_PROFILE_PHOTO} from '/imports/utils/defaults';
 
 /**
  * CUD user profiles (Create, Update, Deactivate)
@@ -49,7 +50,8 @@ export const create = new ValidatedMethod({
     }
   }).validator(),
   run({userId, firstName, lastName, timezone}) {
-    return Profiles.insert({userId, firstName, lastName, timezone});
+    const imageUrl = DEFAULT_PROFILE_PHOTO;
+    return Profiles.insert({userId, firstName, lastName, timezone, imageUrl});
   }
 });
 
@@ -373,17 +375,21 @@ export const getPublicData = new ValidatedMethod({
         }
 
         // Chart
-        getChartData.call({
-          leaderId,
-          organizationId: OrganizationsData[0]._id,
-          date: new Date(), noOfMonths: 6
-        }, (error, chartData) => {
-          if(!error) {
-            result.chart = chartData;
-          } else {
-            console.log(error)
-          }
-        });
+        if(OrganizationsData.length > 0) {
+          getChartData.call({
+            leaderId,
+            organizationId: OrganizationsData[0]._id,
+            date: new Date(), noOfMonths: 6
+          }, (error, chartData) => {
+            if(!error) {
+              result.chart = chartData;
+            } else {
+              console.log(error)
+            }
+          });
+        } else {
+          result.chart = [];
+        }
 
         // Metrics
         result.metrics = {
