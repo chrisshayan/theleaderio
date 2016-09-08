@@ -115,7 +115,7 @@ class DashboardOrganization extends Component {
                 interval="Monthly"
                 label="Feedbacks"
                 content={noOfFeedbacks}
-                description="over 300 employees"
+                description="from employees"
               />
             </div>
           </div>

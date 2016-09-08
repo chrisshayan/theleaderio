@@ -16,7 +16,6 @@ import BlankLayout from '/imports/ui/layouts/BlankLayout';
 
 import LandingPage from '/imports/ui/containers/LandingPage';
 
-import SignUp from '/imports/ui/containers/signup/SignUp';
 import SignUpUser from '/imports/ui/containers/signup/SignUpUser';
 import SignUpAlias from '/imports/ui/containers/signup/SignUpAlias';
 
@@ -162,12 +161,6 @@ signUpRoutes.route('/:action', {
       }
   }
 });
-// signUpRoutes.route('/:action', {
-//   name: 'signUpPage',
-//   action() {
-//     mount(SignUp);
-//   }
-// });
 
 /**
  * @summary lists of signin routes

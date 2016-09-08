@@ -64,7 +64,6 @@ export const getRecipientInfo = ({recipient, sender}) => {
     return false;
   }
   const recipientElements = recipient.split("-");
-  // console.log(recipientElements)
   const
     planId = recipientElements[0],
     organizationId = recipientElements[1]
