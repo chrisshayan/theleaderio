@@ -27,6 +27,8 @@ export default class SchedulerCollection extends Mongo.Collection {
         status: 'READY'
       });
 
+      if(_.isEmpty(doc.metrics)) return;
+
       // generate new sending plan
       const leaderId = Meteor.userId();
       const schedulerId = doc._id;
