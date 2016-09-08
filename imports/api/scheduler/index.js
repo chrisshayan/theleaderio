@@ -111,13 +111,12 @@ Scheduler.schema = new SimpleSchema({
   },
   metrics: {
     type: [String],
-    minCount: 1,
-    maxCount: 3,
     allowedValues: [
       METRICS.PURPOSE, METRICS.MEETINGS, METRICS.RULES, METRICS.COMMUNICATIONS,
       METRICS.LEADERSHIP, METRICS.WORKLOAD, METRICS.ENERGY, METRICS.STRESS,
       METRICS.DECISION, METRICS.RESPECT, METRICS.CONFLICT
     ],
+    optional: true
   },
   year: {
     type: Number

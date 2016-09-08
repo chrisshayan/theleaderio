@@ -14,7 +14,7 @@ class TopNav extends Component {
     const {userProfile} = this.props;
     let profilePhoto = DEFAULT_PROFILE_PHOTO;
     if(!_.isEmpty(userProfile)) {
-      profilePhoto = userProfile.imageUrl;
+      profilePhoto = userProfile.getPicture();
     } else {
       profilePhoto = this.props.imageUrl;
     }

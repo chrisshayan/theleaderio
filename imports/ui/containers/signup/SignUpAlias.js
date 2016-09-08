@@ -80,7 +80,7 @@ export default class SignUpAlias extends Component {
           aliasAllowed={this.state.aliasAllowed}
           errors={ this.state.errors }
           onSubmit={ this._inputSubmit.bind(this) }
-          onKeyUp={ this._onKeyUp.bind(this) }
+          onKeyUp={ _.debounce(this._onKeyUp.bind(this), 300) }
         />
         <Copyright />
       </div>
