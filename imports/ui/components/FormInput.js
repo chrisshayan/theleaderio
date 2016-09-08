@@ -14,29 +14,35 @@ class FormInput extends Component {
 
 	static defaultProps = {
 		label: '',
+		type: 'text',
 		defaultValue: '',
 		value: '',
 		placeholder: '',
 		error: '',
 		disabled: false,
 		multiline: false,
+		required: false,
+		autoFocus: false,
 		onChangeText: () => null,
 	};
 
 	render() {
 		const { 
 			label,
+			type,
 			value,
 			placeholder, 
 			error, 
 			disabled,
 			multiline,
 			onChangeText,
+			required,
+			autoFocus
 		} = this.props;
 
 		return (
 			<div className={error ? 'form-group has-error': 'form-group'}>
-				<label className="control-label">{ label }</label>
+				{(label !== '') && (<label className="control-label">{ label }</label>)}
 				{ multiline ? (
 					<textarea 
 						className="form-control"
@@ -44,15 +50,19 @@ class FormInput extends Component {
 						value={value}
 						onChange={e => onChangeText(e.target.value)}
 						disabled={!!disabled}
+						required={required}
+						autoFocus={autoFocus}
 					/>
 				) : (
 					<input 
-						type="text"
+						type={type}
 						className="form-control"
 						placeholder={placeholder}
 						value={value}
 						onChange={e => onChangeText(e.target.value)}
 						disabled={!!disabled}
+						required={required}
+						autoFocus={autoFocus}
 					/>
 				)}
 				<p style={ styles.errorMsg }>{ error }</p>

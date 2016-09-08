@@ -153,13 +153,14 @@ export const confirm = new ValidatedMethod({
       // verify Token
       const token = Tokens.findOne({_id: tokenId});
       if (!_.isEmpty(token)) {
-        const email = token.email;
-        const user = Accounts.findUserByEmail(email);
+        const
+          email = token.email,
+          user = Accounts.findUserByEmail(email);
         if (!_.isEmpty(user)) {
-          const userId = user._id;
+          const {_id} = user;
           // Activate user
           Meteor.users.update({
-            userId,
+            _id,
             emails: {
               $elemMatch: {address: email}
             }

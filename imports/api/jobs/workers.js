@@ -78,7 +78,7 @@ const enqueueSurveys = function (job, cb) {
                   };
                   const attributes = {
                     priority: "normal",
-                    after: new Date(getLocalDate(date, timezone))
+                    after: new Date(getLocalDate(sendDate, timezone))
                   };
                   enqueue.call({type: "send_surveys", attributes, data: queueData}, (error) => {
                     if (_.isEmpty(error)) {
@@ -119,7 +119,6 @@ const sendSurveys = function (job, cb) {
       job.log(jobMessage, {level: LOG_LEVEL.WARNING});
       job.done();
     } else {
-      // console.log({employeeId, leaderId, organizationId, metric});
       const template = 'survey';
       const data = {
         planId,
@@ -134,7 +133,6 @@ const sendSurveys = function (job, cb) {
           job.done();
         } else {
           setSendingPlanStatus.call({_id: planId, status: "FAILED"});
-          console.log(error);
           jobMessage = error.reason;
           job.log(jobMessage, {level: LOG_LEVEL.WARNING});
           job.done();
@@ -152,7 +150,7 @@ const measureMetrics = (job, cb) => {
   try {
     const measure = measureMonthlyMetricScore();
     if(measure) {
-      jobMessage = `measured metrics for ${leaderList.length} leaders`;
+      jobMessage = `measured metrics for leaders done`;
       job.log(jobMessage, {level: LOG_LEVEL.INFO});
       job.done();
     } else {
@@ -161,7 +159,8 @@ const measureMetrics = (job, cb) => {
       job.done();
     }
   } catch (error) {
-    job.log(error, {level: LOG_LEVEL.CRITICAL});
+    console.log(error)
+    job.log(error.message, {level: LOG_LEVEL.CRITICAL});
     job.fail();
   }
 }

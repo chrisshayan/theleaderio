@@ -188,7 +188,8 @@ signInRoutes.route('/:action', {
     }
     // sign in to user's account
     if (params.action == 'account') {
-      if (Meteor.isLoggingIn || Meteor.userId()) {
+      if (Meteor.loggingIn() || Meteor.userId()) {
+        console.log({logingIn: Meteor.loggingIn(), userId: Meteor.userId()})
         FlowRouter.go('app.dashboard');
       } else {
         mount(SignInAccount);

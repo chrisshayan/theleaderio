@@ -38,7 +38,24 @@ export const arraySum = (array) => {
 	if(_.isEmpty(array)) {
 		return 0;
 	}
-	return array.reduce(function(a, b){return a+b;});
+	return array.reduce(function(a, b){return Number(a)+Number(b);});
+}
+
+export const arrayAverage = (array) => {
+	let count = 0; // calculate the number of element which value > 0
+	if(_.isEmpty(array)) {
+		return 0;
+	}
+	if(arraySum(array) === 0) {
+		return 0;
+	}
+
+	array.map(value => {
+		if(Number(value) > 0) {
+			count++;
+		}
+	});
+	return arraySum(array) / count;
 }
 
 export const addMonths = (date, months) => {

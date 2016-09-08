@@ -110,7 +110,6 @@ export const send = new ValidatedMethod({
         case 'survey':
         {
           const options = EmailFunctions.getSurveyEmailOptions({template, data});
-          console.log(options)
           Email.send(options);
           break;
         }

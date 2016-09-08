@@ -18,8 +18,12 @@ import {DEFAULT_PUBLIC_INFO_PREFERENCES} from '/imports/utils/defaults';
 import {addPreferences} from '/imports/api/users/methods';
 import {getChartData} from '/imports/api/measures/methods';
 
+// functions
+import {getAverageMetrics} from '/imports/api/metrics/functions';
+
 // constants
 import * as ERROR_CODE from '/imports/utils/error_code';
+import {DEFAULT_PROFILE_PHOTO} from '/imports/utils/defaults';
 
 /**
  * CUD user profiles (Create, Update, Deactivate)
@@ -49,7 +53,8 @@ export const create = new ValidatedMethod({
     }
   }).validator(),
   run({userId, firstName, lastName, timezone}) {
-    return Profiles.insert({userId, firstName, lastName, timezone});
+    const imageUrl = DEFAULT_PROFILE_PHOTO;
+    return Profiles.insert({userId, firstName, lastName, timezone, imageUrl});
   }
 });
 
@@ -373,33 +378,26 @@ export const getPublicData = new ValidatedMethod({
         }
 
         // Chart
-        getChartData.call({
-          leaderId,
-          organizationId: OrganizationsData[0]._id,
-          date: new Date(), noOfMonths: 6
-        }, (error, chartData) => {
-          if(!error) {
-            result.chart = chartData;
-          } else {
-            console.log(error)
-          }
-        });
+        if(OrganizationsData.length > 0) {
+          getChartData.call({
+            leaderId,
+            organizationId: OrganizationsData[0]._id,
+            date: new Date(), noOfMonths: 6
+          }, (error, chartData) => {
+            if(!error) {
+              result.chart = chartData;
+            } else {
+              console.log(error)
+            }
+          });
+        } else {
+          result.chart = [];
+        }
 
         // Metrics
-        result.metrics = {
-          overall: 4.4,
-          purpose: 3.6,
-          mettings: 4.7,
-          rules: 5,
-          communications: 4.2,
-          leadership: 3.9,
-          workload: 2.5,
-          energy: 3.8,
-          stress: 3.7,
-          decision: 4.2,
-          respect: 4,
-          conflict: 4.9
-        };
+        if(!_.isEmpty(result.chart)) {
+          result.metrics = getAverageMetrics(result.chart);
+        }
 
         return result;
       } else {

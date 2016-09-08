@@ -12,9 +12,14 @@ import Spinner from '/imports/ui/common/Spinner';
 import {NoticeForm} from '/imports/ui/common/NoticeForm';
 import IboxContentChartWithChosen from '/imports/ui/components/IboxContentChartWithChosen';
 import IboxDashboard from '/imports/ui/components/IboxDashboard';
+import ProfileMetricsBox from '/imports/ui/components/ProfileMetricsBox';
 
 // functions
 import {getChartData} from '/imports/api/measures/methods';
+import {getAverageMetrics} from '/imports/api/metrics/functions';
+
+// constants
+import {DEFAULT_PUBLIC_INFO_PREFERENCES} from '/imports/utils/defaults';
 
 class DashboardOrganization extends Component {
   constructor() {
@@ -23,23 +28,26 @@ class DashboardOrganization extends Component {
     this.state = {
       ready: false,
       error: "",
-      chartContent: {}
+      chart: {}
     };
   }
 
   componentWillMount() {
     const
       leaderId = Meteor.userId(),
-      organizationId = FlowRouter.getQueryParam("t"),
+      organizationId = this.props.organizationId,
       date = new Date(),
-      noOfMonths = 6
+      noOfMonths = 6,
+      preferences = {};
       ;
 
     getChartData.call({leaderId, organizationId, date, noOfMonths}, (err, result) => {
       if (!err) {
+        preferences.metrics = DEFAULT_PUBLIC_INFO_PREFERENCES.metrics;
         this.setState({
           ready: true,
-          chartContent: result
+          chart: result,
+          preferences
         });
       } else {
         this.setState({
@@ -54,19 +62,33 @@ class DashboardOrganization extends Component {
       {
         containerReady,
         measures,
-        feedbacks
+        noOfFeedbacks
       } = this.props,
       {
         ready,
-        chartContent,
-        error
+        error,
+        chart,
+        preferences
       } = this.state
       ;
     let
-      noOfFeedbacks = "",
-      noOfGoodScores = "",
-      noOfBadScores = ""
+      metrics = {},
+      noOfGoodScores = 0,
+      noOfBadScores = 0
       ;
+
+    if (!_.isEmpty(measures)) {
+      measures.map(measure => {
+        noOfGoodScores += measure.value.noOfGoodScores;
+        noOfBadScores += measure.value.noOfBadScores;
+      });
+
+    }
+
+    // Metrics
+    if(!_.isEmpty(chart)) {
+      metrics = getAverageMetrics(chart);
+    }
 
     if (!_.isEmpty(error)) {
       return (
@@ -83,14 +105,6 @@ class DashboardOrganization extends Component {
     }
 
     if (ready & containerReady) {
-      if (!_.isEmpty(measures)) {
-        noOfGoodScores = accounting.formatNumber(measures.value.noOfGoodScores);
-        noOfBadScores = accounting.formatNumber(measures.value.noOfBadScores);
-      }
-      if (feedbacks > 0) {
-        noOfFeedbacks = accounting.formatNumber(feedbacks.count());
-      }
-
       return (
         <div className="animated fadeInRight">
           <div className="row">
@@ -98,7 +112,7 @@ class DashboardOrganization extends Component {
               <IboxDashboard
                 interval="Monthly"
                 label="Good score"
-                content={noOfGoodScores}
+                content={accounting.formatNumber(noOfGoodScores)}
                 description="point in 4 and 5"
               />
             </div>
@@ -106,7 +120,7 @@ class DashboardOrganization extends Component {
               <IboxDashboard
                 interval="Monthly"
                 label="Bad score"
-                content={noOfBadScores}
+                content={accounting.formatNumber(noOfBadScores)}
                 description="point from 1 to 3"
               />
             </div>
@@ -114,21 +128,17 @@ class DashboardOrganization extends Component {
               <IboxDashboard
                 interval="Monthly"
                 label="Feedbacks"
-                content={noOfFeedbacks}
-                description="over 300 employees"
+                content={accounting.formatNumber(noOfFeedbacks)}
+                description="from employees"
               />
             </div>
           </div>
           <div className="row">
-            <div className="col-md-12">
-              <div className="ibox float-e-margins">
-                <IboxContentChartWithChosen
-                  label="Half-year Metric Progress Chart"
-                  data={chartContent}
-                  value={chartContent.overall}
-                />
-              </div>
-            </div>
+            <ProfileMetricsBox
+              label="Half-year leadership progress"
+              preferences={preferences.metrics}
+              data={{chart, metrics}}
+            />
           </div>
         </div>
       );
@@ -142,22 +152,23 @@ class DashboardOrganization extends Component {
   }
 }
 
-export default DashboardOrganizationContainer = createContainer(function () {
+export default DashboardOrganizationContainer = createContainer(function (params) {
   const
     leaderId = Meteor.userId(),
-    organizationId = FlowRouter.getQueryParam("t"),
+    organizationId = params.organizationId,
     date = new Date(),
     year = date.getFullYear(),
-    month = date.getMonth()
-  subMeasures = Meteor.subscribe("measures"),
+    month = date.getMonth(),
+    subMeasures = Meteor.subscribe("measures"),
     subFeedbacks = Meteor.subscribe("feedbacks")
-  ;
+    ;
   let
     containerReady = false,
     query = {},
     projection = {},
-    measures = {},
-    feedbacks = null
+    measures = [],
+    feedbacks = [],
+    noOfFeedbacks = 0
     ;
 
   query = {
@@ -184,13 +195,14 @@ export default DashboardOrganizationContainer = createContainer(function () {
     metric: 1,
     feedback: 1
   };
-  feedbacks = Feedbacks.find(query, projection).count();
+  feedbacks = Feedbacks.find(query, projection).fetch();
+  noOfFeedbacks = feedbacks.length;
 
   containerReady = subMeasures.ready() & subFeedbacks.ready();
 
   return {
     containerReady,
     measures,
-    feedbacks
+    noOfFeedbacks
   };
 }, DashboardOrganization);

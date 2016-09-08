@@ -123,7 +123,7 @@ export default class ProfileMetricsBox extends Component {
             <h5>{label}</h5>
           </div>
           <IboxContentChartWithChosen
-            label="Half-year Metric Progress Chart"
+            label=""
             data={chartContent}
             value={chartContent.overall}
           />
