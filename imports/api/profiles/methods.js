@@ -18,6 +18,9 @@ import {DEFAULT_PUBLIC_INFO_PREFERENCES} from '/imports/utils/defaults';
 import {addPreferences} from '/imports/api/users/methods';
 import {getChartData} from '/imports/api/measures/methods';
 
+// functions
+import {getAverageMetrics} from '/imports/api/metrics/functions';
+
 // constants
 import * as ERROR_CODE from '/imports/utils/error_code';
 import {DEFAULT_PROFILE_PHOTO} from '/imports/utils/defaults';
@@ -392,20 +395,9 @@ export const getPublicData = new ValidatedMethod({
         }
 
         // Metrics
-        result.metrics = {
-          overall: 4.4,
-          purpose: 3.6,
-          mettings: 4.7,
-          rules: 5,
-          communications: 4.2,
-          leadership: 3.9,
-          workload: 2.5,
-          energy: 3.8,
-          stress: 3.7,
-          decision: 4.2,
-          respect: 4,
-          conflict: 4.9
-        };
+        if(!_.isEmpty(result.chart)) {
+          result.metrics = getAverageMetrics(result.chart);
+        }
 
         return result;
       } else {

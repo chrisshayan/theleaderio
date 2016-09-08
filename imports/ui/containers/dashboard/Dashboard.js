@@ -33,7 +33,7 @@ export default class Dashboard extends Component {
     // get present organizations first
     getPresentOrganizations.call({leaderId: Meteor.userId(), isPresent: true}, (error, result) => {
       if (!error) {
-        if(!_.isEmpty(result)) {
+        if (!_.isEmpty(result)) {
           this.setState({
             ready: true,
             orgList: _.orderBy(result, ['startTime'], ['desc'])
@@ -41,7 +41,7 @@ export default class Dashboard extends Component {
         } else {
           // if no present organization, get all active organizations
           getPresentOrganizations.call({leaderId: Meteor.userId(), isPresent: false}, (error, result) => {
-            if(!error) {
+            if (!error) {
               this.setState({
                 ready: true,
                 orgList: _.orderBy(result, ['startTime'], ['desc'])
@@ -62,6 +62,19 @@ export default class Dashboard extends Component {
     });
   }
 
+  componentDidUpdate() {
+    const {ready, orgList} = this.state;
+    if (ready && orgList.length === 0) {
+      const
+        closeButton = false,
+        title = "You didn't have present organization",
+        message = "Please create one"
+        ;
+      Notifications.warning.call({closeButton, title, message});
+      FlowRouter.go('app.organizations');
+    }
+  }
+
   getTabs({orgList}) {
     let tabs = [];
 
@@ -69,7 +82,7 @@ export default class Dashboard extends Component {
       const tab = {
         key: org._id,
         title: org.name,
-        component: <DashboardOrganizationContainer />
+        component: <DashboardOrganizationContainer organizationId={org._id}/>
       };
       // allow maximum MAX_TABS tabs only
       if (tabs.length < MAX_TABS) {
@@ -81,7 +94,6 @@ export default class Dashboard extends Component {
 
   render() {
     const {ready, error} = this.state;
-
     if (!_.isEmpty(error)) {
       return (
         <div>
@@ -98,37 +110,25 @@ export default class Dashboard extends Component {
 
     if (ready) {
       const
-        {currentTab, orgList} = this.state,
-        tabs = this.getTabs({orgList})
+        {currentTab, orgList} = this.state
         ;
 
-      if (tabs.length > 0) {
-        return (
-          <div>
-            <Box>
-              <Tabs
-                tabs={tabs}
-                currentTab={currentTab}
-                onChangeTab={t => {
+      return (
+        <div>
+          <Box>
+            <Tabs
+              tabs={this.getTabs({orgList})}
+              currentTab={currentTab}
+              onChangeTab={t => {
 							  FlowRouter.setQueryParams({ t })
 							  this.setState({
                   currentTab: FlowRouter.getQueryParam('t')
                 });
 						  }}
-              />
-            </Box>
-          </div>
-        );
-      } else {
-        const
-          closeButton = false,
-          title = "You didn't have present organization",
-          message = "Please create one"
-          ;
-        Notifications.warning.call({closeButton, title, message});
-        FlowRouter.go('app.organizations');
-        return (<div></div>);
-      }
+            />
+          </Box>
+        </div>
+      );
     } else {
       return (
         <div>

@@ -38,7 +38,24 @@ Measures.schema = new SimpleSchema({
     type: String
   },
   value: {
-    type: {Object}
+    type: Object,
+    optional: true
+  },
+  "value.averageScore": {
+    type: Number,
+    optional: true
+  },
+  "value.noOfScores": {
+    type: Number,
+    optional: true
+  },
+  "value.noOfGoodScores": {
+    type: Number,
+    optional: true
+  },
+  "value.noOfBadScores": {
+    type: Number,
+    optional: true
   }
 });
 
