@@ -107,22 +107,22 @@ export const getChartData = new ValidatedMethod({
       MeasuresData.map(measure => {
         const
           metric = measure.key,
-          score = Number(measure.value)
+          score = Number(measure.value.averageScore)
           ;
         noOfMetrics++;
         totalScore += score;
         metrics[metric] = score;
       });
       metrics.overall = (totalScore === 0) ? totalScore : totalScore / noOfMetrics;
+      metrics.overall = metrics.overall.toFixed(1);
 
       // add metrics value into result
       for (var metric in metrics) {
         result[metric].push(metrics[metric]);
       }
     }
-
     // return empty if no chart data
-    countChartData = arraySum(result.overall == 0);
+    countChartData = arraySum(result.overall);
     if(countChartData === 0) {
       result = [];
       // these data used for testing
@@ -145,7 +145,6 @@ export const getChartData = new ValidatedMethod({
         result[e] = _.reverse(result[e]);
       }
     }
-
     return result;
   }
 });

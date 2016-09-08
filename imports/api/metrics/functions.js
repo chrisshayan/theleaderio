@@ -7,6 +7,9 @@ import {Defaults} from '/imports/api/defaults/index';
 import {send as sendEmail} from '/imports/api/email/methods';
 import {add as addScore} from './methods';
 
+// functions
+import {arrayAverage} from '/imports/utils/index';
+
 function onScoringFailed({planId, employeeId, leaderId, organizationId, metric}) {
   const template = 'survey_error';
   const data = {
@@ -81,4 +84,45 @@ export const scoringLeader = ({planId, employeeId, leaderId, organizationId, met
   } else {
     return onScoringFailed({planId, employeeId, leaderId, organizationId, metric});
   }
+}
+
+/**
+ * Function get average value of metrics for metric box
+ * @param {Array} data - an array of metrics object
+ * @return {Object} average value of metrics
+ */
+export const getAverageMetrics = (data) => {
+  let
+    metrics = {
+      overall: null,
+      purpose: null,
+      mettings: null,
+      rules: null,
+      communications: null,
+      leadership: null,
+      workload: null,
+      energy: null,
+      stress: null,
+      decision: null,
+      respect: null,
+      conflict: null
+    }
+  ;
+
+  metrics = {
+    overall: arrayAverage(data.overall),
+    purpose: arrayAverage(data.purpose),
+    mettings: arrayAverage(data.mettings),
+    rules: arrayAverage(data.rules),
+    communications: arrayAverage(data.communications),
+    leadership: arrayAverage(data.leadership),
+    workload: arrayAverage(data.workload),
+    energy: arrayAverage(data.energy),
+    stress: arrayAverage(data.stress),
+    decision: arrayAverage(data.decision),
+    respect: arrayAverage(data.respect),
+    conflict: arrayAverage(data.conflict)
+  }
+
+  return metrics;
 }

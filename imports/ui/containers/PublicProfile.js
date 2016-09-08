@@ -67,7 +67,6 @@ export default class PublicProfile extends Component {
 
   render() {
     const {loading, alias} = this.state;
-    // console.log(this.state.chartData)
 
     if (loading) {
       return (
@@ -79,7 +78,6 @@ export default class PublicProfile extends Component {
     if (alias) {
       const url = document.location.href;
       const {publicInfo, preferences} = this.state;
-
       const {
         basic,
         headline,
@@ -92,8 +90,6 @@ export default class PublicProfile extends Component {
         chart
       } = publicInfo;
 
-      console.log(preferences.metrics);
-      console.log(metrics);
 
       return (
         <div className="gray-bg">
@@ -139,7 +135,7 @@ export default class PublicProfile extends Component {
                   <div className="ibox-content gray-bg">
                     <div className="row">
                       <ProfileMetricsBox
-                        label="Leadership progress"
+                        label="Half-year leadership progress"
                         preferences={preferences.metrics}
                         data={{chart, metrics}}
                       />

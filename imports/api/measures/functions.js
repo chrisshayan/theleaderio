@@ -150,7 +150,6 @@ export const measureMonthlyMetricScore = () => {
               noOfBadScores
             }
           };
-          console.log(measureDoc)
           measure({data: measureDoc});
         });
       });
