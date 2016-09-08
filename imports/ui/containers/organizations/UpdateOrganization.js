@@ -69,6 +69,8 @@ class UpdateOrganization extends Component {
 	}
 
 	_onRemove = doc => {
+		let t = confirm('Are you sure you want to delete this organization?');
+		if(!t) return; 
 		orgMethods.remove.call({ _id: doc._id }, err => {
 			if(err) {
 				Notifications.error.call({ message: err.reason });
