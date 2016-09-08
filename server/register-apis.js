@@ -12,6 +12,8 @@ import '/imports/api/users/register.server';
 import '/imports/api/email/register.server';
 // organizations
 import '/imports/api/organizations/register.server';
+// employees
+import '/imports/api/employees/register.server';
 // scheduler
 import '/imports/api/scheduler/register.server';
 // jobs

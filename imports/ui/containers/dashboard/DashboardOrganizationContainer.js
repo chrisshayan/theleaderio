@@ -6,11 +6,11 @@ import {FlowRouter} from 'meteor/kadira:flow-router';
 // collections
 import {Measures} from '/imports/api/measures/index';
 import {Feedbacks} from '/imports/api/feedbacks/index';
+import {Employees, STATUS_ACTIVE} from '/imports/api/employees/index';
 
 // components
 import Spinner from '/imports/ui/common/Spinner';
 import {NoticeForm} from '/imports/ui/common/NoticeForm';
-import IboxContentChartWithChosen from '/imports/ui/components/IboxContentChartWithChosen';
 import IboxDashboard from '/imports/ui/components/IboxDashboard';
 import ProfileMetricsBox from '/imports/ui/components/ProfileMetricsBox';
 
@@ -58,10 +58,12 @@ class DashboardOrganization extends Component {
   }
 
   render() {
+    // console.log(this.props)
     const
       {
         containerReady,
         measures,
+        noOfEmployees,
         noOfFeedbacks
       } = this.props,
       {
@@ -108,7 +110,15 @@ class DashboardOrganization extends Component {
       return (
         <div className="animated fadeInRight">
           <div className="row">
-            <div className="col-md-4">
+            <div className="col-md-3">
+              <IboxDashboard
+                interval="Active"
+                label="Team size"
+                content={accounting.formatNumber(noOfEmployees)}
+                description="employees"
+              />
+            </div>
+            <div className="col-md-3">
               <IboxDashboard
                 interval="Monthly"
                 label="Good score"
@@ -116,7 +126,7 @@ class DashboardOrganization extends Component {
                 description="point in 4 and 5"
               />
             </div>
-            <div className="col-md-4">
+            <div className="col-md-3">
               <IboxDashboard
                 interval="Monthly"
                 label="Bad score"
@@ -124,7 +134,7 @@ class DashboardOrganization extends Component {
                 description="point from 1 to 3"
               />
             </div>
-            <div className="col-md-4">
+            <div className="col-md-3">
               <IboxDashboard
                 interval="Monthly"
                 label="Feedbacks"
@@ -160,6 +170,7 @@ export default DashboardOrganizationContainer = createContainer(function (params
     year = date.getFullYear(),
     month = date.getMonth(),
     subMeasures = Meteor.subscribe("measures"),
+    subEmployees = Meteor.subscribe("employees"),
     subFeedbacks = Meteor.subscribe("feedbacks")
     ;
   let
@@ -167,7 +178,9 @@ export default DashboardOrganizationContainer = createContainer(function (params
     query = {},
     projection = {},
     measures = [],
+    employees = [],
     feedbacks = [],
+    noOfEmployees = 0,
     noOfFeedbacks = 0
     ;
 
@@ -181,6 +194,16 @@ export default DashboardOrganizationContainer = createContainer(function (params
   };
   projection = {key: 1, value: 1};
   measures = Measures.find(query, projection).fetch();
+
+
+  query = {
+    leaderId,
+    organizationId,
+    status: STATUS_ACTIVE
+  };
+  employees = Employees.find(query).fetch();
+  console.log(Employees.find().fetch())
+  noOfEmployees = employees.length;
 
   query = {
     leaderId,
@@ -198,11 +221,12 @@ export default DashboardOrganizationContainer = createContainer(function (params
   feedbacks = Feedbacks.find(query, projection).fetch();
   noOfFeedbacks = feedbacks.length;
 
-  containerReady = subMeasures.ready() & subFeedbacks.ready();
+  containerReady = subMeasures.ready() & subFeedbacks.ready() & subEmployees.ready();
 
   return {
     containerReady,
     measures,
+    noOfEmployees,
     noOfFeedbacks
   };
 }, DashboardOrganization);
