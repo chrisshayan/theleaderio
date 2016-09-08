@@ -1,0 +1,42 @@
+{
+  "name": "ttt",
+  "private": true,
+  "scripts": {
+    "start": "meteor run"
+  },
+  "dependencies": {
+    "amqplib": "^0.4.2",
+    "babel-plugin-transform-class-properties": "^6.10.2",
+    "bcrypt": "^0.8.7",
+    "bluebird": "^3.4.1",
+    "body-parser": "^1.15.2",
+    "capitalize": "^1.0.0",
+    "email-template-builder": "^1.0.0",
+    "faker": "^3.1.0",
+    "lodash": "^4.13.1",
+    "meteor-node-stubs": "^0.2.3",
+    "moment": "^2.14.1",
+    "moment-timezone": "^0.5.5",
+    "papaparse": "^4.1.2",
+    "randomcolor": "^0.4.4",
+    "react": "^15.3.0",
+    "react-addons-pure-render-mixin": "^15.3.0",
+    "react-bootstrap": "^0.29.5",
+    "react-bootstrap-modal": "^2.1.0",
+    "react-dom": "^15.3.0",
+    "react-dropzone": "^3.5.3",
+    "react-filepicker": "^0.8.1",
+    "react-mounter": "^1.2.0",
+    "react-scroll-box": "^0.3.3-beta",
+    "react-scrollbar": "^0.4.1",
+    "react-skylight": "^0.4.0",
+    "react-social-sharebuttons": "^2.0.0",
+    "react-spinner": "^0.2.6",
+    "redux-logger": "^2.6.1",
+    "redux-thunk": "^2.1.0",
+    "validate.js": "^0.10.0"
+  },
+  "devDependencies": {
+    "babel-plugin-transform-class-properties": "^6.10.2"
+  }
+}

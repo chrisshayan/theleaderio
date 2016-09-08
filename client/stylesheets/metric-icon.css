@@ -1,0 +1,79 @@
+  /*
+    Flaticon icon font: Flaticon
+    Creation date: 11/08/2016 09:24
+    */
+  
+  @font-face {
+    font-family: "Flaticon";
+    src: url("./fonts/flaticon.eot");
+    src: url("./fonts/flaticon.eot?#iefix") format("embedded-opentype"), 
+         url("./fonts/flaticon.woff") format("woff"), 
+         url("./fonts/flaticon.ttf") format("truetype"), 
+         url("./fonts/flaticon.svg#Flaticon") format("svg");
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  @media screen and (-webkit-min-device-pixel-ratio:0) {
+    @font-face {
+      font-family: "Flaticon";
+      src: url("./flaticon.svg#Flaticon") format("svg");
+    }
+  }
+  
+  [class^="flaticon-"]:before,
+  [class*=" flaticon-"]:before,
+  [class^="flaticon-"]:after,
+  [class*=" flaticon-"]:after {
+    font-family: Flaticon;
+    font-size: 20px;
+    font-style: normal;
+  }
+
+  .flaticon-2x:before, .flaticon-2x:after {
+    font-size: 28px;
+  }
+  
+  .flaticon-metric-communication:before {
+    content: "\f100";
+  }
+  
+  .flaticon-metric-conflict:before {
+    content: "\f101";
+  }
+  
+  .flaticon-metric-decision:before {
+    content: "\f102";
+  }
+  
+  .flaticon-metric-energy:before {
+    content: "\f103";
+  }
+  
+  .flaticon-metric-leadership:before {
+    content: "\f104";
+  }
+  
+  .flaticon-metric-meeting:before {
+    content: "\f105";
+  }
+  
+  .flaticon-metric-purpose:before {
+    content: "\f106";
+  }
+  
+  .flaticon-metric-respect:before {
+    content: "\f107";
+  }
+  
+  .flaticon-metric-rule:before {
+    content: "\f108";
+  }
+  
+  .flaticon-metric-stress:before {
+    content: "\f109";
+  }
+  
+  .flaticon-metric-workload:before {
+    content: "\f10a";
+  }
