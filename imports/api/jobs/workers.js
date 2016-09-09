@@ -82,6 +82,7 @@ const enqueueSurveys = function (job, cb) {
                   };
                   enqueue.call({type: "send_surveys", attributes, data: queueData}, (error) => {
                     if (_.isEmpty(error)) {
+                      setSendingPlanStatus.call({_id: planId, status: "QUEUED"});
                       jobMessage = `Enqueue mail ${metric} to ${employee.email} on ${date}`;
                       job.log(jobMessage, {level: LOG_LEVEL.INFO});
                     } else {
@@ -159,7 +160,6 @@ const measureMetrics = (job, cb) => {
       job.done();
     }
   } catch (error) {
-    console.log(error)
     job.log(error.message, {level: LOG_LEVEL.CRITICAL});
     job.fail();
   }

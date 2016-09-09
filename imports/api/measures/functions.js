@@ -110,7 +110,7 @@ export const measureMonthlyMetricScore = () => {
         let
           metricList = [],
           orgDocs = MiniMongo.find({leaderId, organizationId}).fetch()
-        ;
+          ;
         orgDocs.map(orgDoc => {
           metricList.push(orgDoc.metric);
           metricList = _.uniq(metricList);
@@ -120,6 +120,8 @@ export const measureMonthlyMetricScore = () => {
           const metricDocs = MiniMongo.find({leaderId, organizationId, metric}).fetch();
           let
             scoreList = [],
+            averageScore = 0,
+            noOfScores = 0,
             noOfGoodScores = 0, // count the number of score from 4 to 5
             noOfBadScores = 0, // count the number of score from 1 to 3
             measureDoc = {} // data of measure for leader
@@ -135,6 +137,11 @@ export const measureMonthlyMetricScore = () => {
             scoreList.push(score);
           });
 
+          noOfScores = scoreList.length;
+          if(noOfScores > 0) {
+            averageScore = Number(arraySum(scoreList) / scoreList.length).toFixed(1);
+          }
+
           measureDoc = {
             leaderId,
             organizationId,
@@ -144,8 +151,8 @@ export const measureMonthlyMetricScore = () => {
             month,
             key: metric,
             value: {
-              averageScore: Number((arraySum(scoreList) / scoreList.length).toFixed(1)),
-              noOfScores: scoreList.length,
+              averageScore,
+              noOfScores,
               noOfGoodScores,
               noOfBadScores
             }

@@ -42,7 +42,7 @@ Measures.schema = new SimpleSchema({
     optional: true
   },
   "value.averageScore": {
-    type: Number,
+    type: String,
     optional: true
   },
   "value.noOfScores": {
