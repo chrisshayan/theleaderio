@@ -62,7 +62,6 @@ export default class PublicProfile extends Component {
         });
       }
     });
-
   }
 
   render() {
@@ -76,9 +75,11 @@ export default class PublicProfile extends Component {
       );
     }
     if (alias) {
-      const url = document.location.href;
-      const {publicInfo, preferences} = this.state;
-      const {
+      const
+        sharedUrl = document.location.href,
+        sharedText = `Checkout my #leadership scorecard on`,
+        {publicInfo, preferences} = this.state,
+        {
         basic,
         headline,
         contact,
@@ -108,13 +109,17 @@ export default class PublicProfile extends Component {
                   <div className="ibox-title">
                     <ul className="list-inline social-icon pull-right">
                       <li>
+                        <div className="addthis_inline_share_toolbox"></div>
+                      </li>
+                      <li>
                         <LinkedinButton
-                          url={url}
+                          url={sharedUrl}
                         />
                       </li>
                       <li>
                         <TwitterTweetButton
-                          url={url}
+                          url={sharedUrl}
+                          text={sharedText}
                         />
                       </li>
                     </ul>
