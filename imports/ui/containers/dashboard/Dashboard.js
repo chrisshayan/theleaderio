@@ -6,6 +6,7 @@ import {FlowRouter} from 'meteor/kadira:flow-router';
 // methods
 import {getPresentOrganizations} from '/imports/api/organizations/methods';
 import * as Notifications from '/imports/api/notifications/methods';
+import {measureMonthlyMetricScore} from '/imports/api/measures/methods';
 
 // components
 import Spinner from '/imports/ui/common/Spinner';
@@ -30,6 +31,10 @@ export default class Dashboard extends Component {
   }
 
   componentWillMount() {
+    const
+      leaderId = Meteor.userId(),
+      date = new Date()
+    ;
     // get present organizations first
     getPresentOrganizations.call({leaderId: Meteor.userId(), isPresent: true}, (error, result) => {
       if (!error) {
@@ -60,13 +65,15 @@ export default class Dashboard extends Component {
         });
       }
     });
+    // measure score of metric every time user access to dashboard
+    measureMonthlyMetricScore.call({params: { leaderId, date}});
   }
 
   componentDidUpdate() {
     const {ready, orgList} = this.state;
     if (ready && orgList.length === 0) {
       const
-        closeButton = false,
+        closeButton = true,
         title = "You didn't have present organization",
         message = "Please create one"
         ;

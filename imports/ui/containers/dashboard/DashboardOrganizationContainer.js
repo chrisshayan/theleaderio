@@ -15,9 +15,6 @@ import {NoticeForm} from '/imports/ui/common/NoticeForm';
 import IboxDashboard from '/imports/ui/components/IboxDashboard';
 import ProfileMetricsBox from '/imports/ui/components/ProfileMetricsBox';
 
-// methods
-import {measureMonthlyMetricScore} from '/imports/api/measures/methods';
-
 // functions
 import {getChartData} from '/imports/api/measures/methods';
 import {getAverageMetrics} from '/imports/api/metrics/functions';
@@ -44,11 +41,6 @@ class DashboardOrganization extends Component {
       noOfMonths = 6,
       preferences = {};
       ;
-
-    // measure score of metric every time user access to dashboard
-    measureMonthlyMetricScore.call({params: {
-      leaderId, organizationId, date
-    }});
 
     getChartData.call({leaderId, organizationId, date, noOfMonths}, (err, result) => {
       if (!err) {
