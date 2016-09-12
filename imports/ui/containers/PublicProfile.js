@@ -135,6 +135,7 @@ export default class PublicProfile extends Component {
                   <div className="ibox-content gray-bg">
                     <div className="row">
                       <ProfileMetricsBox
+                        isPresent={organizations[0].isPresent}
                         label="Half-year leadership progress"
                         preferences={preferences.metrics}
                         data={{chart, metrics}}

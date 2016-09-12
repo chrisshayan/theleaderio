@@ -115,7 +115,8 @@ class ProfilePreferences extends Component {
               <div className="ibox-content no-padding">
                 <div className="row">
                   <ProfileMetricsBox
-                    label="Metrics (no real data)"
+                    isPresent={organizations[0].isPresent}
+                    label="Half-year leadership progress"
                     preferences={preferences.metrics}
                     data={{chart, metrics}}
                   />

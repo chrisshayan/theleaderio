@@ -13,9 +13,7 @@ import * as EmailActions from '/imports/api/email/methods';
 import {getSendingPlans} from '/imports/api/sending_plans/methods';
 import {getLocalDate} from '/imports/api/time/functions';
 import {setStatus as setSendingPlanStatus} from '/imports/api/sending_plans/methods';
-
-// functions
-import {measureMonthlyMetricScore} from '/imports/api/measures/functions';
+import {measureMonthlyMetricScore} from '/imports/api/measures/methods';
 
 // constants
 const LOG_LEVEL = {
@@ -148,21 +146,22 @@ const sendSurveys = function (job, cb) {
 }
 
 const measureMetrics = (job, cb) => {
-  try {
-    const measure = measureMonthlyMetricScore();
-    if(measure) {
-      jobMessage = `measured metrics for leaders done`;
-      job.log(jobMessage, {level: LOG_LEVEL.INFO});
-      job.done();
+  measureMonthlyMetricScore.call({params: {}}, (error, measure) => {
+    if (!error) {
+      if (!_.isEmpty(measure)) {
+        jobMessage = `measured metrics for ${measure.noOfLeader} leaders and ${measure.noOfOrg} organizations done`;
+        job.log(jobMessage, {level: LOG_LEVEL.INFO});
+        job.done();
+      } else {
+        jobMessage = `No data to measure for job: ${job}`;
+        job.log(jobMessage, {level: LOG_LEVEL.WARNING});
+        job.done();
+      }
     } else {
-      jobMessage = `No data to measure for job: ${job}`;
-      job.log(jobMessage, {level: LOG_LEVEL.WARNING});
-      job.done();
+      job.log(error.reason, {level: LOG_LEVEL.CRITICAL});
+      job.fail();
     }
-  } catch (error) {
-    job.log(error.message, {level: LOG_LEVEL.CRITICAL});
-    job.fail();
-  }
+  });
 }
 
 // Start Job
