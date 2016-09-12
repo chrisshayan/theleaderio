@@ -84,8 +84,8 @@ export const getChartData = new ValidatedMethod({
           conflict: 0
         }, // current score of metrics
         selector = {}, // conditions for query database
-        fields = {} // fields will receive from database
-      MeasuresData = []
+        fields = {}, // fields will receive from database
+        MeasuresData = []
       ;
 
       // get labels

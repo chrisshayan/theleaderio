@@ -60,10 +60,42 @@ class DashboardOrganization extends Component {
         });
       } else {
         this.setState({
+          ready: true,
           error: err.reason
         });
       }
     });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const
+      leaderId = Meteor.userId(),
+      organizationId = nextProps.organizationId,
+      date = new Date(),
+      noOfMonths = 6,
+      preferences = {};
+    ;
+    if(this.props.organizationId !== organizationId) {
+      this.setState({
+        ready: false,
+        chart: {}
+      });
+      getChartData.call({leaderId, organizationId, date, noOfMonths}, (err, result) => {
+        if (!err) {
+          preferences.metrics = DEFAULT_PUBLIC_INFO_PREFERENCES.metrics;
+          this.setState({
+            ready: true,
+            chart: result,
+            preferences
+          });
+        } else {
+          this.setState({
+            ready: true,
+            error: err.reason
+          });
+        }
+      });
+    }
   }
 
   render() {
