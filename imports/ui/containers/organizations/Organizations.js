@@ -7,6 +7,11 @@ import { Organizations as OrganizationCollection } from '/imports/api/organizati
 import { setPageHeading, resetPageHeading } from '/imports/store/modules/pageHeading';
 import { actions as orgActions  } from '/imports/store/modules/organizations';
 
+// constants
+import {DEFAULT_ORGANIZATION_PHOTO} from '/imports/utils/defaults';
+
+// components
+import ProfilePhoto from '/imports/ui/components/ProfilePhoto';
 // Views
 import NoOrganization from './NoOrganization';
 import Box from '/imports/ui/components/Box';
@@ -66,34 +71,19 @@ class Organizations extends Component {
 						  	<h4>{ org.jobTitle }</h4>
 						    {/* Description */}
 						    <p>{ getShortDescription(org.description) }</p>
-						    <div className="team-members">
-						      <a href="#" style={{marginRight: '3px'}}><img alt="member" className="img-circle" src="/img/a1.jpg" /></a>
-						      <a href="#" style={{marginRight: '3px'}}><img alt="member" className="img-circle" src="/img/a2.jpg" /></a>
-						      <a href="#" style={{marginRight: '3px'}}><img alt="member" className="img-circle" src="/img/a3.jpg" /></a>
-						      <a href="#" style={{marginRight: '3px'}}><img alt="member" className="img-circle" src="/img/a4.jpg" /></a>
-						      <a href="#" style={{marginRight: '3px'}}><img alt="member" className="img-circle" src="/img/a5.jpg" /></a>
-						    </div>
-						    {/* Status of response */}
-						    <div>
-						      <span>Status of current month:</span>
-						      <div className="stat-percent">48%</div>
-						      <div className="progress progress-mini">
-						        <div style={{width: '48%'}} className="progress-bar"></div>
-						      </div>
-						    </div>
+								<div className="text-center">
+								<ProfilePhoto
+									imageClass='img-thumbnail'
+									imageUrl={org.imageUrl || DEFAULT_ORGANIZATION_PHOTO}
+									width={300}
+									height={200}
+								/>
+								</div>
 						    {/* Some numbers*/}
 						    <div className="row  m-t-sm">
 						      <div className="col-sm-4">
 						        <div className="font-bold">EMPLOYEES</div>
 						        { org.employees && org.employees.length ? org.employees.length : 0 }
-						      </div>
-						      <div className="col-sm-4">
-						        <div className="font-bold">FEEDBACK</div>
-						        23
-						      </div>
-						      <div className="col-sm-4 text-right">
-						        <div className="font-bold">OVERALL</div>
-						        3.4 <i className="fa fa-level-up text-navy"></i>
 						      </div>
 						    </div>
 						  </Box>
