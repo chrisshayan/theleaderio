@@ -58,14 +58,7 @@ class Organizations extends Component {
 
   render() {
     const
-      {isLoading, organizations, hasMore} = this.props,
-      style = {
-        a: {
-          "a, a:visited, a:hover, a:active": {
-            color: 'inherit'
-          }
-        }
-      }
+      {isLoading, organizations, hasMore} = this.props
       ;
     return (
       <div className="animated fadeInRight">
