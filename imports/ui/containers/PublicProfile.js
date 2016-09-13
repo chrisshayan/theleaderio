@@ -89,7 +89,9 @@ export default class PublicProfile extends Component {
         organizations,
         metrics,
         chart
-      } = publicInfo;
+      } = publicInfo,
+        isPresent = (organizations.length > 0) ? organizations[0].isPresent : false
+        ;
 
 
       return (
@@ -140,7 +142,7 @@ export default class PublicProfile extends Component {
                   <div className="ibox-content gray-bg">
                     <div className="row">
                       <ProfileMetricsBox
-                        isPresent={organizations[0].isPresent}
+                        isPresent={isPresent}
                         label="Half-year leadership progress"
                         preferences={preferences.metrics}
                         data={{chart, metrics}}

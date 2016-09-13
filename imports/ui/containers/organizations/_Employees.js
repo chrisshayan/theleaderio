@@ -12,6 +12,8 @@ import SingleOrgEmployee from '/imports/ui/containers/organizations/_SingleOrgEm
 import Papa from 'papaparse';
 import * as Notifications from '/imports/api/notifications/methods';
 
+// constants
+import {TEMPLATE_IMPORT_EMPLOYEES} from '/imports/utils/defaults';
 
 class OrganizationEmployees extends Component {
 	state = {
@@ -146,8 +148,12 @@ class OrganizationEmployees extends Component {
 		return (
 			<div>
 				<div className="row">
-    			<div className="col-md-6">
-    				
+    			<div className="col-md-3 col-md-offset-3">
+						<a className="btn btn-default btn-block" href={TEMPLATE_IMPORT_EMPLOYEES} target="_blank">
+							<i className="fa fa-cloud-download" />
+							{' '}
+							Download template
+						</a>
     			</div>
     			<div className="col-md-3">
     				<button className="btn btn-default btn-block" onClick={this._onClickShowImportDialog}>
