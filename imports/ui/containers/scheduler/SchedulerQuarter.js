@@ -37,7 +37,7 @@ class SchedulerQuarter extends Component {
       isActive = this.isActive,
       scheduler = this.props;
     ;
-    getLeaderPlans.call({date}, (error, planList) => {
+    getLeaderPlans.call({}, (error, planList) => {
       if (!error) {
         if (_.isEmpty(planList)) {
           if (isActive) {
