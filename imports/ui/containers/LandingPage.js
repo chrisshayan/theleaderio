@@ -222,16 +222,11 @@ export default class LandingPage extends Component {
             </div>
             <div className="row">
               <div className="col-lg-12 text-center">
-                <a href="mailto:test@email.com" className="btn btn-primary">Send us mail</a>
                 <p className="m-t-sm">
-                  Or follow us on social platform
+                  Follow us on social platform
                 </p>
                 <ul className="list-inline social-icon">
-                  <li><a href="#"><i className="fa fa-twitter"></i></a>
-                  </li>
-                  <li><a href="#"><i className="fa fa-facebook"></i></a>
-                  </li>
-                  <li><a href="#"><i className="fa fa-linkedin"></i></a>
+                  <li><a href="https://www.linkedin.com/company/6600918"><i className="fa fa-linkedin"></i></a>
                   </li>
                 </ul>
               </div>
@@ -239,7 +234,7 @@ export default class LandingPage extends Component {
             <div className="row">
               <div className="col-lg-8 col-lg-offset-2 text-center m-t-lg m-b-lg">
                 <p><strong>&copy; 2016 theLeader.io</strong><br/>
-                  We Help Leaders to become a better Leader by improving the Decision Making Process.</p>
+                  STRIVE for Great Leadership</p>
               </div>
             </div>
           </div>

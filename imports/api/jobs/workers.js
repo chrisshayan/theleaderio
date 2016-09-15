@@ -1,5 +1,7 @@
+import {Mongo} from 'meteor/mongo';
 import {DailyJobs, QueueJobs} from './collections';
-import {words as capitalize} from 'capitalize';
+import moment from 'moment';
+import _ from 'lodash';
 
 // collections
 import {Organizations} from '/imports/api/organizations/index';
@@ -11,8 +13,7 @@ import * as EmailActions from '/imports/api/email/methods';
 import {getSendingPlans} from '/imports/api/sending_plans/methods';
 import {getLocalDate} from '/imports/api/time/functions';
 import {setStatus as setSendingPlanStatus} from '/imports/api/sending_plans/methods';
-
-
+import {measureMonthlyMetricScore} from '/imports/api/measures/methods';
 
 // constants
 const LOG_LEVEL = {
@@ -75,10 +76,11 @@ const enqueueSurveys = function (job, cb) {
                   };
                   const attributes = {
                     priority: "normal",
-                    after: new Date(getLocalDate(date, timezone))
+                    after: new Date(getLocalDate(sendDate, timezone))
                   };
                   enqueue.call({type: "send_surveys", attributes, data: queueData}, (error) => {
                     if (_.isEmpty(error)) {
+                      setSendingPlanStatus.call({_id: planId, status: "QUEUED"});
                       jobMessage = `Enqueue mail ${metric} to ${employee.email} on ${date}`;
                       job.log(jobMessage, {level: LOG_LEVEL.INFO});
                     } else {
@@ -116,7 +118,6 @@ const sendSurveys = function (job, cb) {
       job.log(jobMessage, {level: LOG_LEVEL.WARNING});
       job.done();
     } else {
-      // console.log({employeeId, leaderId, organizationId, metric});
       const template = 'survey';
       const data = {
         planId,
@@ -126,12 +127,11 @@ const sendSurveys = function (job, cb) {
         metric
       };
       EmailActions.send.call({template, data}, (error) => {
-        if(_.isEmpty(error)) {
+        if (_.isEmpty(error)) {
           setSendingPlanStatus.call({_id: planId, status: "SENT"});
           job.done();
         } else {
           setSendingPlanStatus.call({_id: planId, status: "FAILED"});
-          console.log(error);
           jobMessage = error.reason;
           job.log(jobMessage, {level: LOG_LEVEL.WARNING});
           job.done();
@@ -145,13 +145,40 @@ const sendSurveys = function (job, cb) {
 
 }
 
+const measureMetrics = (job, cb) => {
+  measureMonthlyMetricScore.call({params: {}}, (error, measure) => {
+    if (!error) {
+      if (!_.isEmpty(measure)) {
+        jobMessage = `measured metrics for ${measure.noOfLeader} leaders and ${measure.noOfOrg} organizations done`;
+        job.log(jobMessage, {level: LOG_LEVEL.INFO});
+        job.done();
+      } else {
+        jobMessage = `No data to measure for job: ${job}`;
+        job.log(jobMessage, {level: LOG_LEVEL.WARNING});
+        job.done();
+      }
+    } else {
+      job.log(error.reason, {level: LOG_LEVEL.CRITICAL});
+      job.fail();
+    }
+  });
+}
+
 // Start Job
 function startJob(type) {
-  switch(type) {
-    case "enqueue_surveys": {
+  switch (type) {
+    // daily jobs
+    case "enqueue_surveys":
+    {
       DailyJobs.processJobs(type, enqueueSurveys);
     }
-    case "send_surveys": {
+    case "measure_metric":
+    {
+      DailyJobs.processJobs(type, measureMetrics);
+    }
+    // queue jobs
+    case "send_surveys":
+    {
       QueueJobs.processJobs(type, sendSurveys);
     }
   }

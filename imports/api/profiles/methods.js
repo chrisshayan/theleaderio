@@ -7,22 +7,23 @@ import _ from 'lodash';
 // collections
 import {Profiles, STATUS_ACTIVE, STATUS_INACTIVE} from './index';
 import {Organizations} from '/imports/api/organizations/index';
-import {Employees} from '/imports/api/employees/index';
 import {Industries} from '/imports/api/industries/index';
 import {Preferences} from '/imports/api/users/index';
+import {Feedbacks} from '/imports/api/feedbacks/index';
 
 import {IDValidator} from '/imports/utils';
 import {DEFAULT_PUBLIC_INFO_PREFERENCES} from '/imports/utils/defaults';
 
 // methods
 import {addPreferences} from '/imports/api/users/methods';
-import {getMetricsOfMonth} from '/imports/api/metrics/methods';
+import {getChartData} from '/imports/api/measures/methods';
 
 // functions
-import {addMonths} from '/imports/utils/index';
+import {getAverageMetrics} from '/imports/api/metrics/functions';
 
 // constants
 import * as ERROR_CODE from '/imports/utils/error_code';
+import {DEFAULT_PROFILE_PHOTO} from '/imports/utils/defaults';
 
 /**
  * CUD user profiles (Create, Update, Deactivate)
@@ -52,8 +53,8 @@ export const create = new ValidatedMethod({
     }
   }).validator(),
   run({userId, firstName, lastName, timezone}) {
-    // console.log({userId, firstName, lastName});
-    return Profiles.insert({userId, firstName, lastName, timezone});
+    const imageUrl = DEFAULT_PROFILE_PHOTO;
+    return Profiles.insert({userId, firstName, lastName, timezone, imageUrl});
   }
 });
 
@@ -208,9 +209,14 @@ export const setStatus = new ValidatedMethod({
   }
 });
 
-// get public information
+/**
+ * @summary collect public data with the customization from user
+ * @param {String} alias
+ * @param {Boolean} isGetAll flag for getting all data or just the customization
+ * @return {Object} all data for public profile
+ */
 export const getPublicData = new ValidatedMethod({
-  name: 'profiles.getPublicData',
+  name: "profiles.getPublicData",
   validate: new SimpleSchema({
     alias: {
       type: String
@@ -221,252 +227,181 @@ export const getPublicData = new ValidatedMethod({
   }).validator(),
   run({alias, isGetAll}) {
     if (!this.isSimulation) {
-      const user = Accounts.findUserByUsername(alias);
-      if (!_.isEmpty(user)) {
-        if (Preferences.find({userId: user._id, name: 'publicInfo'}).count() == 0) {
+      const User = Accounts.findUserByUsername(alias);
+      if (!_.isEmpty(User)) {
+        const
+          userId = User._id,
+          leaderId = User._id,
+          noOfPreferences = Preferences.find({userId, name: 'publicInfo'}).count(),
+          ProfileData = Profiles.findOne({userId}),
+          OrganizationsData = _.orderBy(Organizations.find({leaderId}).fetch(), ['isPresent','startTime'], ['desc','desc']),
+          FeedbacksData = Feedbacks.find({leaderId}).fetch(),
+          date = new Date(),
+          months = [
+            {
+              month: date.getMonth(),
+              name: moment(date).format('MMMM'),
+              year: date.getFullYear()
+            }
+          ]
+          ;
+        let
+          result = {
+            basic: {
+              name: null,
+              industry: null
+            },
+            headline: {
+              title: null
+            },
+            contact: {
+              phone: null,
+              email: null
+            },
+            summary: {
+              noOrg: null,
+              noEmployees: null,
+              noFeedbacks: null
+            },
+            picture: {
+              imageUrl: null
+            },
+            about: {
+              aboutMe: null
+            },
+            organizations: [],
+            chart: {},
+            metrics: {
+              overall: null,
+              purpose: null,
+              mettings: null,
+              rules: null,
+              communications: null,
+              leadership: null,
+              workload: null,
+              energy: null,
+              stress: null,
+              decision: null,
+              respect: null,
+              conflict: null
+            },
+            preferences: {}
+          },
+          PreferencesData = {}
+          ;
+
+        // add default preferences for user if don't have
+        //
+        if (noOfPreferences == 0) {
           addPreferences.call({name: 'publicInfo', preferences: DEFAULT_PUBLIC_INFO_PREFERENCES});
         }
-        let result = {
-          basic: {
-            name: null,
-            industry: null
-          },
-          headline: {
-            title: null
-          },
-          contact: {
-            phone: null,
-            email: null
-          },
-          summary: {
-            noOrg: null,
-            noEmployees: null,
-            noFeedbacks: null
-          },
-          picture: {
-            imageUrl: null
-          },
-          about: {
-            aboutMe: null
-          },
-          organizations: [],
-          chart: {
-            label: [],
-            overall: [],
-            purpose: [],
-            mettings: [],
-            rules: [],
-            communications: [],
-            leadership: [],
-            workload: [],
-            energy: [],
-            stress: [],
-            decision: [],
-            respect: [],
-            conflict: []
-          },
-          metrics: {
-            overall: null,
-            purpose: null,
-            mettings: null,
-            rules: null,
-            communications: null,
-            leadership: null,
-            workload: null,
-            energy: null,
-            stress: null,
-            decision: null,
-            respect: null,
-            conflict: null
-          },
-          preferences: {}
-        };
 
-        // Get basic info - always show
+        // Get customize info,
+        // which could be showed all (isGetAll = true)
+        // or customized data only
+        if(isGetAll) {
+          PreferencesData = DEFAULT_PUBLIC_INFO_PREFERENCES;
+        } else {
+          PreferencesData = Preferences.find({userId: User._id}).fetch()[0].preferences;
+          result.preferences = PreferencesData;
+        }
+        // Get preferences data
+        const {headline, contact, summary, picture, about, organizations, metrics} = PreferencesData;
+
+        // Get basic info, which always are showed
         // name
-        const profile = Profiles.findOne({userId: user._id});
-        if (!!profile.firstName || !!profile.lastName) {
-          result.basic.name = `${profile.firstName} ${profile.lastName}`;
+        if (!!ProfileData.firstName || !!ProfileData.lastName) {
+          result.basic.name = `${ProfileData.firstName} ${ProfileData.lastName}`;
         }
         // industry
-        if (!!profile.industries) {
-          result.basic.industry = Industries.findOne({_id: {$in: profile.industries}}).name;
+        if (!!ProfileData.industries) {
+          result.basic.industry = Industries.findOne({_id: {$in: ProfileData.industries}}).name;
         }
 
-        // others
-        if (Preferences.find({userId: user._id}).count() > 0) {
-          let preferences = {};
-          if (isGetAll) {
-            preferences = DEFAULT_PUBLIC_INFO_PREFERENCES;
-          } else {
-            preferences = Preferences.find({userId: user._id}).fetch()[0].preferences;
-            result.preferences = preferences;
-          }
-          // Get preferences
-          const {headline, contact, summary, picture, about, organizations} = preferences;
 
-          // Get headline info
-          // title
-          if (headline.title && typeof headline.title !== 'undefined') {
-            result.headline.title = !!profile.title ? profile.title : null;
-          }
-
-          // Get contact info
-          // phoneNumber
-          if (contact.phone && typeof contact.phone !== 'undefined') {
-            result.contact.phone = !!profile.phoneNumber ? profile.phoneNumber : null;
-          }
-          // email
-          if (contact.email && typeof contact.email !== 'undefined') {
-            result.contact.email = user.emails[0].address;
-          }
-
-          // Get summary info
-          // noOrg
-          if (summary.noOrg && typeof summary.noOrg !== 'undefined') {
-            const noOrg = Organizations.find({leaderId: user._id}).count();
-            result.summary.noOrg = !!noOrg ? noOrg : null;
-          }
-          // noEmployees
-          if (summary.noEmployees && typeof summary.noEmployees !== 'undefined') {
-            if (Organizations.find({leaderId: user._id}).count() > 0) {
-              const modifier = {
-                fields: {employees: true}
-              };
-              const employeesList = Organizations.find({leaderId: user._id}, modifier).fetch();
-              let noEmployees = 0;
-              employeesList.map(employees => {
-                noEmployees += employees.employees.length;
-              });
-              result.summary.noEmployees = noEmployees;
-            }
-          }
-          // noFeedbacks
-          if (summary.noFeedbacks && typeof summary.noFeedbacks !== 'undefined') {
-            result.summary.noFeedbacks = 240;
-          }
-
-          // Get picture
-          if (picture.imageUrl && typeof picture.imageUrl !== 'undefined') {
-            result.picture.imageUrl = !!profile.imageUrl ? profile.imageUrl : null;
-          }
-
-          // Get about info
-          // AboutMe
-          if (about.aboutMe && typeof about.aboutMe !== 'undefined') {
-            result.about.aboutMe = !!profile.aboutMe ? profile.aboutMe : null;
-          }
-
-          // Get Organizations
-          if (organizations.show) {
-            if (Organizations.find({leaderId: user._id}).count() > 0) {
-              const modifier = {
-                fields: {
-                  name: true,
-                  startTime: true,
-                  endTime: true,
-                  jobTitle: true,
-                  isPresent: true,
-                  employees: true,
-                  imageUrl: true
-                },
-                sort: {startTime: -1}
-              };
-              const orgInfo = Organizations.find({leaderId: user._id}, modifier).fetch();
-              result.organizations = !_.isEmpty(orgInfo) ? orgInfo : [];
-            }
-          }
-
-          // Get chart info
-          // result.chart = {
-          //   label: [],
-          //   overall: [],
-          //   purpose: [],
-          //   mettings: [],
-          //   rules: [],
-          //   communications: [],
-          //   leadership: [],
-          //   workload: [],
-          //   energy: [],
-          //   stress: [],
-          //   decision: [],
-          //   respect: [],
-          //   conflict: []
-          // };
-          // const date = new Date();
-          // const months = [
-          //   {
-          //     month: date.getMonth(),
-          //     name: moment(date).format('MMMM'),
-          //     year: date.getFullYear()
-          //   }
-          // ];
-          // for (var i = 1; i < 6; i++) {
-          //   var previousMonth = new Date(moment().subtract(i, 'month'));
-          //   var element = {
-          //     month: previousMonth.getMonth(),
-          //     name: moment(previousMonth).format('MMMM'),
-          //     year: previousMonth.getFullYear()
-          //   };
-          //   months.push(element);
-          // }
-          //
-          // for(var i in months) {
-          //   let data = [];
-          //   result.chart.label.push(months[i].name);
-          //   getMetricsOfMonth.call({leaderId, month, year}, (error, result) => {
-          //     if(!error) {
-          //       console.log(result)
-          //     }
-          //   });
-          // }
-          // months.map(monthData => {
-          //   const leaderId = user._id;
-          //   const {month, year} = monthData;
-          //   getMetricsOfMonth.call({leaderId, month, year}, (error, result) => {
-          //     if(!error) {
-          //       console.log(result)
-          //     }
-          //   });
-          // });
-
-          result.chart.label = ["February", "March", "April", "May", "June", "July"];
-          result.chart.overall = [3.2, 4.0, 3.9, 4.9, 4.5, 4];
-          result.chart.purpose = [2.2, 3.0, 4.9, 3.9, 5, 3];
-          result.chart.mettings = [3.2, 3.0, 3.9, 4.9, 4, 4.3];
-          result.chart.rules = [2.7, 4.6, 3.9, 3.2, 4, 3];
-          result.chart.communications = [4.2, 2.0, 3.9, 4.9, 4, 4];
-          result.chart.leadership = [3.2, 4.0, 3.9, 4.9, 4, 4];
-          result.chart.workload = [3.2, 2.0, 3.9, 4.9, 2.3, 3];
-          result.chart.energy = [2.7, 3.3, 4.6, 3.7, 4.5, 3.6];
-          result.chart.stress = [3.3, 3.5, 4.2, 4.9, 5, 4];
-          result.chart.decision = [2.6, 3.8, 4.2, 3.4, 3.4, 3.7];
-          result.chart.respect = [4.2, 5.0, 3.9, 2.9, 4.5, 4];
-          result.chart.conflict = [2.8, 2.0, 4.9, 4.9, 4.7, 4.4];
-
-          // Get metrics
-          const userId = user._id;
-          // modifier for finding public metrics
-          const metricsModifier = {
-            fields: preferences.metrics
-          };
-          result.metrics = {
-            overall: 4.4,
-            purpose: 3.6,
-            mettings: 4.7,
-            rules: 5,
-            communications: 4.2,
-            leadership: 3.9,
-            workload: 2.5,
-            energy: 3.8,
-            stress: 3.7,
-            decision: 4.2,
-            respect: 4,
-            conflict: 4.9
-          };
+        // get public data base on preferences
+        // Headline
+        if (headline.title && typeof headline.title !== 'undefined') {
+          result.headline.title = !!ProfileData.title ? ProfileData.title : null;
         }
-        // console.log(result)
+
+        // Contact
+        // phoneNumber
+        if (contact.phone && typeof contact.phone !== 'undefined') {
+          result.contact.phone = !!ProfileData.phoneNumber ? ProfileData.phoneNumber : null;
+        }
+        // email
+        if (contact.email && typeof contact.email !== 'undefined') {
+          result.contact.email = User.emails[0].address;
+        }
+
+        // Summary
+        // noOrg
+        if (summary.noOrg && typeof summary.noOrg !== 'undefined') {
+          const noOrg = OrganizationsData.length;
+          result.summary.noOrg = (noOrg > 0) ? noOrg : null;
+        }
+        // noEmployees
+        if (summary.noEmployees && typeof summary.noEmployees !== 'undefined') {
+          if (OrganizationsData.length > 0) {
+            let noEmployees = 0;
+            OrganizationsData.map(organization => {
+              noEmployees += organization.employees.length;
+            });
+            result.summary.noEmployees = (noEmployees > 0) ? noEmployees : null;
+          }
+        }
+        // noFeedbacks
+        if (summary.noFeedbacks && typeof summary.noFeedbacks !== 'undefined') {
+          const noFeedbacks = FeedbacksData.length;
+          result.summary.noFeedbacks = (noFeedbacks > 0) ? noFeedbacks : null;
+        }
+
+        // Picture
+        if (picture.imageUrl && typeof picture.imageUrl !== 'undefined') {
+          result.picture.imageUrl = !!ProfileData.imageUrl ? ProfileData.imageUrl : null;
+        }
+
+        // About
+        // AboutMe
+        if (about.aboutMe && typeof about.aboutMe !== 'undefined') {
+          result.about.aboutMe = !!ProfileData.aboutMe ? ProfileData.aboutMe : null;
+        }
+
+        // Organizations
+        if (organizations.show) {
+          if (OrganizationsData.length > 0) {
+            result.organizations = !_.isEmpty(OrganizationsData) ? OrganizationsData : [];
+          }
+        } else {
+          result.organizations = [];
+        }
+
+        // Chart
+        if(OrganizationsData.length > 0) {
+          getChartData.call({
+            leaderId,
+            organizationId: OrganizationsData[0]._id,
+            date: new Date(), noOfMonths: 6
+          }, (error, chartData) => {
+            if(!error) {
+              result.chart = chartData;
+            } else {
+              console.log(error)
+            }
+          });
+        } else {
+          result.chart = [];
+        }
+
+        // Metrics
+        if(!_.isEmpty(result.chart)) {
+          result.metrics = getAverageMetrics(result.chart);
+        }
+
         return result;
+      } else {
+        return Meteor.Error(ERROR_CODE.RESOURCE_NOT_FOUND);
       }
     }
   }

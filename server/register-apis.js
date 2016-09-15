@@ -12,6 +12,8 @@ import '/imports/api/users/register.server';
 import '/imports/api/email/register.server';
 // organizations
 import '/imports/api/organizations/register.server';
+// employees
+import '/imports/api/employees/register.server';
 // scheduler
 import '/imports/api/scheduler/register.server';
 // jobs
@@ -26,3 +28,5 @@ import '/imports/api/sending_plans/register.server';
 import '/imports/api/metrics/register.server';
 // feedbacks
 import '/imports/api/feedbacks/register.server';
+// measures
+import '/imports/api/measures/register.server';

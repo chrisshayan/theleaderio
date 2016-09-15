@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Organizations } from '/imports/api/organizations';
+import * as orgMethods from '/imports/api/organizations/methods';
 import { actions as orgActions } from '/imports/store/modules/singleOrganization';
 import { getErrors } from '/imports/utils';
 
@@ -67,6 +68,19 @@ class UpdateOrganization extends Component {
 			})
 	}
 
+	_onRemove = doc => {
+		let t = confirm('Are you sure you want to delete this organization?');
+		if(!t) return; 
+		orgMethods.remove.call({ _id: doc._id }, err => {
+			if(err) {
+				Notifications.error.call({ message: err.reason });
+			} else {
+				FlowRouter.go('app.organizations');
+				Notifications.success.call({ message: 'Removed' });
+			}
+		});
+	}
+
 	getTabs() {
 		const { onCancel, doc, error, isLoading } = this.props;
 		return [{
@@ -81,6 +95,7 @@ class UpdateOrganization extends Component {
 					onChange={this._onFormChange}
 					onSubmit={this._onFormSubmit}
 					onCancel={onCancel}
+					onRemove={this._onRemove}
 				/>
 			)
 		}, {

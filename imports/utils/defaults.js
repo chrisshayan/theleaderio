@@ -68,6 +68,8 @@ export const DEFAULT_PUBLIC_INFO_PREFERENCES = {
   }
 };
 
+export const TEMPLATE_IMPORT_EMPLOYEES = '/templates/employees.csv';
+
 export const DEFAULT_PROFILE_PHOTO = '/img/default-profile-pic.png';
 
 export const DEFAULT_ORGANIZATION_PHOTO = '/img/default_firm.jpg';

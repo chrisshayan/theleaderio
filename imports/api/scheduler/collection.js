@@ -3,7 +3,16 @@ import { SendingPlans } from '/imports/api/sending_plans';
 import * as schedulerUtils from '/imports/utils/scheduler';
 
 export default class SchedulerCollection extends Mongo.Collection {
-
+  insert(doc, callback) {
+    const
+      _id = super.insert(doc, callback),
+      data = this.findOne({_id})
+      ;
+    if(_id) {
+      this.updateSendingPlan(data)
+    }
+    return _id;
+  }
 
   update(selector, modifier) {
     const before = this.findOne(selector);
@@ -26,6 +35,8 @@ export default class SchedulerCollection extends Mongo.Collection {
         schedulerId: doc._id,
         status: 'READY'
       });
+
+      if(_.isEmpty(doc.metrics)) return;
 
       // generate new sending plan
       const leaderId = Meteor.userId();

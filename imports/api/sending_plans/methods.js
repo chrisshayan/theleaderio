@@ -60,12 +60,24 @@ export const getSendingPlans = new ValidatedMethod({
   name: "sendingPlans.getSendingPlans",
   validate: null,
   run({date}) {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const day = date.getDate();
-    const nextDay = date.getDate() + 1;
-    const selector = {sendDate: {$gte: new Date(year, month, day), $lt: new Date(year, month, nextDay)}, status: "READY"};
-    const modifier = {};
+    const year = date.getFullYear(),
+      month = date.getMonth(),
+      day = date.getDate(),
+      nextDay = date.getDate() + 1,
+      selector = {sendDate: {$gte: new Date(year, month, day), $lt: new Date(year, month, nextDay)}, status: "READY"},
+      modifier = {};
     return SendingPlans.find(selector).fetch();
+  }
+});
+
+export const getLeaderPlans = new ValidatedMethod({
+  name: "sendingPlans.getLeaderPlans",
+  validate: null,
+  run() {
+    const
+      leaderId = Meteor.userId()
+    ;
+
+    return SendingPlans.find({leaderId}).fetch();
   }
 });

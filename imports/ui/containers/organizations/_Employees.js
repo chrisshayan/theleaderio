@@ -12,6 +12,8 @@ import SingleOrgEmployee from '/imports/ui/containers/organizations/_SingleOrgEm
 import Papa from 'papaparse';
 import * as Notifications from '/imports/api/notifications/methods';
 
+// constants
+import {TEMPLATE_IMPORT_EMPLOYEES} from '/imports/utils/defaults';
 
 class OrganizationEmployees extends Component {
 	state = {
@@ -64,33 +66,40 @@ class OrganizationEmployees extends Component {
 					header: true,
 					skipEmptyLines: true,
 					step: function(results, parser) {
-						if (results.errors.length == 0) {
-							_.each(results.data, function(item) {
-								var employee = {
-									firstName: "",
-									lastName: "",
-									email: ""
-								};
-								var emailPat = /email/i;
-								var firstNamePat = /first/i;
-								var lastNamePat = /last/i;
-								var namePat = /name/i;
-								_.each(item, function(v, k) {
-									if (emailPat.test(k)) {
+						_.each(results.data, function(item) {
+							var employee = {
+								firstName: "",
+								lastName: "",
+								email: ""
+							};
+							var emailPat = /(email|E-mail|E-mail address)/i;
+							var firstNamePat = /first/i;
+							var lastNamePat = /last/i;
+							var namePat = /name/i;
+							_.each(item, function(v, k) {
+								if (emailPat.test(k)) {
+									if(_.isEmpty(employee.email)) {
 										employee.email = v;
-									} else if (firstNamePat.test(k)) {
-										employee.firstName = v;
-									} else if (lastNamePat.test(k)) {
-										employee.lastName = v;
-									} else if (namePat.test(k)) {
+									}
+								} else if (firstNamePat.test(k)) {
+									if(_.isEmpty(employee.firstName)) {
 										employee.firstName = v;
 									}
-								})
-								if (employee.firstName && employee.email) {
-									employees.push(employee);
+								} else if (lastNamePat.test(k)) {
+									if(_.isEmpty(employee.lastName)) {
+										employee.lastName = v;
+									}
+								} else if (namePat.test(k)) {
+									if(_.isEmpty(employee.firstName)) {
+										employee.firstName = v;
+									}
 								}
-							});
-						}
+							})
+							console.log(employee)
+							if (employee.firstName && employee.email) {
+								employees.push(employee);
+							}
+						});
 					},
 					complete: function(results, file) {
 						if (employees.length) {
@@ -139,8 +148,12 @@ class OrganizationEmployees extends Component {
 		return (
 			<div>
 				<div className="row">
-    			<div className="col-md-6">
-    				
+    			<div className="col-md-3 col-md-offset-3">
+						<a className="btn btn-default btn-block" href={TEMPLATE_IMPORT_EMPLOYEES} target="_blank">
+							<i className="fa fa-cloud-download" />
+							{' '}
+							Download template
+						</a>
     			</div>
     			<div className="col-md-3">
     				<button className="btn btn-default btn-block" onClick={this._onClickShowImportDialog}>

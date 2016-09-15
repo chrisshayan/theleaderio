@@ -64,7 +64,6 @@ export const getRecipientInfo = ({recipient, sender}) => {
     return false;
   }
   const recipientElements = recipient.split("-");
-  // console.log(recipientElements)
   const
     planId = recipientElements[0],
     organizationId = recipientElements[1]
@@ -114,7 +113,6 @@ export const getSurveyEmailOptions = ({template, data}) => {
       siteName: "",
       leaderProfileUrl: "",
       leaderName: "",
-      leaderGender: "",
       alias: "",
       orgName: "",
       employeeName: "",
@@ -161,7 +159,6 @@ export const getSurveyEmailOptions = ({template, data}) => {
   mailData.siteName = SITE_NAME;
   mailData.leaderProfileUrl = `http://${mailData.alias}.${domain}`;
   mailData.leaderName = `${capitalize(leader.firstName)} ${capitalize(leader.lastName)}`;
-  mailData.leaderGender = "";
   mailData.orgName = `${capitalize(organization.name)}`;
   mailData.employeeName = `${capitalize(employee.firstName)}`;
   mailData.metric = capitalize(metric);
@@ -172,10 +169,10 @@ export const getSurveyEmailOptions = ({template, data}) => {
     {
       mailData.replyGuideHeader = EMAIL_TEMPLATE_CONTENT.metrics.replyGuideHeader;
       mailData.replyGuideMessage = EMAIL_TEMPLATE_CONTENT.metrics.replyGuideMessage;
-      mailData.message = `Please help your leader "${mailData.leaderName}" to improve "${mailData.metric}" management by giving ${mailData.leaderGender} a score.`;
+      mailData.message = `Please help your leader "${mailData.leaderName}" to improve "${mailData.metric}" management by giving a score.`;
       mailData.description = EMAIL_TEMPLATE_CONTENT.metrics[metric];
       senderSuffix = template;
-      subject = `${mailData.employeeName}, How "${mailData.leaderName}" can improve ${mailData.leaderGender} score on ${mailData.metric} Management?`;
+      subject = `${mailData.employeeName}, How "${mailData.leaderName}" can improve ${mailData.metric} Management?`;
 
       break;
     }
@@ -183,31 +180,31 @@ export const getSurveyEmailOptions = ({template, data}) => {
     {
       mailData.replyGuideHeader = EMAIL_TEMPLATE_CONTENT.metrics.replyGuideHeader;
       mailData.replyGuideMessage = EMAIL_TEMPLATE_CONTENT.metrics.replyGuideMessage;
-      mailData.message = `Please help your leader "${mailData.leaderName}" to improve "${mailData.metric}" management by giving ${mailData.leaderGender} a score.`;
+      mailData.message = `Please help "${mailData.leaderName}" to improve "${mailData.metric}" management by giving accurate score. The score should be a number from 1 to 5. If you think ${mailData.leaderName} is doing a great job, just reply the email by sending 5. If you think ${mailData.leaderName} is doing moderate job reply the email by sending 3 and if ${mailData.leaderName} is doing very bad then send 1.`;
       mailData.description = EMAIL_TEMPLATE_CONTENT.metrics[metric];
       senderSuffix = "survey";
-      subject = `Please correct the score about "${mailData.metric}" for ${mailData.leaderName} in ${mailData.orgName}.`;
+      subject = `${mailData.employeeName}, seems the score of "${mailData.metric}" has some issues.`;
 
       break;
     }
     case "feedback":
     {
       mailData.replyGuideHeader = EMAIL_TEMPLATE_CONTENT[template].replyGuideHeader;
-      mailData.replyGuideMessage = `Simply reply this email with your suggestion for ${mailData.leaderName}  to improve ${mailData.leaderGender} ${mailData.metric} Management.`;
-      mailData.message = `Help your leader "${mailData.leaderName}" to improve "${mailData.metric}" Management.`;
-      mailData.description = EMAIL_TEMPLATE_CONTENT[template].description;
+      mailData.replyGuideMessage = `Simply reply this email with your suggestion and write whatever you think is good.`;
+      mailData.message = `"${mailData.leaderName}" needs your help to improve "${mailData.metric}" Management.`;
+      mailData.description = `Your feedback is very important and it will be kept CONFIDENTIAL, it means ${mailData.leaderName} won’t be able to know who submitted the feedback.`;
       senderSuffix = template;
-      subject = `How could "${mailData.leaderName}" improve the ${mailData.metric} for higher score?`;
+      subject = `${mailData.employeeName}, "${mailData.leaderName}" wants to improve ${mailData.metric}, how?`;
       break;
     }
     case "thankyou":
     {
       const {type} = data;
-      mailData.message = `Thank you very much for your ${type} to "${mailData.leaderName}" about ${mailData.leaderGender} "${mailData.metric}" Management.`;
-      mailData.description = `Your ${type} will help the leader to improve ${mailData.leaderGender} ability.`;
-      mailData.viewLeaderProfileHeader = `Want to view ${mailData.leaderName} profile?`;
+      mailData.message = `I appreciate your contribution on "${mailData.metric}" Management. I believe better leadership can help all of us to enjoy our daily life even more. Besides, it is very effective for you as an individual. The better the leader, happier employee.\nBest Regards,\ntheLeader.io on behalf of "${mailData.leaderName}"`;
+      mailData.description = `Your ${type} will help ${mailData.leaderName} to improve.`;
+      mailData.viewLeaderProfileHeader = `View ${mailData.leaderName} public profile?`;
       senderSuffix = template;
-      subject = `Thank you for your ${type}`;
+      subject = `${mailData.employeeName}, You’ve been heard. Leadership matters.`;
       break;
     }
   }

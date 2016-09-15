@@ -40,8 +40,8 @@ class Scheduler extends Component {
         {quarters.length == 4 && (
           <div className="row">
             <SchedulerQuarter name="1st Quarter" scheduler={this.getQuarter('QUARTER_1')} onClickAddMetric={this._onClickAddMetric} />
-            <SchedulerQuarter name="2th Quarter" scheduler={this.getQuarter('QUARTER_2')} onClickAddMetric={this._onClickAddMetric}/>
-            <SchedulerQuarter name="3th Quarter" scheduler={this.getQuarter('QUARTER_3')} onClickAddMetric={this._onClickAddMetric}/>
+            <SchedulerQuarter name="2nd Quarter" scheduler={this.getQuarter('QUARTER_2')} onClickAddMetric={this._onClickAddMetric}/>
+            <SchedulerQuarter name="3rd Quarter" scheduler={this.getQuarter('QUARTER_3')} onClickAddMetric={this._onClickAddMetric}/>
             <SchedulerQuarter name="4th Quarter" scheduler={this.getQuarter('QUARTER_4')} onClickAddMetric={this._onClickAddMetric}/>
           </div>
         )}

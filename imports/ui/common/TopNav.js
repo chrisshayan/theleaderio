@@ -14,7 +14,7 @@ class TopNav extends Component {
     const {userProfile} = this.props;
     let profilePhoto = DEFAULT_PROFILE_PHOTO;
     if(!_.isEmpty(userProfile)) {
-      profilePhoto = userProfile.imageUrl;
+      profilePhoto = userProfile.getPicture();
     } else {
       profilePhoto = this.props.imageUrl;
     }
@@ -48,8 +48,9 @@ class TopNav extends Component {
                     <span className="caret"></span>
                   </a>
                   <ul className="dropdown-menu" aria-labelledby="user-info">
-                    <li><a href={FlowRouter.url('app.preferences')}>Edit profile</a></li>
                     <li><a href={FlowRouter.url('app.dashboard')}>Dashboard</a></li>
+                    <li><a href={FlowRouter.url('app.preferences')}>Preferences</a></li>
+                    <li><a href={FlowRouter.url('app.organizations')}>Organizations</a></li>
                     <li role="separator" className="divider"></li>
                     <li><a href={FlowRouter.url('app.logout')}>Sign out</a></li>
                   </ul>
