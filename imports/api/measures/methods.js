@@ -3,9 +3,12 @@ import _ from 'lodash';
 
 // collections
 import {Measures} from './index';
+import {Metrics} from '/imports/api/metrics/index';
+import {MiniMongo} from '/imports/api/cache/index';
 
 // functions
 import {arraySum} from '/imports/utils/index';
+import {measure} from './functions';
 
 
 /**
@@ -81,8 +84,8 @@ export const getChartData = new ValidatedMethod({
           conflict: 0
         }, // current score of metrics
         selector = {}, // conditions for query database
-        fields = {} // fields will receive from database
-      MeasuresData = []
+        fields = {}, // fields will receive from database
+        MeasuresData = []
       ;
 
       // get labels
@@ -146,5 +149,151 @@ export const getChartData = new ValidatedMethod({
       }
     }
     return result;
+  }
+});
+
+/**
+ * @summary Method measure monthly metric score
+ * @param {Object} params
+ * @param {String} params.leaderId
+ * @param {String} params.organizationId
+ * @param {Date} params.date - the date which is the last month of data
+ * @return {Number} the number of docs had been upsert
+ */
+export const measureMonthlyMetricScore = new ValidatedMethod({
+  name: "measures.measureMonthlyMetricScore",
+  validate: null,
+  run({params}) {
+    const
+      MiniMongo = new Mongo.Collection(null),
+      runDate = (!!params.date ? params.date : new Date()),
+      year = runDate.getFullYear(),
+      month = runDate.getMonth(),
+      nextMonth = month + 1,
+      haveLeaderId = !!params.leaderId,
+      haveOrgId = !!params.organizationId
+      ;
+    let
+      jobMessage = "",
+      selector = {},
+      modifier = {},
+      leaderList = [],
+      leaderDocs = [],
+      orgList = [],
+      metricList = [],
+      orgDocs = [],
+      metricDocs = [],
+      scoreList = [],
+      averageScore = 0,
+      noOfScores = 0,
+      noOfGoodScores = 0, // count the number of score from 4 to 5
+      noOfBadScores = 0, // count the number of score from 1 to 3
+      measureDoc = {}, // data of measure for leader
+      result = false
+      ;
+
+    // Get list of leaders
+    if(haveLeaderId) {
+      selector.leaderId = params.leaderId;
+    }
+    if(haveOrgId) {
+      selector.organizationId = params.organizationId;
+    }
+    selector.date = {
+        $gte: new Date(year, month, 1),
+        $lt: new Date(year, nextMonth, 1)
+      }
+    ; // only get data in current month
+    modifier = {
+      fields: {
+        _id: 0,
+        leaderId: 1,
+        organizationId: 1,
+        metric: 1,
+        score: 1
+      }
+    }; // only return necessary fields
+
+    // get leaders data in current month
+    const docs = Metrics.find(selector, modifier).fetch();
+    if (!_.isEmpty(docs)) {
+      MiniMongo.remove({});
+      docs.map(doc => {
+        MiniMongo.insert(doc);
+        if(!haveLeaderId) {
+          leaderList.push(doc.leaderId);
+        }
+      });
+
+      if(haveLeaderId) {
+        leaderList.push(params.leaderId);
+      } else {
+        leaderList = _.uniq(leaderList); // get unique leader only
+      }
+
+      // get average score for every leader
+      leaderList.map(leaderId => {
+        //get list of organization for specific leader
+        if(haveOrgId) {
+          orgList.push(params.organizationId);
+        } else {
+          leaderDocs = MiniMongo.find({leaderId}).fetch();
+          leaderDocs.map(leaderDoc => {
+            orgList.push(leaderDoc.organizationId);
+          });
+          orgList = _.uniq(orgList);
+        }
+
+        // get list of metric for specific organization
+        orgList.map(organizationId => {
+          orgDocs = MiniMongo.find({leaderId, organizationId}).fetch();
+          orgDocs.map(orgDoc => {
+            metricList.push(orgDoc.metric);
+          });
+          metricList = _.uniq(metricList);
+          // get list of score for specific metric
+          metricList.map(metric => {
+            metricDocs = MiniMongo.find({leaderId, organizationId, metric}).fetch();
+            metricDocs.map(metricDoc => {
+              const {score} = metricDoc;
+              if(score > 3) {
+                noOfGoodScores++;
+              } else {
+                noOfBadScores++;
+              }
+              scoreList.push(score);
+            });
+
+            noOfScores = scoreList.length;
+            if(noOfScores > 0) {
+              averageScore = Number(arraySum(scoreList) / scoreList.length).toFixed(1);
+            }
+
+            measureDoc = {
+              leaderId,
+              organizationId,
+              type: "metric",
+              interval: "monthly",
+              year,
+              month,
+              key: metric,
+              value: {
+                averageScore,
+                noOfScores,
+                noOfGoodScores,
+                noOfBadScores
+              }
+            };
+            measure({data: measureDoc});
+          });
+        });
+      });
+      return {
+        noOfLeader: leaderList.length,
+        noOfOrg: orgList.length
+      };
+    } else {
+      return {};
+    }
   }
 });

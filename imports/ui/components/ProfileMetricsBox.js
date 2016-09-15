@@ -10,11 +10,14 @@ export default class ProfileMetricsBox extends Component {
   constructor() {
     super();
 
-    this.state = {}
+    this.state = {};
   }
 
   render() {
-    const {label, preferences, data} = this.props;
+    const
+      {isPresent, label, preferences, data} = this.props,
+      status = isPresent ? "current organization" : "latest organization"
+      ;
 
     if (!_.isEmpty(data)) {
       const {chart, metrics} = data;
@@ -120,6 +123,7 @@ export default class ProfileMetricsBox extends Component {
       return (
         <div className="ibox float-e-margins" style={{marginBottom: 18}}>
           <div className="ibox-title">
+            <span className="label label-info pull-right">{status}</span>
             <h5>{label}</h5>
           </div>
           <IboxContentChartWithChosen

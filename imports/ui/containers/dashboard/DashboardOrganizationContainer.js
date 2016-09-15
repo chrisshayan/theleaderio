@@ -7,6 +7,7 @@ import {FlowRouter} from 'meteor/kadira:flow-router';
 import {Measures} from '/imports/api/measures/index';
 import {Feedbacks} from '/imports/api/feedbacks/index';
 import {Employees, STATUS_ACTIVE} from '/imports/api/employees/index';
+import {Organizations} from '/imports/api/organizations/index';
 
 // components
 import Spinner from '/imports/ui/common/Spinner';
@@ -51,20 +52,52 @@ class DashboardOrganization extends Component {
         });
       } else {
         this.setState({
+          ready: true,
           error: err.reason
         });
       }
     });
   }
 
+  componentWillReceiveProps(nextProps) {
+    const
+      leaderId = Meteor.userId(),
+      organizationId = nextProps.organizationId,
+      date = new Date(),
+      noOfMonths = 6,
+      preferences = {};
+    ;
+    if(this.props.organizationId !== organizationId) {
+      this.setState({
+        ready: false,
+        chart: {}
+      });
+      getChartData.call({leaderId, organizationId, date, noOfMonths}, (err, result) => {
+        if (!err) {
+          preferences.metrics = DEFAULT_PUBLIC_INFO_PREFERENCES.metrics;
+          this.setState({
+            ready: true,
+            chart: result,
+            preferences
+          });
+        } else {
+          this.setState({
+            ready: true,
+            error: err.reason
+          });
+        }
+      });
+    }
+  }
+
   render() {
-    // console.log(this.props)
     const
       {
         containerReady,
         measures,
         noOfEmployees,
-        noOfFeedbacks
+        noOfFeedbacks,
+        isCurrentOrg
       } = this.props,
       {
         ready,
@@ -145,6 +178,7 @@ class DashboardOrganization extends Component {
           </div>
           <div className="row">
             <ProfileMetricsBox
+              isPresent={isCurrentOrg}
               label="Half-year leadership progress"
               preferences={preferences.metrics}
               data={{chart, metrics}}
@@ -171,7 +205,8 @@ export default DashboardOrganizationContainer = createContainer(function (params
     month = date.getMonth(),
     subMeasures = Meteor.subscribe("measures"),
     subEmployees = Meteor.subscribe("employees"),
-    subFeedbacks = Meteor.subscribe("feedbacks")
+    subFeedbacks = Meteor.subscribe("feedbacks"),
+    subOrg = Meteor.subscribe("organizations.details", {_id: organizationId})
     ;
   let
     containerReady = false,
@@ -180,8 +215,10 @@ export default DashboardOrganizationContainer = createContainer(function (params
     measures = [],
     employees = [],
     feedbacks = [],
+    organizations = [],
     noOfEmployees = 0,
-    noOfFeedbacks = 0
+    noOfFeedbacks = 0,
+    isCurrentOrg = false
     ;
 
   query = {
@@ -193,7 +230,7 @@ export default DashboardOrganizationContainer = createContainer(function (params
     month
   };
   projection = {key: 1, value: 1};
-  measures = Measures.find(query, projection).fetch();
+  measures = Measures.find(query, {fields: projection}).fetch();
 
 
   query = {
@@ -202,7 +239,6 @@ export default DashboardOrganizationContainer = createContainer(function (params
     status: STATUS_ACTIVE
   };
   employees = Employees.find(query).fetch();
-  console.log(Employees.find().fetch())
   noOfEmployees = employees.length;
 
   query = {
@@ -218,15 +254,24 @@ export default DashboardOrganizationContainer = createContainer(function (params
     metric: 1,
     feedback: 1
   };
-  feedbacks = Feedbacks.find(query, projection).fetch();
+  feedbacks = Feedbacks.find(query, {fields: projection}).fetch();
   noOfFeedbacks = feedbacks.length;
 
-  containerReady = subMeasures.ready() & subFeedbacks.ready() & subEmployees.ready();
+  projection = {
+    isPresent: 1
+  }
+  organizations = Organizations.find({}, {fields: projection}).fetch();
+  if(!_.isEmpty(organizations)) {
+    isCurrentOrg = organizations[0].isPresent;
+  }
+
+  containerReady = subMeasures.ready() & subFeedbacks.ready() & subEmployees.ready() & subOrg.ready();
 
   return {
     containerReady,
     measures,
     noOfEmployees,
-    noOfFeedbacks
+    noOfFeedbacks,
+    isCurrentOrg
   };
 }, DashboardOrganization);

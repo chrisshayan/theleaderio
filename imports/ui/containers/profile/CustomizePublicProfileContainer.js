@@ -60,7 +60,7 @@ class ProfilePreferences extends Component {
       });
     }
   }
-  
+
 
   onSave() {
     const
@@ -87,20 +87,22 @@ class ProfilePreferences extends Component {
     const loading = (this.props.loading | this.state.loading);
 
     if (!loading) {
-      const {preferences} = this.state;
-      const {
-        basic,
-        headline,
-        contact,
-        summary,
-        picture,
-        about,
-        organizations,
-        metrics,
-        chart
-      } = this.state.publicInfo;
-      
-      const ulStyle = {margin: 0, paddingLeft: 15};
+      const
+        {preferences} = this.state,
+        {
+          basic,
+          headline,
+          contact,
+          summary,
+          picture,
+          about,
+          organizations,
+          metrics,
+          chart
+        } = this.state.publicInfo,
+        isPresent = (organizations.length > 0) ? organizations[0].isPresent : false,
+        ulStyle = {margin: 0, paddingLeft: 15}
+        ;
 
       return (
         <div className="wrapper wrapper-content animated fadeInRight">
@@ -115,7 +117,8 @@ class ProfilePreferences extends Component {
               <div className="ibox-content no-padding">
                 <div className="row">
                   <ProfileMetricsBox
-                    label="Metrics (no real data)"
+                    isPresent={isPresent}
+                    label="Half-year leadership progress"
                     preferences={preferences.metrics}
                     data={{chart, metrics}}
                   />

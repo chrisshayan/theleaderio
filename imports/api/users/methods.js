@@ -169,7 +169,7 @@ export const confirm = new ValidatedMethod({
               "emails.$.verified": true
             }
           });
-          ProfileActions.setStatus.call({userId, status: STATUS_ACTIVE});
+          ProfileActions.setStatus.call({userId: _id, status: STATUS_ACTIVE});
         }
       } else {
         throw new Meteor.Error('invalid-token', 'User token is invalid or has been used.');
