@@ -30,3 +30,5 @@ import '/imports/api/metrics/register.server';
 import '/imports/api/feedbacks/register.server';
 // measures
 import '/imports/api/measures/register.server';
+// migration
+import '/imports/api/migration/register.server';
