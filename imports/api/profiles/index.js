@@ -46,7 +46,8 @@ Profiles.schema = new SimpleSchema({
     optional: true
   },
   timezone: {
-    type: String
+    type: String,
+    optional: true
   },
   "address.zipCode": {
     type: String,

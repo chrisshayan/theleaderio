@@ -49,7 +49,8 @@ export const create = new ValidatedMethod({
       optional: true
     },
     timezone: {
-      type: String
+      type: String,
+      optional: true
     }
   }).validator(),
   run({userId, firstName, lastName, timezone}) {
