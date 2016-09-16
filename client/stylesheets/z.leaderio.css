@@ -548,7 +548,7 @@ nav.left-nav ul li a span {
 }
 
 #left-nav {
-  overflow-y: scroll !important;
+  overflow: hidden;
 }
 
 .no-item {
