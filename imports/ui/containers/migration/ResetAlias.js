@@ -75,17 +75,21 @@ export default class ResetAlias extends Component {
           // Remove token
           console.log(tokenId)
           TokenActions.remove.call({tokenId, action: 'migration'}, (error, result) => {
-            console.log(error)
-            console.log(result)
+            if(!error) {
+              // Redirect to user's login page
+              // Need the cookie sharing login information here
+              this.setState({
+                errors: null
+              });
+              // Sign out user before route to subdomain
+              SubdomainActions.addSubdomain({alias, route: FlowRouter.path('SignInPage', {action: 'account'})});
+            } else {
+              this.setState({
+                errors: error.reason
+              });
+            }
           });
-          // Redirect to user's login page
-          // Need the cookie sharing login information here
-          this.setState({
-            errors: null
-          });
-          // Sign out user before route to subdomain
-          // Meteor.logout();
-          // SubdomainActions.addSubdomain({alias, route: FlowRouter.path('SignInPage', {action: 'account'})});
+
         } else {
           this.setState({
             errors: error.reason
