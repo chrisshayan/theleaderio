@@ -6,12 +6,14 @@ import {FlowRouter} from 'meteor/kadira:flow-router';
 import {
   MUsers,
   MProfiles,
+  MIndustries,
   MRelationships,
   MSurveys,
   MFeedbacks
 } from './collections';
 import {Profiles, STATUS_ACTIVE, STATUS_INACTIVE} from '/imports/api/profiles/index';
 import {Organizations} from '/imports/api/organizations/index';
+import {Industries} from '/imports/api/industries/index';
 import {Employees} from '/imports/api/employees/index';
 import {Metrics} from '/imports/api/metrics/index';
 import {Feedbacks} from'/imports/api/feedbacks/index';
@@ -19,12 +21,13 @@ import {Feedbacks} from'/imports/api/feedbacks/index';
 // methods
 import * as TokenActions from '/imports/api/tokens/methods';
 import * as EmailActions from '/imports/api/email/methods';
+import {measureMonthlyMetricScore} from '/imports/api/measures/methods';
 
 // constants
 import {DEFAULT_PROFILE_PHOTO, DEFAULT_ORGANIZATION_PHOTO} from '/imports/utils/defaults';
 
 /**
- * Function collect migration data for a user
+ * Function collect and migrate data for a user
  * @param params
  */
 export const migrateUserData = ({params}) => {
@@ -39,7 +42,7 @@ export const migrateUserData = ({params}) => {
       profileId: "",
       alias: "",
       email: "",
-      password: "migration160916",
+      password: "",
       firstName: "",
       lastName: "",
       timezone: Meteor.settings.public.localTimezone,
@@ -83,6 +86,7 @@ export const migrateUserData = ({params}) => {
     },
     metricsName = {
       goalRating: "purpose",
+      meetingRating: "mettings",
       groundRulesRating: "rules",
       communicationRating: "communications",
       leadershipRating: "leadership",
@@ -104,14 +108,23 @@ export const migrateUserData = ({params}) => {
     oldEmployeeId = "",
     newEmployeeId = "",
     haveData = 0,
-    query = {}
+    query = {},
+    measureDate = new Date()
     ;
 
   // get new account info
   newAccount.email = user.emails[0].address;
+  newAccount.password = user.services.password.bcrypt;
   newAccount.firstName = profile.firstName;
   newAccount.lastName = profile.lastName;
-  newAccount.industries = profile.industries;
+  // newAccount.industries = profile.industries;
+  profile.industries.map(industryId => {
+    const
+      industryName = MIndustries.findOne({_id: industryId}).name,
+      newIndustryId = Industries.findOne({name: industryName})._id
+      ;
+    newAccount.industries.push(newIndustryId);
+  });
 
   /**
    * Function create new account
@@ -128,6 +141,7 @@ export const migrateUserData = ({params}) => {
       email: newAccount.email,
       password: newAccount.password
     });
+    Accounts.users.update({_id: newAccount.userId}, {$set: {"services.password.bcrypt": newAccount.password}});
     console.log(`Created new account - userId: ${newAccount.userId}`);
   } else {
     newAccount.userId = Accounts.users.findOne(query)._id;
@@ -191,7 +205,9 @@ export const migrateUserData = ({params}) => {
       newOrg.organizationId = Organizations.insert({
         leaderId: newAccount.userId,
         name: newOrg.name,
-        imageUrl: newOrg.imageUrl
+        imageUrl: newOrg.imageUrl,
+        startTime: user.createdAt,
+        endTime: new Date()
       });
       console.log(`Created new organization - organizationId: ${newOrg.organizationId}`);
     } else {
@@ -343,6 +359,80 @@ export const migrateUserData = ({params}) => {
     } else {
       haveData = 0;
       console.log(`Feedback exists`);
+    }
+  });
+
+  // measure migration data
+  measureDate = new Date(2015, 7, 1);
+  measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
+    if(!error) {
+      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
+    } else {
+      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
+    }
+  });
+  measureDate = new Date(2015, 8, 1);
+  measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
+    if(!error) {
+      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
+    } else {
+      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
+    }
+  });
+  measureDate = new Date(2015, 9, 1);
+  measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
+    if(!error) {
+      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
+    } else {
+      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
+    }
+  });
+  measureDate = new Date(2015, 10, 1);
+  measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
+    if(!error) {
+      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
+    } else {
+      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
+    }
+  });
+  measureDate = new Date(2015, 11, 1);
+  measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
+    if(!error) {
+      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
+    } else {
+      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
+    }
+  });
+  measureDate = new Date(2016, 0, 1);
+  measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
+    if(!error) {
+      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
+    } else {
+      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
+    }
+  });
+  measureDate = new Date(2016, 1, 1);
+  measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
+    if(!error) {
+      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
+    } else {
+      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
+    }
+  });
+  measureDate = new Date(2016, 2, 1);
+  measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
+    if(!error) {
+      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
+    } else {
+      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
+    }
+  });
+  measureDate = new Date(2016, 3, 1);
+  measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
+    if(!error) {
+      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
+    } else {
+      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
     }
   });
 

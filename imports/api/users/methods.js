@@ -185,8 +185,9 @@ export const confirm = new ValidatedMethod({
 export const addPreferences = new ValidatedMethod({
   name: 'users.addPreferences',
   validate: null,
-  run({name, preferences}) {
-    Preferences.insert({name, preferences});
+  run({name, preferences, userId}) {
+    console.log({name, preferences, userId})
+    Preferences.insert({name, preferences, userId});
   }
 });
 

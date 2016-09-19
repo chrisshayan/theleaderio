@@ -292,9 +292,8 @@ export const getPublicData = new ValidatedMethod({
           ;
 
         // add default preferences for user if don't have
-        //
         if (noOfPreferences == 0) {
-          addPreferences.call({name: 'publicInfo', preferences: DEFAULT_PUBLIC_INFO_PREFERENCES});
+          addPreferences.call({name: 'publicInfo', preferences: DEFAULT_PUBLIC_INFO_PREFERENCES, userId});
         }
 
         // Get customize info,
