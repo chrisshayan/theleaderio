@@ -17,6 +17,7 @@ import {Industries} from '/imports/api/industries/index';
 import {Employees} from '/imports/api/employees/index';
 import {Metrics} from '/imports/api/metrics/index';
 import {Feedbacks} from'/imports/api/feedbacks/index';
+import {Tokens} from '/imports/api/tokens/index';
 
 // methods
 import * as TokenActions from '/imports/api/tokens/methods';
@@ -51,7 +52,7 @@ export const migrateUserData = ({params}) => {
     },
     newOrg = {
       organizationId: "",
-      name: "default",
+      name: "Unnamed",
       leaderId: "",
       employees: [],
       imageUrl: DEFAULT_ORGANIZATION_PHOTO
@@ -169,24 +170,23 @@ export const migrateUserData = ({params}) => {
     }
     if (!_.isEmpty(newAccount.profileId)) {
       // Send migration information email to user
-      const tokenId = TokenActions.generate.call({email: newAccount.email, action: 'migration'}, (error) => {
-        if (!error) {
-          // call methods to send verify Email with token link to user
-          // route to Welcome page with a message to verify user's email
-          const
-            verifyUrl = FlowRouter.path('migrationPage', {action: 'migration'}, {token: tokenId}),
-            url = `http://${DOMAIN}${verifyUrl}`,
-            template = 'migration',
-            data = {
-              email: newAccount.email,
-              firstName: newAccount.firstName,
-              url: url
-            };
-          console.log(`create new user success with userId: ${newAccount.userId}`);
-          console.log({template, data});
-          // EmailActions.send.call({template, data});
-        }
-      });
+      const tokenId = Tokens.insert({email: newAccount.email, action: 'migration'});
+      if(!_.isEmpty(tokenId)) {
+        // call methods to send verify Email with token link to user
+        // route to Welcome page with a message to verify user's email
+        const
+          verifyUrl = `/signup/migration?token=${tokenId}`,
+          url = `http://${DOMAIN}${verifyUrl}`,
+          template = 'migration',
+          data = {
+            // email: newAccount.email,
+            email: "jackiekhuu.work@gmail.com", // for testing only
+            firstName: newAccount.firstName,
+            url: url
+          };
+        console.log(`create new user success with userId: ${newAccount.userId}`);
+        EmailActions.send.call({template, data});
+      }
     } else {
       Accounts.users.remove({_id: newAccount.userId});
       newAccount.userId = "";

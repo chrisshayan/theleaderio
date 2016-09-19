@@ -43,7 +43,7 @@ export const verify = new ValidatedMethod({
     if (!this.isSimulation) {
       const token = Tokens.findOne({_id: tokenId, action});
       if (token) {
-        return true;
+        return token.email;
       } else {
         throw new Meteor.Error('invalid-token', 'User token is invalid or has been used.');
       }
@@ -69,7 +69,7 @@ export const remove = new ValidatedMethod({
   }).validator(),
   run({tokenId, action}) {
     if (!this.isSimulation) {
-      Tokens.remove({_id: tokenId, action});
+      console.log(Tokens.remove({_id: tokenId, action}));
     }
   }
 });

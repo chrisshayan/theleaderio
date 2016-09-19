@@ -40,7 +40,7 @@ export const createAlias = new ValidatedMethod({
               `Can not create user alias with email=${email} & alias=${alias}`);
           } else {
             // add alias into profiles collection
-            return `create alias success`;
+            return userId;
           }
         } else {
           throw new Meteor.Error('create-alias-failed',
@@ -186,7 +186,6 @@ export const addPreferences = new ValidatedMethod({
   name: 'users.addPreferences',
   validate: null,
   run({name, preferences, userId}) {
-    console.log({name, preferences, userId})
     Preferences.insert({name, preferences, userId});
   }
 });
