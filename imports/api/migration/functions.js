@@ -2,6 +2,9 @@ import {Meteor} from 'meteor/meteor';
 import {Accounts} from 'meteor/accounts-base';
 import {FlowRouter} from 'meteor/kadira:flow-router';
 
+// logger
+import {Logger} from '/imports/api/logger/index';
+
 // collections
 import {
   MUsers,
@@ -28,8 +31,27 @@ import {measureMonthlyMetricScore} from '/imports/api/measures/methods';
 import {DEFAULT_PROFILE_PHOTO, DEFAULT_ORGANIZATION_PHOTO} from '/imports/utils/defaults';
 
 /**
+ * Function get list of migrated users and migrate their data one by one
+ */
+export const migrate = () => {
+  const
+    users = MUsers.find({roles: "leader"}, {fields: {_id: true}}).fetch()
+    ;
+  let count = 0;
+
+  // migrate users data
+  users.map(user => {
+    migrateUserData({params: {oldUserId: user._id}});
+    count++;
+  });
+  Logger.info(`migrated users: ${count}`);
+  return count;
+};
+
+/**
  * Function collect and migrate data for a user
  * @param params
+ * @param params.oldUserId - userId of the old data
  */
 export const migrateUserData = ({params}) => {
   if (typeof params.oldUserId === 'undefined') {
@@ -38,6 +60,11 @@ export const migrateUserData = ({params}) => {
   const
     DOMAIN = Meteor.settings.public.domain,
     {oldUserId} = params,
+    checkExists = {
+      user: false,
+      profile: false,
+      org: false,
+    },
     newAccount = {
       userId: "",
       profileId: "",
@@ -63,7 +90,8 @@ export const migrateUserData = ({params}) => {
       firstName: "",
       lastName: "",
       organizationId: "",
-      leaderId: ""
+      leaderId: "",
+      noOfEmployees: 0
     },
     newMetric = {
       metricId: "",
@@ -73,7 +101,8 @@ export const migrateUserData = ({params}) => {
       employeeId: "",
       metric: "",
       score: 0,
-      date: new Date()
+      date: new Date(),
+      noOfMetrics: 0
     },
     newFeedback = {
       feedbackId: "",
@@ -83,7 +112,8 @@ export const migrateUserData = ({params}) => {
       employeeId: "",
       metric: "leadership",
       feedback: "",
-      date: new Date()
+      date: new Date(),
+      noOfFeedback: 0
     },
     metricsName = {
       goalRating: "purpose",
@@ -102,9 +132,19 @@ export const migrateUserData = ({params}) => {
     profile = MProfiles.findOne({userId: oldUserId}),
     employees = MRelationships.find({userId: oldUserId, type: 1}, {fields: {elseId: true}}).fetch(),
     surveys = MSurveys.find({leaderId: oldUserId}).fetch(),
-    feedbacks = MFeedbacks.find({leaderId: oldUserId}).fetch()
+    feedbacks = MFeedbacks.find({leaderId: oldUserId}).fetch(),
+    report = {
+      oldUserId: "",
+      newUserId: "",
+      organizationId: "",
+      noOfEmployees: 0,
+      noOfMetrics: 0,
+      noOfFeedback: 0
+    }
     ;
   let
+    oldEmployee = {},
+    employee = {},
     oldEmployeeEmail = "",
     oldEmployeeId = "",
     newEmployeeId = "",
@@ -115,6 +155,10 @@ export const migrateUserData = ({params}) => {
 
   // get new account info
   newAccount.email = user.emails[0].address;
+  // Merge account for special user
+  if (newAccount.email = "hamedshayan@gmail.com") {
+    newAccount.email = "christopher.shayan@gmail.com";
+  }
   newAccount.password = user.services.password.bcrypt;
   newAccount.firstName = profile.firstName;
   newAccount.lastName = profile.lastName;
@@ -142,14 +186,17 @@ export const migrateUserData = ({params}) => {
       email: newAccount.email,
       password: newAccount.password
     });
-    Accounts.users.update({_id: newAccount.userId}, {$set: {"services.password.bcrypt": newAccount.password}});
-    console.log(`Created new account - userId: ${newAccount.userId}`);
+    // Accounts.users.update({_id: newAccount.userId}, {$set: {"services.password.bcrypt": newAccount.password}});
+    // for testing only
+    Accounts.users.update({_id: newAccount.userId}, {$set: {"services.password.bcrypt": "$2a$10$k79BJKrSDgt9lud.mmPp.uhHiCq9gTLKcCJV5G7U560HCBAB4Gkde"}});
+    Logger.info(`Created new account - userId: ${newAccount.userId}`);
   } else {
     newAccount.userId = Accounts.users.findOne(query)._id;
     haveData = 0;
-    console.log(`Account exists - userId: ${newAccount.userId}`);
+    checkExists.user = true;
+    Logger.warn(`Account exists - userId: ${newAccount.userId}`);
   }
-  if (!_.isEmpty(newAccount.userId)) {
+  if (!checkExists.user) {
     imageUrl = DEFAULT_PROFILE_PHOTO;
     query = {userId: newAccount.userId};
     haveData = Profiles.find(query).count();
@@ -162,16 +209,17 @@ export const migrateUserData = ({params}) => {
         timezone: newAccount.timezone,
         imageUrl: newAccount.imageUrl
       });
-      console.log(`Created new profile - profileId: ${newAccount.profileId}`);
+      Logger.info(`Created new profile - profileId: ${newAccount.profileId}`);
     } else {
       newAccount.profileId = Profiles.findOne(query)._id;
       haveData = 0;
-      console.log(`Profile exists - profileId: ${newAccount.profileId}`);
+      checkExists.profile = true;
+      Logger.warn(`Profile exists - profileId: ${newAccount.profileId}`);
     }
-    if (!_.isEmpty(newAccount.profileId)) {
+    if (!checkExists.profile) {
       // Send migration information email to user
       const tokenId = Tokens.insert({email: newAccount.email, action: 'migration'});
-      if(!_.isEmpty(tokenId)) {
+      if (!_.isEmpty(tokenId)) {
         // call methods to send verify Email with token link to user
         // route to Welcome page with a message to verify user's email
         const
@@ -179,21 +227,24 @@ export const migrateUserData = ({params}) => {
           url = `http://${DOMAIN}${verifyUrl}`,
           template = 'migration',
           data = {
-            // email: newAccount.email,
-            email: "jackiekhuu.work@gmail.com", // for testing only
+            email: newAccount.email,
             firstName: newAccount.firstName,
             url: url
           };
-        console.log(`create new user success with userId: ${newAccount.userId}`);
-        EmailActions.send.call({template, data});
+        Logger.info(`create new user success with userId: ${newAccount.userId}`);
+        if(Meteor.settings.public.env === "production") {
+          EmailActions.send.call({template, data});
+        } else {
+          Logger.info(`send email: ${template} to ${data.email}`);
+        }
       }
     } else {
       Accounts.users.remove({_id: newAccount.userId});
       newAccount.userId = "";
-      console.log(`create profile failed for ${newAccount.userId}`);
+      Logger.info(`create profile failed for ${newAccount.userId}`);
     }
   } else {
-    console.log(`create user failed for old user ${oldUserId}`);
+    Logger.warn(`No new user created for old user ${oldUserId}`);
   }
 
   // get new organization info
@@ -209,14 +260,15 @@ export const migrateUserData = ({params}) => {
         startTime: user.createdAt,
         endTime: new Date()
       });
-      console.log(`Created new organization - organizationId: ${newOrg.organizationId}`);
+      Logger.info(`Created new organization - organizationId: ${newOrg.organizationId}`);
     } else {
       newOrg.organizationId = Organizations.findOne(query)._id;
       haveData = 0;
-      console.log(`Organization exists - organizationId: ${newOrg.organizationId}`);
+      checkExists.org = true;
+      Logger.warn(`Organization exists - organizationId: ${newOrg.organizationId}`);
     }
 
-    if (!_.isEmpty(newOrg.organizationId)) {
+    if (!checkExists.org) {
       // get list of employees
       employees.map(employee => {
         const
@@ -244,11 +296,12 @@ export const migrateUserData = ({params}) => {
             lastName: newEmployee.lastName,
             email: newEmployee.email
           });
-          console.log(`Created new employee - employeeId: ${newEmployee.employeeId}`);
+          newEmployee.noOfEmployees++;
+          Logger.info(`Created new employee - employeeId: ${newEmployee.employeeId}`);
         } else {
           newEmployee.employeeId = Employees.findOne(query)._id;
           haveData = 0;
-          console.log(`Employee exists - employeeId: ${newEmployee.employeeId}`);
+          Logger.warn(`Employee exists - employeeId: ${newEmployee.employeeId}`);
         }
       });
     } else {
@@ -256,184 +309,200 @@ export const migrateUserData = ({params}) => {
       newAccount.userId = "";
       Profiles.remove({userId: newAccount.userId});
       newAccount.profileId = "";
-      console.log(`no new org created for the old user ${oldUserId} with new user ${newAccount.userId}`)
+      Logger.warn(`no new org created for the old user ${oldUserId} with new user ${newAccount.userId}`)
     }
   } else {
-    console.log(`no new organization created for the old user ${oldUserId}, can not create organization`)
+    Logger.warn(`no new organization created for the old user ${oldUserId}, can not create organization`)
   }
 
-  // get user metrics
-  surveys.map(survey => {
-    oldEmployeeEmail = MUsers.findOne({_id: survey.createdBy}).emails[0].address;
-    // get newEmployeeId
-    newEmployeeId = Employees.findOne({email: oldEmployeeEmail})._id;
+  if (!checkExists.org) {
+    // import metrics
+    surveys.map(survey => {
+      oldEmployee = MUsers.findOne({_id: survey.createdBy});
+      if (!_.isEmpty(oldEmployee)) {
+        oldEmployeeEmail = oldEmployee.emails[0].address;
+        // get newEmployeeId
+        employee = Employees.findOne({email: oldEmployeeEmail});
+        if (!_.isEmpty(employee)) {
+          newEmployeeId = employee._id;
 
-    // add metrics for user
-    for (var i in survey) {
-      var
-        metric = "",
-        score = 0
-        ;
-      if (typeof metricsName[i] !== 'undefined') {
-        metric = metricsName[i];
-        score = survey[i];
+          // add metrics for user
+          for (var i in survey) {
+            var
+              metric = "",
+              score = 0
+              ;
+            if (typeof metricsName[i] !== 'undefined') {
+              metric = metricsName[i];
+              score = survey[i];
 
-        newMetric.leaderId = newAccount.userId;
-        newMetric.organizationId = newOrg.organizationId;
-        newMetric.employeeId = newEmployeeId;
-        newMetric.metric = metric;
-        newMetric.score = score;
-        newMetric.date = survey.createdAt;
+              newMetric.leaderId = newAccount.userId;
+              newMetric.organizationId = newOrg.organizationId;
+              newMetric.employeeId = newEmployeeId;
+              newMetric.metric = metric;
+              newMetric.score = score;
+              newMetric.date = survey.createdAt;
 
-        // create metric for user
-        query = {
-          planId: newMetric.planId,
-          leaderId: newMetric.leaderId,
-          organizationId: newMetric.organizationId,
-          employeeId: newMetric.employeeId,
-          metric: newMetric.metric,
-        };
-        haveData = Metrics.find(query).count();
-        if (haveData === 0) {
-          Metrics.insert({
-            planId: newMetric.planId,
-            leaderId: newMetric.leaderId,
-            organizationId: newMetric.organizationId,
-            employeeId: newMetric.employeeId,
-            metric: newMetric.metric,
-            score: newMetric.score,
-            date: newMetric.date
-          });
-          console.log(`Created new metric - metric: ${metric}, score: ${score}`);
-        } else {
-          haveData = 0;
-          console.log(`Metric exists - metric: ${metric}, score: ${score}`);
+              // create metric for user
+              query = {
+                planId: newMetric.planId,
+                leaderId: newMetric.leaderId,
+                organizationId: newMetric.organizationId,
+                employeeId: newMetric.employeeId,
+                metric: newMetric.metric,
+              };
+              haveData = Metrics.find(query).count();
+              if (haveData === 0) {
+                newMetric.metricId = Metrics.insert({
+                  planId: newMetric.planId,
+                  leaderId: newMetric.leaderId,
+                  organizationId: newMetric.organizationId,
+                  employeeId: newMetric.employeeId,
+                  metric: newMetric.metric,
+                  score: newMetric.score,
+                  date: newMetric.date
+                });
+                newMetric.noOfMetrics++;
+                Logger.info(`Created new metric - metric: ${metric}, score: ${score} with metricId: ${newMetric.metricId}`);
+              } else {
+                haveData = 0;
+                Logger.warn(`Metric exists - metric: ${metric}, score: ${score}`);
+              }
+            }
+          }
         }
       }
-    }
-  });
+    });
 
-  feedbacks.map(feedback => {
-    oldEmployeeEmail = MUsers.findOne({_id: feedback.createdBy}).emails[0].address;
-    // get newEmployeeId
-    newEmployeeId = Employees.findOne({email: oldEmployeeEmail})._id;
+    // import feedbacks
+    feedbacks.map(feedback => {
+      oldEmployee = MUsers.findOne({_id: feedback.createdBy});
+      if (!_.isEmpty(oldEmployee)) {
+        oldEmployeeEmail = oldEmployee.emails[0].address;
+        // get newEmployeeId
+        employee = Employees.findOne({email: oldEmployeeEmail});
+        if (!_.isEmpty(employee)) {
+          newEmployeeId = employee._id;
 
-    // get feedback info
-    newFeedback.leaderId = newAccount.userId;
-    newFeedback.organizationId = newOrg.organizationId;
-    newFeedback.employeeId = newEmployeeId;
-    newFeedback.feedback = feedback.content;
-    newFeedback.date = feedback.createdAt;
+          // get feedback info
+          newFeedback.leaderId = newAccount.userId;
+          newFeedback.organizationId = newOrg.organizationId;
+          newFeedback.employeeId = newEmployeeId;
+          newFeedback.feedback = feedback.content;
+          newFeedback.date = feedback.createdAt;
 
 
-    // create feedback for user
-    query = {
-      planId: newFeedback.planId,
-      leaderId: newFeedback.leaderId,
-      organizationId: newFeedback.organizationId,
-      employeeId: newFeedback.employeeId,
-      metric: newFeedback.metric,
-    };
-    haveData = Feedbacks.find(query).count();
-    if (haveData === 0) {
-      console.log({
-        planId: newFeedback.planId,
-        leaderId: newFeedback.leaderId,
-        organizationId: newFeedback.organizationId,
-        employeeId: newFeedback.employeeId,
-        metric: newFeedback.metric,
-        feedback: newFeedback.feedback,
-        date: newFeedback.date
-      });
-      Feedbacks.insert({
-        planId: newFeedback.planId,
-        leaderId: newFeedback.leaderId,
-        organizationId: newFeedback.organizationId,
-        employeeId: newFeedback.employeeId,
-        metric: newFeedback.metric,
-        feedback: newFeedback.feedback,
-        date: newFeedback.date
-      });
-      console.log(`Created new feedback`);
+          // create feedback for user
+          query = {
+            planId: newFeedback.planId,
+            leaderId: newFeedback.leaderId,
+            organizationId: newFeedback.organizationId,
+            employeeId: newFeedback.employeeId,
+            metric: newFeedback.metric,
+          };
+          haveData = Feedbacks.find(query).count();
+          if (haveData === 0) {
+            newFeedback.feedbackId = Feedbacks.insert({
+              planId: newFeedback.planId,
+              leaderId: newFeedback.leaderId,
+              organizationId: newFeedback.organizationId,
+              employeeId: newFeedback.employeeId,
+              metric: newFeedback.metric,
+              feedback: newFeedback.feedback,
+              date: newFeedback.date
+            });
+            newFeedback.noOfFeedback++;
+            Logger.info(`Created new feedback ${newFeedback.feedbackId}`);
 
-    } else {
-      haveData = 0;
-      console.log(`Feedback exists`);
-    }
-  });
+          } else {
+            haveData = 0;
+            Logger.warn(`Feedback exists: ${newFeedback.feedback}`);
+          }
+        }
+      }
 
-  // measure migration data
-  measureDate = new Date(2015, 7, 1);
-  measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
-    if(!error) {
-      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
-    } else {
-      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
-    }
-  });
-  measureDate = new Date(2015, 8, 1);
-  measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
-    if(!error) {
-      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
-    } else {
-      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
-    }
-  });
-  measureDate = new Date(2015, 9, 1);
-  measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
-    if(!error) {
-      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
-    } else {
-      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
-    }
-  });
-  measureDate = new Date(2015, 10, 1);
-  measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
-    if(!error) {
-      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
-    } else {
-      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
-    }
-  });
-  measureDate = new Date(2015, 11, 1);
-  measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
-    if(!error) {
-      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
-    } else {
-      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
-    }
-  });
-  measureDate = new Date(2016, 0, 1);
-  measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
-    if(!error) {
-      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
-    } else {
-      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
-    }
-  });
-  measureDate = new Date(2016, 1, 1);
-  measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
-    if(!error) {
-      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
-    } else {
-      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
-    }
-  });
-  measureDate = new Date(2016, 2, 1);
-  measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
-    if(!error) {
-      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
-    } else {
-      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
-    }
-  });
-  measureDate = new Date(2016, 3, 1);
-  measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
-    if(!error) {
-      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
-    } else {
-      console.log(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
-    }
-  });
+    });
 
+    // measure migration data
+    measureDate = new Date(2015, 7, 1);
+    measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
+      if (!error) {
+        Logger.info(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
+      } else {
+        Logger.warn(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
+      }
+    });
+    measureDate = new Date(2015, 8, 1);
+    measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
+      if (!error) {
+        Logger.info(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
+      } else {
+        Logger.warn(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
+      }
+    });
+    measureDate = new Date(2015, 9, 1);
+    measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
+      if (!error) {
+        Logger.info(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
+      } else {
+        Logger.warn(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
+      }
+    });
+    measureDate = new Date(2015, 10, 1);
+    measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
+      if (!error) {
+        Logger.info(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
+      } else {
+        Logger.warn(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
+      }
+    });
+    measureDate = new Date(2015, 11, 1);
+    measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
+      if (!error) {
+        Logger.info(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
+      } else {
+        Logger.warn(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
+      }
+    });
+    measureDate = new Date(2016, 0, 1);
+    measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
+      if (!error) {
+        Logger.info(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
+      } else {
+        Logger.warn(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
+      }
+    });
+    measureDate = new Date(2016, 1, 1);
+    measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
+      if (!error) {
+        Logger.info(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
+      } else {
+        Logger.warn(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
+      }
+    });
+    measureDate = new Date(2016, 2, 1);
+    measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
+      if (!error) {
+        Logger.info(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
+      } else {
+        Logger.warn(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
+      }
+    });
+    measureDate = new Date(2016, 3, 1);
+    measureMonthlyMetricScore.call({params: {leaderId: newAccount.userId, date: measureDate}}, (error, result) => {
+      if (!error) {
+        Logger.info(`Measure metrics data for ${newAccount.userId} in ${measureDate} - success`);
+      } else {
+        Logger.warn(`Measure metrics data for ${newAccount.userId} in ${measureDate} - failed: ${error.reason}`);
+      }
+    });
+
+    report.oldUserId = oldUserId;
+    report.newUserId = newAccount.userId;
+    report.organizationId = newOrg.organizationId;
+    report.noOfEmployees = newEmployee.noOfEmployees;
+    report.noOfMetrics = newMetric.noOfMetrics;
+    report.noOfFeedback = newFeedback.noOfFeedback;
+    Logger.info(report);
+  }
 }

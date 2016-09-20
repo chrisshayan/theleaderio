@@ -15,6 +15,9 @@ import {getLocalDate} from '/imports/api/time/functions';
 import {setStatus as setSendingPlanStatus} from '/imports/api/sending_plans/methods';
 import {measureMonthlyMetricScore} from '/imports/api/measures/methods';
 
+// functions
+import {migrate} from '/imports/api/migration/functions';
+
 // constants
 const LOG_LEVEL = {
   INFO: "info",
@@ -145,6 +148,11 @@ const sendSurveys = function (job, cb) {
 
 }
 
+/**
+ * Function measure the score of metric for leaders
+ * @param job
+ * @param cb
+ */
 const measureMetrics = (job, cb) => {
   measureMonthlyMetricScore.call({params: {}}, (error, measure) => {
     if (!error) {
@@ -164,6 +172,17 @@ const measureMetrics = (job, cb) => {
   });
 }
 
+/**
+ * Function migrate data for users from old version to the new version of theleader.io
+ * @param job
+ * @param cb
+ */
+const migrateUsers = (job, cb) => {
+  const result = migrate();
+  job.log(`migrated ${result} users`, {level: LOG_LEVEL.INFO});
+  job.done();
+}
+
 // Start Job
 function startJob(type) {
   switch (type) {
@@ -180,6 +199,11 @@ function startJob(type) {
     case "send_surveys":
     {
       QueueJobs.processJobs(type, sendSurveys);
+    }
+    // queue jobs
+    case "migration":
+    {
+      QueueJobs.processJobs(type, migrateUsers);
     }
   }
 }
