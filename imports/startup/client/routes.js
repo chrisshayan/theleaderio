@@ -18,6 +18,7 @@ import LandingPage from '/imports/ui/containers/LandingPage';
 
 import SignUpUser from '/imports/ui/containers/signup/SignUpUser';
 import SignUpAlias from '/imports/ui/containers/signup/SignUpAlias';
+import ResetAlias from '/imports/ui/containers/migration/ResetAlias';
 
 import SignInAlias from '/imports/ui/containers/signin/SignInAlias';
 import SignInAccount from '/imports/ui/containers/signin/SignInAccount';
@@ -155,10 +156,14 @@ signUpRoutes.route('/:action', {
         mount(SignUpAlias);
       }
     }
-    // create new alias
+    // email confirmation
     if (params.action == 'confirm') {
-        mount(ConfirmEmail);
-      }
+      mount(ConfirmEmail);
+    }
+    // create alias for migrated user
+    if(params.action == 'migration') {
+      mount(ResetAlias);
+    }
   }
 });
 

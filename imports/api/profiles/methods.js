@@ -49,7 +49,8 @@ export const create = new ValidatedMethod({
       optional: true
     },
     timezone: {
-      type: String
+      type: String,
+      optional: true
     }
   }).validator(),
   run({userId, firstName, lastName, timezone}) {
@@ -291,9 +292,8 @@ export const getPublicData = new ValidatedMethod({
           ;
 
         // add default preferences for user if don't have
-        //
         if (noOfPreferences == 0) {
-          addPreferences.call({name: 'publicInfo', preferences: DEFAULT_PUBLIC_INFO_PREFERENCES});
+          addPreferences.call({name: 'publicInfo', preferences: DEFAULT_PUBLIC_INFO_PREFERENCES, userId});
         }
 
         // Get customize info,

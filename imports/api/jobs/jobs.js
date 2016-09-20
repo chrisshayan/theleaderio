@@ -23,6 +23,10 @@ function createJob(type, attributes, data) {
         job = new Job(QueueJobs, type, data);
         break;
       }
+      case "migration": {
+        job = new Job(QueueJobs, type, data);
+        break;
+      }
       default: {
         return `Unknown job type: ${type}`
       }

@@ -45,7 +45,6 @@ export default class ResetPasswordPage extends Component {
 
   componentWillMount() {
     const tokenId = FlowRouter.getQueryParam("token");
-    console.log(tokenId);
     TokenActions.verify.call({tokenId, action: 'password'}, (error) => {
       if (_.isEmpty(error)) {
         this.setState({
@@ -71,7 +70,6 @@ export default class ResetPasswordPage extends Component {
   }
 
   render() {
-    console.log(this.state);
     if (this.state.loading) {
       return (
         <div>

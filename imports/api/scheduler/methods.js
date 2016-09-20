@@ -49,6 +49,18 @@ export const create = new ValidatedMethod({
   }
 });
 
+// Create scheduler for migrating data
+// with basics information: name
+export const createForMigration = new ValidatedMethod({
+  name: 'scheduler.createForMigration',
+  validate: validate.methodValidator(constraints),
+  run({userId, year, quarter, schedule, metrics, status}) {
+    if (!this.isSimulation) {
+      return Scheduler.insert({userId, year, quarter, schedule, metrics, status});
+    }
+  }
+});
+
 // Edit scheduler
 // Edit Organization's name, description, imageUrl, address
 export const edit = new ValidatedMethod({

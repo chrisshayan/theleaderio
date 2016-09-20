@@ -17,7 +17,7 @@ Meteor.startup(function () {
   // Migrations.migrateTo('latest');
 
   // jobs
-  DailyJobs.startJobServer();
+  // DailyJobs.startJobServer();
   QueueJobs.startJobServer();
 
   /**
@@ -26,30 +26,48 @@ Meteor.startup(function () {
    * @job: measure metric
    */
   // sending survey email job
-  if(!DailyJobs.find({type: "enqueue_surveys"}).count()) {
+  if (!DailyJobs.find({type: "enqueue_surveys"}).count()) {
     type = "enqueue_surveys";
     let attributes = {};
-    if(Meteor.settings.public.env === "dev") {
+    if (Meteor.settings.public.env === "dev") {
       console.log(`dev environment`)
       attributes = {priority: "normal", repeat: {schedule: later.parse.text("every 5 minutes")}};
     } else {
-      attributes = {priority: "normal", repeat: {schedule: later.parse.text(Meteor.settings.jobs.runTime.metricEmailSurvey)}};
+      attributes = {
+        priority: "normal",
+        repeat: {schedule: later.parse.text(Meteor.settings.jobs.runTime.metricEmailSurvey)}
+      };
     }
     var data = {type};
     Jobs.create(type, attributes, data);
   }
   // measure score of metric job
-  if(!DailyJobs.find({type: "measure_metric"}).count()) {
+  if (!DailyJobs.find({type: "measure_metric"}).count()) {
     type = "measure_metric";
     let attributes = {};
-    if(Meteor.settings.public.env === "dev") {
+    if (Meteor.settings.public.env === "dev") {
       console.log(`dev environment`)
       attributes = {priority: "normal", repeat: {schedule: later.parse.text("every 5 minutes")}};
     } else {
-      attributes = {priority: "normal", repeat: {schedule: later.parse.text(Meteor.settings.jobs.runTime.measureMetric)}};
+      attributes = {
+        priority: "normal",
+        repeat: {schedule: later.parse.text(Meteor.settings.jobs.runTime.measureMetric)}
+      };
     }
     const data = {type};
     Jobs.create(type, attributes, data);
+  }
+  // migrate data for users
+  if (Meteor.settings.migration) {
+    type = "migration";
+    const attributes = {
+        priority: "normal",
+        after: new Date()
+      },
+      data = {type}
+      ;
+    Jobs.create(type, attributes, data);
+    Workers.start(type);
   }
 
   type = "enqueue_surveys";

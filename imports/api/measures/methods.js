@@ -285,6 +285,8 @@ export const measureMonthlyMetricScore = new ValidatedMethod({
               }
             };
             measure({data: measureDoc});
+            noOfGoodScores = 0;
+            noOfBadScores = 0;
           });
         });
       });
