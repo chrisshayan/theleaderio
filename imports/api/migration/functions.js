@@ -156,7 +156,7 @@ export const migrateUserData = ({params}) => {
   // get new account info
   newAccount.email = user.emails[0].address;
   // Merge account for special user
-  if (newAccount.email = "hamedshayan@gmail.com") {
+  if (newAccount.email === "hamedshayan@gmail.com") {
     newAccount.email = "christopher.shayan@gmail.com";
   }
   newAccount.password = user.services.password.bcrypt;
@@ -186,9 +186,7 @@ export const migrateUserData = ({params}) => {
       email: newAccount.email,
       password: newAccount.password
     });
-    // Accounts.users.update({_id: newAccount.userId}, {$set: {"services.password.bcrypt": newAccount.password}});
-    // for testing only
-    Accounts.users.update({_id: newAccount.userId}, {$set: {"services.password.bcrypt": "$2a$10$k79BJKrSDgt9lud.mmPp.uhHiCq9gTLKcCJV5G7U560HCBAB4Gkde"}});
+    Accounts.users.update({_id: newAccount.userId}, {$set: {"services.password.bcrypt": newAccount.password}});
     Logger.info(`Created new account - userId: ${newAccount.userId}`);
   } else {
     newAccount.userId = Accounts.users.findOne(query)._id;
@@ -239,8 +237,6 @@ export const migrateUserData = ({params}) => {
         }
       }
     } else {
-      Accounts.users.remove({_id: newAccount.userId});
-      newAccount.userId = "";
       Logger.info(`create profile failed for ${newAccount.userId}`);
     }
   } else {
@@ -305,10 +301,6 @@ export const migrateUserData = ({params}) => {
         }
       });
     } else {
-      Accounts.users.remove({_id: newAccount.userId});
-      newAccount.userId = "";
-      Profiles.remove({userId: newAccount.userId});
-      newAccount.profileId = "";
       Logger.warn(`no new org created for the old user ${oldUserId} with new user ${newAccount.userId}`)
     }
   } else {
