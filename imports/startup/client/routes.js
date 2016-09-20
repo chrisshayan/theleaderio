@@ -34,13 +34,14 @@ import Organizations from '/imports/ui/containers/organizations/Organizations';
 import CreateOrganization from '/imports/ui/containers/organizations/CreateOrganization';
 import UpdateOrganization from '/imports/ui/containers/organizations/UpdateOrganization';
 
+import Feedback from '/imports/ui/containers/feedback';
+
 // methods
 import * as Notifications from '/imports/api/notifications/methods';
 
 // Admin page
 import ManageIndustries from '/imports/ui/containers/admin/ManageIndustries';
 
-import {resetPageHeading} from '/imports/store/modules/pageHeading';
 /**
  * Constant
  * @routes all routes in action
@@ -390,6 +391,20 @@ appRoutes.route('/organizations/update/:_id', {
     mount(MainLayout, {
       content() {
         return <UpdateOrganization _id={params._id}/>
+      }
+    })
+  }
+});
+
+/**
+ * Route for feedback 
+ */
+appRoutes.route('/feedback', {
+  name: 'app.feedback',
+  action(params) {
+    mount(MainLayout, {
+      content() {
+        return <Feedback />
       }
     })
   }
