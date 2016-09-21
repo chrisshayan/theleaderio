@@ -58,17 +58,17 @@ Meteor.startup(function () {
     Jobs.create(type, attributes, data);
   }
   // migrate data for users
-  if (Meteor.settings.migration) {
-    type = "migration";
-    const attributes = {
-        priority: "normal",
-        after: new Date()
-      },
-      data = {type}
-      ;
-    Jobs.create(type, attributes, data);
-    Workers.start(type);
-  }
+  // if (Meteor.settings.migration) {
+  //   type = "migration";
+  //   const attributes = {
+  //       priority: "normal",
+  //       after: new Date()
+  //     },
+  //     data = {type}
+  //     ;
+  //   Jobs.create(type, attributes, data);
+  //   Workers.start(type);
+  // }
 
   type = "enqueue_surveys";
   Workers.start(type);
