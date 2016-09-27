@@ -26,7 +26,7 @@ Meteor.startup(function () {
    * @job: measure metric
    */
   // sending survey email job
-  if (!DailyJobs.find({type: "enqueue_surveys", status: "waiting"}).count()) {
+  if (!DailyJobs.find({type: "enqueue_surveys"}).count()) {
     type = "enqueue_surveys";
     let attributes = {};
     if (Meteor.settings.public.env === "dev") {
@@ -42,7 +42,7 @@ Meteor.startup(function () {
     Jobs.create(type, attributes, data);
   }
   // measure score of metric job
-  if (!DailyJobs.find({type: "measure_metric", status: "waiting"}).count()) {
+  if (!DailyJobs.find({type: "measure_metric"}).count()) {
     type = "measure_metric";
     let attributes = {};
     if (Meteor.settings.public.env === "dev") {
