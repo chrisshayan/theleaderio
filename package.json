@@ -34,7 +34,8 @@
     "react-spinner": "^0.2.6",
     "redux-logger": "^2.6.1",
     "redux-thunk": "^2.1.0",
-    "validate.js": "^0.10.0"
+    "validate.js": "^0.10.0",
+    "winston": "^2.2.0"
   },
   "devDependencies": {
     "babel-plugin-transform-class-properties": "^6.10.2"

@@ -18,6 +18,7 @@ import LandingPage from '/imports/ui/containers/LandingPage';
 
 import SignUpUser from '/imports/ui/containers/signup/SignUpUser';
 import SignUpAlias from '/imports/ui/containers/signup/SignUpAlias';
+import ResetAlias from '/imports/ui/containers/migration/ResetAlias';
 
 import SignInAlias from '/imports/ui/containers/signin/SignInAlias';
 import SignInAccount from '/imports/ui/containers/signin/SignInAccount';
@@ -33,13 +34,14 @@ import Organizations from '/imports/ui/containers/organizations/Organizations';
 import CreateOrganization from '/imports/ui/containers/organizations/CreateOrganization';
 import UpdateOrganization from '/imports/ui/containers/organizations/UpdateOrganization';
 
+import Feedback from '/imports/ui/containers/feedback';
+
 // methods
 import * as Notifications from '/imports/api/notifications/methods';
 
 // Admin page
 import ManageIndustries from '/imports/ui/containers/admin/ManageIndustries';
 
-import {resetPageHeading} from '/imports/store/modules/pageHeading';
 /**
  * Constant
  * @routes all routes in action
@@ -155,10 +157,14 @@ signUpRoutes.route('/:action', {
         mount(SignUpAlias);
       }
     }
-    // create new alias
+    // email confirmation
     if (params.action == 'confirm') {
-        mount(ConfirmEmail);
-      }
+      mount(ConfirmEmail);
+    }
+    // create alias for migrated user
+    if(params.action == 'migration') {
+      mount(ResetAlias);
+    }
   }
 });
 
@@ -385,6 +391,20 @@ appRoutes.route('/organizations/update/:_id', {
     mount(MainLayout, {
       content() {
         return <UpdateOrganization _id={params._id}/>
+      }
+    })
+  }
+});
+
+/**
+ * Route for feedback 
+ */
+appRoutes.route('/feedback', {
+  name: 'app.feedback',
+  action(params) {
+    mount(MainLayout, {
+      content() {
+        return <Feedback />
       }
     })
   }

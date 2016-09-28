@@ -35,8 +35,10 @@ export default class SignUpUser extends Component {
     });
     Accounts.createUser({email, password}, (error) => {
       if (!error) {
-        const userId = Accounts.userId();
-        const timezone = momentTZ.tz.guess();
+        const
+          userId = Accounts.userId(),
+          timezone = momentTZ.tz.guess()
+          ;
         ProfileActions.create.call({userId, firstName, lastName, timezone}, (error) => {
           if (error) {
             this.setState({

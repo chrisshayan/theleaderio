@@ -67,7 +67,7 @@ export const send = new ValidatedMethod({
             const html = EmailFunctions.buildHtml({template, data: mailData});
             const options = {
               to: email,
-              from: `"${mailData.siteName}" <no-reply@mail.mailgun.com>`,
+              from: `"${mailData.siteName}" <no-reply@theleader.io>`,
               subject: `Get your alias`,
               html: html
             };
@@ -122,6 +122,28 @@ export const send = new ValidatedMethod({
         case 'feedback':
         {
           const options = EmailFunctions.getSurveyEmailOptions({template, data});
+          Email.send(options);
+          break;
+        }
+        case 'migration':
+        {
+          const {email, firstName, url} = data,
+            mailData = {
+              siteUrl: `http://${domain}`,
+              siteName: SITE_NAME,
+              url,
+              leaderName: ""
+            };
+
+          mailData.leaderName = firstName;
+
+          const html = EmailFunctions.buildHtml({template, data: mailData});
+          const options = {
+            to: email,
+            from: `"${mailData.siteName}" <no-reply@theleader.io>`,
+            subject: `Leadership in Action`,
+            html: html
+          };
           Email.send(options);
           break;
         }

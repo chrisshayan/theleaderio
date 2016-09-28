@@ -1,13 +1,19 @@
 import {Meteor} from 'meteor/meteor';
 import {Feedbacks} from '../index';
 
-Meteor.publish('feedbacks', function() {
+const PAGE_SIZE = 10;
+
+Meteor.publish('feedbacks', function(page = 1) {
+  check(page, Number);
   if(!this.userId) {
     return this.ready();
   }
   
-  return Feedbacks.find({leaderId: this.userId}, {
-    fields: Feedbacks.publicFields
-  });
+  const selector = {leaderId: this.userId};
+  const option = {
+    limit: (page * PAGE_SIZE) + 5,
+    sort: {date: -1}
+  };
+  return Feedbacks.find(selector, option);
   
 });

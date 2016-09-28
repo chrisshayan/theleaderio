@@ -64,7 +64,8 @@ export const getSendingPlans = new ValidatedMethod({
       month = date.getMonth(),
       day = date.getDate(),
       nextDay = date.getDate() + 1,
-      selector = {sendDate: {$gte: new Date(year, month, day), $lt: new Date(year, month, nextDay)}, status: "READY"},
+      // selector = {sendDate: {$gte: new Date(year, month, day), $lt: new Date(year, month, nextDay)}, status: "READY"},
+      selector = {sendDate: {$lt: new Date(year, month, nextDay)}, status: "READY"},
       modifier = {};
     return SendingPlans.find(selector).fetch();
   }

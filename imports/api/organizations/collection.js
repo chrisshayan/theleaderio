@@ -4,7 +4,9 @@ class OrganizationsCollection extends Mongo.Collection {
 	insert(doc, callback) {
 		// hook event: before insert
 		doc.createdAt = doc.updatedAt = new Date();
-		doc.leaderId = Meteor.userId();
+		if(_.isEmpty(doc.leaderId)) {
+			doc.leaderId = Meteor.userId();
+		}
 		return super.insert(doc, callback);
 	}
 

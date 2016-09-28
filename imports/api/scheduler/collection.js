@@ -39,7 +39,7 @@ export default class SchedulerCollection extends Mongo.Collection {
       if(_.isEmpty(doc.metrics)) return;
 
       // generate new sending plan
-      const leaderId = Meteor.userId();
+      const leaderId = doc.userId;
       const schedulerId = doc._id;
       let metricIdx = 0;
       const plans = schedulerUtils.generateSendingPlan(doc.quarter, doc.interval);
