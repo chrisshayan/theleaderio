@@ -56,12 +56,14 @@ const enqueueSurveys = function (job, cb) {
         if (_.isEmpty(organizationList)) {
           jobMessage = `Organizations of leader ${leaderId} not found`;
           job.log(jobMessage, {level: LOG_LEVEL.WARNING});
+          setSendingPlanStatus.call({_id: planId, status: "FAILED"});
         } else {
           organizationList.map(org => {
             const employeeList = org.employees;
             if (_.isEmpty(employeeList)) {
               jobMessage = `Organization ${org.name} has no employee`;
               job.log(jobMessage, {level: LOG_LEVEL.WARNING});
+              setSendingPlanStatus.call({_id: planId, status: "FAILED"});
             } else {
               // get enqueue data
               // name, email, metric, schedulerId
