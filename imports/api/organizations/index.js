@@ -72,6 +72,11 @@ Organizations.schema = new SimpleSchema({
     type: [String],
     optional: true,
     defaultValue: []
+  },
+  pickedEmployees: {
+    type: [String],
+    optional: true,
+    defaultValue: []
   }
 });
 

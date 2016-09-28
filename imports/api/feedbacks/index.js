@@ -12,7 +12,8 @@ Feedbacks.publicFields = {};
 
 Feedbacks.schema = new SimpleSchema({
   planId: {
-    type: String
+    type: String,
+    optional: true
   },
   leaderId: {
     type: String
@@ -32,6 +33,12 @@ Feedbacks.schema = new SimpleSchema({
   feedback: {
     type: String,
     optional: true
+  },
+  type: {
+    type: String,
+    optional: true,
+    allowedValues: ["EMPLOYEE_TO_LEADER", "LEADER_TO_EMPLOYEE"],
+    defaultValue: "EMPLOYEE_TO_LEADER"
   },
   date: {
     type: Date
