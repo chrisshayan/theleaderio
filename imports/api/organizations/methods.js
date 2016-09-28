@@ -124,7 +124,6 @@ export const update = new ValidatedMethod({
     }
 
     if (!this.isSimulation) {
-      Meteor._sleepForMs(1000);
       var selector = { _id: _id };
       var modifier = {
         $set: {

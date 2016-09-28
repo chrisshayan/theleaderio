@@ -8,9 +8,7 @@ Meteor.publish('feedbacks', function(page = 1) {
   if(!this.userId) {
     return this.ready();
   }
-
-  Meteor._sleepForMs(2000);
-
+  
   const selector = {leaderId: this.userId};
   const option = {
     limit: (page * PAGE_SIZE) + 5,
