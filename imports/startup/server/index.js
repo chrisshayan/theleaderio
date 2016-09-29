@@ -4,7 +4,7 @@ import {later} from 'meteor/mrt:later';
 import './fixtures.js';
 import './migrations';
 import './routes';
-import {DailyJobs, QueueJobs} from '/imports/api/jobs/collections';
+import {DailyJobs, QueueJobs, AdminJobs} from '/imports/api/jobs/collections';
 import {Jobs} from '/imports/api/jobs/jobs';
 import {Workers} from '/imports/api/jobs/workers';
 
@@ -19,6 +19,7 @@ Meteor.startup(function () {
   // jobs
   DailyJobs.startJobServer();
   QueueJobs.startJobServer();
+  AdminJobs.startJobServer();
 
   /**
    * DailyJobs

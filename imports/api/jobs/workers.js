@@ -185,6 +185,15 @@ const migrateUsers = (job, cb) => {
   job.done();
 }
 
+/**
+ * Function send email to leader to receive feedback for an employee who will be choose randomly
+ * @param job
+ * @param cb
+ */
+const sendFeedbackEmail = (job, cb) => {
+  
+}
+
 // Start Job
 function startJob(type) {
   switch (type) {

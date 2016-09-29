@@ -45,8 +45,7 @@ export const getRandomEmployee = ({params}) => {
       }
     }
 
-    return Employees.findOne({_id: currentPickedEmployee});
-    // return {employeeId: currentPickedEmployee};
+    return {employeeId: currentPickedEmployee};
   } else {
     return {};
   }
