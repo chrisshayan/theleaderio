@@ -20,6 +20,7 @@ import OrganizationInfoForm from './_OrganizationInformationForm';
 import OrganizationEmployees from './_Employees';
 
 import * as Notifications from '/imports/api/notifications/methods';
+import Calendar from '../calendar/Calendar';
 
 class UpdateOrganization extends Component {
 	static propTypes = {
@@ -102,7 +103,11 @@ class UpdateOrganization extends Component {
 			key: 'employees',
 			title: 'Employees',
 			component: <OrganizationEmployees />
-		}, ];
+		}, {
+			key: 'calendar',
+			title: 'Calendar',
+			component: <Calendar />
+		}];
 	}
 
 	render() {

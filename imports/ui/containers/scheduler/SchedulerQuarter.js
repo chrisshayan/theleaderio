@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {createContainer} from 'meteor/react-meteor-data';
 import {
   Scheduler as SchedulerCollection,
-  MEETINGS_UI_INFO,
+  METRICS_UI_INFO,
 } from '/imports/api/scheduler';
 
 // methods
