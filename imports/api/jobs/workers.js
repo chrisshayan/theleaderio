@@ -1,7 +1,9 @@
 import {Mongo} from 'meteor/mongo';
-import {DailyJobs, QueueJobs} from './collections';
 import moment from 'moment';
 import _ from 'lodash';
+
+// job collections
+import {DailyJobs, QueueJobs, AdminJobs} from './collections';
 
 // collections
 import {Organizations} from '/imports/api/organizations/index';
@@ -17,6 +19,10 @@ import {measureMonthlyMetricScore} from '/imports/api/measures/methods';
 
 // functions
 import {migrate} from '/imports/api/migration/functions';
+import {getRandomEmployee} from '/imports/api/organizations/functions';
+
+// logger
+import {Logger} from '/imports/api/logger/index';
 
 // constants
 const LOG_LEVEL = {
@@ -190,8 +196,33 @@ const migrateUsers = (job, cb) => {
  * @param job
  * @param cb
  */
-const sendFeedbackEmail = (job, cb) => {
-  
+const sendFeedbackEmailToLeader = (job, cb) => {
+  const
+    activeOrgList = Organizations.find({isPresent: true}, {fields: {_id: true}}).fetch()
+    ;
+  let
+    employee = {},
+    employeeData = {}
+
+  if(_.isEmpty(activeOrgList)) {
+    job.log({name: "sendFeedbackEmailToLeader", message: "No active organization"});
+    job.done();
+  } else {
+    activeOrgList.map(org => {
+      const
+        employee = getRandomEmployee({params: {organizationId: org._id}})
+      ;
+      if(!_.isEmpty(employee)) {
+        if(employee.message !== 'undefined') {
+          Logger.error({name: "sendFeedbackEmailToLeader", message: {detail: employee.message}});
+        } else {
+          employeeData = Employees.findOne({_id: employee.employeeId});
+          console.log(employeeData);
+        }
+      }
+    });
+    job.done();
+  }
 }
 
 // Start Job
@@ -215,6 +246,10 @@ function startJob(type) {
     case "migration":
     {
       QueueJobs.processJobs(type, migrateUsers);
+    }
+    // admin jobs: send feedback email for employee
+    case "feedback_for_employee": {
+      AdminJobs.processJobs(type, sendFeedbackEmailToLeader);
     }
   }
 }

@@ -181,8 +181,14 @@ export function createDefaults() {
           conflict: `Conflict resolution is a daily occurrence at work that can either propel or disrupt the momentum for a leader, a team or the entire organization. The workplace can become a toxic environment when leaders allow conflict to fester rather than confront it head-on.`
         },
         feedback: {
-          replyGuideHeader: "How to feedback?",
-          description: "Your feedback will help the leader to improve their ability."
+          leader: {
+            replyGuideHeader: "How to feedback?",
+            replyGuideMessage: `Simply reply this email with your suggestion and write whatever you think is good.`,
+          },
+          employee: {
+            replyGuideHeader: "How to feedback?",
+            replyGuideMessage: `Simply reply this email with your suggestion and write whatever you think about your employee.`,
+          }
         }
       };
     DefaultsActions.add.call({name, content});

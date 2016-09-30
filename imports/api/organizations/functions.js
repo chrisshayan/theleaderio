@@ -1,6 +1,11 @@
+import {Meteor} from 'meteor/meteor';
+
 // collections
 import {Organizations} from '/imports/api/organizations/index';
 import {Employees} from '/imports/api/employees/index';
+
+// constants
+import * as ERROR_CODE from '/imports/utils/error_code';
 
 /**
  * Function get 1 employee from organization randomly
@@ -9,45 +14,50 @@ import {Employees} from '/imports/api/employees/index';
  * @return employeeId
  */
 export const getRandomEmployee = ({params}) => {
-  const
-    {organizationId} = params,
-    organization = Organizations.findOne({_id: organizationId})
-    ;
+  if(Meteor.isServer) {
 
-  if(!_.isEmpty(organization)) {
     const
-      {employees, pickedEmployees} = organization,
-      total = employees.length
+      {organizationId} = params,
+      organization = Organizations.findOne({_id: organizationId})
       ;
-    let
-      picked = -1,
-      currentPickedEmployee = "",
-      currentOrganization = {},
-      currentPickedEmployees = []
-    ;
 
-    // get random employee who isn't exists in pickedEmployees
-    do {
-      picked = Math.floor((Math.random() * total));
-      currentPickedEmployee = employees[picked];
-    } while (_.indexOf(pickedEmployees, currentPickedEmployee) > -1);
+    if(!_.isEmpty(organization)) {
+      const
+        {employees, pickedEmployees} = organization,
+        total = employees.length
+        ;
+      let
+        picked = -1,
+        currentPickedEmployee = "",
+        currentOrganization = {},
+        currentPickedEmployees = []
+        ;
+
+      // get random employee who isn't exists in pickedEmployees
+      do {
+        picked = Math.floor((Math.random() * total));
+        currentPickedEmployee = employees[picked];
+      } while (_.indexOf(pickedEmployees, currentPickedEmployee) > -1);
 
 
-    // add current picked employee into list pickedEmployees
-    Organizations.update({_id: organizationId}, {$push: {pickedEmployees: currentPickedEmployee}});
+      // add current picked employee into list pickedEmployees
+      Organizations.update({_id: organizationId}, {$push: {pickedEmployees: currentPickedEmployee}});
 
-    // if all employees had been picked, clear the list pickedEmployees
-    currentOrganization = Organizations.findOne({_id: organizationId});
-    if(!_.isEmpty(currentOrganization)) {
-      currentPickedEmployees = currentOrganization.pickedEmployees;
-      if(employees.length === currentPickedEmployees.length) {
-        Organizations.update({_id: organizationId}, {$set: {pickedEmployees: []}});
+      // if all employees had been picked, clear the list pickedEmployees
+      currentOrganization = Organizations.findOne({_id: organizationId});
+      if(!_.isEmpty(currentOrganization)) {
+        currentPickedEmployees = currentOrganization.pickedEmployees;
+        if(employees.length === currentPickedEmployees.length) {
+          Organizations.update({_id: organizationId}, {$set: {pickedEmployees: []}});
+        }
       }
-    }
 
-    return {employeeId: currentPickedEmployee};
+      return {employeeId: currentPickedEmployee};
+    } else {
+      return {};
+    }
   } else {
-    return {};
+    return {message: ERROR_CODE.PERMISSION_DENIED}
   }
 }
 

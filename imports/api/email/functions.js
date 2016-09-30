@@ -59,34 +59,48 @@ export const buildHtml = function ({template, data}) {
  * @param sender
  * @returns {*}
  */
-export const getRecipientInfo = ({recipient, sender}) => {
+export const getRecipientInfo = ({recipient, sender, apiName}) => {
   if (typeof recipient == "undefined") {
     return false;
   }
-  const recipientElements = recipient.split("-");
   const
-    planId = recipientElements[0],
-    organizationId = recipientElements[1]
+    recipientElements = recipient.split("-")
     ;
+  switch (apiName) {
+    case "metrics": {
+      const
+        planId = recipientElements[0],
+        organizationId = recipientElements[1]
+        ;
 
-  const sendingPlan = SendingPlans.findOne({_id: planId});
-  if (!_.isEmpty(sendingPlan)) {
-    const {
-      leaderId,
-      metric,
-      timezone
-    } = sendingPlan;
+      const sendingPlan = SendingPlans.findOne({_id: planId});
+      if (!_.isEmpty(sendingPlan)) {
+        const {
+          leaderId,
+          metric,
+          timezone
+        } = sendingPlan;
 
-    const employee = Employees.findOne({leaderId, organizationId, email: sender});
-    if (!_.isEmpty(employee)) {
-      const employeeId = employee._id;
-      return {planId, employeeId, leaderId, organizationId, metric: metric.toLowerCase()};
-    } else {
-      return false;
+        const employee = Employees.findOne({leaderId, organizationId, email: sender});
+        if (!_.isEmpty(employee)) {
+          const employeeId = employee._id;
+          return {planId, employeeId, leaderId, organizationId, metric: metric.toLowerCase()};
+        } else {
+          return {};
+        }
+      } else {
+        return {};
+      }
+      break;
     }
-  } else {
-    return false;
+    case "feedback": {
+
+    }
+    default: {
+      return {message: "Invalid API Name"};
+    }
   }
+
 }
 
 /**
@@ -165,8 +179,7 @@ export const getSurveyEmailOptions = ({template, data}) => {
 
   // get from, subject and message
   switch (template) {
-    case "survey":
-    {
+    case "survey": {
       mailData.replyGuideHeader = EMAIL_TEMPLATE_CONTENT.metrics.replyGuideHeader;
       mailData.replyGuideMessage = EMAIL_TEMPLATE_CONTENT.metrics.replyGuideMessage;
       mailData.message = `Please help your leader "${mailData.leaderName}" to improve "${mailData.metric}" management by giving a score.`;
@@ -176,8 +189,7 @@ export const getSurveyEmailOptions = ({template, data}) => {
 
       break;
     }
-    case "survey_error":
-    {
+    case "survey_error": {
       mailData.replyGuideHeader = EMAIL_TEMPLATE_CONTENT.metrics.replyGuideHeader;
       mailData.replyGuideMessage = EMAIL_TEMPLATE_CONTENT.metrics.replyGuideMessage;
       mailData.message = `Please help "${mailData.leaderName}" to improve "${mailData.metric}" management by giving accurate score. The score should be a number from 1 to 5. If you think ${mailData.leaderName} is doing a great job, just reply the email by sending 5. If you think ${mailData.leaderName} is doing moderate job reply the email by sending 3 and if ${mailData.leaderName} is doing very bad then send 1.`;
@@ -187,18 +199,27 @@ export const getSurveyEmailOptions = ({template, data}) => {
 
       break;
     }
-    case "feedback":
-    {
-      mailData.replyGuideHeader = EMAIL_TEMPLATE_CONTENT[template].replyGuideHeader;
-      mailData.replyGuideMessage = `Simply reply this email with your suggestion and write whatever you think is good.`;
+    case "feedback": {
+      mailData.replyGuideHeader = EMAIL_TEMPLATE_CONTENT[template].leader.replyGuideHeader;
+      mailData.replyGuideMessage = EMAIL_TEMPLATE_CONTENT[template].leader.replyGuideMessage;
       mailData.message = `"${mailData.leaderName}" needs your help to improve "${mailData.metric}" Management.`;
       mailData.description = `Your feedback is very important and it will be kept CONFIDENTIAL, it means ${mailData.leaderName} won’t be able to know who submitted the feedback.`;
       senderSuffix = template;
       subject = `${mailData.employeeName}, "${mailData.leaderName}" wants to improve ${mailData.metric}, how?`;
       break;
     }
-    case "thankyou":
-    {
+    case "feedback_for_employee": {
+      mailData.employeeName = `${capitalize(employee.firstName)} ${capitalize(employee.lastName)}`;
+      mailData.leaderName = `${capitalize(leader.firstName)}`;
+      mailData.replyGuideHeader = EMAIL_TEMPLATE_CONTENT[template].employee.replyGuideHeader;
+      mailData.replyGuideMessage = EMAIL_TEMPLATE_CONTENT[template].employee.replyGuideMessage;
+      mailData.message = `"${mailData.employeeName}" needs your help to improve Performance.`;
+      mailData.description = `Your feedback will help ${mailData.employeeName} a lot.`;
+      senderSuffix = template;
+      subject = `How is the performance of "${mailData.employeeName}" in ${mailData.orgName}?`;
+      break;
+    }
+    case "thankyou": {
       const {type} = data;
       mailData.message = `I appreciate your contribution on "${mailData.metric}" Management. I believe better leadership can help all of us to enjoy our daily life even more. Besides, it is very effective for you as an individual. The better the leader, happier employee.\nBest Regards,\ntheLeader.io on behalf of "${mailData.leaderName}"`;
       mailData.description = `Your ${type} will help ${mailData.leaderName} to improve.`;

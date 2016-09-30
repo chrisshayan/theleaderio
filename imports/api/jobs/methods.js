@@ -7,6 +7,7 @@ import {AdminJobs} from '/imports/api/jobs/collections';
 
 // Job
 import {Jobs} from '/imports/api/jobs/jobs';
+import {Workers} from '/imports/api/jobs/workers';
 
 /**
  * Method create admin job with the configurable repeat (use cron parser of later.js)
@@ -74,7 +75,8 @@ export const editAdminJob = new ValidatedMethod({
         cronExpression = `${schedule.min} ${schedule.hour} ${schedule.dayOfMonth} ${schedule.month} ${schedule.dayOfWeek}`,
         attributes = {
           priority: "normal",
-          repeat: {schedule: later.parse.cron(cronExpression)}
+          // repeat: {schedule: later.parse.cron(cronExpression)}
+          repeat: {schedule: later.parse.text("every 5 minutes")} // for testing
         }
         ;
       let
@@ -87,10 +89,10 @@ export const editAdminJob = new ValidatedMethod({
       jobs = AdminJobs.find({type, status: {$in: AdminJobs.jobStatusCancellable}}, {fields: {_id: true, status: true}}).fetch();
       if(_.isEmpty(jobs)) {
         message = Jobs.create(type, attributes, data);
+        Workers.start(type);
         return {message}; // return new job id
       } else {
         jobs.map(job => {
-          console.log(job)
           if(job.status === "running") {
             message = "running";
             return {message}; // job running, couldn't update
@@ -99,6 +101,7 @@ export const editAdminJob = new ValidatedMethod({
             if(status) {
               // cancel job success, create new job with new attributes
               message = Jobs.create(type, attributes, data);
+              Workers.start(type);
               return {message}; // return new job id
             } else {
               message = "failed";
