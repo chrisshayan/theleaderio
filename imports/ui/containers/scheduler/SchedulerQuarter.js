@@ -72,7 +72,7 @@ class SchedulerQuarter extends Component {
       isActive = this.isActive
       ;
     return (
-      <div className="col-lg-3">
+      <div className="col-sm-6 col-md-3 col-lg-3">
         <div className="ibox">
           <div className="ibox-content">
             <h3>{ name }</h3>
