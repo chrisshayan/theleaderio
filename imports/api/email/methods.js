@@ -38,7 +38,7 @@ export const send = new ValidatedMethod({
           const html = EmailFunctions.buildHtml({template, data: mailData});
           const options = {
             to: email,
-            from: `"${mailData.siteName}" <no-reply@mail.mailgun.com>`,
+            from: `"${mailData.siteName}" <no-reply@mail.theleader.io>`,
             subject: `Welcome to ${mailData.siteName}`,
             html: html
           };
@@ -68,7 +68,7 @@ export const send = new ValidatedMethod({
             const html = EmailFunctions.buildHtml({template, data: mailData});
             const options = {
               to: email,
-              from: `"${mailData.siteName}" <no-reply@theleader.io>`,
+              from: `"${mailData.siteName}" <no-reply@mailtheleader.io>`,
               subject: `Get your alias`,
               html: html
             };

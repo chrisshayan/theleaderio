@@ -65,7 +65,6 @@ export const buildHtml = function ({template, data}) {
       break;
     }
     case "employee": {
-      console.log(data)
       mailTemplate = Assets.getText(`email_templates/${template}/${type}.html`);
       break;
     }
@@ -263,7 +262,7 @@ export const getSurveyEmailOptions = ({template, data}) => {
  */
 export const getEmployeeEmailOptions = ({template, data}) => {
   const
-    {type, employeeId, leaderId, organizationId} = data,
+    {type, employeeId, leaderId, organizationId, feedback} = data,
     EMAIL_TEMPLATE_CONTENT = getDefaults.call({name: 'EMAIL_TEMPLATE_CONTENT'}).content,
     mailData = {
       type,
@@ -275,7 +274,8 @@ export const getEmployeeEmailOptions = ({template, data}) => {
       message: "",
       description: "",
       replyGuideHeader: "",
-      replyGuideMessage: ""
+      replyGuideMessage: "",
+      delegates: ""
     };
 
   let
@@ -311,32 +311,43 @@ export const getEmployeeEmailOptions = ({template, data}) => {
   // get mail data
   mailData.siteUrl = `http://${domain}`;
   mailData.siteName = SITE_NAME;
-  mailData.employeeName = `${capitalize(employee.firstName)}`;
-  mailData.orgName = `${capitalize(organization.name)}`;
-  mailData.leaderName = `${capitalize(leader.firstName)} ${capitalize(leader.lastName)}`;
 
   switch (type) {
     case "feedback": {
+      mailData.employeeName = `${capitalize(employee.firstName)} ${capitalize(employee.lastName)}`;
+      mailData.orgName = `${capitalize(organization.name)}`;
+      mailData.leaderName = `${capitalize(leader.firstName)}`;
       mailData.replyGuideHeader = EMAIL_TEMPLATE_CONTENT.leader[type].replyGuideHeader;
       mailData.replyGuideMessage = EMAIL_TEMPLATE_CONTENT.leader[type].replyGuideMessage;
       mailData.message = `"${mailData.employeeName}" needs your help to improve Performance.`;
       mailData.description = `Your feedback will help ${mailData.employeeName} a lot.`;
       senderSuffix = `${template}-${type}`;
       subject = `How is the performance of "${mailData.employeeName}" in ${mailData.orgName}?`;
+
+      result.subject = subject;
+      result.from = `"${mailData.siteName}" <${employeeId}-${organizationId}-${leaderId}-${senderSuffix}@${mailDomain}>`;
+      result.to = leaderData.emails[0].address;
       break;
     }
-    case "inform_feedback_from_leader": {
+    case "inform_feedback": {
+      mailData.employeeName = `${capitalize(employee.firstName)}`;
+      mailData.orgName = `${capitalize(organization.name)}`;
+      mailData.leaderName = `${capitalize(leader.firstName)} ${capitalize(leader.lastName)}`;
+      mailData.message = `This is how "${mailData.leaderName}" evaluated your performance.`;
+      mailData.description = feedback;
+      mailData.delegates = `theLeader.io, Send on Behalf of "${mailData.leaderName}"`
+      subject = `${mailData.employeeName}, "${mailData.leaderName} has a suggestion for you.`;
 
+      result.subject = subject;
+      result.from = `"${mailData.siteName}" <no-reply@mail.theleader.io>`;
+      result.to = employee.email;
+      break;
     }
     default: {
       return {message: "Unknown type."}
     }
   }
 
-  result.subject = subject;
-  result.from = `"${mailData.siteName}" <${employeeId}-${organizationId}-${leaderId}-${senderSuffix}@${mailDomain}>`;
-  result.to = leaderData.emails[0].address;
-  console.log({template, mailData})
   result.html = buildHtml({template, data: mailData});
 
   return result;

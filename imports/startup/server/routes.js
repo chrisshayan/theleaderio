@@ -138,21 +138,22 @@ Api.addRoute('employee/:action', {authRequired: false}, {
 
               const feedbackId = Feedbacks.insert({employeeId, organizationId, leaderId, type, feedback, date});
               if(!_.isEmpty(feedbackId)) {
-                console.log(`will send feedback ${feedbackId} to employee: ${employeeId}`);
+                // console.log(`will send feedback ${feedbackId} to employee: ${employeeId}`);
                 const
                   template = 'employee',
                   data = {
-                    type: "inform_feedback_from_leader",
+                    type: "inform_feedback",
                     employeeId,
                     leaderId,
-                    organizationId
+                    organizationId,
+                    feedback
                   };
                 EmailActions.send.call({template, data}, (error) => {
                   if (_.isEmpty(error)) {
-                    job.log({name, message: {detail: `Send email to employee ${employeeId} 
+                    Logger.info({name, message: {detail: `Send email to employee ${employeeId} 
                               about feedback of leader ${leaderId} - success`}});
                   } else {
-                    job.log({name, message: {detail: `Send email to employee ${employeeId} 
+                    Logger.error({name, message: {detail: `Send email to employee ${employeeId} 
                               about feedback of leader ${leaderId} failed`}});
                   }
                 });

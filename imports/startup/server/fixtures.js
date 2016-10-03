@@ -191,6 +191,9 @@ export function createDefaults() {
               decision: `We believe the time has come to broaden the traditional approach to leadership and decision making and form a new perspective based on complexity science. Do your followers think you are able to make a decision?`,
               respect: `Too many people today assume leadership positions without consideration for their impact on others. The leadership vacuum in business today allows them to stay as long they manage acceptable results. Ultimately, your personal leadership legacy will not be remembered for your M.B.A., your sales numbers, or the toys you acquired. Most likely, it will be the positive, personal impact you created, one follower at a time.`,
               conflict: `Conflict resolution is a daily occurrence at work that can either propel or disrupt the momentum for a leader, a team or the entire organization. The workplace can become a toxic environment when leaders allow conflict to fester rather than confront it head-on.`
+            },
+            inform_feedback: {
+
             }
           }
         }
