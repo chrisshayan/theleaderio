@@ -41,16 +41,39 @@ export const get = function ({templateName, firstName, url, alias}) {
  * @returns {*}
  */
 export const buildHtml = function ({template, data}) {
-  const metricTemplate = ["survey", "survey_error", "feedback", "thankyou"];
-  if (_.indexOf(metricTemplate, template) !== -1) {
-    const mailTemplate = Assets.getText(`email_templates/metrics/${template}.html`);
-    return emailTemplateBuilder.generate(data, mailTemplate);
-  } else {
-    {
-      const mailTemplate = Assets.getText(`email_templates/${template}.html`);
-      return emailTemplateBuilder.generate(data, mailTemplate);
+  const
+    {type} = data
+  ;
+  let
+    mailTemplate = ""
+    ;
+  switch (template) {
+    case "survey": {
+      mailTemplate = Assets.getText(`email_templates/metrics/${template}.html`);
+      break;
+    }
+    case "survey_error": {
+      mailTemplate = Assets.getText(`email_templates/metrics/${template}.html`);
+      break;
+    }
+    case "feedback": {
+      mailTemplate = Assets.getText(`email_templates/metrics/${template}.html`);
+      break;
+    }
+    case "thankyou": {
+      mailTemplate = Assets.getText(`email_templates/metrics/${template}.html`);
+      break;
+    }
+    case "employee": {
+      console.log(data)
+      mailTemplate = Assets.getText(`email_templates/${template}/${type}.html`);
+      break;
+    }
+    default: {
+      mailTemplate = Assets.getText(`email_templates/${template}.html`);
     }
   }
+  return emailTemplateBuilder.generate(data, mailTemplate);
 }
 
 /**
@@ -93,8 +116,14 @@ export const getRecipientInfo = ({recipient, sender, apiName}) => {
       }
       break;
     }
-    case "feedback": {
+    case "employee": {
+      const
+        employeeId = recipientElements[0],
+        organizationId = recipientElements[1],
+        leaderId = recipientElements[2]
+      ;
 
+      return {employeeId, organizationId, leaderId};
     }
     default: {
       return {message: "Invalid API Name"};
@@ -180,43 +209,32 @@ export const getSurveyEmailOptions = ({template, data}) => {
   // get from, subject and message
   switch (template) {
     case "survey": {
-      mailData.replyGuideHeader = EMAIL_TEMPLATE_CONTENT.metrics.replyGuideHeader;
-      mailData.replyGuideMessage = EMAIL_TEMPLATE_CONTENT.metrics.replyGuideMessage;
+      mailData.replyGuideHeader = EMAIL_TEMPLATE_CONTENT.employee.metrics.replyGuideHeader;
+      mailData.replyGuideMessage = EMAIL_TEMPLATE_CONTENT.employee.metrics.replyGuideMessage;
       mailData.message = `Please help your leader "${mailData.leaderName}" to improve "${mailData.metric}" management by giving a score.`;
-      mailData.description = EMAIL_TEMPLATE_CONTENT.metrics[metric];
+      mailData.description = EMAIL_TEMPLATE_CONTENT.employee.metrics[metric];
       senderSuffix = template;
       subject = `${mailData.employeeName}, How "${mailData.leaderName}" can improve ${mailData.metric} Management?`;
 
       break;
     }
     case "survey_error": {
-      mailData.replyGuideHeader = EMAIL_TEMPLATE_CONTENT.metrics.replyGuideHeader;
-      mailData.replyGuideMessage = EMAIL_TEMPLATE_CONTENT.metrics.replyGuideMessage;
+      mailData.replyGuideHeader = EMAIL_TEMPLATE_CONTENT.employee.metrics.replyGuideHeader;
+      mailData.replyGuideMessage = EMAIL_TEMPLATE_CONTENT.employee.metrics.replyGuideMessage;
       mailData.message = `Please help "${mailData.leaderName}" to improve "${mailData.metric}" management by giving accurate score. The score should be a number from 1 to 5. If you think ${mailData.leaderName} is doing a great job, just reply the email by sending 5. If you think ${mailData.leaderName} is doing moderate job reply the email by sending 3 and if ${mailData.leaderName} is doing very bad then send 1.`;
-      mailData.description = EMAIL_TEMPLATE_CONTENT.metrics[metric];
+      mailData.description = EMAIL_TEMPLATE_CONTENT.employee.metrics[metric];
       senderSuffix = "survey";
       subject = `${mailData.employeeName}, seems the score of "${mailData.metric}" has some issues.`;
 
       break;
     }
     case "feedback": {
-      mailData.replyGuideHeader = EMAIL_TEMPLATE_CONTENT[template].leader.replyGuideHeader;
-      mailData.replyGuideMessage = EMAIL_TEMPLATE_CONTENT[template].leader.replyGuideMessage;
+      mailData.replyGuideHeader = EMAIL_TEMPLATE_CONTENT.employee[template].replyGuideHeader;
+      mailData.replyGuideMessage = EMAIL_TEMPLATE_CONTENT.employee[template].replyGuideMessage;
       mailData.message = `"${mailData.leaderName}" needs your help to improve "${mailData.metric}" Management.`;
       mailData.description = `Your feedback is very important and it will be kept CONFIDENTIAL, it means ${mailData.leaderName} won’t be able to know who submitted the feedback.`;
       senderSuffix = template;
       subject = `${mailData.employeeName}, "${mailData.leaderName}" wants to improve ${mailData.metric}, how?`;
-      break;
-    }
-    case "feedback_for_employee": {
-      mailData.employeeName = `${capitalize(employee.firstName)} ${capitalize(employee.lastName)}`;
-      mailData.leaderName = `${capitalize(leader.firstName)}`;
-      mailData.replyGuideHeader = EMAIL_TEMPLATE_CONTENT[template].employee.replyGuideHeader;
-      mailData.replyGuideMessage = EMAIL_TEMPLATE_CONTENT[template].employee.replyGuideMessage;
-      mailData.message = `"${mailData.employeeName}" needs your help to improve Performance.`;
-      mailData.description = `Your feedback will help ${mailData.employeeName} a lot.`;
-      senderSuffix = template;
-      subject = `How is the performance of "${mailData.employeeName}" in ${mailData.orgName}?`;
       break;
     }
     case "thankyou": {
@@ -233,6 +251,92 @@ export const getSurveyEmailOptions = ({template, data}) => {
   result.subject = subject;
   result.from = `"${mailData.leaderName}" <${planId}-${organizationId}-${senderSuffix}@${mailDomain}>`;
   result.to = employee.email;
+  result.html = buildHtml({template, data: mailData});
+
+  return result;
+}
+
+/**
+ * Function to collect content data for email to employees
+ * @param template
+ * @param data
+ */
+export const getEmployeeEmailOptions = ({template, data}) => {
+  const
+    {type, employeeId, leaderId, organizationId} = data,
+    EMAIL_TEMPLATE_CONTENT = getDefaults.call({name: 'EMAIL_TEMPLATE_CONTENT'}).content,
+    mailData = {
+      type,
+      siteUrl: "",
+      siteName: "",
+      employeeName: "",
+      orgName: "",
+      leaderName: "",
+      message: "",
+      description: "",
+      replyGuideHeader: "",
+      replyGuideMessage: ""
+    };
+
+  let
+    result = {
+      from: "",
+      to: "",
+      subject: "",
+      html: ""
+    },
+    senderSuffix = "",
+    subject = ""
+    ;
+
+
+  // Get data from collection
+  const employee = Employees.findOne({_id: employeeId});
+  if (_.isEmpty(employee)) {
+    return new Meteor.Error(ERROR_CODE.RESOURCE_NOT_FOUND, `employee ${employeeId} not found`);
+  }
+  const leaderData = Accounts.users.findOne({_id: leaderId});
+  if (_.isEmpty(leaderData)) {
+    return new Meteor.Error(ERROR_CODE.RESOURCE_NOT_FOUND, `leader ${leaderId} not found`);
+  }
+  const leader = Profiles.findOne({userId: leaderId});
+  if (_.isEmpty(leader)) {
+    return new Meteor.Error(ERROR_CODE.RESOURCE_NOT_FOUND, `leader ${leaderId} not found`);
+  }
+  const organization = Organizations.findOne({_id: organizationId});
+  if (_.isEmpty(organization)) {
+    return new Meteor.Error(ERROR_CODE.RESOURCE_NOT_FOUND, `organization ${organizationId} not found`);
+  }
+
+  // get mail data
+  mailData.siteUrl = `http://${domain}`;
+  mailData.siteName = SITE_NAME;
+  mailData.employeeName = `${capitalize(employee.firstName)}`;
+  mailData.orgName = `${capitalize(organization.name)}`;
+  mailData.leaderName = `${capitalize(leader.firstName)} ${capitalize(leader.lastName)}`;
+
+  switch (type) {
+    case "feedback": {
+      mailData.replyGuideHeader = EMAIL_TEMPLATE_CONTENT.leader[type].replyGuideHeader;
+      mailData.replyGuideMessage = EMAIL_TEMPLATE_CONTENT.leader[type].replyGuideMessage;
+      mailData.message = `"${mailData.employeeName}" needs your help to improve Performance.`;
+      mailData.description = `Your feedback will help ${mailData.employeeName} a lot.`;
+      senderSuffix = `${template}-${type}`;
+      subject = `How is the performance of "${mailData.employeeName}" in ${mailData.orgName}?`;
+      break;
+    }
+    case "inform_feedback_from_leader": {
+
+    }
+    default: {
+      return {message: "Unknown type."}
+    }
+  }
+
+  result.subject = subject;
+  result.from = `"${mailData.siteName}" <${employeeId}-${organizationId}-${leaderId}-${senderSuffix}@${mailDomain}>`;
+  result.to = leaderData.emails[0].address;
+  console.log({template, mailData})
   result.html = buildHtml({template, data: mailData});
 
   return result;

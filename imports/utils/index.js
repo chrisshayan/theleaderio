@@ -63,4 +63,7 @@ export const addMonths = (date, months) => {
 	return date;
 }
 
+export const timestampToDate = (timestamp) => {
+	return new Date(timestamp * 1000);
+}
 

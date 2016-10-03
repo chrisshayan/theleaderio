@@ -198,6 +198,7 @@ const migrateUsers = (job, cb) => {
  */
 const sendFeedbackEmailToLeader = (job, cb) => {
   const
+    name = "sendFeedbackEmailToLeader",
     activeOrgList = Organizations.find({isPresent: true}, {fields: {_id: true}}).fetch()
     ;
   let
@@ -205,7 +206,7 @@ const sendFeedbackEmailToLeader = (job, cb) => {
     employeeData = {}
 
   if(_.isEmpty(activeOrgList)) {
-    job.log({name: "sendFeedbackEmailToLeader", message: "No active organization"});
+    job.log({name, message: "No active organization"});
     job.done();
   } else {
     activeOrgList.map(org => {
@@ -213,11 +214,29 @@ const sendFeedbackEmailToLeader = (job, cb) => {
         employee = getRandomEmployee({params: {organizationId: org._id}})
       ;
       if(!_.isEmpty(employee)) {
-        if(employee.message !== 'undefined') {
-          Logger.error({name: "sendFeedbackEmailToLeader", message: {detail: employee.message}});
+        if(employee.message === 'undefined') {
+          Logger.error({name, message: {detail: employee.message}});
         } else {
           employeeData = Employees.findOne({_id: employee.employeeId});
-          console.log(employeeData);
+          if(!_.isEmpty(employeeData)) {
+            const
+              template = 'employee',
+              data = {
+              type: "feedback",
+              employeeId: employeeData._id,
+              leaderId: employeeData.leaderId,
+              organizationId: employeeData.organizationId
+            };
+            EmailActions.send.call({template, data}, (error) => {
+              if (_.isEmpty(error)) {
+                job.log({name, message: {detail: `Send email to leader ${employeeData.leaderId} about employee ${employeeData._id} - success`}});
+              } else {
+                job.log({name, message: {detail: `Send email to leader ${employeeData.leaderId} about employee ${employeeData._id} - failed`}});
+              }
+            });
+          } else {
+            job.log({name, message: {detail: `Employee ${employee.employeeId} not exists`}});
+          }
         }
       }
     });

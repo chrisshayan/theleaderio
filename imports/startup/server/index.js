@@ -17,9 +17,15 @@ Meteor.startup(function () {
   // Migrations.migrateTo('latest');
 
   // jobs
-  DailyJobs.startJobServer();
-  QueueJobs.startJobServer();
-  AdminJobs.startJobServer();
+  if(Meteor.settings.jobs.enable.daily) {
+    DailyJobs.startJobServer();
+  }
+  if(Meteor.settings.jobs.enable.queue) {
+    QueueJobs.startJobServer();
+  }
+  if(Meteor.settings.jobs.enable.admin) {
+    AdminJobs.startJobServer();
+  }
 
   /**
    * DailyJobs
@@ -74,6 +80,8 @@ Meteor.startup(function () {
   type = "enqueue_surveys";
   Workers.start(type);
   type = "measure_metric";
+  Workers.start(type);
+  type = "feedback_for_employee";
   Workers.start(type);
 
 });

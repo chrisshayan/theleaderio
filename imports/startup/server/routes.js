@@ -1,14 +1,19 @@
 import {Restivus} from 'meteor/nimble:restivus';
 import {Mongo} from 'meteor/mongo';
 
+// collections
+import {Feedbacks} from '/imports/api/feedbacks/index';
+
 // methods
 import {checkExists as checkExistsScore} from '/imports/api/metrics/methods';
 import {checkExists as checkExistsFeedback} from '/imports/api/feedbacks/methods';
+import * as EmailActions from '/imports/api/email/methods';
 
 // functions
 import {getRecipientInfo, removeWebGmailClientContent} from '/imports/api/email/functions';
 import {scoringLeader} from '/imports/api/metrics/functions';
 import {feedbackLeader} from '/imports/api/feedbacks/functions';
+import {timestampToDate} from '/imports/utils/index';
 
 // logger
 import {Logger} from '/imports/api/logger/index';
@@ -95,24 +100,31 @@ Api.addRoute('metrics/:action', {authRequired: false}, {
   }
 });
 
-Api.addRoute('feedback/:action', {authRequired: false}, {
+Api.addRoute('employee/:action', {authRequired: false}, {
   post: {
     action: function () {
       const
+        name = "api",
+        apiName = "employee",
         {action} = this.urlParams,
         {
           recipient,
           sender,
           Subject,
           timestamp,
-        } = this.request.body
+        } = this.request.body,
+        content = this.request.body["stripped-text"],
+        date = timestampToDate(timestamp),
+        recipientInfo = getRecipientInfo({recipient, sender, apiName})
         ;
-      const content = this.request.body["stripped-text"];
+      let
+        type = "",
+        feedback = ""
+      ;
 
-      const recipientInfo = getRecipientInfo({recipient, sender, apiName: "feedback"});
       if (!_.isEmpty(recipientInfo)) {
-        if (recipientInfo.message !== 'undefined') {
-          Logger.error({name: "api", message: {apiName: "feedback", detail: recipientInfo.message}});
+        if (recipientInfo.message === 'undefined') {
+          Logger.error({name, message: {apiName, detail: recipientInfo.message}});
           this.response.writeHead(404, {'Content-Type': 'text/plain'});
           this.response.write(recipientInfo.message);
         } else {
@@ -120,8 +132,35 @@ Api.addRoute('feedback/:action', {authRequired: false}, {
             {employeeId, organizationId, leaderId} = recipientInfo
             ;
           switch (action) {
-            case "employee": {
-              console.log()
+            case "feedback": {
+              type = "LEADER_TO_EMPLOYEE";
+              feedback = content;
+
+              const feedbackId = Feedbacks.insert({employeeId, organizationId, leaderId, type, feedback, date});
+              if(!_.isEmpty(feedbackId)) {
+                console.log(`will send feedback ${feedbackId} to employee: ${employeeId}`);
+                const
+                  template = 'employee',
+                  data = {
+                    type: "inform_feedback_from_leader",
+                    employeeId,
+                    leaderId,
+                    organizationId
+                  };
+                EmailActions.send.call({template, data}, (error) => {
+                  if (_.isEmpty(error)) {
+                    job.log({name, message: {detail: `Send email to employee ${employeeId} 
+                              about feedback of leader ${leaderId} - success`}});
+                  } else {
+                    job.log({name, message: {detail: `Send email to employee ${employeeId} 
+                              about feedback of leader ${leaderId} failed`}});
+                  }
+                });
+              } else {
+                Logger.error({name, message: {apiName, detail: `Insert feedback for employee: ${employeeId} failed 
+                                with content: ${feedback}`}});
+              }
+
             }
             default: {
               Logger.warn({name: "api", message: {apiName: "feedback", detail: `Unknown action`}});
