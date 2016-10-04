@@ -170,31 +170,31 @@ export function createDefaults() {
           feedback: {
             replyGuideHeader: "How to feedback?",
             replyGuideMessage: `Simply reply this email with your suggestion and write whatever you think about your employee.`,
+          }
+        },
+        // mail send to employee
+        employee: {
+          feedback: {
+            replyGuideHeader: "How to feedback?",
+            replyGuideMessage: `Simply reply this email with your suggestion and write whatever you think is good.`,
           },
-          // mail send to employee
-          employee: {
-            feedback: {
-              replyGuideHeader: "How to feedback?",
-              replyGuideMessage: `Simply reply this email with your suggestion and write whatever you think is good.`,
-            },
-            metrics: {
-              replyGuideHeader: "How to score?",
-              replyGuideMessage: "Simply reply this email and score your leader from scale of 1 to 5, 1 is bad and 5 is awesome.",
-              purpose: `One of the key elements of inspiration is setting purpose to the work. When employees “clearly know their role, have what they need to fulfill their role, and can see the connection between their role and the overall organizational purpose,” says Harter, that’s the recipe for creating greater levels of engagement.`,
-              mettings: `There are few signs that shows teams are drifting. One of the main indicators is meetings. You leave meetings feeling like they’ve been a waste of time, or you decide to stop having team meetings because they’re not productive anymore.`,
-              rules: `Ground rules are an important tool for helping individuals function together as a team. They reflect what is important to the members about how they work together.Ground rules should focus on three elements:  Tasks – Expected activities and deliverables for the team; Process – How the activities will be carried out; and Norms – Ways in which team members will interact with each other.`,
-              communications: `It is simply impossible to become a great leader without being a great communicator.`,
-              leadership: `It can be hard to define and it means different things to different people. This is why it is important to be measured in point of view of your team members, are you leading them properly?`,
-              workload: `As the leader of a high-performing team, how you distribute and balance work across the members of that team is a critical success factor. It needs to be done fairly. Note, I didn't say equally.`,
-              energy: `Commitment of a leader inspires and motivates the followers and helps them to be more stronger towards the purpose and vision of the organization and team.`,
-              stress: `It is acceptable to have stress in the business in fact today's business is very stressful. However a good leader must be able to manage the stress in order to ensure the team is performing in their best focus.`,
-              decision: `We believe the time has come to broaden the traditional approach to leadership and decision making and form a new perspective based on complexity science. Do your followers think you are able to make a decision?`,
-              respect: `Too many people today assume leadership positions without consideration for their impact on others. The leadership vacuum in business today allows them to stay as long they manage acceptable results. Ultimately, your personal leadership legacy will not be remembered for your M.B.A., your sales numbers, or the toys you acquired. Most likely, it will be the positive, personal impact you created, one follower at a time.`,
-              conflict: `Conflict resolution is a daily occurrence at work that can either propel or disrupt the momentum for a leader, a team or the entire organization. The workplace can become a toxic environment when leaders allow conflict to fester rather than confront it head-on.`
-            },
-            inform_feedback: {
+          metrics: {
+            replyGuideHeader: "How to score?",
+            replyGuideMessage: "Simply reply this email and score your leader from scale of 1 to 5, 1 is bad and 5 is awesome.",
+            purpose: `One of the key elements of inspiration is setting purpose to the work. When employees “clearly know their role, have what they need to fulfill their role, and can see the connection between their role and the overall organizational purpose,” says Harter, that’s the recipe for creating greater levels of engagement.`,
+            mettings: `There are few signs that shows teams are drifting. One of the main indicators is meetings. You leave meetings feeling like they’ve been a waste of time, or you decide to stop having team meetings because they’re not productive anymore.`,
+            rules: `Ground rules are an important tool for helping individuals function together as a team. They reflect what is important to the members about how they work together.Ground rules should focus on three elements:  Tasks – Expected activities and deliverables for the team; Process – How the activities will be carried out; and Norms – Ways in which team members will interact with each other.`,
+            communications: `It is simply impossible to become a great leader without being a great communicator.`,
+            leadership: `It can be hard to define and it means different things to different people. This is why it is important to be measured in point of view of your team members, are you leading them properly?`,
+            workload: `As the leader of a high-performing team, how you distribute and balance work across the members of that team is a critical success factor. It needs to be done fairly. Note, I didn't say equally.`,
+            energy: `Commitment of a leader inspires and motivates the followers and helps them to be more stronger towards the purpose and vision of the organization and team.`,
+            stress: `It is acceptable to have stress in the business in fact today's business is very stressful. However a good leader must be able to manage the stress in order to ensure the team is performing in their best focus.`,
+            decision: `We believe the time has come to broaden the traditional approach to leadership and decision making and form a new perspective based on complexity science. Do your followers think you are able to make a decision?`,
+            respect: `Too many people today assume leadership positions without consideration for their impact on others. The leadership vacuum in business today allows them to stay as long they manage acceptable results. Ultimately, your personal leadership legacy will not be remembered for your M.B.A., your sales numbers, or the toys you acquired. Most likely, it will be the positive, personal impact you created, one follower at a time.`,
+            conflict: `Conflict resolution is a daily occurrence at work that can either propel or disrupt the momentum for a leader, a team or the entire organization. The workplace can become a toxic environment when leaders allow conflict to fester rather than confront it head-on.`
+          },
+          inform_feedback: {
 
-            }
           }
         }
       }

@@ -9,6 +9,12 @@ import {AdminJobs} from '/imports/api/jobs/collections';
 import {Jobs} from '/imports/api/jobs/jobs';
 import {Workers} from '/imports/api/jobs/workers';
 
+// functions
+import {isAdmin} from '/imports/utils/index';
+
+// constants
+import * as ERROR_CODE from '/imports/utils/error_code';
+
 /**
  * Method create admin job with the configurable repeat (use cron parser of later.js)
  * @param type
@@ -75,8 +81,8 @@ export const editAdminJob = new ValidatedMethod({
         cronExpression = `${schedule.min} ${schedule.hour} ${schedule.dayOfMonth} ${schedule.month} ${schedule.dayOfWeek}`,
         attributes = {
           priority: "normal",
-          // repeat: {schedule: later.parse.cron(cronExpression)}
-          repeat: {schedule: later.parse.text("every 5 minutes")} // for testing
+          repeat: {schedule: later.parse.cron(cronExpression)}
+          // repeat: {schedule: later.parse.text("every 5 minutes")} // for testing
         }
         ;
       let

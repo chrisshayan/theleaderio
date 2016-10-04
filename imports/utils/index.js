@@ -1,3 +1,5 @@
+import {Roles} from 'meteor/alanning:roles';
+
 export const IDValidator = {
 	_id: {
 		type: String,
@@ -67,3 +69,12 @@ export const timestampToDate = (timestamp) => {
 	return new Date(timestamp * 1000);
 }
 
+/**
+ * Function verify admin role
+ * @param {String|Object} user User Id or actual user object
+ * @param {Boolean} true if user is in _any_ of the target roles
+ */
+export const isAdmin = (user) => {
+	console.log(user)
+	return Roles.userIsInRole(user, ["admin"]);
+}

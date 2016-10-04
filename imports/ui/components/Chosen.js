@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {words as capitalize} from 'capitalize';
+// import {words as capitalize} from 'capitalize';
 
 
 export default class Chosen extends Component {
@@ -7,8 +7,17 @@ export default class Chosen extends Component {
     super();
 
     this.state = {
-      selected: null
+      selected: null,
+      el: null
     }
+  }
+
+  componentDidMount() {
+    const el = $(this.refs.selector);
+    el.chosen({max_selected_options: 3});
+    this.setState({
+      el
+    });
   }
 
   _onChange() {
@@ -30,7 +39,7 @@ export default class Chosen extends Component {
         <select ref="selector"
                 data-placeholder={placeHolder}
                 className={chosenClass}
-                defaultValue={selectedOptions}
+                value={selectedOptions}
                 multiple={isMultiple}
                 onChange={this._onChange.bind(this)}
         >
@@ -39,7 +48,7 @@ export default class Chosen extends Component {
               key={key}
               value={value}
             >
-              {capitalize(value)}
+              {value}
             </option>
           ))}
         </select>

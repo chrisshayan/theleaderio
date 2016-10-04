@@ -35,18 +35,20 @@ const Api = new Restivus({
 Api.addRoute('metrics/:action', {authRequired: false}, {
   post: {
     action: function () {
-      const {action} = this.urlParams;
-      const {
-        recipient,
-        sender,
-        Subject,
-        timestamp,
-      } = this.request.body;
-      const content = this.request.body["stripped-text"];
+      const
+        {action} = this.urlParams,
+        {
+          recipient,
+          sender,
+          Subject,
+          timestamp,
+        } = this.request.body,
+        content = this.request.body["stripped-text"],
+        recipientInfo = getRecipientInfo({recipient, sender, apiName: "metrics"})
+        ;
 
-      const recipientInfo = getRecipientInfo({recipient, sender, apiName: "metrics"});
       if (!_.isEmpty(recipientInfo)) {
-        if (recipientInfo.message !== 'undefined') {
+        if (recipientInfo.message === 'undefined') {
           Logger.error({name: "api", message: {apiName: "metrics", detail: recipientInfo.message}});
           this.response.writeHead(404, {'Content-Type': 'text/plain'});
           this.response.write(recipientInfo.message);
@@ -120,7 +122,7 @@ Api.addRoute('employee/:action', {authRequired: false}, {
       let
         type = "",
         feedback = ""
-      ;
+        ;
 
       if (!_.isEmpty(recipientInfo)) {
         if (recipientInfo.message === 'undefined') {
@@ -137,7 +139,7 @@ Api.addRoute('employee/:action', {authRequired: false}, {
               feedback = content;
 
               const feedbackId = Feedbacks.insert({employeeId, organizationId, leaderId, type, feedback, date});
-              if(!_.isEmpty(feedbackId)) {
+              if (!_.isEmpty(feedbackId)) {
                 // console.log(`will send feedback ${feedbackId} to employee: ${employeeId}`);
                 const
                   template = 'employee',
@@ -150,16 +152,28 @@ Api.addRoute('employee/:action', {authRequired: false}, {
                   };
                 EmailActions.send.call({template, data}, (error) => {
                   if (_.isEmpty(error)) {
-                    Logger.info({name, message: {detail: `Send email to employee ${employeeId} 
-                              about feedback of leader ${leaderId} - success`}});
+                    Logger.info({
+                      name, message: {
+                        detail: `Send email to employee ${employeeId} 
+                              about feedback of leader ${leaderId} - success`
+                      }
+                    });
                   } else {
-                    Logger.error({name, message: {detail: `Send email to employee ${employeeId} 
-                              about feedback of leader ${leaderId} failed`}});
+                    Logger.error({
+                      name, message: {
+                        detail: `Send email to employee ${employeeId} 
+                              about feedback of leader ${leaderId} failed`
+                      }
+                    });
                   }
                 });
               } else {
-                Logger.error({name, message: {apiName, detail: `Insert feedback for employee: ${employeeId} failed 
-                                with content: ${feedback}`}});
+                Logger.error({
+                  name, message: {
+                    apiName, detail: `Insert feedback for employee: ${employeeId} failed 
+                                with content: ${feedback}`
+                  }
+                });
               }
 
             }

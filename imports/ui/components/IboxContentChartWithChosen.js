@@ -56,7 +56,7 @@ export default class IboxContentChartWithChosen extends Component {
             </h3>
             <Chosen
               options={options}
-              selectedOptions={null}
+              selectedOptions={options[0]}
               chosenClass="chosen-select"
               isMultiple={false}
               placeHolder='Choose one option ...'

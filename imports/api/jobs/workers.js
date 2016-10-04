@@ -142,6 +142,7 @@ const sendSurveys = function (job, cb) {
           setSendingPlanStatus.call({_id: planId, status: "SENT"});
           job.done();
         } else {
+          console.log(error)
           setSendingPlanStatus.call({_id: planId, status: "FAILED"});
           jobMessage = error.reason;
           job.log(jobMessage, {level: LOG_LEVEL.WARNING});

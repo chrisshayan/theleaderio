@@ -11,7 +11,7 @@ class Navigation extends Component {
         {route: 'app.dashboard', path: FlowRouter.url('app.dashboard'), label: 'Dashboard', icon: 'fa fa-dashboard'},
         {route: 'app.preferences', path: FlowRouter.url('app.preferences'), label: 'Preferences', icon: 'fa fa-gears'},
         {route: 'app.organizations', path: FlowRouter.url('app.organizations'), label: 'Organizations', icon: 'fa fa-sitemap'},
-        {route: 'app.organizations', path: FlowRouter.url('app.feedback'), label: 'Feedback', icon: 'fa fa-gift'},
+        {route: 'app.feedback', path: FlowRouter.url('app.feedback'), label: 'Feedback', icon: 'fa fa-gift'},
       ]
     };
   }

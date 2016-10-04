@@ -23,7 +23,6 @@ export const MONTH_OF_QUARTER = {
   QUARTER_4: [9, 10, 11],
 };
 
-export const SCHEDULE_INTERVAL = ["every week", ]
 
 export const DEFAULT_PUBLIC_INFO_PREFERENCES = {
   basic: {
@@ -121,3 +120,34 @@ export const EMAIL_TEMPLATE_CONTENT = {
     }
   },
 };
+
+/**
+ * CONSTANT JOB FREQUENCY
+ */
+export const JOB_FREQUENCY = ["Every Week", "Every 2 Weeks", "Every Month", "Choose frequency"];
+
+/**
+ * CONSTANT DAY OF WEEK
+ */
+export const DAY_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Choose a day"];
+
+
+/**
+ * CONSTANT DAY OF MONTH
+ * only allow day from 1 - 28, incase of the month is different from 29 - 31
+ */
+export const DAY_OF_MONTH = ["day 1", "day 2", "day 3", "day 4", "day 5", "day 6", "day 7", "day 8",
+                             "day 9", "day 10", "day 11", "day 12", "day 13", "day 14", "day 15", "day 16",
+                             "day 17", "day 18", "day 19", "day 20", "day 21", "day 22", "day 23", "day 24",
+                             "day 25", "day 26", "day 27", "day 28", "Choose a day"];
+
+/**
+ * CONSTANT HOUR OF A DAY
+ */
+export const HOUR_OF_DAY = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                            13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, "...hour"];
+
+/**
+ * CONSTANT MINUTE OF AN HOUR
+ */
+export const MINUTE_OF_AN_HOUR = [0, 10, 20, 30, 40, 50, "...minute"];

@@ -14,6 +14,10 @@ import ConfirmEmail from '/imports/ui/components/ConfirmEmail';
 import MainLayout from '/imports/ui/layouts/MainLayout';
 import BlankLayout from '/imports/ui/layouts/BlankLayout';
 
+// Admin page
+import ManageIndustries from '/imports/ui/containers/admin/ManageIndustries';
+import ManageJobs from '/imports/ui/containers/admin/ManageJobs';
+
 import LandingPage from '/imports/ui/containers/LandingPage';
 
 import SignUpUser from '/imports/ui/containers/signup/SignUpUser';
@@ -39,8 +43,9 @@ import Feedback from '/imports/ui/containers/feedback';
 // methods
 import * as Notifications from '/imports/api/notifications/methods';
 
-// Admin page
-import ManageIndustries from '/imports/ui/containers/admin/ManageIndustries';
+// functions
+import {isAdmin} from '/imports/utils/index';
+
 
 /**
  * Constant
@@ -333,6 +338,20 @@ adminRoutes.route('/industries', {
     mount(MainLayout, {
       content() {
         return <ManageIndustries />
+      }
+    })
+  }
+});
+
+/**
+ * Route: Admin jobs
+ */
+adminRoutes.route('/jobs', {
+  name: 'admin.jobs',
+  action() {
+    mount(MainLayout, {
+      content() {
+        return <ManageJobs />
       }
     })
   }
