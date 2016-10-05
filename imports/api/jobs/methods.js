@@ -7,13 +7,86 @@ import {AdminJobs} from '/imports/api/jobs/collections';
 
 // Job
 import {Jobs} from '/imports/api/jobs/jobs';
-import {Workers} from '/imports/api/jobs/workers';
 
 // functions
-import {isAdmin} from '/imports/utils/index';
+// import {sendFeedbackEmailToLeader} from '/imports/api/jobs/functions';
 
 // constants
 import * as ERROR_CODE from '/imports/utils/error_code';
+
+// Job Collection
+// import {AdminJobs} from '/imports/api/jobs/collections';
+
+// collections
+import {Organizations} from '/imports/api/organizations/index';
+import {Employees} from '/imports/api/employees/index';
+
+// Job
+// import {Jobs} from '/imports/api/jobs/jobs';
+
+// methods
+import * as EmailActions from '/imports/api/email/methods';
+
+// functions
+import {getRandomEmployee} from '/imports/api/organizations/functions';
+
+
+/**
+ * Function send email to leader to receive feedback for an employee who will be choose randomly
+ * @param job
+ * @param cb
+ */
+const sendFeedbackEmailToLeader = function(job, cb) {
+  const
+    name = "sendFeedbackEmailToLeader",
+    activeOrgList = Organizations.find({isPresent: true}, {fields: {_id: true}}).fetch()
+    ;
+  let
+    employee = {},
+    employeeData = {},
+    jobMessage = ""
+
+  if(_.isEmpty(activeOrgList)) {
+    job.log({name, message: "No active organization"});
+    job.done();
+  } else {
+    activeOrgList.map(org => {
+      const
+        employee = getRandomEmployee({params: {organizationId: org._id}})
+        ;
+      if(!_.isEmpty(employee)) {
+        if(employee.message === 'undefined') {
+          Logger.error({name, message: {detail: employee.message}});
+        } else {
+          employeeData = Employees.findOne({_id: employee.employeeId});
+          if(!_.isEmpty(employeeData)) {
+            const
+              template = 'employee',
+              data = {
+                type: "feedback",
+                employeeId: employeeData._id,
+                leaderId: employeeData.leaderId,
+                organizationId: employeeData.organizationId
+              };
+            EmailActions.send.call({template, data}, (error) => {
+              if (_.isEmpty(error)) {
+                jobMessage = `Send email to leader ${employeeData.leaderId} about employee ${employeeData._id} - success`;
+                job.log(jobMessage, {level: LOG_LEVEL.INFO});
+              } else {
+                jobMessage = `Send email to leader ${employeeData.leaderId} about employee ${employeeData._id} - failed`;
+                job.log(jobMessage, {level: LOG_LEVEL.CRITICAL});
+              }
+            });
+          } else {
+            jobMessage = `Employee ${employee.employeeId} not exists`;
+            job.log(jobMessage, {level: LOG_LEVEL.WARNING});
+          }
+        }
+      }
+    });
+    job.done();
+  }
+}
 
 /**
  * Method create admin job with the configurable repeat (use cron parser of later.js)
@@ -65,7 +138,7 @@ export const editAdminJob = new ValidatedMethod({
   name: "jobs.editAdminJob",
   validate: null,
   run({params}) {
-    if (Meteor.isServer) {
+    if (!this.isSimulation) {
       const
         {
           type = "",
@@ -91,11 +164,12 @@ export const editAdminJob = new ValidatedMethod({
         message = ""
       ;
 
+      console.log(schedule)
       // get current job
       jobs = AdminJobs.find({type, status: {$in: AdminJobs.jobStatusCancellable}}, {fields: {_id: true, status: true}}).fetch();
       if(_.isEmpty(jobs)) {
         message = Jobs.create(type, attributes, data);
-        Workers.start(type);
+        AdminJobs.processJobs(type, sendFeedbackEmailToLeader);
         return {message}; // return new job id
       } else {
         jobs.map(job => {
@@ -107,7 +181,7 @@ export const editAdminJob = new ValidatedMethod({
             if(status) {
               // cancel job success, create new job with new attributes
               message = Jobs.create(type, attributes, data);
-              Workers.start(type);
+              AdminJobs.processJobs(type, sendFeedbackEmailToLeader);
               return {message}; // return new job id
             } else {
               message = "failed";
@@ -119,3 +193,4 @@ export const editAdminJob = new ValidatedMethod({
     }
   }
 });
+

@@ -124,12 +124,12 @@ export const EMAIL_TEMPLATE_CONTENT = {
 /**
  * CONSTANT JOB FREQUENCY
  */
-export const JOB_FREQUENCY = ["Every Week", "Every 2 Weeks", "Every Month", "Choose frequency"];
+export const JOB_FREQUENCY = ["Every Week", "Every 2 Weeks", "Every Month"];
 
 /**
  * CONSTANT DAY OF WEEK
  */
-export const DAY_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Choose a day"];
+export const DAY_OF_WEEK = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 
 /**
@@ -139,15 +139,15 @@ export const DAY_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Frida
 export const DAY_OF_MONTH = ["day 1", "day 2", "day 3", "day 4", "day 5", "day 6", "day 7", "day 8",
                              "day 9", "day 10", "day 11", "day 12", "day 13", "day 14", "day 15", "day 16",
                              "day 17", "day 18", "day 19", "day 20", "day 21", "day 22", "day 23", "day 24",
-                             "day 25", "day 26", "day 27", "day 28", "Choose a day"];
+                             "day 25", "day 26", "day 27", "day 28"];
 
 /**
  * CONSTANT HOUR OF A DAY
  */
 export const HOUR_OF_DAY = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-                            13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, "...hour"];
+                            13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
 
 /**
  * CONSTANT MINUTE OF AN HOUR
  */
-export const MINUTE_OF_AN_HOUR = [0, 10, 20, 30, 40, 50, "...minute"];
+export const MINUTE_OF_AN_HOUR = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];

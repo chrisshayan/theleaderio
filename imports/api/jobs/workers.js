@@ -197,7 +197,7 @@ const migrateUsers = (job, cb) => {
  * @param job
  * @param cb
  */
-const sendFeedbackEmailToLeader = (job, cb) => {
+export const sendFeedbackEmailToLeader = (job, cb) => {
   const
     name = "sendFeedbackEmailToLeader",
     activeOrgList = Organizations.find({isPresent: true}, {fields: {_id: true}}).fetch()
@@ -230,13 +230,13 @@ const sendFeedbackEmailToLeader = (job, cb) => {
             };
             EmailActions.send.call({template, data}, (error) => {
               if (_.isEmpty(error)) {
-                job.log({name, message: {detail: `Send email to leader ${employeeData.leaderId} about employee ${employeeData._id} - success`}});
+                job.log(`Send email to leader ${employeeData.leaderId} about employee ${employeeData._id} - success`);
               } else {
-                job.log({name, message: {detail: `Send email to leader ${employeeData.leaderId} about employee ${employeeData._id} - failed`}});
+                job.log(`Send email to leader ${employeeData.leaderId} about employee ${employeeData._id} - failed`);
               }
             });
           } else {
-            job.log({name, message: {detail: `Employee ${employee.employeeId} not exists`}});
+            job.log(`Employee ${employee.employeeId} not exists`);
           }
         }
       }

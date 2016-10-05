@@ -136,7 +136,7 @@ Api.addRoute('employee/:action', {authRequired: false}, {
           switch (action) {
             case "feedback": {
               type = "LEADER_TO_EMPLOYEE";
-              feedback = content;
+              feedback = removeWebGmailClientContent(content)[0];
 
               const feedbackId = Feedbacks.insert({employeeId, organizationId, leaderId, type, feedback, date});
               if (!_.isEmpty(feedbackId)) {
