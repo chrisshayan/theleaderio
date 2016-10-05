@@ -1,9 +1,11 @@
 import {Meteor} from 'meteor/meteor';
 import {EJSON} from 'meteor/ejson';
+import {Roles} from 'meteor/alanning:roles';
 
 // collections
 import {Industries} from '/imports/api/industries/index';
 import {Defaults} from '/imports/api/defaults/index';
+import {Accounts} from 'meteor/accounts-base';
 
 // methods
 import * as IndustriesActions from '/imports/api/industries/methods';
@@ -203,10 +205,29 @@ export function createDefaults() {
   }
 }
 
+// create role for user
+const initiateRoles = () => {
+  const
+    users = Accounts.users.find({ roles: { $exists: false } }).fetch(),
+    adminEmails = ["jackiekhuu.work@gmail.com", "mrphu3074@gmail.com", "christopher.shayan@gmail.com"]
+    ;
+
+  users.map(user => {
+    Roles.addUsersToRoles(user._id, ["user"]);
+  });
+
+  adminEmails.map(adminEmail => {
+    const admin = Accounts.users.findOne({emails: {$elemMatch: {address: adminEmail}}});
+    Roles.addUsersToRoles(admin._id, ["admin"]);
+  });
+}
+
 Meteor.startup(() => {
   setupIndustries();
 
   // create defaults for app
   createDefaults();
+
+  initiateRoles();
 });
 
