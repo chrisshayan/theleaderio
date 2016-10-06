@@ -228,6 +228,6 @@ Meteor.startup(() => {
   // create defaults for app
   createDefaults();
 
-  initiateRoles();
+  // initiateRoles();
 });
 

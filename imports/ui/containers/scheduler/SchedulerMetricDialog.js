@@ -17,11 +17,12 @@ class SchedulerMetricDialog extends Component {
       schedulerId: metric._id,
       metric: selected.key
     }, error => {
-      if(error) {
-        Notifications.error.call({message: error.reason});
+      if (error) {
+        Notifications.error.call({ message: error.reason });
       } else {
         onDismiss();
-        Notifications.success.call({message: 'Added'});
+        Notifications.success.call({ message: 'Added' });
+        window.trackEvent('update_scheduler');
       }
     });
   }
@@ -31,11 +32,11 @@ class SchedulerMetricDialog extends Component {
     const selected = metric.metrics || [];
     return selected.indexOf(m.key) >= 0;
   }
-  
+
   render() {
     const { show, metric, onDismiss } = this.props;
 
-    return ( <SkyLightStateless isVisible = { show }
+    return ( < SkyLightStateless isVisible = { show }
       onCloseClicked = { onDismiss }
       title = { 'Metrics' }
       dialogStyles = {
@@ -67,13 +68,10 @@ class SchedulerMetricDialog extends Component {
               </div>
             </div>
           ))}
-        </div> 
-        <div className="row">
-          <div className="col-md-2" >
+        </div> < div className = "row" >
+      <div className="col-md-2" >
             <button className="btn btn-white btn-block" onClick={onDismiss}>Cancel</button> 
-          </div> 
-        </div> 
-      </SkyLightStateless>
+          </div> < /div>  < /SkyLightStateless>
     );
   }
 }

@@ -66,6 +66,10 @@ class UpdateOrganization extends Component {
 					title = 'Saved',
 					message = '';
 				Notifications.success.call({ closeButton, title, message });
+				window.trackEvent('update_organization', {
+					id: this.props._id,
+					name: this.props.doc.name
+				});
 			})
 	}
 
@@ -78,6 +82,10 @@ class UpdateOrganization extends Component {
 			} else {
 				FlowRouter.go('app.organizations');
 				Notifications.success.call({ message: 'Removed' });
+				window.trackEvent('remove_organization', {
+					id: doc._id,
+					name: doc.name
+				})
 			}
 		});
 	}

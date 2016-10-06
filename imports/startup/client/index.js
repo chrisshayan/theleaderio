@@ -7,3 +7,5 @@ Session.setDefault('alias', getSubdomain());
 createStore().then(() => {
 	require('./routes');
 });
+
+require('./intercom');
