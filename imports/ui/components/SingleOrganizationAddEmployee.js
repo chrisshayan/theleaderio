@@ -29,9 +29,10 @@ class SingleOrganizationAddEmployee extends Component {
 
 	_onSave = e => {
 		e.preventDefault();
+    const {organizationId} = this.props;
 		const data = {
 			...this.state.doc,
-			organizationId: this.props.organizationId
+			organizationId,
 		};
 		orgActions.addEmployee.call(data, (err) => {
 			if (err) {
@@ -43,6 +44,11 @@ class SingleOrganizationAddEmployee extends Component {
           title = 'Employee',
           message = 'Added';
         Notifications.success.call({ closeButton, title, message });
+        window.trackEvent('add_employee', {
+          organization_id: organizationId,
+          name: [data['firstName'], data['lastName']].join(' '),
+          email: data['email']
+        });
 				this._onCancel();
 			}
 		})

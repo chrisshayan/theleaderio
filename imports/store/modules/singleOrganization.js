@@ -45,6 +45,10 @@ const create = (data) => {
 			if(err) {
 				return dispatch({ type: SUBMIT_FAILED, error: getErrors(err) });
 			} else {
+				window.trackEvent('create_organization', {
+					id: orgId,
+					name: data.name
+				});
 				return dispatch({ type: SUBMIT_SUCCESS, orgId });
 			}
 		});

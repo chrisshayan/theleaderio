@@ -19,7 +19,6 @@ const constraints = {
   description: {
     type: "string"
   },
-
 };
 
 /**
@@ -68,7 +67,7 @@ export const create = new ValidatedMethod({
     }
 
     if (!this.isSimulation) {
-      return Organizations.insert({
+      var result = Organizations.insert({
         name,
         jobTitle,
         description,
@@ -77,6 +76,7 @@ export const create = new ValidatedMethod({
         endTime,
         isPresent
       });
+      return result;
     }
   }
 });

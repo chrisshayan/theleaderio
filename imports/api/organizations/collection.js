@@ -1,5 +1,6 @@
 import { Mongo } from 'meteor/mongo';
 
+
 class OrganizationsCollection extends Mongo.Collection {
 	insert(doc, callback) {
 		// hook event: before insert
@@ -7,7 +8,12 @@ class OrganizationsCollection extends Mongo.Collection {
 		if(_.isEmpty(doc.leaderId)) {
 			doc.leaderId = Meteor.userId();
 		}
-		return super.insert(doc, callback);
+		var result = super.insert(doc, callback);
+		if(Meteor.isServer) {
+			var intercom = require('/imports/api/intercom');
+			console.log(intercom)
+		}
+		return result;
 	}
 
 	update(selector, modifier) {

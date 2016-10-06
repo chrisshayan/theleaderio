@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { SkyLightStateless } from 'react-skylight';
-import { MEETINGS_UI_INFO } from '/imports/api/scheduler';
+import { METRICS_UI_INFO } from '/imports/api/scheduler';
 
 import * as Notifications from '/imports/api/notifications/methods';
 
@@ -17,11 +17,12 @@ class SchedulerMetricDialog extends Component {
       schedulerId: metric._id,
       metric: selected.key
     }, error => {
-      if(error) {
-        Notifications.error.call({message: error.reason});
+      if (error) {
+        Notifications.error.call({ message: error.reason });
       } else {
         onDismiss();
-        Notifications.success.call({message: 'Added'});
+        Notifications.success.call({ message: 'Added' });
+        window.trackEvent('update_scheduler');
       }
     });
   }
@@ -31,11 +32,11 @@ class SchedulerMetricDialog extends Component {
     const selected = metric.metrics || [];
     return selected.indexOf(m.key) >= 0;
   }
-  
+
   render() {
     const { show, metric, onDismiss } = this.props;
 
-    return ( <SkyLightStateless isVisible = { show }
+    return ( < SkyLightStateless isVisible = { show }
       onCloseClicked = { onDismiss }
       title = { 'Metrics' }
       dialogStyles = {
@@ -49,7 +50,7 @@ class SchedulerMetricDialog extends Component {
         }
       } >
       <div className="row">
-          {MEETINGS_UI_INFO.map((m, key) => (
+          {METRICS_UI_INFO.map((m, key) => (
             <div key={key} className="col-lg-4 col-md-6 col-sm-12 col-xs-12" style={{marginBottom: 20}} onClick={() => !this.isMetricDisabled(m) ? this._onAddMetric(m) : null}>  
               <div className={this.isMetricDisabled(m) ? 'scheduler-metric-dialog__item disabled' : 'scheduler-metric-dialog__item enable'}>
                 <div className="row vertical-align">
@@ -67,13 +68,10 @@ class SchedulerMetricDialog extends Component {
               </div>
             </div>
           ))}
-        </div> 
-        <div className="row">
-          <div className="col-md-2" >
+        </div> < div className = "row" >
+      <div className="col-md-2" >
             <button className="btn btn-white btn-block" onClick={onDismiss}>Cancel</button> 
-          </div> 
-        </div> 
-      </SkyLightStateless>
+          </div> < /div>  < /SkyLightStateless>
     );
   }
 }

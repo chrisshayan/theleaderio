@@ -5,59 +5,72 @@ import XEditable from '/imports/ui/components/XEditable';
 import { STATUS_ACTIVE, STATUS_DEACTIVE } from '/imports/api/employees';
 import * as orgActions from '/imports/api/organizations/methods';
 class SingleOrgEmployee extends Component {
-	state = {
-		isEditing: false,
-	}
+  state = {
+    isEditing: false,
+  }
 
-	_onToggleEditMode = e => {
-		this.setState({
-			isEditing: !this.state.isEditing
-		});
-	}
+  _onToggleEditMode = e => {
+    this.setState({
+      isEditing: !this.state.isEditing
+    });
+  }
 
-	_onRemove = e => {
-		e.preventDefault();
-		const t = confirm('Are you sure you want to delete this employee?');
-		if(t) {
-			orgActions.removeEmployee.call({ employeeId: this.props.employee._id }, err => {
-				console.log(err);
-			})
-		}
-	}
+  _onRemove = e => {
+    e.preventDefault();
+    const t = confirm('Are you sure you want to delete this employee?');
+    if (t) {
+      var snapshot = _.clone(this.props.employee);
+      orgActions.removeEmployee.call({ employeeId: this.props.employee._id }, err => {
+        if (!err) {
+          window.trackEvent('remove_employee', {
+            organization_id: this.props.orgId,
+            employee_id: snapshot._id,
+            name: [snapshot['firstName'], snapshot['lastName']].join(' '),
+            email: snapshot['email']
+          });
+        }
+      })
+    }
+  }
 
-	_onDeactive = e => {
-		e.preventDefault();
-		const data = {
-			employeeId: this.props.employee._id,
-			status: STATUS_DEACTIVE
-		};
-		orgActions.toggleStatusEmployee.call(data, err => {
-			if(err) {
-				
-			}
-		});
-	}
+  _onDeactive = e => {
+    e.preventDefault();
+    const data = {
+      employeeId: this.props.employee._id,
+      status: STATUS_DEACTIVE
+    };
+    orgActions.toggleStatusEmployee.call(data, err => {
+      if (!err) {
+        window.trackEvent('deactive_employee', {
+          organization_id: this.props.orgId,
+          employee_id: this.props.employee._id
+        });
+      }
+    });
+  }
 
-	_onActive = e => {
-		e.preventDefault();
+  _onActive = e => {
+    e.preventDefault();
 
-		const data = {
-			employeeId: this.props.employee._id,
-			status: STATUS_ACTIVE
-		};
-		orgActions.toggleStatusEmployee.call(data, err => {
-			console.log(err)
-			if(err) {
+    const data = {
+      employeeId: this.props.employee._id,
+      status: STATUS_ACTIVE
+    };
+    orgActions.toggleStatusEmployee.call(data, err => {
+      if (!err) {
+        window.trackEvent('active_employee', {
+          organization_id: this.props.orgId,
+          employee_id: this.props.employee._id
+        });
+      }
+    });
+  }
 
-			}
-		});
-	}
+  render() {
+    const { position = '', employee, orgId } = this.props;
 
-	render() {
-		const { position = '', employee, orgId } = this.props;
-
-		return (
-			<tr>
+    return (
+      <tr>
 				<td style={styles.valign}>{ position }</td>
         <td style={styles.valign}>
 			  	<XEditable
@@ -113,14 +126,14 @@ class SingleOrgEmployee extends Component {
 
       	</td>
       </tr>
-		);
-	}
+    );
+  }
 }
 
 const styles = {
-	valign: {
-		verticalAlign: 'middle'
-	}
+  valign: {
+    verticalAlign: 'middle'
+  }
 };
 
 export default SingleOrgEmployee;

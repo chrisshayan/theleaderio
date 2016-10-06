@@ -94,8 +94,7 @@ class OrganizationEmployees extends Component {
 										employee.firstName = v;
 									}
 								}
-							})
-							console.log(employee)
+							});
 							if (employee.firstName && employee.email) {
 								employees.push(employee);
 							}
@@ -118,6 +117,10 @@ class OrganizationEmployees extends Component {
 										closeButton,
 										title,
 										message
+									});
+									window.trackEvent('import_employees', {
+										organization_id: organizationId,
+										total: employees.length
 									});
 								}
 							})

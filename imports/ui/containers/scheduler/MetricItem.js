@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { 
   Scheduler as SchedulerCollection, 
-  MEETINGS_UI_INFO,
+  METRICS_UI_INFO,
 } from '/imports/api/scheduler';
 
 import * as Notifications from '/imports/api/notifications/methods';
@@ -15,7 +15,7 @@ class MetricItem extends Component {
 
   get metric() {
     const key = this.props.name;
-    return _.find(MEETINGS_UI_INFO, r => r.key === key) || {};
+    return _.find(METRICS_UI_INFO, r => r.key === key) || {};
   }
 
   get name() {
