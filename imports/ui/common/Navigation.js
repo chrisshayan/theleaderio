@@ -1,4 +1,4 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import {FlowRouter} from 'meteor/kadira:flow-router';
 import React, {Component} from 'react';
 
 class Navigation extends Component {
@@ -10,18 +10,31 @@ class Navigation extends Component {
       menuItems: [
         {route: 'app.dashboard', path: FlowRouter.url('app.dashboard'), label: 'Dashboard', icon: 'fa fa-dashboard'},
         {route: 'app.preferences', path: FlowRouter.url('app.preferences'), label: 'Preferences', icon: 'fa fa-gears'},
-        {route: 'app.organizations', path: FlowRouter.url('app.organizations'), label: 'Organizations', icon: 'fa fa-sitemap'},
-        {route: 'app.organizations', path: FlowRouter.url('app.feedback'), label: 'Feedback', icon: 'fa fa-gift'},
+        {
+          route: 'app.organizations',
+          path: FlowRouter.url('app.organizations'),
+          label: 'Organizations',
+          icon: 'fa fa-sitemap'
+        },
+        {route: 'app.feedback', path: FlowRouter.url('app.feedback'), label: 'Feedback', icon: 'fa fa-gift'},
       ]
     };
   }
 
-  componentDidMount() {
-
+  componentWillReceiveProps(nextProps) {
+    if(this.props.isAdmin !== nextProps.isAdmin) {
+      let menuItems = this.state.menuItems;
+      if(nextProps.isAdmin) {
+        menuItems.push({route: 'admin.jobs', path: FlowRouter.url('admin.jobs'), label: 'Admin', icon: 'fa fa-user-md'});
+        this.setState({
+          menuItems
+        });
+      }
+    }
   }
 
   render() {
-    const {activeRoute} = this.props;
+    const {activeRoute, isAdmin} = this.props;
 
     return (
       <nav id="left-nav" className="left-nav">

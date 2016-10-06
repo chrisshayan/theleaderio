@@ -6,13 +6,15 @@ import {Feedbacks} from './index';
 export const add = new ValidatedMethod({
   name: "feedbacks.add",
   validate: null,
-  run({planId, leaderId, organizationId, employeeId, metric, feedback, date}) {
+  run({planId, leaderId, organizationId, employeeId, metric, feedback, type, date}) {
     const doc = {
-      planId,
       leaderId,
       organizationId,
       date
     };
+    if(typeof planId !== 'undefined') {
+      doc.planId = planId;
+    }
     if(typeof employeeId !== 'undefined') {
       doc.employeeId = employeeId;
     }
@@ -21,6 +23,9 @@ export const add = new ValidatedMethod({
     }
     if(typeof feedback !== 'undefined') {
       doc.feedback = feedback;
+    }
+    if(typeof type !== 'undefined') {
+      doc.type = type;
     }
     Feedbacks.insert(doc);
   }

@@ -4,7 +4,7 @@ import {later} from 'meteor/mrt:later';
 import './fixtures.js';
 import './migrations';
 import './routes';
-import {DailyJobs, QueueJobs} from '/imports/api/jobs/collections';
+import {DailyJobs, QueueJobs, AdminJobs} from '/imports/api/jobs/collections';
 import {Jobs} from '/imports/api/jobs/jobs';
 import {Workers} from '/imports/api/jobs/workers';
 
@@ -17,8 +17,15 @@ Meteor.startup(function () {
   // Migrations.migrateTo('latest');
 
   // jobs
-  DailyJobs.startJobServer();
-  QueueJobs.startJobServer();
+  if(Meteor.settings.jobs.enable.daily) {
+    DailyJobs.startJobServer();
+  }
+  if(Meteor.settings.jobs.enable.queue) {
+    QueueJobs.startJobServer();
+  }
+  if(Meteor.settings.jobs.enable.admin) {
+    AdminJobs.startJobServer();
+  }
 
   /**
    * DailyJobs
@@ -57,22 +64,25 @@ Meteor.startup(function () {
     const data = {type};
     Jobs.create(type, attributes, data);
   }
+  /*
   // migrate data for users
-  // if (Meteor.settings.migration) {
-  //   type = "migration";
-  //   const attributes = {
-  //       priority: "normal",
-  //       after: new Date()
-  //     },
-  //     data = {type}
-  //     ;
-  //   Jobs.create(type, attributes, data);
-  //   Workers.start(type);
-  // }
-
+  if (Meteor.settings.migration) {
+    type = "migration";
+    const attributes = {
+        priority: "normal",
+        after: new Date()
+      },
+      data = {type}
+      ;
+    Jobs.create(type, attributes, data);
+    Workers.start(type);
+  }
+*/
   type = "enqueue_surveys";
   Workers.start(type);
   type = "measure_metric";
   Workers.start(type);
+  // type = "feedback_for_employee";
+  // Workers.start(type);
 
 });

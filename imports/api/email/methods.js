@@ -20,45 +20,46 @@ export const send = new ValidatedMethod({
   validate: null,
   run({template, data}) {
     if (!this.isSimulation) {
+      let
+        options = {}
+        ;
       switch (template) {
-        case 'welcome':
-        {
+        case 'welcome': {
           const {email, firstName, url} = data,
-          mailData = {
-            siteUrl: `http://${domain}`,
-            siteName: SITE_NAME,
-            url,
-            leaderName: ""
-          };
+            mailData = {
+              siteUrl: `http://${domain}`,
+              siteName: SITE_NAME,
+              url,
+              leaderName: ""
+            };
 
           mailData.leaderName = firstName;
 
           const html = EmailFunctions.buildHtml({template, data: mailData});
           const options = {
             to: email,
-            from: `"${mailData.siteName}" <no-reply@mail.mailgun.com>`,
+            from: `"${mailData.siteName}" <no-reply@mail.theleader.io>`,
             subject: `Welcome to ${mailData.siteName}`,
             html: html
           };
           Email.send(options);
           break;
         }
-        case 'thankyou':
-        {
+        case 'thankyou': {
           const options = EmailFunctions.getSurveyEmailOptions({template, data});
           Email.send(options);
           break;
         }
-        case 'forgot_alias':
-        {
-          const {email, url} = data,
+        case 'forgot_alias': {
+          const
+            {email, url} = data,
             mailData = {
-            siteUrl: `http://${domain}`,
-            siteName: SITE_NAME,
-            url: "",
-            alias: ""
-          };
-          const user = Accounts.findUserByEmail(email);
+              siteUrl: `http://${domain}`,
+              siteName: SITE_NAME,
+              url: "",
+              alias: ""
+            },
+            user = Accounts.findUserByEmail(email);
           if (!_.isEmpty(user)) {
             mailData.alias = user.username;
             mailData.url = `http://${mailData.alias}.${url}`;
@@ -67,7 +68,7 @@ export const send = new ValidatedMethod({
             const html = EmailFunctions.buildHtml({template, data: mailData});
             const options = {
               to: email,
-              from: `"${mailData.siteName}" <no-reply@theleader.io>`,
+              from: `"${mailData.siteName}" <no-reply@mailtheleader.io>`,
               subject: `Get your alias`,
               html: html
             };
@@ -77,8 +78,7 @@ export const send = new ValidatedMethod({
           }
           break;
         }
-        case 'forgot_password':
-        {
+        case 'forgot_password': {
           // Forgot / Reset password
           // Get email html
           const {email, url} = data,
@@ -107,26 +107,27 @@ export const send = new ValidatedMethod({
           });
           break;
         }
-        case 'survey':
-        {
+        case 'survey': {
           const options = EmailFunctions.getSurveyEmailOptions({template, data});
           Email.send(options);
           break;
         }
-        case 'survey_error':
-        {
+        case 'survey_error': {
           const options = EmailFunctions.getSurveyEmailOptions({template, data});
           Email.send(options);
           break;
         }
-        case 'feedback':
-        {
+        case 'feedback': {
           const options = EmailFunctions.getSurveyEmailOptions({template, data});
           Email.send(options);
           break;
         }
-        case 'migration':
-        {
+        case "employee": {
+          options = EmailFunctions.getEmployeeEmailOptions({template, data});
+          Email.send(options);
+          break;
+        }
+        case 'migration': {
           const {email, firstName, url} = data,
             mailData = {
               siteUrl: `http://${domain}`,
@@ -147,8 +148,7 @@ export const send = new ValidatedMethod({
           Email.send(options);
           break;
         }
-        default:
-        {
+        default: {
 
         }
       }

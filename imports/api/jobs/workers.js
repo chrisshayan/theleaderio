@@ -1,7 +1,9 @@
 import {Mongo} from 'meteor/mongo';
-import {DailyJobs, QueueJobs} from './collections';
 import moment from 'moment';
 import _ from 'lodash';
+
+// job collections
+import {DailyJobs, QueueJobs, AdminJobs} from './collections';
 
 // collections
 import {Organizations} from '/imports/api/organizations/index';
@@ -17,6 +19,10 @@ import {measureMonthlyMetricScore} from '/imports/api/measures/methods';
 
 // functions
 import {migrate} from '/imports/api/migration/functions';
+import {getRandomEmployee} from '/imports/api/organizations/functions';
+
+// logger
+import {Logger} from '/imports/api/logger/index';
 
 // constants
 const LOG_LEVEL = {
@@ -136,6 +142,7 @@ const sendSurveys = function (job, cb) {
           setSendingPlanStatus.call({_id: planId, status: "SENT"});
           job.done();
         } else {
+          console.log(error)
           setSendingPlanStatus.call({_id: planId, status: "FAILED"});
           jobMessage = error.reason;
           job.log(jobMessage, {level: LOG_LEVEL.WARNING});
@@ -185,6 +192,59 @@ const migrateUsers = (job, cb) => {
   job.done();
 }
 
+/**
+ * Function send email to leader to receive feedback for an employee who will be choose randomly
+ * @param job
+ * @param cb
+ */
+export const sendFeedbackEmailToLeader = (job, cb) => {
+  const
+    name = "sendFeedbackEmailToLeader",
+    activeOrgList = Organizations.find({isPresent: true}, {fields: {_id: true}}).fetch()
+    ;
+  let
+    employee = {},
+    employeeData = {}
+
+  if(_.isEmpty(activeOrgList)) {
+    job.log({name, message: "No active organization"});
+    job.done();
+  } else {
+    activeOrgList.map(org => {
+      const
+        employee = getRandomEmployee({params: {organizationId: org._id}})
+      ;
+      if(!_.isEmpty(employee)) {
+        if(employee.message === 'undefined') {
+          Logger.error({name, message: {detail: employee.message}});
+        } else {
+          employeeData = Employees.findOne({_id: employee.employeeId});
+          if(!_.isEmpty(employeeData)) {
+            const
+              template = 'employee',
+              data = {
+              type: "feedback",
+              employeeId: employeeData._id,
+              leaderId: employeeData.leaderId,
+              organizationId: employeeData.organizationId
+            };
+            EmailActions.send.call({template, data}, (error) => {
+              if (_.isEmpty(error)) {
+                job.log(`Send email to leader ${employeeData.leaderId} about employee ${employeeData._id} - success`);
+              } else {
+                job.log(`Send email to leader ${employeeData.leaderId} about employee ${employeeData._id} - failed`);
+              }
+            });
+          } else {
+            job.log(`Employee ${employee.employeeId} not exists`);
+          }
+        }
+      }
+    });
+    job.done();
+  }
+}
+
 // Start Job
 function startJob(type) {
   switch (type) {
@@ -206,6 +266,10 @@ function startJob(type) {
     case "migration":
     {
       QueueJobs.processJobs(type, migrateUsers);
+    }
+    // admin jobs: send feedback email for employee
+    case "feedback_for_employee": {
+      AdminJobs.processJobs(type, sendFeedbackEmailToLeader);
     }
   }
 }

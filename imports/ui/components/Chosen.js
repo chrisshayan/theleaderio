@@ -1,15 +1,18 @@
 import React, {Component} from 'react';
-import {words as capitalize} from 'capitalize';
+// import {words as capitalize} from 'capitalize';
 
 
 export default class Chosen extends Component {
-  constructor() {
-    super();
 
-    this.state = {
-      selected: null
-    }
-  }
+  // componentDidMount() {
+  //   const el = $(this.refs.selector);
+  //   el.chosen({max_selected_options: 3}).change(this._onChange.bind(this));
+  // }
+  //
+  // componentDidUpdate() {
+  //   const el = $(this.refs.selector);
+  //   el.chosen({max_selected_options: 3}).change(this._onChange.bind(this));
+  // }
 
   _onChange() {
     const selected = this.refs.selector.value;
@@ -18,6 +21,7 @@ export default class Chosen extends Component {
 
   render() {
     const {
+      disabled=false,
       options=[],
       selectedOptions = null,
       chosenClass='chosen-select form-control',
@@ -28,6 +32,7 @@ export default class Chosen extends Component {
     return (
       <div>
         <select ref="selector"
+                disabled={disabled}
                 data-placeholder={placeHolder}
                 className={chosenClass}
                 defaultValue={selectedOptions}
@@ -39,7 +44,7 @@ export default class Chosen extends Component {
               key={key}
               value={value}
             >
-              {capitalize(value)}
+              {value}
             </option>
           ))}
         </select>

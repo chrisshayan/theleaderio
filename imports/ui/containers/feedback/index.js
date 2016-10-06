@@ -49,7 +49,7 @@ const withMeteor = () => {
     limit: limit
   };
 
-  let cursor = Feedbacks.find({}, option);
+  let cursor = Feedbacks.find({type: {$not: /LEADER_TO_EMPLOYEE/}}, option);
   let total = Feedbacks.find().count();
   return {
     ready: sub.ready(),
