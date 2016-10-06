@@ -218,7 +218,9 @@ const initiateRoles = () => {
 
   adminEmails.map(adminEmail => {
     const admin = Accounts.users.findOne({emails: {$elemMatch: {address: adminEmail}}});
-    Roles.addUsersToRoles(admin._id, ["admin"]);
+    if(!_.isEmpty(admin)) {
+      Roles.addUsersToRoles(admin._id, ["admin"]);
+    }
   });
 }
 
