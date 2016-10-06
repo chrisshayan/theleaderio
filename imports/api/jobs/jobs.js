@@ -2,15 +2,26 @@ import {Meteor} from 'meteor/meteor';
 import {later} from 'meteor/mrt:later';
 
 // Job Collections
-import {DailyJobs, QueueJobs} from './collections';
+import {DailyJobs, QueueJobs, AdminJobs} from './collections';
 
 // constants
 import * as ERROR_CODE from '/imports/utils/error_code';
 
 function createJob(type, attributes, data) {
   if (Meteor.isServer) {
+    const
+      currentDate = new Date(),
+      {
+        depends = [],
+        priority = "",
+        retry = {},
+        repeat = {},
+        delay = 0,
+        after = currentDate
+      } = attributes
+      ;
     let job;
-    switch(type) {
+    switch (type) {
       case "enqueue_surveys": {
         job = new Job(DailyJobs, type, data);
         break;
@@ -27,19 +38,14 @@ function createJob(type, attributes, data) {
         job = new Job(QueueJobs, type, data);
         break;
       }
+      case "feedback_for_employee": {
+        job = new Job(AdminJobs, type, data);
+        break;
+      }
       default: {
         return `Unknown job type: ${type}`
       }
     }
-    const currentDate = new Date();
-    const {
-      depends = [],
-      priority = "",
-      retry = {},
-      repeat = {},
-      delay = 0,
-      after = currentDate
-    } = attributes;
 
     if (!_.isEmpty(depends)) {
       job.depends(depends);
