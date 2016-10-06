@@ -151,3 +151,14 @@ export const HOUR_OF_DAY = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
  * CONSTANT MINUTE OF AN HOUR
  */
 export const MINUTE_OF_AN_HOUR = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+
+/**
+ * Job Collection log levels
+ * @type {{INFO: string, SUCCESS: string, WARNING: string, CRITICAL: string}}
+ */
+export const LOG_LEVEL = {
+  INFO: "info",
+  SUCCESS: "success",
+  WARNING: "warning",
+  CRITICAL: "danger"
+};

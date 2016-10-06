@@ -25,7 +25,7 @@ import {getRandomEmployee} from '/imports/api/organizations/functions';
 import {Logger} from '/imports/api/logger/index';
 
 // constants
-const LOG_LEVEL = {
+export const LOG_LEVEL = {
   INFO: "info",
   SUCCESS: "success",
   WARNING: "warning",

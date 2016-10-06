@@ -5,24 +5,12 @@ import {later} from 'meteor/mrt:later';
 // Job Collection
 import {AdminJobs} from '/imports/api/jobs/collections';
 
-// Job
-import {Jobs} from '/imports/api/jobs/jobs';
-
-// functions
-// import {sendFeedbackEmailToLeader} from '/imports/api/jobs/functions';
-
-// constants
-import * as ERROR_CODE from '/imports/utils/error_code';
-
-// Job Collection
-// import {AdminJobs} from '/imports/api/jobs/collections';
-
 // collections
 import {Organizations} from '/imports/api/organizations/index';
 import {Employees} from '/imports/api/employees/index';
 
 // Job
-// import {Jobs} from '/imports/api/jobs/jobs';
+import {Jobs} from '/imports/api/jobs/jobs';
 
 // methods
 import * as EmailActions from '/imports/api/email/methods';
@@ -30,6 +18,9 @@ import * as EmailActions from '/imports/api/email/methods';
 // functions
 import {getRandomEmployee} from '/imports/api/organizations/functions';
 
+// constants
+import * as ERROR_CODE from '/imports/utils/error_code';
+import {LOG_LEVEL} from '/imports/utils/defaults';
 
 /**
  * Function send email to leader to receive feedback for an employee who will be choose randomly
@@ -47,7 +38,8 @@ const sendFeedbackEmailToLeader = function(job, cb) {
     jobMessage = ""
 
   if(_.isEmpty(activeOrgList)) {
-    job.log({name, message: "No active organization"});
+      jobMessage = `No active organization`;
+    job.log(jobMessage, {level: LOG_LEVEL.INFO});
     job.done();
   } else {
     activeOrgList.map(org => {
@@ -164,7 +156,6 @@ export const editAdminJob = new ValidatedMethod({
         message = ""
       ;
 
-      console.log(schedule)
       // get current job
       jobs = AdminJobs.find({type, status: {$in: AdminJobs.jobStatusCancellable}}, {fields: {_id: true, status: true}}).fetch();
       if(_.isEmpty(jobs)) {

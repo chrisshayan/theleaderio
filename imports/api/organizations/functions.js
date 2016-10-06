@@ -35,6 +35,13 @@ export const getRandomEmployee = ({params}) => {
     organization = Organizations.findOne({_id: organizationId});
     employees = organization.employees;
     pickedEmployees = organization.pickedEmployees;
+
+    if(typeof pickedEmployees === 'undefined') {
+      Organizations.update({_id: organizationId}, {$set: {pickedEmployees: []}});
+      organization = Organizations.findOne({_id: organizationId});
+      employees = organization.employees;
+      pickedEmployees = organization.pickedEmployees;
+    }
     if (employees.length === pickedEmployees.length) {
       Organizations.update({_id: organizationId}, {$set: {pickedEmployees: []}});
     }
