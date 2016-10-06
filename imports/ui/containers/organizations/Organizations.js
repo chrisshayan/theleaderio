@@ -15,6 +15,7 @@ import ProfilePhoto from '/imports/ui/components/ProfilePhoto';
 // Views
 import NoOrganization from './NoOrganization';
 import Box from '/imports/ui/components/Box';
+import Spinner from '/imports/ui/common/Spinner';
 
 function getShortDescription(str) {
   if (!str) return '';
@@ -57,12 +58,12 @@ class Organizations extends Component {
   }
 
   render() {
-    const
-      {isLoading, organizations, hasMore} = this.props
-      ;
+    const {loaded, isLoading, organizations, hasMore} = this.props;
+
     return (
       <div className="animated fadeInRight">
-        {!organizations.length && (
+        {isLoading && !loaded && (<Spinner />)}
+        {!isLoading && !organizations.length && (
           <NoOrganization />
         )}
         {/* Organization list */}
@@ -132,6 +133,7 @@ const mapMeteorToProps = params => {
 
   return {
     isLoading,
+    loaded: page > 1 || !isLoading,
     organizations,
     total,
     hasMore: (total > limit),

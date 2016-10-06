@@ -32,7 +32,7 @@ export const STATUS = {
   INACTIVE: "INACTIVE"
 }
 
-export const MEETINGS_UI_INFO = [{
+export const METRICS_UI_INFO = [{
     key: METRICS.PURPOSE,
     name: 'Purpose',
     shortName: 'Purpose',

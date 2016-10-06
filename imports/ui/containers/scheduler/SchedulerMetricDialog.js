@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { SkyLightStateless } from 'react-skylight';
-import { MEETINGS_UI_INFO } from '/imports/api/scheduler';
+import { METRICS_UI_INFO } from '/imports/api/scheduler';
 
 import * as Notifications from '/imports/api/notifications/methods';
 
@@ -49,7 +49,7 @@ class SchedulerMetricDialog extends Component {
         }
       } >
       <div className="row">
-          {MEETINGS_UI_INFO.map((m, key) => (
+          {METRICS_UI_INFO.map((m, key) => (
             <div key={key} className="col-lg-4 col-md-6 col-sm-12 col-xs-12" style={{marginBottom: 20}} onClick={() => !this.isMetricDisabled(m) ? this._onAddMetric(m) : null}>  
               <div className={this.isMetricDisabled(m) ? 'scheduler-metric-dialog__item disabled' : 'scheduler-metric-dialog__item enable'}>
                 <div className="row vertical-align">
