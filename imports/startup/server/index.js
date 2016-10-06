@@ -32,8 +32,8 @@ Meteor.startup(function() {
     logIfLatest: true,
     collectionName: "migrations"
   });
-  if(Meteor.settings.migration) {
-    Migrations.migrateTo(Meteor.settings.migration);
+  if(Meteor.settings['migrationVersion']) {
+    Migrations.migrateTo(Meteor.settings.migrationVersion);
   }
 
   // jobs
