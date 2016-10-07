@@ -3,6 +3,7 @@ import emailTemplateBuilder from 'email-template-builder';
 import {words as capitalize} from 'capitalize';
 
 // collections
+import {Accounts} from 'meteor/accounts-base';
 import {SendingPlans} from '/imports/api/sending_plans/index';
 import {Profiles} from '/imports/api/profiles/index';
 import {Organizations} from '/imports/api/organizations/index';
@@ -351,4 +352,59 @@ export const getEmployeeEmailOptions = ({template, data}) => {
   result.html = buildHtml({template, data: mailData});
 
   return result;
+}
+
+/**
+ * Function verify the sender email
+ * @param {Object} params {type, email, id}
+ * @return {Object} {isLeader, isEmployee, message} if email match with the email of the id (id could be leader or employee)
+ */
+export const verifySenderEmail = ({params}) => {
+  const
+    {type, email, id} = params
+  ;
+
+  switch(type) {
+    case "leader": {
+      const leader = Accounts.users.findOne({_id: id});
+      if(!_.isEmpty(leader)) {
+        if(email === leader.emails[0].address) {
+          return {isLeader: true};
+        } else {
+          return {
+            isLeader: false,
+            message: `sender ${email} doesn't match the leader ${id}`
+          };
+        }
+      } else {
+        return {
+          isLeader: false,
+          message: `leader ${id} doesn't exists.`
+        };
+      }
+      break;
+    }
+    case "employee": {
+      const employee = Employees.findOne({_id: id});
+      if(!_.isEmpty(employee)) {
+        if(email === employee.email) {
+          return {isEmployee: true};
+        } else {
+          return {
+            isEmployee: false,
+            message: `sender ${email} doesn't match the employee ${id}`
+          };
+        }
+      } else {
+        return {
+          isEmployee: false,
+          message: `employee ${id} doesn't exists.`
+        }
+      }
+      break;
+    }
+    default: {
+      return {};
+    }
+  }
 }

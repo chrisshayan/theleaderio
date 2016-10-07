@@ -14,6 +14,7 @@ import {getRecipientInfo, removeWebGmailClientContent} from '/imports/api/email/
 import {scoringLeader} from '/imports/api/metrics/functions';
 import {feedbackLeader} from '/imports/api/feedbacks/functions';
 import {timestampToDate} from '/imports/utils/index';
+import {verifySenderEmail} from '/imports/api/email/functions';
 
 // logger
 import {Logger} from '/imports/api/logger/index';
@@ -121,8 +122,10 @@ Api.addRoute('employee/:action', {authRequired: false}, {
         ;
       let
         type = "",
-        feedback = ""
+        feedback = "",
+        verifySender = {}
         ;
+
 
       if (!_.isEmpty(recipientInfo)) {
         if (recipientInfo.message === 'undefined') {
@@ -137,45 +140,57 @@ Api.addRoute('employee/:action', {authRequired: false}, {
             case "feedback": {
               type = "LEADER_TO_EMPLOYEE";
               feedback = removeWebGmailClientContent(content)[0];
+              verifySender = verifySenderEmail({params: {
+                type: "leader",
+                email: sender,
+                id: leaderId
+              }});
 
-              const feedbackId = Feedbacks.insert({employeeId, organizationId, leaderId, type, feedback, date});
-              if (!_.isEmpty(feedbackId)) {
-                // console.log(`will send feedback ${feedbackId} to employee: ${employeeId}`);
-                const
-                  template = 'employee',
-                  data = {
-                    type: "inform_feedback",
-                    employeeId,
-                    leaderId,
-                    organizationId,
-                    feedback
-                  };
-                EmailActions.send.call({template, data}, (error) => {
-                  if (_.isEmpty(error)) {
-                    Logger.info({
-                      name, message: {
-                        detail: `Send email to employee ${employeeId} 
+              if(!_.isEmpty(verifySender)) {
+                if(verifySender.isLeader) {
+                  const feedbackId = Feedbacks.insert({employeeId, organizationId, leaderId, type, feedback, date});
+                  if (!_.isEmpty(feedbackId)) {
+                    const
+                      template = 'employee',
+                      data = {
+                        type: "inform_feedback",
+                        employeeId,
+                        leaderId,
+                        organizationId,
+                        feedback
+                      };
+                    EmailActions.send.call({template, data}, (error) => {
+                      if (_.isEmpty(error)) {
+                        Logger.info({
+                          name, message: {
+                            detail: `Send email to employee ${employeeId} 
                               about feedback of leader ${leaderId} - success`
+                          }
+                        });
+                      } else {
+                        Logger.error({
+                          name, message: {
+                            detail: `Send email to employee ${employeeId} 
+                              about feedback of leader ${leaderId} failed`
+                          }
+                        });
                       }
                     });
                   } else {
                     Logger.error({
                       name, message: {
-                        detail: `Send email to employee ${employeeId} 
-                              about feedback of leader ${leaderId} failed`
+                        apiName, detail: `Insert feedback for employee: ${employeeId} failed 
+                                with content: ${feedback}`
                       }
                     });
                   }
-                });
-              } else {
-                Logger.error({
-                  name, message: {
-                    apiName, detail: `Insert feedback for employee: ${employeeId} failed 
-                                with content: ${feedback}`
-                  }
-                });
+                } else {
+                  Logger.error({name, message: {apiName, detail: verifySender.message}});
+                  this.response.writeHead(404, {'Content-Type': 'text/plain'});
+                  this.response.write(verifySender.message);
+                }
               }
-
+              break;
             }
             default: {
               Logger.warn({name: "api", message: {apiName: "feedback", detail: `Unknown action`}});
