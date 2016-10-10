@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
-import {setPageHeading, resetPageHeading} from '/imports/store/modules/pageHeading';
 import {Feedbacks} from '/imports/api/feedbacks';
 import Spinner from '/imports/ui/common/Spinner';
 import Indicator from '/imports/ui/common/LoadingIndicator';
@@ -8,11 +7,11 @@ import NoFeedback from './NoFeedback';
 import FeedbackList from './FeedbackList';
 
 
-class Feedback extends Component {
+class FeedbackToEmployees extends Component {
   onLoadMore = e => {
     e.preventDefault();
-    const currentPage = Session.get('FEEDBACK_PAGE');
-    Session.set('FEEDBACK_PAGE', currentPage + 1);
+    const currentPage = Session.get('FEEDBACK_TO_EMPLOYEES_PAGE');
+    Session.set('FEEDBACK_TO_EMPLOYEES_PAGE', currentPage + 1);
   }
 
   render() {
@@ -40,7 +39,7 @@ class Feedback extends Component {
 }
 
 const withMeteor = () => {
-  let page = parseInt(Session.get('FEEDBACK_PAGE'));
+  let page = parseInt(Session.get('FEEDBACK_TO_EMPLOYEES_PAGE'));
   if(_.isNaN(page)) page = 1;
   let sub = Meteor.subscribe('feedbacks', page);
   const limit = page * 10;
@@ -49,8 +48,8 @@ const withMeteor = () => {
     limit: limit
   };
 
-  let cursor = Feedbacks.find({type: {$not: /LEADER_TO_EMPLOYEE/}}, option);
-  let total = Feedbacks.find().count();
+  let cursor = Feedbacks.find({type: "LEADER_TO_EMPLOYEE"}, option);
+  let total = Feedbacks.find({type: "LEADER_TO_EMPLOYEE"}).count();
   return {
     ready: sub.ready(),
     items: cursor.fetch(),
@@ -59,27 +58,4 @@ const withMeteor = () => {
   };
 }
 
-const FeedbackContainer = createContainer(withMeteor, Feedback);
-
-export default class Container extends Component {
-  constructor(props) {
-    super(props);
-    setPageHeading({
-      title: 'Feedback',
-      breadcrumb: [{
-        label: 'Feedback',
-        active: true
-      }]
-    });
-
-    Session.setDefault('FEEDBACK_PAGE', 1);
-  }
-
-  render() {
-    return (
-      <div>
-        <FeedbackContainer />
-      </div>
-    );
-  }
-}
+export default FeedbackToEmployeesContainer = createContainer(withMeteor, FeedbackToEmployees);

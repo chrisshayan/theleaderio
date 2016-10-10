@@ -14,7 +14,6 @@ import ConfirmEmail from '/imports/ui/components/ConfirmEmail';
 import MainLayout from '/imports/ui/layouts/MainLayout';
 import BlankLayout from '/imports/ui/layouts/BlankLayout';
 
-// Admin page
 import ManageIndustries from '/imports/ui/containers/admin/ManageIndustries';
 import ManageJobs from '/imports/ui/containers/admin/ManageJobs';
 
@@ -38,7 +37,7 @@ import Organizations from '/imports/ui/containers/organizations/Organizations';
 import CreateOrganization from '/imports/ui/containers/organizations/CreateOrganization';
 import UpdateOrganization from '/imports/ui/containers/organizations/UpdateOrganization';
 
-import Feedback from '/imports/ui/containers/feedback';
+import Feedback from '/imports/ui/containers/feedback/Feedback';
 
 // methods
 import * as Notifications from '/imports/api/notifications/methods';
