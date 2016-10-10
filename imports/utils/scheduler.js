@@ -10,9 +10,9 @@ const intervalDay = {
 const getQuarter = () => {
   const now = new moment();
   const q1 = now.clone(),
-        q2 = now.clone(),
-        q3 = now.clone(),
-        q4 = now.clone();
+    q2 = now.clone(),
+    q3 = now.clone(),
+    q4 = now.clone();
 
   q1.date(1).month(0);
   q2.date(1).month(3);
@@ -28,12 +28,12 @@ const getQuarter = () => {
 
 export const getScheduleAvailable = (
   start, end, interval = 'EVERY_WEEK', result = []
-  ) => {
+) => {
   let startTime = new moment(start);
   let endTime = new moment(end);
   let nextTime = startTime.clone();
   nextTime.add(intervalDay[interval], 'day');
-  if(nextTime.valueOf() <= endTime.valueOf()) {
+  if (nextTime.valueOf() <= endTime.valueOf()) {
     result.push(startTime.toDate());
     return getScheduleAvailable(nextTime.toDate(), end, interval, result);
   }
@@ -47,11 +47,18 @@ export const generateSendingPlan = (quarter, interval) => {
   let end = start.clone();
   end.add(3, 'month');
 
-  if(now.isAfter(end)) {
+  if (now.isAfter(end)) {
     return [];
-  } else if(now.isBetween(start, end)) {
+  } else if (now.isBetween(start, end)) {
     start = now.clone();
-    start.add(1, 'day');
+    if (start.day() == 5) {
+      start.add(3, 'days');
+    } else if (start.day() == 6) {
+      start.add(2, 'days');
+    } else {
+      // start is sunday
+      start.add(1, 'day');
+    }
   }
   return getScheduleAvailable(start.toDate(), end.toDate(), interval);
 }
@@ -64,9 +71,10 @@ export const validate = (quarter, numOfMetric, interval) => {
   const end = start.clone();
   end.add(3, 'month');
 
-  if(now.isBefore(start)) {
+  if (now.isBefore(start)) {
     return numOfMetric <= 3;
-  } if(now.isBetween(start, end)) {
+  }
+  if (now.isBetween(start, end)) {
     const numOfSending = getScheduleAvailable(now.toDate(), end.toDate(), interval);
     return numOfSending.length >= numOfMetric;
   } else {
