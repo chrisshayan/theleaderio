@@ -32,3 +32,5 @@ import '/imports/api/feedbacks/register.server';
 import '/imports/api/measures/register.server';
 // migration
 import '/imports/api/migration/register.server';
+// user messages
+import '/imports/api/user_messages/register.server';

@@ -4,6 +4,9 @@ import React, {Component} from 'react';
 // constants
 import {DEFAULT_PROFILE_PHOTO} from '/imports/utils/defaults';
 
+// components
+import MessageBox from '/imports/ui/components/MessageBox';
+
 class TopNav extends Component {
 
   _onClickMinimalize() {
@@ -13,7 +16,7 @@ class TopNav extends Component {
   render() {
     const {userProfile} = this.props;
     let profilePhoto = DEFAULT_PROFILE_PHOTO;
-    if(!_.isEmpty(userProfile)) {
+    if (!_.isEmpty(userProfile)) {
       profilePhoto = userProfile.getPicture();
     } else {
       profilePhoto = this.props.imageUrl;
@@ -32,8 +35,9 @@ class TopNav extends Component {
         </div>
         <div className="col-xs-6 pull-right">
           <div className="account-info">
-            <ul className="nav navbar-top-links navbar-right">
-              { (Meteor.loggingIn() || currentUser) ? (
+            { (Meteor.loggingIn() || currentUser) ? (
+              <ul className="nav navbar-top-links navbar-right">
+                <MessageBox />
                 <li id="fat-menu" className="dropdown" style={{marginRight: 0}}>
                   <a id="user-info" href="#" className="dropdown-toggle" data-toggle="dropdown" role="button"
                      aria-haspopup="true" aria-expanded="false">
@@ -56,14 +60,16 @@ class TopNav extends Component {
                     <li><a href={FlowRouter.url('app.logout')}>Sign out</a></li>
                   </ul>
                 </li>
-              ) : (
+              </ul>
+            ) : (
+              <ul className="nav navbar-top-links navbar-right">
                 <li>
                   <a href={FlowRouter.url('SignInPage', {action: 'account'})}>
                     <i className="fa fa-sign-in"></i> Sign in
                   </a>
                 </li>
-              )}
-            </ul>
+              </ul>
+            )}
           </div>
         </div>
       </div>

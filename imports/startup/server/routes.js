@@ -3,11 +3,13 @@ import {Mongo} from 'meteor/mongo';
 
 // collections
 import {Feedbacks} from '/imports/api/feedbacks/index';
+import {Employees} from '/imports/api/employees/index';
 
 // methods
 import {checkExists as checkExistsScore} from '/imports/api/metrics/methods';
 import {checkExists as checkExistsFeedback} from '/imports/api/feedbacks/methods';
 import * as EmailActions from '/imports/api/email/methods';
+import {add as addMessages} from '/imports/api/user_messages/methods';
 
 // functions
 import {getRecipientInfo, removeWebGmailClientContent} from '/imports/api/email/functions';
@@ -18,6 +20,9 @@ import {verifySenderEmail} from '/imports/api/email/functions';
 
 // logger
 import {Logger} from '/imports/api/logger/index';
+
+// constants
+import {TYPE, STATUS} from '/imports/api/user_messages/index';
 
 /**
  * @summary Routes for handling inbound emails
@@ -123,7 +128,8 @@ Api.addRoute('employee/:action', {authRequired: false}, {
       let
         type = "",
         feedback = "",
-        verifySender = {}
+        verifySender = {},
+        employee = {}
         ;
 
 
@@ -167,6 +173,19 @@ Api.addRoute('employee/:action', {authRequired: false}, {
                               about feedback of leader ${leaderId} - success`
                           }
                         });
+                        employee = Employees.findOne({_id: employeeId});
+                        if(!_.isEmpty(employee)) {
+                          addMessages.call({
+                            userId: leaderId,
+                            type: TYPE.FB_TO_EMPLOYEE,
+                            message: {
+                              name: `Feedback to ${employee.lastName} ${employee.lastName}`,
+                              detail: "had been sent."
+                            },
+                            status: STATUS.UNREAD,
+                            date: date
+                          });
+                        }
                       } else {
                         Logger.error({
                           name, message: {
@@ -188,6 +207,7 @@ Api.addRoute('employee/:action', {authRequired: false}, {
                   Logger.error({name, message: {apiName, detail: verifySender.message}});
                   this.response.writeHead(404, {'Content-Type': 'text/plain'});
                   this.response.write(verifySender.message);
+                  this.done();
                 }
               }
               break;
@@ -196,6 +216,7 @@ Api.addRoute('employee/:action', {authRequired: false}, {
               Logger.warn({name: "api", message: {apiName: "feedback", detail: `Unknown action`}});
               this.response.writeHead(404, {'Content-Type': 'text/plain'});
               this.response.write("Unknown action");
+              this.done();
             }
           }
         }

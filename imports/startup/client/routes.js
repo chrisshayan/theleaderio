@@ -39,6 +39,8 @@ import UpdateOrganization from '/imports/ui/containers/organizations/UpdateOrgan
 
 import Feedback from '/imports/ui/containers/feedback/Feedback';
 
+import Messages from '/imports/ui/containers/messages/Messages';
+
 // methods
 import * as Notifications from '/imports/api/notifications/methods';
 
@@ -449,5 +451,19 @@ appRoutes.route('/feedback', {
         return <Feedback />
       }
     })
+  }
+});
+
+/**
+ * Route for messages
+ */
+appRoutes.route('/messages', {
+  name: "app.messages",
+  action() {
+    mount(MainLayout, {
+      content() {
+        return <Messages />;
+      }
+    });
   }
 });
