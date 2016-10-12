@@ -54,6 +54,7 @@ export default class NavBox extends Component {
                     <strong>{media.message.name}</strong>
                     <br/>
                     {media.message.detail}
+                    <br/>
                     <small className="text-muted">{"on "}{moment(media.date).format('MMMM Do, YYYY')}</small>
                   </div>
                 </div>

@@ -179,7 +179,7 @@ Api.addRoute('employee/:action', {authRequired: false}, {
                             userId: leaderId,
                             type: TYPE.FB_TO_EMPLOYEE,
                             message: {
-                              name: `Feedback to ${employee.lastName} ${employee.lastName}`,
+                              name: `Feedback to ${employee.firstName} ${employee.lastName}`,
                               detail: "had been sent."
                             },
                             status: STATUS.UNREAD,
