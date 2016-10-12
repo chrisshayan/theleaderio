@@ -4,15 +4,22 @@ import {createContainer} from 'meteor/react-meteor-data';
 import {Roles} from 'meteor/alanning:roles';
 import {Session} from 'meteor/session';
 
+//cache
+import {MiniMongo} from '/imports/api/cache/index';
+
 // components
 import NoticeForm from '/imports/ui/common/NoticeForm';
 import Spinner from '/imports/ui/common/Spinner';
 import Chosen from '/imports/ui/components/Chosen';
 
+// collections
+import {Administration} from '/imports/api/admin/index';
+
 // methods
 import * as Notifications from '/imports/api/notifications/methods';
 import {verifyAdminRole} from '/imports/api/users/methods';
 import {editAdminJob} from '/imports/api/jobs/methods';
+import {add as addJobSchedule, edit as editJobSchedule} from '/imports/api/admin/methods';
 
 // functions
 import {getCronExpression} from '/imports/utils/index';
@@ -21,7 +28,7 @@ import {getCronExpression} from '/imports/utils/index';
 import {JOB_FREQUENCY, DAY_OF_WEEK, DAY_OF_MONTH, HOUR_OF_DAY, MINUTE_OF_AN_HOUR} from '/imports/utils/defaults';
 import * as ERROR_CODE from '/imports/utils/error_code';
 
-export default class ManageJobs extends Component {
+class ManageJobs extends Component {
   constructor() {
     super();
 
@@ -40,6 +47,9 @@ export default class ManageJobs extends Component {
   }
 
   componentWillMount() {
+    // const
+    //   {sendFeedbackEmailToLeaderJob} = this.props;
+
     this.setState({
       ready: 0
     });
@@ -47,6 +57,21 @@ export default class ManageJobs extends Component {
       verifyAdminRole.call({userId: Meteor.userId()}, (error, result) => {
         if (!error) {
           if (result.isAdmin) {
+            // get current value of job sendFeedbackEmailToLeader
+            // if(!_.isEmpty(sendFeedbackEmailToLeaderJob)) {
+            //   this.setState({
+            //     ready: 1,
+            //     error: "",
+            //     sendFeedbackForEmployee: {
+            //       frequency: sendFeedbackEmailToLeaderJob.data.frequency, // index of the frequency
+            //       day: sendFeedbackEmailToLeaderJob.data.day,
+            //       hour: sendFeedbackEmailToLeaderJob.data.hour,
+            //       minute: sendFeedbackEmailToLeaderJob.data.minute,
+            //       disableDayOfWeek: sendFeedbackEmailToLeaderJob.data.disableDayOfWeek,
+            //       disableDayOfMonth: sendFeedbackEmailToLeaderJob.data.disableDayOfMonth
+            //     }
+            //   });
+            // }
             this.setState({
               ready: 1,
               error: ""
@@ -67,23 +92,58 @@ export default class ManageJobs extends Component {
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    const
+      {sendFeedbackEmailToLeaderJob} = nextProps;
+
+    // get current value of job sendFeedbackEmailToLeader
+    if(!_.isEmpty(sendFeedbackEmailToLeaderJob)) {
+      this.setState({
+        sendFeedbackForEmployee: {
+          frequency: sendFeedbackEmailToLeaderJob.data.frequency, // index of the frequency
+          day: sendFeedbackEmailToLeaderJob.data.day,
+          hour: sendFeedbackEmailToLeaderJob.data.hour,
+          minute: sendFeedbackEmailToLeaderJob.data.minute,
+          disableDayOfWeek: sendFeedbackEmailToLeaderJob.data.disableDayOfWeek,
+          disableDayOfMonth: sendFeedbackEmailToLeaderJob.data.disableDayOfMonth
+        }
+      });
+    }
+  }
+
   _sendFeedbackForEmployeeSubmit() {
     const
+      {sendFeedbackForEmployee} = this.state,
       params = {
         type: "feedback_for_employee",
-        schedule: getCronExpression({params: this.state.sendFeedbackForEmployee}),
+        schedule: getCronExpression({params: sendFeedbackForEmployee}),
         data: {}
       }
       ;
 
-    editAdminJob.call({params}, (error) => {
+    editJobSchedule.call({
+      type: "job",
+      name: "sendFeedbackEmailToLeader",
+      data: sendFeedbackForEmployee
+    }, (error, result) => {
       if(!error) {
-        const
-          closeButton = true,
-          title = 'Send performance feedback emails to leaders',
-          message = 'Edited'
-          ;
-        Notifications.success.call({closeButton, title, message});
+        editAdminJob.call({params}, (error) => {
+          if(!error) {
+            const
+              closeButton = true,
+              title = 'Send performance feedback emails to leaders',
+              message = 'Edited'
+              ;
+            Notifications.success.call({closeButton, title, message});
+          } else {
+            const
+              closeButton = true,
+              title = 'Send performance feedback emails to leaders',
+              message = `Edit failed - ${error.reason}`
+              ;
+            Notifications.error.call({closeButton, title, message});
+          }
+        });
       } else {
         const
           closeButton = true,
@@ -93,12 +153,13 @@ export default class ManageJobs extends Component {
         Notifications.error.call({closeButton, title, message});
       }
     });
+
   }
 
   render() {
     const
       {
-        admin
+        sendFeedbackEmailToLeaderJob
       } = this.props,
       {
         ready,
@@ -201,7 +262,9 @@ export default class ManageJobs extends Component {
         }
       }
       ;
-    // console.log(this.state)
+
+      console.log(sendFeedbackForEmployee)
+
     if (ready === 1) {
       return (
         <div>
@@ -221,7 +284,7 @@ export default class ManageJobs extends Component {
                     <div className="form-group">
                       <Chosen
                         options={chosenProps.frequency.options}
-                        selectedOptions={chosenProps.frequency.selectedOptions}
+                        selectedOptions={JOB_FREQUENCY[sendFeedbackForEmployee.frequency]}
                         isMultiple={chosenProps.frequency.isMultiple}
                         placeHolder={chosenProps.frequency.placeHolder}
                         onChange={chosenProps.frequency.onChange}
@@ -232,7 +295,7 @@ export default class ManageJobs extends Component {
                       <Chosen
                         disabled={sendFeedbackForEmployee.disableDayOfMonth}
                         options={chosenProps.dayOfMonth.options}
-                        selectedOptions={chosenProps.dayOfMonth.selectedOptions}
+                        selectedOptions={DAY_OF_MONTH[sendFeedbackForEmployee.day]}
                         isMultiple={chosenProps.dayOfMonth.isMultiple}
                         placeHolder={chosenProps.dayOfMonth.placeHolder}
                         onChange={chosenProps.dayOfMonth.onChange}
@@ -243,7 +306,7 @@ export default class ManageJobs extends Component {
                       <Chosen
                         disabled={sendFeedbackForEmployee.disableDayOfWeek}
                         options={chosenProps.dayOfWeek.options}
-                        selectedOptions={chosenProps.dayOfWeek.selectedOptions}
+                        selectedOptions={DAY_OF_WEEK[sendFeedbackForEmployee.day]}
                         isMultiple={chosenProps.dayOfWeek.isMultiple}
                         placeHolder={chosenProps.dayOfWeek.placeHolder}
                         onChange={chosenProps.dayOfWeek.onChange}
@@ -253,7 +316,7 @@ export default class ManageJobs extends Component {
                     <div className="form-group">
                       <Chosen
                         options={chosenProps.hour.options}
-                        selectedOptions={chosenProps.hour.selectedOptions}
+                        selectedOptions={HOUR_OF_DAY[sendFeedbackForEmployee.hour]}
                         isMultiple={chosenProps.hour.isMultiple}
                         placeHolder={chosenProps.hour.options[chosenProps.hour.options.length - 1]}
                         onChange={chosenProps.hour.onChange}
@@ -263,7 +326,7 @@ export default class ManageJobs extends Component {
                     <div className="form-group">
                       <Chosen
                         options={chosenProps.minute.options}
-                        selectedOptions={chosenProps.minute.selectedOptions}
+                        selectedOptions={MINUTE_OF_AN_HOUR[sendFeedbackForEmployee.minute]}
                         isMultiple={chosenProps.minute.isMultiple}
                         placeHolder={chosenProps.minute.options[chosenProps.minute.options.length - 1]}
                         onChange={chosenProps.minute.onChange}
@@ -296,3 +359,21 @@ export default class ManageJobs extends Component {
     }
   }
 }
+
+export default ManageJobsContainer = createContainer((params) => {
+  const
+    sub = Meteor.subscribe("administration"),
+    ready = sub.ready()
+  ;
+  let
+    // AdminJobs = Administration.find({type: "job"}).fetch(),
+    sendFeedbackEmailToLeaderJob = {}
+  ;
+
+  sendFeedbackEmailToLeaderJob = Administration.findOne({name: "sendFeedbackEmailToLeader"});
+
+  return {
+    ready,
+    sendFeedbackEmailToLeaderJob
+  };
+}, ManageJobs);

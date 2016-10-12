@@ -23,7 +23,7 @@ export default class Chosen extends Component {
     const {
       disabled=false,
       options=[],
-      selectedOptions = null,
+      selectedOptions = "",
       chosenClass='chosen-select form-control',
       isMultiple = false,
       placeHolder=' Choose one option ...',
@@ -35,7 +35,7 @@ export default class Chosen extends Component {
                 disabled={disabled}
                 data-placeholder={placeHolder}
                 className={chosenClass}
-                defaultValue={selectedOptions}
+                value={selectedOptions}
                 multiple={isMultiple}
                 onChange={this._onChange.bind(this)}
         >
