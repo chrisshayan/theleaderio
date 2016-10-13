@@ -128,20 +128,6 @@ export const getChartData = new ValidatedMethod({
     countChartData = arraySum(result.overall);
     if(countChartData === 0) {
       result = [];
-      // these data used for testing
-      // result.label = ["April", "May", "June", "July", "August", "September"];
-      // result.overall = [3.2, 4.0, 3.9, 4.9, 4.5, 4];
-      // result.purpose = [2.2, 3.0, 4.9, 3.9, 5, 3];
-      // result.mettings = [3.2, 3.0, 3.9, 4.9, 4, 4.3];
-      // result.rules = [2.7, 4.6, 3.9, 3.2, 4, 3];
-      // result.communications = [4.2, 2.0, 3.9, 4.9, 4, 4];
-      // result.leadership = [3.2, 4.0, 3.9, 4.9, 4, 4];
-      // result.workload = [3.2, 2.0, 3.9, 4.9, 2.3, 3];
-      // result.energy = [2.7, 3.3, 4.6, 3.7, 4.5, 3.6];
-      // result.stress = [3.3, 3.5, 4.2, 4.9, 5, 4];
-      // result.decision = [2.6, 3.8, 4.2, 3.4, 3.4, 3.7];
-      // result.respect = [4.2, 5.0, 3.9, 2.9, 4.5, 4];
-      // result.conflict = [2.8, 2.0, 4.9, 4.9, 4.7, 4.4];
     } else {
       // reorder the values
       for (var e in result) {

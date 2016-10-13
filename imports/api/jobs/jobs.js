@@ -42,6 +42,10 @@ function createJob(type, attributes, data) {
         job = new Job(AdminJobs, type, data);
         break;
       }
+      case "statistic_for_leader": {
+        job = new Job(AdminJobs, type, data);
+        break;
+      }
       default: {
         return `Unknown job type: ${type}`
       }

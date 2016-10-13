@@ -6,10 +6,16 @@ import {Roles} from 'meteor/alanning:roles';
 import {Industries} from '/imports/api/industries/index';
 import {Defaults} from '/imports/api/defaults/index';
 import {Accounts} from 'meteor/accounts-base';
+import {Administration} from '/imports/api/admin/index';
 
 // methods
 import * as IndustriesActions from '/imports/api/industries/methods';
 import * as DefaultsActions from '/imports/api/defaults/methods';
+import {editAdminJob} from '/imports/api/jobs/methods';
+import {add as addJobSchedule, edit as editJobSchedule} from '/imports/api/admin/methods';
+
+// functions
+import {getCronExpression} from '/imports/utils/index';
 
 // constants
 import {METRICS, QUARTER} from '/imports/api/scheduler/index';
@@ -195,9 +201,7 @@ export function createDefaults() {
             respect: `Too many people today assume leadership positions without consideration for their impact on others. The leadership vacuum in business today allows them to stay as long they manage acceptable results. Ultimately, your personal leadership legacy will not be remembered for your M.B.A., your sales numbers, or the toys you acquired. Most likely, it will be the positive, personal impact you created, one follower at a time.`,
             conflict: `Conflict resolution is a daily occurrence at work that can either propel or disrupt the momentum for a leader, a team or the entire organization. The workplace can become a toxic environment when leaders allow conflict to fester rather than confront it head-on.`
           },
-          inform_feedback: {
-
-          }
+          inform_feedback: {}
         }
       }
       ;
@@ -208,7 +212,7 @@ export function createDefaults() {
 // create role for user
 const initiateRoles = () => {
   const
-    users = Accounts.users.find({ roles: { $exists: false } }).fetch(),
+    users = Accounts.users.find({roles: {$exists: false}}).fetch(),
     adminEmails = ["jackiekhuu.work@gmail.com", "mrphu3074@gmail.com", "christopher.shayan@gmail.com"]
     ;
 
@@ -218,10 +222,83 @@ const initiateRoles = () => {
 
   adminEmails.map(adminEmail => {
     const admin = Accounts.users.findOne({emails: {$elemMatch: {address: adminEmail}}});
-    if(!_.isEmpty(admin)) {
+    if (!_.isEmpty(admin)) {
       Roles.addUsersToRoles(admin._id, ["admin"]);
     }
   });
+}
+
+// initiate for admin jobs
+const initiateAdminJobs = () => {
+  // initiate for admin jobs feedback_for_employee
+  if (Administration.find({type: "job", name: "feedback_for_employee"}).count() == 0) {
+    editJobSchedule.call({
+      type: "job",
+      name: "feedback_for_employee",
+      data: {
+        frequency: 0, // index of the frequency
+        day: 0,
+        hour: 0,
+        minute: 0,
+        disableDayOfWeek: false,
+        disableDayOfMonth: true
+      }
+    }, (error) => {
+      if (!error) {
+        editAdminJob.call({
+          params: {
+            type: "feedback_for_employee",
+            schedule: getCronExpression({
+              params: {
+                frequency: 0, // index of the frequency
+                day: 0,
+                hour: 0,
+                minute: 0,
+                disableDayOfWeek: false,
+                disableDayOfMonth: true
+              }
+            }),
+            data: {}
+          }
+        });
+      }
+    });
+  }
+
+// initiate for admin jobs statistic_for_leader
+  if (Administration.find({type: "job", name: "statistic_for_leader"}).count() == 0) {
+    editJobSchedule.call({
+      type: "job",
+      name: "statistic_for_leader",
+      data: {
+        frequency: 0, // index of the frequency
+        day: 0,
+        hour: 0,
+        minute: 0,
+        disableDayOfWeek: false,
+        disableDayOfMonth: true
+      }
+    }, (error) => {
+      if (!error) {
+        editAdminJob.call({
+          params: {
+            type: "statistic_for_leader",
+            schedule: getCronExpression({
+              params: {
+                frequency: 0, // index of the frequency
+                day: 0,
+                hour: 0,
+                minute: 0,
+                disableDayOfWeek: false,
+                disableDayOfMonth: true
+              }
+            }),
+            data: {}
+          }
+        });
+      }
+    });
+  }
 }
 
 Meteor.startup(() => {
@@ -229,6 +306,9 @@ Meteor.startup(() => {
 
   // create defaults for app
   createDefaults();
+
+  // initiate Admin Jobs
+  initiateAdminJobs();
 
   // initiateRoles();
 });

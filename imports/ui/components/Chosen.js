@@ -4,38 +4,30 @@ import React, {Component} from 'react';
 
 export default class Chosen extends Component {
 
-  // componentDidMount() {
-  //   const el = $(this.refs.selector);
-  //   el.chosen({max_selected_options: 3}).change(this._onChange.bind(this));
-  // }
-  //
-  // componentDidUpdate() {
-  //   const el = $(this.refs.selector);
-  //   el.chosen({max_selected_options: 3}).change(this._onChange.bind(this));
-  // }
-
   _onChange() {
     const selected = this.refs.selector.value;
     this.props.onChange(selected);
   }
 
   render() {
-    const {
-      disabled=false,
-      options=[],
-      selectedOptions = "",
-      chosenClass='chosen-select form-control',
-      isMultiple = false,
-      placeHolder=' Choose one option ...',
-      onChange=() => null
-    } = this.props;
+    const
+      {
+        disabled = false,
+        options = [],
+        defaultValue="",
+        chosenClass = 'chosen-select form-control',
+        isMultiple = false,
+        placeHolder = ' Choose one option ...',
+        onChange = () => null
+      } = this.props
+      ;
     return (
       <div>
         <select ref="selector"
                 disabled={disabled}
                 data-placeholder={placeHolder}
+                value={defaultValue}
                 className={chosenClass}
-                value={selectedOptions}
                 multiple={isMultiple}
                 onChange={this._onChange.bind(this)}
         >

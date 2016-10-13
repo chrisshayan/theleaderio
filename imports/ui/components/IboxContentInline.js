@@ -12,7 +12,7 @@ export default class IboxContentMetric extends Component {
             return (
               <div key={key} className={classGrid}>
                 <p className="stats-label">{capitalize(key)}</p>
-                <h5>{value}</h5>
+                <h5>{Number(value).toFixed(1)}</h5>
               </div>
             );
           })}

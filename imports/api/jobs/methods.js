@@ -80,6 +80,16 @@ const sendFeedbackEmailToLeader = function(job, cb) {
   }
 }
 
+
+/**
+ * Function send email to leader to receive feedback for an employee who will be choose randomly
+ * @param job
+ * @param cb
+ */
+const sendStatisticEmailToLeader = function(job, cb) {
+  
+}
+
 /**
  * Method create admin job with the configurable repeat (use cron parser of later.js)
  * @param type
@@ -153,14 +163,36 @@ export const editAdminJob = new ValidatedMethod({
       let
         jobs = {},
         status = false,
-        message = ""
+        message = "",
+        worker = () => null
       ;
+
+      // get worker
+      switch(type) {
+        case "feedback_for_employee": {
+          worker = sendFeedbackEmailToLeader;
+          break;
+        }
+        case "statistic_for_leader": {
+          worker = sendStatisticEmailToLeader;
+          break;
+        }
+        default: {
+
+        }
+      }
+
+      console.log(type)
+      console.log(attributes)
+      console.log(data)
+      console.log(worker)
 
       // get current job
       jobs = AdminJobs.find({type, status: {$in: AdminJobs.jobStatusCancellable}}, {fields: {_id: true, status: true}}).fetch();
       if(_.isEmpty(jobs)) {
+        console.log(`create new job ${type}`)
         message = Jobs.create(type, attributes, data);
-        AdminJobs.processJobs(type, sendFeedbackEmailToLeader);
+        AdminJobs.processJobs(type, worker);
         return {message}; // return new job id
       } else {
         jobs.map(job => {
@@ -170,9 +202,10 @@ export const editAdminJob = new ValidatedMethod({
           } else {
             status = AdminJobs.cancelJobs([job._id]);
             if(status) {
+              console.log(`cancel job, create new job`)
               // cancel job success, create new job with new attributes
               message = Jobs.create(type, attributes, data);
-              AdminJobs.processJobs(type, sendFeedbackEmailToLeader);
+              AdminJobs.processJobs(type, worker);
               return {message}; // return new job id
             } else {
               message = "failed";
