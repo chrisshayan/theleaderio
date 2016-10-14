@@ -124,6 +124,7 @@ export const getRecipientInfo = ({recipient, sender, apiName}) => {
       ;
 
       return {employeeId, organizationId, leaderId};
+      break;
     }
     default: {
       return {message: "Invalid API Name"};

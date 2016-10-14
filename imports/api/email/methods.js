@@ -109,7 +109,7 @@ export const send = new ValidatedMethod({
         }
         case 'survey': {
           const options = EmailFunctions.getSurveyEmailOptions({template, data});
-          // Email.send(options);
+          Email.send(options);
           break;
         }
         case 'survey_error': {

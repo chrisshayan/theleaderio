@@ -286,21 +286,29 @@ function startJob(type) {
     // daily jobs
     case "enqueue_surveys": {
       DailyJobs.processJobs(type, enqueueSurveys);
+      break;
     }
     case "measure_metric": {
       DailyJobs.processJobs(type, measureMetrics);
+      break;
     }
     // queue jobs
     case "send_surveys": {
       QueueJobs.processJobs(type, sendSurveys);
+      break;
     }
     // queue jobs
     case "migration": {
       QueueJobs.processJobs(type, migrateUsers);
+      break;
     }
     // admin jobs: send feedback email for employee
     case "feedback_for_employee": {
       AdminJobs.processJobs(type, sendFeedbackEmailToLeader);
+      break;
+    }
+    default: {
+
     }
   }
 }

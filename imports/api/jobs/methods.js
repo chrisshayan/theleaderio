@@ -87,7 +87,7 @@ const sendFeedbackEmailToLeader = function(job, cb) {
  * @param cb
  */
 const sendStatisticEmailToLeader = function(job, cb) {
-  
+
 }
 
 /**
