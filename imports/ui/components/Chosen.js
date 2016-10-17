@@ -4,13 +4,21 @@ import React, {Component} from 'react';
 
 export default class Chosen extends Component {
 
-  _onChange() {
-    const selected = this.refs.selector.value;
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      selected: props.defaultValue
+    };
+  }
+
+  _onChange(selected) {
     this.props.onChange(selected);
   }
 
   render() {
     const
+      {selected} = this.state,
       {
         disabled = false,
         options = [],
@@ -21,15 +29,19 @@ export default class Chosen extends Component {
         onChange = () => null
       } = this.props
       ;
+
     return (
       <div>
         <select ref="selector"
                 disabled={disabled}
                 data-placeholder={placeHolder}
-                value={defaultValue}
+                value={selected}
                 className={chosenClass}
                 multiple={isMultiple}
-                onChange={this._onChange.bind(this)}
+                onChange={() => {
+                  this.setState({selected: this.refs.selector.value});
+                  this._onChange(this.refs.selector.value);
+                }}
         >
           {options.map((value, key) => (
             <option

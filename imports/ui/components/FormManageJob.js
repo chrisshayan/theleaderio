@@ -152,10 +152,6 @@ export default class FormManageJob extends Component {
       }
       ;
 
-    // console.log(ready)
-    // console.log(type)
-    // console.log(currentSchedule)
-
     if (ready) {
       return (
         <form action="" className="form-inline"
@@ -167,7 +163,7 @@ export default class FormManageJob extends Component {
           <div className="form-group">
             <Chosen
               options={frequency.options}
-              defaultValue={!_.isEmpty(schedule) ? JOB_FREQUENCY[schedule.frequency] : ""}
+              defaultValue={!_.isEmpty(schedule) ? JOB_FREQUENCY[schedule.frequency] : null}
               isMultiple={frequency.isMultiple}
               placeHolder={frequency.placeHolder}
               onChange={frequency.onChange}
