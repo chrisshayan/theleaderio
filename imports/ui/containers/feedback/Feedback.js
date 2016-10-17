@@ -26,7 +26,7 @@ export default class Feedback extends Component {
     this.state = {
       ready: false,
       error: "",
-      currentTab: ""
+      currentTab: FlowRouter.getQueryParam('t') || ""
     };
   }
 

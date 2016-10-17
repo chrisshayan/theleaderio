@@ -8,7 +8,8 @@ import {DEFAULT_METRICS} from '/imports/utils/defaults';
 
 export const Feedbacks = new FeedbacksCollections('feedbacks');
 
-Feedbacks.publicFields = {};
+// public fields
+Feedbacks.publicFields = {leaderId: true, feedback: true, date: true, type: true};
 
 Feedbacks.schema = new SimpleSchema({
   planId: {
