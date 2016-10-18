@@ -65,6 +65,7 @@ export const edit = new ValidatedMethod({
     }
   }).validator(),
   run({_id, email, firstName, lastName, imageUrl}) {
+    const updatedAt = new Date();
     var selector = { _id };
     var modifier = {};
     if (email != undefined) {
@@ -79,6 +80,7 @@ export const edit = new ValidatedMethod({
     if (imageUrl != undefined) {
       modifier['imageUrl'] = imageUrl;
     }
+    modifier["updatedAt"] = updatedAt;
     var employee = Employees.findOne(selector);
     if(!employee) {
       throw new Meteor.Error(404, 'Employee not found');
@@ -102,10 +104,11 @@ export const setStatus = new ValidatedMethod({
   }).validator(),
   run({ _id, status }) {
     var employee = Employees.findOne({ _id });
+    const updatedAt = new Date();
     if(!employee) {
       throw new Meteor.Error(404, 'Employee not found');
     } else {
-      return Employees.update({ _id }, { $set: { status }});
+      return Employees.update({ _id }, { $set: { status, updatedAt }});
     }
   }
 });

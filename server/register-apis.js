@@ -1,5 +1,7 @@
 // defaults
 import '/imports/api/defaults/register.server';
+// logs
+import '/imports/api/logs/register.server';
 // industries
 import '/imports/api/industries/register.server';
 // profiles

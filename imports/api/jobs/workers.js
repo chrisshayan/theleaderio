@@ -21,6 +21,7 @@ import {add as addMessages} from '/imports/api/user_messages/methods';
 // functions
 import {migrate} from '/imports/api/migration/functions';
 import {getRandomEmployee} from '/imports/api/organizations/functions';
+import {add as addLogs} from '/imports/api/logs/functions';
 
 // logger
 import {Logger} from '/imports/api/logger/index';
@@ -42,11 +43,24 @@ import {STATUS, TYPE} from '/imports/api/user_messages/index';
  */
 const enqueueSurveys = function (job, cb) {
   try {
-    let jobMessage = "";
     const
       {type} = job.data,
       date = new Date(),
       sendingPlansList = getSendingPlans.call({date})
+      ;
+    let
+      jobMessage = "",
+      totalQueuedEmailsToEmployeesOfOrg = 0,
+      logName = "sending_plan",
+      logContent = {
+        planId: "",
+        noOfActiveOrgs: 0,
+        details: []
+      },
+      logDetail = {
+        orgId: "",
+        noOfQueuedEmailsToEmployees: 0
+      }
       ;
 
     if (_.isEmpty(sendingPlansList)) {
@@ -54,17 +68,20 @@ const enqueueSurveys = function (job, cb) {
       job.log(jobMessage, {level: LOG_LEVEL.INFO});
       job.done();
     } else {
-      sendingPlansList.map(sendingPlans => {
+      sendingPlansList.map(sendingPlan => {
         const
-          {metric, leaderId, sendDate, timezone} = sendingPlans,
-          planId = sendingPlans._id,
+          {metric, leaderId, sendDate, timezone} = sendingPlan,
+          planId = sendingPlan._id,
           selector = {leaderId, isPresent: true, status: STATUS_ACTIVE},
           organizationList = Organizations.find(selector).fetch()
           ;
+
+        logContent.planId = planId;
         if (_.isEmpty(organizationList)) {
+          logContent.noOfActiveOrgs = 0;
           jobMessage = `Organizations of leader ${leaderId} not found`;
           job.log(jobMessage, {level: LOG_LEVEL.WARNING});
-          setSendingPlanStatus.call({_id: planId, status: "FAILED"});
+          setSendingPlanStatus.call({_id: planId, status: "FAILED", reason: jobMessage});
           addMessages.call({
             userId: leaderId,
             type: TYPE.SURVEY,
@@ -76,9 +93,13 @@ const enqueueSurveys = function (job, cb) {
             date: date
           });
         } else {
+          logContent.noOfActiveOrgs = 0;
           organizationList.map(org => {
             const employeeList = org.employees;
-            let noOfEmployeesQueued = 0;
+
+            logContent.noOfActiveOrgs += 1;
+            logDetail.orgId = org._id;
+            logDetail.noOfQueuedEmailsToEmployees = 0;
             if (_.isEmpty(employeeList)) {
               jobMessage = `Organization ${org.name} has no employee`;
               job.log(jobMessage, {level: LOG_LEVEL.WARNING});
@@ -114,7 +135,7 @@ const enqueueSurveys = function (job, cb) {
                   };
                   enqueue.call({type: "send_surveys", attributes, data: queueData}, (error) => {
                     if (_.isEmpty(error)) {
-                      noOfEmployeesQueued += 1;
+                      logDetail.noOfQueuedEmailsToEmployees += 1;
                       setSendingPlanStatus.call({_id: planId, status: "QUEUED"});
                       jobMessage = `Enqueue mail ${metric} to ${employee.email} on ${date}`;
                       job.log(jobMessage, {level: LOG_LEVEL.INFO});
@@ -125,20 +146,39 @@ const enqueueSurveys = function (job, cb) {
                   });
                 }
               });
+              // add message to inform the leader about the status of plan
               addMessages.call({
                 userId: leaderId,
                 type: TYPE.SURVEY,
                 message: {
                   name: `${metric} Management Survey in ${org.name} `,
-                  detail: `sent to ${noOfEmployeesQueued} employees.`
+                  detail: `sent to ${logDetail.noOfQueuedEmailsToEmployees} employees.`
                 },
                 status: STATUS.UNREAD,
                 date: date
               });
             }
-
+            logContent.details.push(logDetail);
           });
         }
+
+        // update status of plan
+        if(logContent.noOfActiveOrgs === 0) {
+          setSendingPlanStatus.call({_id: logContent.planId, status: "FAILED", reason: `No active organization.`});
+        } else {
+          totalQueuedEmailsToEmployeesOfOrg = 0;
+          logContent.details.map(org => {
+            totalQueuedEmailsToEmployeesOfOrg += org.noOfQueuedEmailsToEmployees;
+          });
+          if(totalQueuedEmailsToEmployeesOfOrg === 0) {
+            setSendingPlanStatus.call({_id: logContent.planId, status: "FAILED", reason: `No active employee in any active organization.`});
+          } else {
+            setSendingPlanStatus.call({_id: logContent.planId, status: "QUEUED", reason: `Total Org: ${logContent.noOfActiveOrgs}, Total Employees: ${totalQueuedEmailsToEmployeesOfOrg}`});
+          }
+        }
+
+        // add log for a plan into log collection
+        addLogs({params: {name: logName, content: logContent}});
       });
       job.done();
     }
@@ -174,11 +214,8 @@ const sendSurveys = function (job, cb) {
       };
       EmailActions.send.call({template, data}, (error) => {
         if (_.isEmpty(error)) {
-          setSendingPlanStatus.call({_id: planId, status: "SENT"});
           job.done();
         } else {
-          console.log(error)
-          setSendingPlanStatus.call({_id: planId, status: "FAILED"});
           jobMessage = error.reason;
           job.log(jobMessage, {level: LOG_LEVEL.WARNING});
           job.done();

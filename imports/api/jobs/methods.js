@@ -182,15 +182,10 @@ export const editAdminJob = new ValidatedMethod({
         }
       }
 
-      console.log(type)
-      console.log(attributes)
-      console.log(data)
-      console.log(worker)
-
       // get current job
       jobs = AdminJobs.find({type, status: {$in: AdminJobs.jobStatusCancellable}}, {fields: {_id: true, status: true}}).fetch();
       if(_.isEmpty(jobs)) {
-        console.log(`create new job ${type}`)
+        // console.log(`create new job ${type}`)
         message = Jobs.create(type, attributes, data);
         AdminJobs.processJobs(type, worker);
         return {message}; // return new job id
@@ -202,7 +197,7 @@ export const editAdminJob = new ValidatedMethod({
           } else {
             status = AdminJobs.cancelJobs([job._id]);
             if(status) {
-              console.log(`cancel job, create new job`)
+              // console.log(`cancel job, create new job`)
               // cancel job success, create new job with new attributes
               message = Jobs.create(type, attributes, data);
               AdminJobs.processJobs(type, worker);

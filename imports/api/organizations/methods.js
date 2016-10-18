@@ -124,6 +124,7 @@ export const update = new ValidatedMethod({
     }
 
     if (!this.isSimulation) {
+      const updatedAt = new Date();
       var selector = { _id: _id };
       var modifier = {
         $set: {
@@ -133,7 +134,8 @@ export const update = new ValidatedMethod({
           startTime,
           endTime,
           isPresent,
-          imageUrl
+          imageUrl,
+          updatedAt
         }
       };
 
@@ -245,6 +247,7 @@ export const addEmployee = new ValidatedMethod({
   },
   run({ organizationId, firstName, lastName, email }) {
     if (!this.isSimulation) {
+      const updatedAt = new Date();
       let leaderId = Meteor.userId();
       let employeeId;
 
@@ -257,6 +260,7 @@ export const addEmployee = new ValidatedMethod({
           reason: 'This employee already exists'
         }]);
       } else {
+        Organizations.update({_id: org._id}, {$set: {updatedAt}});
         return Employees.insert({ leaderId, organizationId, firstName, lastName, email });
       }
     }
@@ -296,11 +300,13 @@ export const importEmployees = new ValidatedMethod({
   },
   run({ organizationId, employees }) {
     if (!this.isSimulation) {
+      const updatedAt = new Date();
       let leaderId = Meteor.userId();
       _.each(employees, e => {
         const { firstName, lastName, email } = e;
         const employee = Employees.findOne({ email, organizationId, leaderId });
         if (!employee) {
+          Organizations.update({_id: organizationId}, {$set: {updatedAt}});
           return Employees.insert({ leaderId, organizationId, firstName, lastName, email });
         }
       });
@@ -431,7 +437,8 @@ export const toggleStatusEmployee = new ValidatedMethod({
     }
   },
   run({ employeeId, status }) {
-    return Employees.update({ _id: employeeId }, { $set: { status: status } });
+    const updatedAt = new Date();
+    return Employees.update({ _id: employeeId }, { $set: { status: status, updatedAt } });
   }
 });
 
