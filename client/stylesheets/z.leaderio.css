@@ -694,3 +694,8 @@ nav.left-nav ul li a span {
 .scheduler-metric-item:hover .btn-remove-metric {
   display: block;
 }
+
+#sending-plan-calendar .popover{
+  width: 350px;
+  max-width: 350px;
+}

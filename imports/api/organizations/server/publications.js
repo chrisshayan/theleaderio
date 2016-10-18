@@ -32,6 +32,14 @@ Meteor.publish('organizations.list', function({ page = 1, q = '' }) {
 	return Organizations.find(selector, option);
 });
 
+Meteor.publish('organizations', function() {
+	if(!this.userId) {
+		return this.ready();
+	}
+
+	return Organizations.find();
+});
+
 Meteor.publishComposite('organizations.details', function({ _id }) {
 	check(_id, String);
 	return {

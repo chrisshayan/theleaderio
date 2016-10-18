@@ -33,9 +33,10 @@ export const enqueue = new ValidatedMethod({
           // const {planId, employeeId, leaderId, organizationId, metric, date, timezone } = data;
           Jobs.create(type, attributes, data);
           Workers.start(type);
+          break;
         }
         case "resend_surveys": {
-
+          break;
         }
       }
     }

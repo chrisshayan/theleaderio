@@ -67,6 +67,11 @@ class EditProfile extends Component {
           message = 'Saved'
           ;
         Notifications.success.call({closeButton, timeOut, title, message});
+        window.Intercom('update',{
+          user_id: userId,
+          name: [firstName, lastName].join(' ')
+        });
+        window.trackEvent('update_profile');
       }
     });
   }

@@ -9,13 +9,39 @@ import PageHeading from '/imports/ui/common/PageHeading';
 
 import { Profiles } from '/imports/api/profiles';
 
+// methods
+import {verifyAdminRole} from '/imports/api/users/methods';
+
 class MainLayout extends Component {
+  constructor() {
+    super();
+
+    this.state = {
+      isAdmin: false
+    };
+  }
+
+  componentWillMount() {
+    verifyAdminRole.call({userId: Meteor.userId()}, (error, result) => {
+      if (!error) {
+        this.setState({
+          isAdmin: result.isAdmin
+        });
+      } else {
+        this.setState({
+          error: error.reason
+        });
+      }
+    });
+  }
+
   render() {
-    const {content = () => null, activeRoute, pageHeading, currentUser, userProfile} = this.props;
+    const {content = () => null, activeRoute, pageHeading, currentUser, userProfile} = this.props,
+      {isAdmin} = this.state;
     
     return (
       <div id="wrapper">
-        <Navigation activeRoute={activeRoute} />
+        <Navigation activeRoute={activeRoute} isAdmin={isAdmin}/>
         <div id="page-wrapper" className="gray-bg">
           <TopNav
             currentUser={currentUser}

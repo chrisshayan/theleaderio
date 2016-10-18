@@ -33,6 +33,14 @@
   .flaticon-2x:before, .flaticon-2x:after {
     font-size: 28px;
   }
+
+  .flaticon-3x:before, .flaticon-3x:after {
+    font-size: 28px;
+  }
+
+  .flaticon-4x:before, .flaticon-4x:after {
+    font-size: 60px;
+  }
   
   .flaticon-metric-communication:before {
     content: "\f100";

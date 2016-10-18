@@ -1,45 +1,54 @@
 import React, {Component} from 'react';
-import {words as capitalize} from 'capitalize';
+// import {words as capitalize} from 'capitalize';
 
 
 export default class Chosen extends Component {
-  constructor() {
-    super();
+
+  constructor(props) {
+    super(props);
 
     this.state = {
-      selected: null
-    }
+      selected: props.defaultValue
+    };
   }
 
-  _onChange() {
-    const selected = this.refs.selector.value;
+  _onChange(selected) {
     this.props.onChange(selected);
   }
 
   render() {
-    const {
-      options=[],
-      selectedOptions = null,
-      chosenClass='chosen-select form-control',
-      isMultiple = false,
-      placeHolder=' Choose one option ...',
-      onChange=() => null
-    } = this.props;
+    const
+      {selected} = this.state,
+      {
+        disabled = false,
+        options = [],
+        defaultValue="",
+        chosenClass = 'chosen-select form-control',
+        isMultiple = false,
+        placeHolder = ' Choose one option ...',
+        onChange = () => null
+      } = this.props
+      ;
+
     return (
       <div>
         <select ref="selector"
+                disabled={disabled}
                 data-placeholder={placeHolder}
+                value={selected}
                 className={chosenClass}
-                defaultValue={selectedOptions}
                 multiple={isMultiple}
-                onChange={this._onChange.bind(this)}
+                onChange={() => {
+                  this.setState({selected: this.refs.selector.value});
+                  this._onChange(this.refs.selector.value);
+                }}
         >
           {options.map((value, key) => (
             <option
               key={key}
               value={value}
             >
-              {capitalize(value)}
+              {value}
             </option>
           ))}
         </select>

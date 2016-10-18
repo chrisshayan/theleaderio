@@ -9,3 +9,6 @@ export const DailyJobs = new JobCollection('daily');
 
 // Queue Jobs
 export const QueueJobs = new JobCollection('queue');
+
+// Admin Jobs
+export const AdminJobs = new JobCollection("admin");

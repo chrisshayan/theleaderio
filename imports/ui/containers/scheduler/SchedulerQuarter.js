@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {createContainer} from 'meteor/react-meteor-data';
 import {
   Scheduler as SchedulerCollection,
-  MEETINGS_UI_INFO,
+  METRICS_UI_INFO,
 } from '/imports/api/scheduler';
 
 // methods
@@ -72,7 +72,7 @@ class SchedulerQuarter extends Component {
       isActive = this.isActive
       ;
     return (
-      <div className="col-lg-3">
+      <div className="col-sm-6 col-md-3 col-lg-3">
         <div className="ibox">
           <div className="ibox-content">
             <h3>{ name }</h3>

@@ -3,6 +3,7 @@ import {ValidatedMethod} from 'meteor/mdg:validated-method';
 import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 import {Accounts} from 'meteor/accounts-base';
 import _ from 'lodash';
+import {Roles} from 'meteor/alanning:roles';
 
 // actions
 import * as ProfileActions from '/imports/api/profiles/methods';
@@ -203,5 +204,23 @@ export const updatePreferences = new ValidatedMethod({
       name
     };
     Preferences.update(selector, { $set: {preferences}});
+  }
+});
+
+/**
+ * Method verify admin role
+ * @param {String} userId
+ * @return {Boolean} true if user has admin role, otherwise is failed
+ */
+export const verifyAdminRole = new ValidatedMethod({
+  name: "users.verifyAdminRole",
+  validate: null,
+  run({userId}) {
+    if(!this.isSimulation) {
+      const isAdmin = Roles.userIsInRole(userId, "admin");
+      return {
+        isAdmin
+      };
+    }
   }
 });
