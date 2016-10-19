@@ -17,6 +17,7 @@ import * as EmailActions from '/imports/api/email/methods';
 
 // functions
 import {getRandomEmployee} from '/imports/api/organizations/functions';
+import {getLeaderForDigestEmail} from '/imports/api/admin/functions';
 
 // constants
 import * as ERROR_CODE from '/imports/utils/error_code';
@@ -27,7 +28,7 @@ import {LOG_LEVEL} from '/imports/utils/defaults';
  * @param job
  * @param cb
  */
-const sendFeedbackEmailToLeader = function(job, cb) {
+const sendFeedbackEmailToLeader = function (job, cb) {
   const
     name = "sendFeedbackEmailToLeader",
     activeOrgList = Organizations.find({isPresent: true}, {fields: {_id: true}}).fetch()
@@ -37,8 +38,8 @@ const sendFeedbackEmailToLeader = function(job, cb) {
     employeeData = {},
     jobMessage = ""
 
-  if(_.isEmpty(activeOrgList)) {
-      jobMessage = `No active organization`;
+  if (_.isEmpty(activeOrgList)) {
+    jobMessage = `No active organization`;
     job.log(jobMessage, {level: LOG_LEVEL.INFO});
     job.done();
   } else {
@@ -46,12 +47,12 @@ const sendFeedbackEmailToLeader = function(job, cb) {
       const
         employee = getRandomEmployee({params: {organizationId: org._id}})
         ;
-      if(!_.isEmpty(employee)) {
-        if(employee.message === 'undefined') {
+      if (!_.isEmpty(employee)) {
+        if (employee.message === 'undefined') {
           Logger.error({name, message: {detail: employee.message}});
         } else {
           employeeData = Employees.findOne({_id: employee.employeeId});
-          if(!_.isEmpty(employeeData)) {
+          if (!_.isEmpty(employeeData)) {
             const
               template = 'employee',
               data = {
@@ -86,8 +87,93 @@ const sendFeedbackEmailToLeader = function(job, cb) {
  * @param job
  * @param cb
  */
-const sendStatisticEmailToLeader = function(job, cb) {
+export const sendStatisticEmailToLeader = function (job, cb) {
+  const
+    startDate = new Date(moment().subtract(7, 'day')),
+    leaderIdList = getLeaderForDigestEmail({params: startDate})
+    ;
+  let
+    query = {},
+    options = {},
+    org = [],
+    employee = [],
+    latestUpdatedAt = startDate,
+    totalLeaders = 0,
+    digest = {
+      leaderId: "",
+      line1: {
+        latestUpdatedAt
+      },
+      line2: {
+        totalBadScores: 0,
+        totalGoodScores: 0,
+        totalFeedback: 0
+      },
+      line3: {
+        topics: []
+      }
+    }
+    ;
 
+  if (!_.isEmpty(leaderIdList)) {
+    totalLeaders = leaderIdList.length;
+    leaderIdList.map(leaderId => {
+      // initiate
+      options = {};
+      org = [];
+      employee = [];
+      latestUpdatedAt = startDate;
+      // digest values
+      digest = {
+        leaderId,
+        line1: {
+          latestUpdatedAt
+        },
+        line2: {
+          totalBadScores: 0,
+          totalGoodScores: 0,
+          totalFeedback: 0
+        },
+        line3: {
+          topics: []
+        }
+      }
+      ;
+
+      // get the latest updatedAt of organizations and employees.
+      query = {leaderId};
+      options = {
+        sort: {updatedAt: -1},
+        limit: 1
+      };
+      // latest updatedAt from organizations
+      org = Organizations.find(query, options).fetch();
+      if (!_.isEmpty(org)) {
+        latestUpdatedAt = org[0].updatedAt;
+        if(latestUpdatedAt > digest.line1.latestUpdatedAt) {
+          digest.line1.latestUpdatedAt = latestUpdatedAt;
+        }
+      }
+      // latest updatedAt from employees
+      employee = Employees.find(query, options).fetch();
+      if (!_.isEmpty(employee)) {
+        latestUpdatedAt = employee[0].updatedAt;
+        if(latestUpdatedAt > digest.line1.latestUpdatedAt) {
+          digest.line1.latestUpdatedAt = latestUpdatedAt;
+        }
+      }
+      console.log(leaderId);
+      console.log(latestUpdatedAt);
+
+      // get total of bad & good scores of leader in last week for every metric (if they have)
+
+      // get total of feedback from employees and their topics.
+
+      // get article for leader base on the bad score of metric or the topics of negative feedback
+
+      // send digest email to leader
+    });
+  }
 }
 
 /**
@@ -165,10 +251,10 @@ export const editAdminJob = new ValidatedMethod({
         status = false,
         message = "",
         worker = () => null
-      ;
+        ;
 
       // get worker
-      switch(type) {
+      switch (type) {
         case "feedback_for_employee": {
           worker = sendFeedbackEmailToLeader;
           break;
@@ -183,20 +269,25 @@ export const editAdminJob = new ValidatedMethod({
       }
 
       // get current job
-      jobs = AdminJobs.find({type, status: {$in: AdminJobs.jobStatusCancellable}}, {fields: {_id: true, status: true}}).fetch();
-      if(_.isEmpty(jobs)) {
+      jobs = AdminJobs.find({type, status: {$in: AdminJobs.jobStatusCancellable}}, {
+        fields: {
+          _id: true,
+          status: true
+        }
+      }).fetch();
+      if (_.isEmpty(jobs)) {
         // console.log(`create new job ${type}`)
         message = Jobs.create(type, attributes, data);
         AdminJobs.processJobs(type, worker);
         return {message}; // return new job id
       } else {
         jobs.map(job => {
-          if(job.status === "running") {
+          if (job.status === "running") {
             message = "running";
             return {message}; // job running, couldn't update
           } else {
             status = AdminJobs.cancelJobs([job._id]);
-            if(status) {
+            if (status) {
               // console.log(`cancel job, create new job`)
               // cancel job success, create new job with new attributes
               message = Jobs.create(type, attributes, data);
