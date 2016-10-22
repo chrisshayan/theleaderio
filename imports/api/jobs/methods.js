@@ -147,7 +147,6 @@ export const sendStatisticEmailToLeader = function (job, cb) {
     }
     ;
 
-    console.log(leaderIdList)
   if (!_.isEmpty(leaderIdList)) {
     totalLeaders = leaderIdList.length;
     leaderIdList.map(leaderId => {

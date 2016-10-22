@@ -548,6 +548,7 @@ export const getDigestEmailOptions = ({template, data}) => {
   mailData.sendingPlanStatus = digest.sendingPlanStatus;
   mailData.leadershipProgress = digest.leadershipProgress;
   mailData.articles = digest.articles;
+  mailData.leaderProfileUrl = leaderInfo.leaderProfileUrl;
   mailData.orgUrl = `http://${leaderInfo.alias}.${domain}/app/organizations`;
 
   result.subject = mailData.subject;

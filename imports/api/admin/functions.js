@@ -8,8 +8,8 @@ import moment from 'moment';
 export const getLeaderForDigestEmail = ({params}) => {
   const
     {startDate, endDate} = params,
-    plans = SendingPlans.find({status: {$not: /READY/}, sendDate: {$gte: startDate, $lt: endDate}}).fetch()
-    // plans = SendingPlans.find({leaderId: "6BQNxj6h3ixywwtMc", status: {$not: /READY/}, sendDate: {$gte: startDate, $lt: endDate}}).fetch()
+    // plans = SendingPlans.find({status: {$not: /READY/}, sendDate: {$gte: startDate, $lt: endDate}}).fetch()
+    plans = SendingPlans.find({leaderId: "zFwXqkDoCD9QbiR8K", status: {$not: /READY/}, sendDate: {$gte: startDate, $lt: endDate}}).fetch()
     ;
   let
     listOfLeaders = [];

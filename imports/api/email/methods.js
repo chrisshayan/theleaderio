@@ -152,7 +152,9 @@ export const send = new ValidatedMethod({
       }
 
       // send email
-      return Email.send(options);
+      return Meteor.defer(() => {
+        Email.send(options);
+      });
     }
   }
 });
