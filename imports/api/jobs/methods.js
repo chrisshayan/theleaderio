@@ -8,6 +8,10 @@ import {AdminJobs} from '/imports/api/jobs/collections';
 // collections
 import {Organizations} from '/imports/api/organizations/index';
 import {Employees} from '/imports/api/employees/index';
+import {SendingPlans} from '/imports/api/sending_plans/index';
+import {Metrics} from '/imports/api/metrics/index';
+import {Feedbacks} from '/imports/api/feedbacks/index';
+import {LogsDigest} from '/imports/api/logs/index';
 
 // Job
 import {Jobs} from '/imports/api/jobs/jobs';
@@ -18,6 +22,7 @@ import * as EmailActions from '/imports/api/email/methods';
 // functions
 import {getRandomEmployee} from '/imports/api/organizations/functions';
 import {getLeaderForDigestEmail} from '/imports/api/admin/functions';
+import {add as addLogs} from '/imports/api/logs/functions';
 
 // constants
 import * as ERROR_CODE from '/imports/utils/error_code';
@@ -89,32 +94,60 @@ const sendFeedbackEmailToLeader = function (job, cb) {
  */
 export const sendStatisticEmailToLeader = function (job, cb) {
   const
-    startDate = new Date(moment().subtract(7, 'day')),
-    leaderIdList = getLeaderForDigestEmail({params: startDate})
+    startDate = new Date(moment().subtract(9, 'day')),
+    currentDate = new Date(),
+    leaderIdList = getLeaderForDigestEmail({params: {startDate, endDate: currentDate}})
     ;
   let
     query = {},
     options = {},
     org = [],
     employee = [],
+    plan = [],
+    metrics = [],
+    feedback = [],
     latestUpdatedAt = startDate,
     totalLeaders = 0,
     digest = {
       leaderId: "",
-      line1: {
-        latestUpdatedAt
+      updateEmployeeList: {
+        startDate
       },
-      line2: {
+      sendingPlanStatus: {
+        sendFailed: false,
+        message: "",
+        reason: "",
+        suggest: "",
+      },
+      leadershipProgress: {
+        haveProgress: true,
         totalBadScores: 0,
         totalGoodScores: 0,
-        totalFeedback: 0
+        totalFeedback: 0,
       },
-      line3: {
-        topics: []
-      }
+      articles: {
+        haveArticles: false,
+        metricToImprove: "",
+        articles: [
+          {
+            url: "",
+            subject: ""
+          }
+        ]
+      },
+    },
+    logName = "digest",
+    logContent = {
+      interval: "weekly",
+      details: []
+    },
+    logContentDetails = {
+      leaderId: "",
+      status: ""
     }
     ;
 
+    console.log(leaderIdList)
   if (!_.isEmpty(leaderIdList)) {
     totalLeaders = leaderIdList.length;
     leaderIdList.map(leaderId => {
@@ -122,57 +155,141 @@ export const sendStatisticEmailToLeader = function (job, cb) {
       options = {};
       org = [];
       employee = [];
-      latestUpdatedAt = startDate;
+      plan = [];
+      metrics = [];
+      feedback = [];
+      // latestUpdatedAt = startDate;
       // digest values
       digest = {
         leaderId,
-        line1: {
-          latestUpdatedAt
+        updateEmployeeList: {
+          startDate: moment(startDate).format("MMMM Do, YYYY")
         },
-        line2: {
+        sendingPlanStatus: {
+          sendFailed: false,
+          message: "",
+          reason: "",
+          suggest: "",
+        },
+        leadershipProgress: {
+          haveProgress: true,
           totalBadScores: 0,
           totalGoodScores: 0,
-          totalFeedback: 0
+          totalFeedback: 0,
         },
-        line3: {
-          topics: []
-        }
+        articles: {
+          haveArticles: false,
+          metricToImprove: "",
+          articles: [
+            {
+              url: "",
+              subject: ""
+            }
+          ]
+        },
       }
       ;
 
+      logContentDetails.leaderId = leaderId;
       // get the latest updatedAt of organizations and employees.
-      query = {leaderId};
+      // query = {leaderId};
+      // options = {
+      //   sort: {updatedAt: -1},
+      //   limit: 1
+      // };
+      // latest updatedAt from organizations
+      // org = Organizations.find(query, options).fetch();
+      // if (!_.isEmpty(org)) {
+      //   digest.orgUrl = `/app/organizations/update/${org._id}?t=employees`;
+      // }
+
+      // get sending plan status
+      query = {leaderId, status: {$not: /READY/}, sendDate: {$gte: startDate, $lt: currentDate}};
       options = {
-        sort: {updatedAt: -1},
+        sort: {sendDate: -1},
         limit: 1
       };
-      // latest updatedAt from organizations
-      org = Organizations.find(query, options).fetch();
-      if (!_.isEmpty(org)) {
-        latestUpdatedAt = org[0].updatedAt;
-        if(latestUpdatedAt > digest.line1.latestUpdatedAt) {
-          digest.line1.latestUpdatedAt = latestUpdatedAt;
+      plan = SendingPlans.find(query, options).fetch();
+      if (!_.isEmpty(plan)) {
+        if (plan[0].status === "FAILED") {
+          digest.sendingPlanStatus.sendFailed = true;
+          digest.sendingPlanStatus.message = `The "${plan[0].metric}" survey couldn't be sent on ${moment(plan[0].sendDate).format('MMMM Do, YYYY')}.`;
+          if (typeof plan[0].reason !== 'undefined') {
+            digest.sendingPlanStatus.reason = `Because ${plan[0].reason}`;
+          }
+          digest.sendingPlanStatus.suggest = "Please make sure that you have at least one current organization and there are employees in it.";
+        } else {
+          digest.sendingPlanStatus = {
+            sendFailed: false
+          };
         }
       }
-      // latest updatedAt from employees
-      employee = Employees.find(query, options).fetch();
-      if (!_.isEmpty(employee)) {
-        latestUpdatedAt = employee[0].updatedAt;
-        if(latestUpdatedAt > digest.line1.latestUpdatedAt) {
-          digest.line1.latestUpdatedAt = latestUpdatedAt;
-        }
-      }
-      console.log(leaderId);
-      console.log(latestUpdatedAt);
 
+      // leadership progress
       // get total of bad & good scores of leader in last week for every metric (if they have)
-
+      query = {leaderId, date: {$gte: startDate, $lt: currentDate}};
+      options = {
+        fields: {
+          metric: true,
+          score: true,
+          date: true
+        }
+      };
+      metrics = Metrics.find(query, options).fetch();
+      if (!_.isEmpty(metrics)) {
+        metrics.map(metric => {
+          if (metric.score > 3) {
+            digest.leadershipProgress.totalGoodScores += 1;
+          }
+          if (metric.score > 0 && metric.score < 4) {
+            digest.leadershipProgress.totalBadScores += 1;
+          }
+        });
+      }
       // get total of feedback from employees and their topics.
+      query = {leaderId, date: {$gte: startDate, $lt: currentDate}, type: {$not: /LEADER_TO_EMPLOYEE/}};
+      options = {
+        fields: {
+          leaderId: true,
+          metric: true,
+          feedback: true,
+          date: true
+        }
+      };
+      feedback = Feedbacks.find(query, options).fetch();
+      if (!_.isEmpty(feedback)) {
+        feedback.map(feed => {
+          digest.leadershipProgress.totalFeedback += 1;
+        });
+      }
+      if((digest.leadershipProgress.totalFeedback +
+          digest.leadershipProgress.totalGoodScores +
+          digest.leadershipProgress.totalBadScores) === 0) {
+        digest.leadershipProgress.haveProgress = false;
+      }
 
       // get article for leader base on the bad score of metric or the topics of negative feedback
+      // not implemented yet
 
       // send digest email to leader
+      const template = 'digest';
+      const data = {
+        digest
+      };
+      EmailActions.send.call({template, data}, (error) => {
+        if (_.isEmpty(error)) {
+          logContentDetails.status = "sent";
+        } else {
+          logContentDetails.status = `failed - ${error.reason}`;
+        }
+      });
+      // console.log(digest)
+
+      logContent.details.push(logContentDetails);
     });
+
+    // add log for a digest into log collection
+    addLogs({params: {name: logName, content: logContent}});
   }
 }
 

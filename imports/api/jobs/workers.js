@@ -94,6 +94,7 @@ const enqueueSurveys = function (job, cb) {
           });
         } else {
           logContent.noOfActiveOrgs = 0;
+          setSendingPlanStatus.call({_id: logContent.planId, status: "QUEUED"});
           organizationList.map(org => {
             const employeeList = org.employees;
 
@@ -136,7 +137,6 @@ const enqueueSurveys = function (job, cb) {
                   enqueue.call({type: "send_surveys", attributes, data: queueData}, (error) => {
                     if (_.isEmpty(error)) {
                       logDetail.noOfQueuedEmailsToEmployees += 1;
-                      setSendingPlanStatus.call({_id: planId, status: "QUEUED"});
                       jobMessage = `Enqueue mail ${metric} to ${employee.email} on ${date}`;
                       job.log(jobMessage, {level: LOG_LEVEL.INFO});
                     } else {
@@ -173,7 +173,7 @@ const enqueueSurveys = function (job, cb) {
           if(totalQueuedEmailsToEmployeesOfOrg === 0) {
             setSendingPlanStatus.call({_id: logContent.planId, status: "FAILED", reason: `No active employee in any active organization.`});
           } else {
-            setSendingPlanStatus.call({_id: logContent.planId, status: "QUEUED", reason: `Total Org: ${logContent.noOfActiveOrgs}, Total Employees: ${totalQueuedEmailsToEmployeesOfOrg}`});
+            setSendingPlanStatus.call({_id: logContent.planId, status: "SENT", reason: `Total Org: ${logContent.noOfActiveOrgs}, Total Employees: ${totalQueuedEmailsToEmployeesOfOrg}`});
           }
         }
 

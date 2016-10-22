@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta name="viewport" content="width=device-width"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>{{subject}}</title>
+    <link href="styles.css" media="all" rel="stylesheet" type="text/css"/>
+</head>
+
+<body>
+
+<table class="body-wrap">
+    <tr>
+        <td></td>
+        <td class="container" width="600">
+            <div class="content">
+                <table class="main" width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td class="content-wrap aligncenter">
+                            <table width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td class="content-block">
+                                        <h2>Hi {{leaderName}}, Thanks for using {{siteName}}</h2>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="content-block">
+                                        <table class="invoice">
+                                            <tr>
+                                                <td>
+                                                    <h4 style="margin-bottom: 5px; margin-top: 10px;">
+                                                        A brief summary of your leadership progress
+                                                        since {{updateEmployeeList.startDate}}
+                                                    </h4>
+                                                </td>
+                                            </tr>
+                                            {{#if sendingPlanStatus.sendFailed}}
+                                                <tr>
+                                                    <td>
+                                                        {{sendingPlanStatus.message}}
+                                                        <br/>
+                                                        {{sendingPlanStatus.reason}}
+                                                        <br/>
+                                                        {{sendingPlanStatus.suggest}}
+                                                    </td>
+                                                </tr>
+                                            {{/if}}
+                                            {{#if leadershipProgress.haveProgress}}
+                                                <tr>
+                                                    <td>
+                                                        <table class="invoice-items" cellpadding="0" cellspacing="0">
+                                                            <tr>
+                                                                <td>Good Scores</td>
+                                                                <td class="alignright">{{leadershipProgress.totalGoodScores}}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Bad Scores</td>
+                                                                <td class="alignright">{{leadershipProgress.totalBadScores}}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Feedback</td>
+                                                                <td class="alignright">{{leadershipProgress.totalFeedback}}</td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            {{/if}}
+                                            <tr>
+                                                <td>
+                                                    Your employees will help you to improve the leadership.
+                                                    <br/>
+                                                    <a href={{orgUrl}}>Add more employees here.</a>
+                                                </td>
+                                            </tr>
+                                            {{#if articles.haveArticles}}
+                                                <tr>
+                                                    <td style="padding: 0 0 5px;">
+                                                        <h4 style="margin-bottom: 5px; margin-top: 10px;">
+                                                            Want to improve your "{{articles.metricToImprove}}"?
+                                                        </h4>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 0 0 5px;">
+                                                        {{#each articles.articles}}
+                                                            <a href="{{url}}">
+                                                                {{subject}}
+                                                            </a>
+                                                        {{/each}}
+                                                    </td>
+                                                </tr>
+                                            {{/if}}
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="content-block">
+                                        <a href={{leaderProfileUrl}}>View your profile</a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+                <div style="width: 100%;
+                        clear: both;
+                        color: #999;
+                        padding: 20px;"
+                >
+                    <p style="margin-top: 15px; text-align: center;">
+                        <small>theLeader.io, strive for great leadership &copy; 2016</small>
+                    </p>
+                </div>
+            </div>
+        </td>
+        <td></td>
+    </tr>
+</table>
+
+</body>
+</html>

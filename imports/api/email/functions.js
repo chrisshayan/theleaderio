@@ -44,7 +44,7 @@ export const get = function ({templateName, firstName, url, alias}) {
 export const buildHtml = function ({template, data}) {
   const
     {type} = data
-  ;
+    ;
   let
     mailTemplate = ""
     ;
@@ -67,6 +67,10 @@ export const buildHtml = function ({template, data}) {
     }
     case "employee": {
       mailTemplate = Assets.getText(`email_templates/${template}/${type}.html`);
+      break;
+    }
+    case "digest": {
+      mailTemplate = Assets.getText(`email_templates/${template}.html`);
       break;
     }
     default: {
@@ -121,7 +125,7 @@ export const getRecipientInfo = ({recipient, sender, apiName}) => {
         employeeId = recipientElements[0],
         organizationId = recipientElements[1],
         leaderId = recipientElements[2]
-      ;
+        ;
 
       return {employeeId, organizationId, leaderId};
       break;
@@ -142,6 +146,80 @@ export const removeWebGmailClientContent = (content) => {
   return content.split('\r\n\r\n--');
 }
 
+/**
+ * Function get mail data
+ * @param {String} type
+ * @param {Object} data
+ * @return {Object} base one type
+ */
+const getMailData = ({type, data}) => {
+  let result = {};
+
+  switch (type) {
+    case "site": {
+      result = {
+        siteUrl: `http://${domain}`,
+        siteName: SITE_NAME
+      };
+      break;
+    }
+    case "leader": {
+      const
+        {leaderId} = data,
+        leader = Accounts.users.findOne({_id: leaderId}, {fields: {username: true, emails: true}}),
+        leaderProfile = Profiles.findOne({userId: leaderId}, {fields: {firstName: true, lastName: true}})
+        ;
+      if (_.isEmpty(leader)) {
+        return new Meteor.Error(ERROR_CODE.RESOURCE_NOT_FOUND, `leader ${leaderId} not found`);
+      }
+      if (_.isEmpty(leaderProfile)) {
+        return new Meteor.Error(ERROR_CODE.RESOURCE_NOT_FOUND, `leader profile ${leaderId} not found`);
+      }
+      result = {
+        alias: leader.username,
+        leaderProfileUrl: `http://${leader.username}.${domain}`,
+        leaderName: `${capitalize(leaderProfile.firstName)}`,
+        leaderFullName: `${capitalize(leaderProfile.firstName)} ${capitalize(leaderProfile.lastName)}`,
+        leaderEmail: leader.emails[0].address
+      };
+      break;
+    }
+    case "employee": {
+      const
+        {employeeId} = data,
+        employee = Employees.findOne({_id: employeeId}, {fields: {email: true, firstName: true, lastName: true}})
+        ;
+      if (_.isEmpty(employee)) {
+        return new Meteor.Error(ERROR_CODE.RESOURCE_NOT_FOUND, `employee ${employeeId} not found`);
+      }
+
+      result = {
+        employeeName: `${capitalize(employee.firstName)}`,
+        employeeFullName: `${capitalize(employee.firstName)} ${capitalize(employee.lastName)}`,
+        employeeEmail: employee.email
+      };
+      break;
+    }
+    case "organization": {
+      const
+        {organizationId} = data,
+        organization = Organizations.findOne({_id: organizationId}, {fields: {name: true}});
+      if (_.isEmpty(organization)) {
+        return new Meteor.Error(ERROR_CODE.RESOURCE_NOT_FOUND, `organization ${organizationId} not found`);
+      }
+
+      result = {
+        orgName: `${capitalize(organization.name)}`
+      };
+      break;
+    }
+    default: {
+      return new Meteor.Error(`Unknown type: ${type}`);
+    }
+  }
+
+  return result;
+}
 
 /**
  * Function to collect content data for survey email
@@ -363,13 +441,13 @@ export const getEmployeeEmailOptions = ({template, data}) => {
 export const verifySenderEmail = ({params}) => {
   const
     {type, email, id} = params
-  ;
+    ;
 
-  switch(type) {
+  switch (type) {
     case "leader": {
       const leader = Accounts.users.findOne({_id: id});
-      if(!_.isEmpty(leader)) {
-        if(email === leader.emails[0].address) {
+      if (!_.isEmpty(leader)) {
+        if (email === leader.emails[0].address) {
           return {isLeader: true};
         } else {
           return {
@@ -387,8 +465,8 @@ export const verifySenderEmail = ({params}) => {
     }
     case "employee": {
       const employee = Employees.findOne({_id: id});
-      if(!_.isEmpty(employee)) {
-        if(email === employee.email) {
+      if (!_.isEmpty(employee)) {
+        if (email === employee.email) {
           return {isEmployee: true};
         } else {
           return {
@@ -408,4 +486,74 @@ export const verifySenderEmail = ({params}) => {
       return {};
     }
   }
+}
+
+/**
+ * Function to collect content data for digest email to leaders
+ * @param template
+ * @param data
+ */
+export const getDigestEmailOptions = ({template, data}) => {
+  const
+    {digest} = data,
+    {leaderId} = digest,
+    EMAIL_TEMPLATE_CONTENT = getDefaults.call({name: 'EMAIL_TEMPLATE_CONTENT'}).content,
+    siteInfo = getMailData({type: "site"}),
+    leaderInfo = getMailData({type: "leader", data: {leaderId}}),
+    mailData = {
+      subject: "",
+      leaderName: "",
+      siteName: "",
+      updateEmployeeList: {
+        startDate: new Date()
+      },
+      sendingPlanStatus: {
+        sendFailed: false,
+        message: "",
+        reason: "",
+        suggest: "",
+      },
+      leadershipProgress: {
+        haveProgress: true,
+        totalBadScores: 0,
+        totalGoodScores: 0,
+        totalFeedback: 0,
+      },
+      articles: {
+        haveArticles: false,
+        metricToImprove: "",
+        articles: [
+          {
+            url: "",
+            subject: ""
+          }
+        ]
+      },
+      leaderProfileUrl: ""
+    }
+    ;
+  let
+    result = {
+      from: `"${siteInfo.siteName} weekly" <no-reply@${mailDomain}>`,
+      to: "jackiekhuu.work@gmail.com",
+      subject: "",
+      html: ""
+    }
+    ;
+
+  mailData.subject = `${leaderInfo.leaderName}, Here is your leadership progress last week.`;
+  mailData.leaderName = leaderInfo.leaderName;
+  mailData.siteName = siteInfo.siteName;
+  mailData.updateEmployeeList = digest.updateEmployeeList;
+  mailData.sendingPlanStatus = digest.sendingPlanStatus;
+  mailData.leadershipProgress = digest.leadershipProgress;
+  mailData.articles = digest.articles;
+  mailData.orgUrl = `http://${leaderInfo.alias}.${domain}/app/organizations`;
+
+  result.subject = mailData.subject;
+  // result.to = leaderInfo.leaderEmail;
+  result.html = buildHtml({template, data: mailData});
+
+  return result;
+
 }

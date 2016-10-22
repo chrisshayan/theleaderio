@@ -7,17 +7,16 @@ import moment from 'moment';
  */
 export const getLeaderForDigestEmail = ({params}) => {
   const
-    {startDate} = params,
-    endDate = new Date(),
-    plans = SendingPlans.find({leaderId: "frYPNtXtBi2u6nC99", sendDate: {$gte: startDate, $lt: endDate}}).fetch()
-    // plans = SendingPlans.find({sendDate: {$gte: startDate, $lt: endDate}}).fetch()
+    {startDate, endDate} = params,
+    plans = SendingPlans.find({status: {$not: /READY/}, sendDate: {$gte: startDate, $lt: endDate}}).fetch()
+    // plans = SendingPlans.find({leaderId: "6BQNxj6h3ixywwtMc", status: {$not: /READY/}, sendDate: {$gte: startDate, $lt: endDate}}).fetch()
     ;
   let
     listOfLeaders = [];
 
-  if(!_.isEmpty(plans)) {
+  if (!_.isEmpty(plans)) {
     plans.map(plan => {
-      if(_.indexOf(listOfLeaders, plan.leaderId) === -1) {
+      if (_.indexOf(listOfLeaders, plan.leaderId) === -1) {
         listOfLeaders.push(plan.leaderId);
       }
     });

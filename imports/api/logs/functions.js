@@ -1,5 +1,6 @@
 import {
-  LogsSendingPlan
+  LogsSendingPlan,
+  LogsDigest
 } from './index';
 
 /**
@@ -14,13 +15,26 @@ import {
  *    {String} orgId
  *    {Number} noOfQueuedEmailsToEmployees
  * {Date} date
+ *
+ * Digest Log Content:
+ * {String} interval (weekly)
+ * {Array} details
+ *    {String} leaderId
+ *    {String} status (sent | failed)
+ * {Date} date
  */
 export const add = ({params}) => {
   const
-    {name, content} = params;
+    {name, content} = params,
+    date = new Date()
+    ;
   switch (name) {
     case "sending_plan": {
-      LogsSendingPlan.insert(content);
+      LogsSendingPlan.insert(content, date);
+      break;
+    }
+    case "digest": {
+      LogsDigest.insert(content, date);
       break;
     }
     default: {
