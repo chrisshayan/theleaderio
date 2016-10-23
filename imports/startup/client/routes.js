@@ -17,6 +17,10 @@ import BlankLayout from '/imports/ui/layouts/BlankLayout';
 import ManageIndustries from '/imports/ui/containers/admin/ManageIndustries';
 import ManageJobs from '/imports/ui/containers/admin/ManageJobs';
 
+import ArticlesContainer from '/imports/ui/containers/articles/ArticlesContainer';
+import EditArticle from '/imports/ui/containers/articles/EditArticle';
+import ViewArticle from '/imports/ui/containers/articles/ViewArticle';
+
 import LandingPage from '/imports/ui/containers/LandingPage';
 
 import SignUpUser from '/imports/ui/containers/signup/SignUpUser';
@@ -465,5 +469,61 @@ appRoutes.route('/messages', {
         return <Messages />;
       }
     });
+  }
+});
+
+/**
+ * Route for articles
+ */
+appRoutes.route('/articles', {
+  name: "app.articles",
+  action() {
+    mount(MainLayout, {
+      content() {
+        return <ArticlesContainer />;
+      }
+    });
+  }
+});
+
+/**
+ * Route for creating an article
+ */
+appRoutes.route('/articles/create', {
+  name: 'app.articles.create',
+  action(params) {
+    mount(MainLayout, {
+      content() {
+        return <EditArticle />
+      }
+    })
+  }
+});
+
+/**
+ * Route for edit an article
+ */
+appRoutes.route('/articles/edit/:_id', {
+  name: 'app.articles.edit',
+  action(params) {
+    mount(MainLayout, {
+      content() {
+        return <EditArticle _id={params._id}/>
+      }
+    })
+  }
+});
+
+/**
+ * Route for view an article
+ */
+appRoutes.route('/articles/view/:_id', {
+  name: 'app.articles.view',
+  action(params) {
+    mount(MainLayout, {
+      content() {
+        return <ViewArticle _id={params._id}/>
+      }
+    })
   }
 });
