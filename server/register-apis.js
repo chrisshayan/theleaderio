@@ -36,3 +36,5 @@ import '/imports/api/migration/register.server';
 import '/imports/api/admin/register.server';
 // user messages
 import '/imports/api/user_messages/register.server';
+// articles
+import '/imports/api/articles/register.server';

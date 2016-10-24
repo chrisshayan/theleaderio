@@ -4,6 +4,9 @@ import {setPageHeading, resetPageHeading} from '/imports/store/modules/pageHeadi
 // components
 import SummerNoteEditor from '/imports/ui/components/SummerNoteEditor';
 
+// methods
+import {add as addArticle} from '/imports/api/articles/methods';
+
 export default class EditArticle extends Component {
   constructor() {
     super();
@@ -22,6 +25,19 @@ export default class EditArticle extends Component {
           label: !_id ? 'create' : 'edit',
           active: true
         }]
+    });
+  }
+
+  componentWillUnmount() {
+    resetPageHeading();
+  }
+
+  _onClick() {
+    // console.log(this.refs.summernote.getContent())
+    addArticle.call({
+      subject: "Employee Engagement Framework",
+      content: this.refs.summernote.getContent(),
+      tags: ["purpose", "leadership", "engagement"]
     });
   }
 
@@ -47,11 +63,16 @@ export default class EditArticle extends Component {
         <div className="clearfix"></div>
         <div className="mail-text">
           <SummerNoteEditor
+            ref="summernote"
             height={350}
           />
         </div>
         <div className="mail-body text-right" style={{borderTopWidth: 0}}>
-          <a href="{{pathFor route='mailbox'}}" className="btn btn-sm btn-primary">
+          <a
+            ref="save"
+            className="btn btn-sm btn-primary"
+            onClick={this._onClick.bind(this)}
+          >
             <i className="fa fa-floppy-o"></i> Save</a>
           {" "}
           <a href="{{pathFor route='mailbox'}}" className="btn btn-danger btn-sm">

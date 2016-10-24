@@ -19,7 +19,7 @@ import ManageJobs from '/imports/ui/containers/admin/ManageJobs';
 
 import ArticlesContainer from '/imports/ui/containers/articles/ArticlesContainer';
 import EditArticle from '/imports/ui/containers/articles/EditArticle';
-import ViewArticle from '/imports/ui/containers/articles/ViewArticle';
+import ViewArticle from '/imports/ui/containers/articles/ViewArticleContainer';
 
 import LandingPage from '/imports/ui/containers/LandingPage';
 

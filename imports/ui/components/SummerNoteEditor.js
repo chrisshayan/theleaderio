@@ -17,6 +17,11 @@ export default class SummerNoteEditor extends Component {
     $(editor).summernote("destroy");
   }
 
+  getContent() {
+    const editor = this.refs.summernote;
+    return $(editor).summernote("code");
+  }
+
   render() {
     return (
       <div className="summernote" ref="summernote">
