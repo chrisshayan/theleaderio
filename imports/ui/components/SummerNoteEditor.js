@@ -4,12 +4,18 @@ export default class SummerNoteEditor extends Component {
 
   componentDidMount() {
     const
-      {height} = this.props,
+      {
+        height = 200,
+        placeholder = "write your article...",
+        content = "<p>write your article ...</p>"
+      } = this.props,
       editor = this.refs.summernote
       ;
     $(editor).summernote({
-      height
+      height,
+      placeholder
     });
+    $(editor).summernote('editor.pasteHTML', content);
   }
 
   componentWillUnmount() {
@@ -23,9 +29,13 @@ export default class SummerNoteEditor extends Component {
   }
 
   render() {
+    const
+      {
+        content = ""
+      } = this.props
+      ;
     return (
       <div className="summernote" ref="summernote">
-        Hello Summernote
       </div>
     );
   }

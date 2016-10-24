@@ -1,10 +1,16 @@
+import {Meteor} from 'meteor/meteor';
 import React, {Component} from 'react';
+import {createContainer} from 'meteor/react-meteor-data';
 import {setPageHeading, resetPageHeading} from '/imports/store/modules/pageHeading';
 
-// components
-import CreateArticle from '/imports/ui/containers/articles/EditArticle';
+// collections
+import {Articles} from '/imports/api/articles/index';
 
-export default class Articles extends Component {
+// components
+import ArticleBox from '/imports/ui/containers/articles/ArticleBox';
+import NoArticle from '/imports/ui/containers/articles/NoArticle';
+
+class ArticlesComponent extends Component {
   constructor() {
     super();
 
@@ -33,54 +39,49 @@ export default class Articles extends Component {
   }
 
   render() {
-    return (
-      <div className="row animated fadeInRight">
-        <div className="col-md-8">
-          <div className="ibox float-e-margins" style={{marginBottom: 10}}>
-            <div className="ibox-title">
-              <h5>Leadership in action</h5>
-              <div className="ibox-tools">
-                <a href="/app/articles/edit/abdc" className="btn btn-white btn-xs">
-                  <i className="fa fa-pencil-square-o"></i>
-                  Edit
-                </a>
-              </div>
-            </div>
-            <div className="feed-activity-list">
-              <div className="feed-element no-padding">
-                <div className="ibox-content no-padding border-left-right">
-                  <img alt="image" className="img-responsive" src="img/profile_big.jpg"/>
-                </div>
-                <div className="ibox-content profile-content">
-                  <h4><strong>Monica Smith</strong></h4>
-                  <p><i className="fa fa-map-marker"></i> Riviera State 32/106</p>
-                  <h5>
-                    About me
-                  </h5>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-                    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                    exercitat.
-                  </p>
-                  <div className="user-button">
-                    <div className="row">
-                      <div className="col-md-2 text-right">
-                        <a type="button" className="btn btn-primary btn-sm btn-block"><i
-                          className="fa fa-thumbs-up"></i> Like it
-                        </a>
-                      </div>
-                      <div className="col-md-2 text-left" style={{paddingLeft: 0}}>
-                        <a href="/app/articles/view/abcd" type="button" className="btn btn-info btn-sm btn-block ">Read more
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+    const
+      {ready, articles} = this.props
+      ;
+
+    console.log(this.props)
+    if (ready) {
+      if (!_.isEmpty(articles)) {
+        return (
+          <div className="row animated fadeInRight">
+            <div className="col-md-8">
+              {articles.map(article => (
+                <ArticleBox
+                  key={article._id}
+                  article={article}
+                />
+              ))}
             </div>
           </div>
-        </div>
-      </div>
-    );
+        );
+      } else {
+        return (
+          <div>
+            <NoArticle />
+          </div>
+        );
+      }
+    } else {
+      return (
+        <div>Loading...</div>
+      );
+    }
   }
 }
+
+export default ArticlesContainer = createContainer((params) => {
+  const
+    sub = Meteor.subscribe("articles"),
+    ready = sub.ready(),
+    articles = Articles.find().fetch()
+    ;
+
+  return {
+    ready,
+    articles
+  };
+}, ArticlesComponent);

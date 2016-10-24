@@ -1,13 +1,75 @@
+import {Meteor} from 'meteor/meteor';
 import {ValidatedMethod} from 'meteor/mdg:validated-method';
+import {Roles} from 'meteor/alanning:roles';
 
 // collections
 import {Articles} from './index';
 
-export const add = new ValidatedMethod({
-  name: "articles.add",
+// constants
+import * as ERROR_CODE from '/imports/utils/error_code';
+
+/**
+ * Method create new article
+ * @param {String} subject
+ * @param {String} content html content from summernote
+ * @param {Array} tags tags for the article, which could be generated from monkey learn
+ */
+export const create = new ValidatedMethod({
+  name: "articles.create",
   validate: null,
-  run({subject, content, tags}) {
-    return Articles.insert({subject, content, tags});
+  run({subject, content, tags, status}) {
+    const
+      user = Meteor.user()
+      ;
+
+    if(!_.isEmpty(user)) {
+      if(Roles.userIsInRole(user._id, "admin")) {
+        return Articles.insert({subject, content, tags, status});
+      } else {
+        return new Meteor.Error(ERROR_CODE.PERMISSION_DENIED);
+      }
+    } else {
+      return new Meteor.Error(ERROR_CODE.UNAUTHORIZED, "No user found.");
+    }
   }
 });
+
+/**
+ * Method edit article
+ * @param {String} subject
+ * @param {String} content html content from summernote
+ * @param {Array} tags tags for the article, which could be generated from monkey learn
+ */
+export const edit = new ValidatedMethod({
+  name: "articles.edit",
+  validate: null,
+  run({_id, subject, content, tags, status}) {
+    const
+      user = Meteor.user()
+      ;
+
+    if(!_.isEmpty(user)) {
+      if(Roles.userIsInRole(user._id, "admin")) {
+        console.log({
+          _id,
+          subject,
+          content,
+          tags,
+          status
+        })
+        return Articles.update({_id}, {$set: {subject, content, tags, status}});
+      } else {
+        return new Meteor.Error(ERROR_CODE.PERMISSION_DENIED);
+      }
+    } else {
+      return new Meteor.Error(ERROR_CODE.UNAUTHORIZED, "No user found.");
+    }
+  }
+});
+
+
+
+
+
+
 

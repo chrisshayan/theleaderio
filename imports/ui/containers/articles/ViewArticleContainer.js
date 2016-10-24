@@ -39,46 +39,50 @@ class ViewArticle extends Component {
     const
       {ready, article} = this.props
 
+    console.log(article)
     if (ready) {
-      return (
-        <div className="col-lg-10 col-lg-offset-1">
-          <div className="ibox">
-            <div className="ibox-content" style={{padding: 40}}>
-              <div className="pull-right">
-                <button className="btn btn-white btn-xs" type="button">Purpose</button>
-                <button className="btn btn-white btn-xs" type="button">Leadership</button>
-                <button className="btn btn-white btn-xs" type="button">Engagement</button>
-              </div>
-              <div className="text-center article-title">
-                <span className="text-muted"><i className="fa fa-clock-o"></i> October 18, 2016</span>
-
-                <h1>
-                  Employee Engagement Framework
-                </h1>
-              </div>
-              {!!article.content && (
-                <div dangerouslySetInnerHTML={this._createMarkup({content: article.content})}/>
-              )}
-              <div className="hr-line-dashed"/>
-              <div className="row">
-                <div className="col-md-6">
-                  <h5>Tags:</h5>
-                  <button className="btn btn-primary btn-xs" type="button">Model</button>
-                  <button className="btn btn-white btn-xs" type="button">Publishing</button>
+      if(!_.isEmpty(article)) {
+        return (
+          <div className="col-lg-10 col-lg-offset-1">
+            <div className="ibox">
+              <div className="ibox-content" style={{padding: 40}}>
+                <div className="pull-right">
+                  {article.tags.map(tag => (
+                    <button key={tag} className="btn btn-white btn-xs" type="button">{tag}</button>
+                  ))}
                 </div>
-                <div className="col-md-6">
-                  <div className="small text-right">
-                    <h5>Stats:</h5>
+                <div className="text-center article-title">
+                  <span className="text-muted"><i className="fa fa-clock-o"></i>{" "}{moment(article.createdAt).format('MMMM Do, YYYY')}</span>
 
-                    <div><i className="fa fa-thumbs-o-up"> </i> 56 likes</div>
-                    <i className="fa fa-eye"> </i> 144 views
+                  <h1>
+                    {article.subject}
+                  </h1>
+                </div>
+                {!!article.content && (
+                  <div dangerouslySetInnerHTML={this._createMarkup({content: article.content})}/>
+                )}
+                <div className="hr-line-dashed"/>
+                <div className="row">
+                  <div className="col-md-6">
+                    <h5>Stats:</h5>
+                    <button className="btn btn-primary btn-xs" type="button">
+                      <i className="fa fa-thumbs-o-up"></i>{" "}56 likes
+                    </button>
+                    {" "}
+                    <button className="btn btn-white btn-xs" type="button">
+                      <i className="fa fa-eye"> </i>{" "}144 views
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      );
+        );
+      } else {
+        return (
+          <div>Article not exists</div>
+        );
+      }
     } else {
       return (
         <div>Loading...</div>
