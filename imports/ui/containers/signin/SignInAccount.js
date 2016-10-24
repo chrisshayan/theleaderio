@@ -55,7 +55,12 @@ export default class SignInPage extends Component {
           const alias = Meteor.user().username;
           const subdomain = SubdomainActions.getSubdomain();
           if (subdomain === alias) {
-            FlowRouter.go('homePage');
+            const currentPath = Session.get("currentPath");
+            if(typeof currentPath !== 'undefined') {
+              FlowRouter.go(currentPath);
+            } else {
+              FlowRouter.go('homePage');
+            }
           } else {
             Meteor.logout();
             this.setState({
