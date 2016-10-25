@@ -8,12 +8,18 @@ class EmployeesCollection extends Mongo.Collection {
    * after insert employee, add employees array of that organization 
    */
   insert(doc, callback) {
-    const employeeId = super.insert(doc, callback);
+    const
+      employeeId = super.insert(doc, callback),
+      updatedAt = new Date()
+      ;
 
     if(employeeId) {
       Organizations.update({ _id: doc.organizationId }, {
         $addToSet: {
           employees: employeeId
+        },
+        $set: {
+          updatedAt
         }
       })
     }
@@ -26,14 +32,20 @@ class EmployeesCollection extends Mongo.Collection {
    * afterRemove : pull employee id in organization's employees
    */
   remove(selector, callback) {
-    const doc = this.findOne(selector);
-    const result = super.remove(selector, callback);
+    const
+      doc = this.findOne(selector),
+      updatedAt = new Date(),
+      result = super.remove(selector, callback)
+      ;
     if(result) {
-      Organizations.update({ _id: doc.organizationId }, {
+      console.log(Organizations.update({ _id: doc.organizationId }, {
         $pull: {
           employees: doc._id
+        },
+        $set: {
+          updatedAt
         }
-      });
+      }));
     }
     return result;
   }

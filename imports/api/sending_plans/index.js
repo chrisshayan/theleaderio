@@ -44,6 +44,10 @@ SendingPlans.schema = new SimpleSchema({
   status: {
     type: String,
     allowedValues: ['READY', 'SENT', 'FAILED', 'QUEUED']
+  },
+  reason :{
+    type: String,
+    optional: true
   }
 });
 
