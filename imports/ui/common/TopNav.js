@@ -14,7 +14,9 @@ class TopNav extends Component {
   }
 
   render() {
-    const {userProfile} = this.props;
+    const {
+      userProfile
+    } = this.props;
     let profilePhoto = DEFAULT_PROFILE_PHOTO;
     if (!_.isEmpty(userProfile)) {
       profilePhoto = userProfile.getPicture();
@@ -56,6 +58,7 @@ class TopNav extends Component {
                     <li><a href={FlowRouter.url('app.preferences')}>Preferences</a></li>
                     <li><a href={FlowRouter.url('app.organizations')}>Organizations</a></li>
                     <li><a href={FlowRouter.url('app.feedback')}>Feedback</a></li>
+                    <li><a href={FlowRouter.url('app.articles')}>Articles</a></li>
                     <li role="separator" className="divider"></li>
                     <li><a href={FlowRouter.url('app.logout')}>Sign out</a></li>
                   </ul>
