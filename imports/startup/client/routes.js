@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import {Meteor} from 'meteor/meteor';
+import {FlowRouter} from 'meteor/kadira:flow-router';
 import React from 'react';
-import { mount } from 'react-mounter';
+import {mount} from 'react-mounter';
 
 // components
 import NoticeForm from '/imports/ui/common/NoticeForm';
@@ -52,7 +52,6 @@ import * as Notifications from '/imports/api/notifications/methods';
 import {isAdmin} from '/imports/utils/index';
 
 
-
 /**
  * Constant
  * @routes all routes in action
@@ -76,12 +75,12 @@ FlowRouter.setRootUrl = (url) => {
   Meteor.absoluteUrl.defaultOptions.rootUrl = url || window.location.origin;
 }
 
-Tracker.autorun(function() {
+Tracker.autorun(function () {
   FlowRouter.watchPathChange();
   FlowRouter.setRootUrl();
 });
 
-Accounts.onLogout(function() {
+Accounts.onLogout(function () {
   window.Intercom('shutdown');
 });
 
@@ -93,8 +92,8 @@ function intercomUpdate(context, redirect) {
   if (user) {
     var email = user.emails[0].address;
     var user_id = user._id;
-    data = { app_id: appId, email, user_id, last_page: window.location.toString() };
-    if(!_.isEqual(LAST_INTERCOM_UPDATE, data)) {
+    data = {app_id: appId, email, user_id, last_page: window.location.toString()};
+    if (!_.isEqual(LAST_INTERCOM_UPDATE, data)) {
       LAST_INTERCOM_UPDATE = data;
       window.Intercom('update', data);
     }
@@ -182,8 +181,8 @@ signUpRoutes.route('/:action', {
           closeButton = false,
           title = "Signup user",
           message = "Please enter your basic informations first";
-        Notifications.warning.call({ closeButton, title, message });
-        FlowRouter.go('signUpPage', { action: 'user' });
+        Notifications.warning.call({closeButton, title, message});
+        FlowRouter.go('signUpPage', {action: 'user'});
       } else {
         mount(SignUpAlias);
       }
@@ -292,7 +291,7 @@ aliasRoutes.route('/:action', {
 const requiredAuthentication = (context, redirect) => {
   if (!Meteor.isLoggingIn && !Meteor.userId()) {
     const alias = Session.get('alias');
-    const params = { action: 'alias' };
+    const params = {action: 'alias'};
     if (alias) {
       params.action = 'account';
     }
@@ -317,7 +316,7 @@ appRoutes.route('/logout', {
           timeOut = 2000,
           title = 'Signed out',
           message = '';
-        Notifications.success.call({ closeButton, timeOut, title, message });
+        Notifications.success.call({closeButton, timeOut, title, message});
       }
       FlowRouter.go('/');
     });
@@ -329,7 +328,7 @@ appRoutes.route('/logout', {
  */
 appRoutes.route('/', {
   name: 'app.dashboard',
-  triggersEnter: [  _.debounce(intercomUpdate, 1000)],
+  triggersEnter: [_.debounce(intercomUpdate, 1000)],
   action() {
     mount(MainLayout, {
       content() {
@@ -386,7 +385,7 @@ adminRoutes.route('/jobs', {
  */
 appRoutes.route('/preferences', {
   name: 'app.preferences',
-  triggersEnter: [  _.debounce(intercomUpdate, 1000)],
+  triggersEnter: [_.debounce(intercomUpdate, 1000)],
   action() {
     mount(MainLayout, {
       content() {
@@ -403,7 +402,7 @@ appRoutes.route('/preferences', {
  */
 appRoutes.route('/organizations', {
   name: 'app.organizations',
-  triggersEnter: [  _.debounce(intercomUpdate, 1000)],
+  triggersEnter: [_.debounce(intercomUpdate, 1000)],
   action() {
     mount(MainLayout, {
       content() {
@@ -418,7 +417,7 @@ appRoutes.route('/organizations', {
  */
 appRoutes.route('/organizations/create', {
   name: 'app.organizations.create',
-  triggersEnter: [  _.debounce(intercomUpdate, 1000)],
+  triggersEnter: [_.debounce(intercomUpdate, 1000)],
   action() {
     mount(MainLayout, {
       content() {
@@ -433,7 +432,7 @@ appRoutes.route('/organizations/create', {
  */
 appRoutes.route('/organizations/update/:_id', {
   name: 'app.organizations.update',
-  triggersEnter: [  _.debounce(intercomUpdate, 1000)],
+  triggersEnter: [_.debounce(intercomUpdate, 1000)],
   action(params) {
     mount(MainLayout, {
       content() {
@@ -444,11 +443,11 @@ appRoutes.route('/organizations/update/:_id', {
 });
 
 /**
- * Route for feedback 
+ * Route for feedback
  */
 appRoutes.route('/feedback', {
   name: 'app.feedback',
-  triggersEnter: [  _.debounce(intercomUpdate, 1000)],
+  triggersEnter: [_.debounce(intercomUpdate, 1000)],
   action(params) {
     mount(MainLayout, {
       content() {
@@ -503,27 +502,49 @@ appRoutes.route('/articles/create', {
 /**
  * Route for edit an article
  */
-appRoutes.route('/articles/edit/:_id', {
-  name: 'app.articles.edit',
-  action(params) {
-    mount(MainLayout, {
-      content() {
-        return <EditArticle _id={params._id}/>
+appRoutes.route('/articles/:action/:seoUrl', {
+  name: 'app.articles.action',
+  action(params, queryParams) {
+    switch (params.action) {
+      case "edit": {
+        mount(MainLayout, {
+          content() {
+            return <EditArticle _id={queryParams._id}/>
+          }
+        });
+        break;
       }
-    })
+      case "view": {
+        mount(MainLayout, {
+          content() {
+            return <ViewArticle _id={queryParams._id}/>
+          }
+        });
+        break;
+      }
+      default: {
+        mount(MainLayout, {
+          content() {
+            return <NoticeForm />
+          }
+        });
+      }
+    }
+
   }
 });
 
 /**
  * Route for view an article
  */
-appRoutes.route('/articles/view/:_id', {
-  name: 'app.articles.view',
-  action(params) {
-    mount(MainLayout, {
+const viewArticleRoute = FlowRouter.route('/articles/view/:seoUrl', {
+  name: 'articles.view',
+  action(params, queryParams) {
+    // mount(ViewArticle, {_id: queryParams._id});
+    mount(BlankLayout, {
       content() {
-        return <ViewArticle _id={params._id}/>
+        return <ViewArticle _id={queryParams._id}/>
       }
-    })
+    });
   }
 });

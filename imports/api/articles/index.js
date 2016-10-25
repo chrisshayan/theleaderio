@@ -20,6 +20,14 @@ Articles.schema = new SimpleSchema({
   subject: {
     type: String
   },
+  seoUrl: {
+    type: String,
+    optional: true
+  },
+  description: {
+    type: String,
+    optional: true
+  },
   content: {
     type: String
   },
@@ -27,9 +35,9 @@ Articles.schema = new SimpleSchema({
     type: [String],
     optional: true
   },
-  like: {
-    type: Number,
-    defaultValue: 0
+  likes: {
+    type: [String],
+    defaultValue: []
   },
   status: {
     type: String,

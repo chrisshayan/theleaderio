@@ -9,3 +9,6 @@ Meteor.publish('articles', function() {
   }
   return Articles.find();
 });
+Meteor.publish('articles.public', function() {
+  return Articles.find();
+});

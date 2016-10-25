@@ -1,15 +1,24 @@
 import React, {Component} from 'react';
 
+// methods
+import * as ArticleActions from '/imports/api/articles/methods';
+
 export default class ArticleBox extends Component {
+
   _createMarkup({content}) {
     return {__html: content};
+  }
+
+  _onLikeArticle() {
+    const {_id} = this.props.article;
+    ArticleActions.like.call({_id});
   }
 
   render() {
     const
       {
         article,
-        allowEdit = true
+        allowEdit = false
       } = this.props,
       {
         _id,
@@ -18,8 +27,8 @@ export default class ArticleBox extends Component {
         tags,
         createdAt,
       } = article,
-      editUrl = FlowRouter.path("app.articles.edit", {_id}),
-      viewUrl = FlowRouter.path("app.articles.view", {_id})
+      editUrl = FlowRouter.path("app.articles.action", {action: "edit", seoUrl: article.seoUrl}, {_id}),
+      viewUrl = FlowRouter.path("articles.view", {seoUrl: article.seoUrl}, {_id})
       ;
 
     return (
@@ -50,8 +59,9 @@ export default class ArticleBox extends Component {
               <div className="user-button">
                 <div className="row">
                   <div className="col-md-2 text-right">
-                    <a type="button" className="btn btn-primary btn-sm btn-block"><i
-                      className="fa fa-thumbs-up"></i> Like it
+                    <a type="button" className="btn btn-primary btn-sm btn-block"
+                       onClick={this._onLikeArticle.bind(this)}
+                    ><i className="fa fa-thumbs-up"></i> Like it
                     </a>
                   </div>
                   <div className="col-md-2 text-left" style={{paddingLeft: 0}}>

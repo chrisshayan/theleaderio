@@ -10,10 +10,27 @@ import {Articles} from '/imports/api/articles/index';
 import ArticleBox from '/imports/ui/containers/articles/ArticleBox';
 import NoArticle from '/imports/ui/containers/articles/NoArticle';
 
+// methods
+import {verifyAdminRole} from '/imports/api/users/methods';
+
 class ArticlesComponent extends Component {
   constructor() {
     super();
 
+    // setPageHeading({
+    //   title: 'Articles',
+    //   breadcrumb: [{
+    //     label: 'Articles',
+    //     active: true
+    //   }]
+    // });
+
+    this.state = {
+      isAdmin: false
+    };
+  }
+
+  componentWillMount() {
     const
       actions = (
         <a href={FlowRouter.url('app.articles.create')} className="btn btn-primary">
@@ -23,15 +40,36 @@ class ArticlesComponent extends Component {
         </a>
       )
       ;
-
-    setPageHeading({
-      title: 'Articles',
-      breadcrumb: [{
-        label: 'Articles',
-        active: true
-      }],
-      actions
+    this.setState({
+      isAdmin: false
     });
+    if (!!Meteor.userId()) {
+      verifyAdminRole.call({userId: Meteor.userId()}, (error, result) => {
+        if (!error) {
+          if(result.isAdmin) {
+            setPageHeading({
+              title: 'Articles',
+              breadcrumb: [{
+                label: 'Articles',
+                active: true
+              }],
+              actions
+            });
+          } else {
+            setPageHeading({
+              title: 'Articles',
+              breadcrumb: [{
+                label: 'Articles',
+                active: true
+              }]
+            });
+          }
+          this.setState({
+            isAdmin: result.isAdmin
+          });
+        }
+      });
+    }
   }
 
   componentWillUnmount() {
@@ -40,10 +78,11 @@ class ArticlesComponent extends Component {
 
   render() {
     const
+      {isAdmin} = this.state,
       {ready, articles} = this.props
       ;
 
-    console.log(this.props)
+    // console.log(this.state)
     if (ready) {
       if (!_.isEmpty(articles)) {
         return (
@@ -53,6 +92,7 @@ class ArticlesComponent extends Component {
                 <ArticleBox
                   key={article._id}
                   article={article}
+                  allowEdit={isAdmin}
                 />
               ))}
             </div>

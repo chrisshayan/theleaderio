@@ -14,6 +14,9 @@ import FormChosen from '/imports/ui/components/FormChosen';
 import * as ArticleActions from '/imports/api/articles/methods';
 import * as Notifications from '/imports/api/notifications/methods';
 
+// functions
+import {encodeKeyword} from '/imports/utils/urlBuilder';
+
 // constants
 import {DEFAULT_METRICS} from '/imports/utils/defaults';
 
@@ -22,7 +25,7 @@ class EditArticle extends Component {
     super();
 
     const
-      _id = FlowRouter.getParam("_id")
+      _id = FlowRouter.getQueryParam("_id")
       ;
     setPageHeading({
       title: !_id ? 'Create new article' : 'Edit article',
@@ -62,21 +65,21 @@ class EditArticle extends Component {
     resetPageHeading();
   }
 
-  _editArticle({action, data}) {
+  _editArticle({status, data}) {
     const
       {articleId} = this.state,
-      {subject, content, tags} = data
+      {subject, content, tags, seoUrl} = data
       ;
     let
-      status = ""
+      articleStatus = ""
       ;
-    switch (action) {
+    switch (status) {
       case "save": {
-        status = "ACTIVE";
+        articleStatus = "ACTIVE";
         break;
       }
       case "draft": {
-        status = "DRAFT";
+        articleStatus = "DRAFT";
         break;
       }
       default: {
@@ -92,8 +95,9 @@ class EditArticle extends Component {
         subject,
         content,
         tags,
-        status
-      }, (error) => {
+        status: articleStatus,
+        seoUrl
+      }, (error, _id) => {
         if (!error) {
           const
             closeButton = true,
@@ -101,13 +105,15 @@ class EditArticle extends Component {
             message = "Saved"
             ;
           Notifications.success.call({closeButton, title, message});
+          // route to view article
+          FlowRouter.go('app.articles.action', {action: 'view', seoUrl}, {_id});
         } else {
           const
             closeButton = true,
             title = "Article",
             message = error.reason
             ;
-          Notifications.success.call({closeButton, title, message});
+          Notifications.error.call({closeButton, title, message});
         }
       });
     } else {
@@ -117,7 +123,7 @@ class EditArticle extends Component {
         subject,
         content,
         tags,
-        status
+        status: articleStatus
       }, (error) => {
         if (!error) {
           const
@@ -132,44 +138,76 @@ class EditArticle extends Component {
             title = "Article",
             message = error.reason
             ;
-          Notifications.success.call({closeButton, title, message});
+          Notifications.error.call({closeButton, title, message});
         }
       });
     }
-    console.log({subject, content, tags, status})
+    // console.log({subject, content, tags, articleStatus})
+  }
+
+  _getArticleData() {
+    const
+      {articleId} = this.state,
+      articleData = {
+        subject: this.refs.subject.value,
+        content: this.refs.summernote.getContent(),
+        tags: this.refs.selectedTags.getValue()
+      }
+      ;
+
+    if (typeof articleId === "undefined") {
+      articleData.seoUrl = encodeKeyword(articleData.subject.toLowerCase())
+    }
+
+    return articleData;
   }
 
   _onSaveAsDraft() {
-    const
-      subject = this.refs.subject.value,
-      content = this.refs.summernote.getContent(),
-      tags = this.refs.selectedTags.getValue()
-      ;
-
-    this._editArticle({action: "draft", data: {subject, content, tags}});
+    this._editArticle({status: "draft", data: this._getArticleData()});
+    // console.log(this._getArticleData())
   }
 
   _onSave() {
-    const
-      subject = this.refs.subject.value,
-      content = this.refs.summernote.getContent(),
-      tags = this.refs.selectedTags.getValue()
-      ;
-
-    this._editArticle({action: "save", data: {subject, content, tags}});
+    this._editArticle({status: "save", data: this._getArticleData()});
+    // console.log(this._getArticleData())
   }
 
   _onDelete() {
-    console.log(`discard`)
+    const
+      {articleId} = this.state;
+
+    if(!articleId) {
+      FlowRouter.go('app.articles.create');
+    } else {
+      ArticleActions.discard.call({_id: articleId}, (error, result) => {
+        if (!error) {
+          const
+            closeButton = true,
+            title = "Article",
+            message = "Discarded"
+            ;
+          Notifications.success.call({closeButton, title, message});
+          FlowRouter.go('app.articles');
+        } else {
+          const
+            closeButton = true,
+            title = "Article",
+            message = error.reason
+            ;
+          Notifications.error.call({closeButton, title, message});
+        }
+      });
+    }
   }
 
   render() {
     const
       {ready, article} = this.props,
+      action = FlowRouter.getParam("action"),
+      seoUrl = FlowRouter.getParam("seoUrl"),
+      _id = FlowRouter.getQueryParam("_id"),
       chosenTags = []
       ;
-
-    // console.log(this.state.subject.length);
 
     // get chosenTags values
     DEFAULT_METRICS.map((value, key) => {
@@ -210,7 +248,7 @@ class EditArticle extends Component {
           <div className="mail-text">
             <SummerNoteEditor
               ref="summernote"
-              content={!_.isEmpty(article) ? article.content : ""}
+              content={!_.isEmpty(article) ? article.content : "<p>write your article ...</p>"}
               height={350}
             />
           </div>
@@ -249,12 +287,11 @@ class EditArticle extends Component {
 
 export default EditArticleContainer = createContainer((params) => {
   const
-    _id = FlowRouter.getParam("_id")
+    {_id} = params
     ;
   if (!_id) {
     return {
-      ready: true,
-      action: 'create'
+      ready: true
     };
   } else {
     const
@@ -265,7 +302,6 @@ export default EditArticleContainer = createContainer((params) => {
 
     return {
       ready,
-      action: 'edit',
       article
     };
   }

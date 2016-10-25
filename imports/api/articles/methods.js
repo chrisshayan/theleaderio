@@ -17,14 +17,14 @@ import * as ERROR_CODE from '/imports/utils/error_code';
 export const create = new ValidatedMethod({
   name: "articles.create",
   validate: null,
-  run({subject, content, tags, status}) {
+  run({subject, content, tags, status, seoUrl}) {
     const
       user = Meteor.user()
       ;
 
     if(!_.isEmpty(user)) {
       if(Roles.userIsInRole(user._id, "admin")) {
-        return Articles.insert({subject, content, tags, status});
+        return Articles.insert({subject, content, tags, status, seoUrl});
       } else {
         return new Meteor.Error(ERROR_CODE.PERMISSION_DENIED);
       }
@@ -67,9 +67,66 @@ export const edit = new ValidatedMethod({
   }
 });
 
+/**
+ * Method delete article
+ * @param {String} _id
+ */
+export const discard = new ValidatedMethod({
+  name: "articles.discard",
+  validate: null,
+  run({_id}) {
+    const
+      user = Meteor.user()
+      ;
 
+    if(!_.isEmpty(user)) {
+      if(Roles.userIsInRole(user._id, "admin")) {
+        return Articles.remove({_id});
+      } else {
+        return new Meteor.Error(ERROR_CODE.PERMISSION_DENIED);
+      }
+    } else {
+      return new Meteor.Error(ERROR_CODE.UNAUTHORIZED, "No user found.");
+    }
+  }
+});
 
+/**
+ * Method like article
+ * @param {String} _id
+ */
+export const like = new ValidatedMethod({
+  name: "articles.like",
+  validate: null,
+  run({_id}) {
+    const
+      user = Meteor.user()
+      ;
 
+    if(!_.isEmpty(user)) {
+      return Articles.update({_id}, {$addToSet: {likes: user._id}});
+    } else {
+      return new Meteor.Error(ERROR_CODE.UNAUTHORIZED, "No user found.");
+    }
+  }
+});
 
+/**
+ * Method unlike article
+ * @param {String} _id
+ */
+export const unlike = new ValidatedMethod({
+  name: "articles.unlike",
+  validate: null,
+  run({_id}) {
+    const
+      user = Meteor.user()
+      ;
 
-
+    if(!_.isEmpty(user)) {
+      return Articles.update({_id}, {$pull: {likes: user._id}});
+    } else {
+      return new Meteor.Error(ERROR_CODE.UNAUTHORIZED, "No user found.");
+    }
+  }
+});
