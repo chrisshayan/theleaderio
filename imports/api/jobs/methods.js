@@ -94,14 +94,14 @@ const sendFeedbackEmailToLeader = function (job, cb) {
  */
 export const sendStatisticEmailToLeader = function (job, cb) {
   const
-    startDate = new Date(moment().subtract(9, 'day')),
+    startDate = new Date(moment().subtract(12, 'day')),
     currentDate = new Date(),
     leaderIdList = getLeaderForDigestEmail({params: {startDate, endDate: currentDate}})
     ;
   let
     query = {},
     options = {},
-    org = [],
+    orgs = [],
     employee = [],
     plan = [],
     metrics = [],
@@ -124,6 +124,10 @@ export const sendStatisticEmailToLeader = function (job, cb) {
         totalBadScores: 0,
         totalGoodScores: 0,
         totalFeedback: 0,
+      },
+      orgInfo: {
+        haveActiveOrg: false,
+        totalEmployees: 0 // in active orgs.
       },
       articles: {
         haveArticles: false,
@@ -152,7 +156,7 @@ export const sendStatisticEmailToLeader = function (job, cb) {
     leaderIdList.map(leaderId => {
       // initiate
       options = {};
-      org = [];
+      orgs = [];
       employee = [];
       plan = [];
       metrics = [];
@@ -176,6 +180,10 @@ export const sendStatisticEmailToLeader = function (job, cb) {
           totalGoodScores: 0,
           totalFeedback: 0,
         },
+        orgInfo: {
+          haveActiveOrg: false,
+          totalEmployees: 0 // in active orgs.
+        },
         articles: {
           haveArticles: false,
           metricToImprove: "",
@@ -190,17 +198,19 @@ export const sendStatisticEmailToLeader = function (job, cb) {
       ;
 
       logContentDetails.leaderId = leaderId;
-      // get the latest updatedAt of organizations and employees.
-      // query = {leaderId};
+      // get org information
+      query = {leaderId, isPresent: true};
       // options = {
       //   sort: {updatedAt: -1},
       //   limit: 1
       // };
-      // latest updatedAt from organizations
-      // org = Organizations.find(query, options).fetch();
-      // if (!_.isEmpty(org)) {
-      //   digest.orgUrl = `/app/organizations/update/${org._id}?t=employees`;
-      // }
+      orgs = Organizations.find(query).fetch();
+      if (!_.isEmpty(orgs)) {
+        digest.orgInfo.haveActiveOrg = true;
+        orgs.map(org => {
+          digest.orgInfo.totalEmployees += org.employees.length;
+        });
+      }
 
       // get sending plan status
       query = {leaderId, status: {$not: /READY/}, sendDate: {$gte: startDate, $lt: currentDate}};

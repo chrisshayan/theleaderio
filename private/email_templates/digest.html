@@ -62,11 +62,20 @@
                                                         {{sendingPlanStatus.message}}
                                                         <br/>
                                                         {{sendingPlanStatus.reason}}
-                                                        <br/>
-                                                        {{sendingPlanStatus.suggest}}
                                                     </td>
                                                 </tr>
                                             {{/if}}
+                                            {{#unless orgInfo.haveActiveOrg}}
+                                                <tr>
+                                                    <td style="padding-top: 20px;">
+                                                        You have not created any company yet. It is
+                                                        important to create your company and upload your
+                                                        list of employees so theLeader.io will be able to get
+                                                        scores of different perspectives of your leadership.
+                                                        Engagement starts from this simple step.
+                                                    </td>
+                                                </tr>
+                                            {{/unless}}
                                             {{#if leadershipProgress.haveProgress}}
                                                 <tr>
                                                     <td>
@@ -89,6 +98,23 @@
                                                     </td>
                                                 </tr>
                                             {{/if}}
+                                            {{#unless sendingPlanStatus.sendFailed}}
+                                                {{#unless leadershipProgress.haveProgress}}
+                                                    {{#if orgInfo.haveActiveOrg}}
+                                                        <tr>
+                                                            <td style="padding-top: 20px;">
+                                                                You have {{orgInfo.totalEmployees}} employees in your
+                                                                companies. However in the last evaluation period
+                                                                none of your employees have evaluated you. It can be an
+                                                                issue about email or they do not know how to score. We
+                                                                suggest you to continuously inform and engage with your
+                                                                employees and encourage them to score your leadership.
+                                                                Engagement starts from this simple step.
+                                                            </td>
+                                                        </tr>
+                                                    {{/if}}
+                                                {{/unless}}
+                                            {{/unless}}
                                             <tr>
                                                 <td style="padding-top: 10px;">
                                                     Your employees will help you to improve the leadership.

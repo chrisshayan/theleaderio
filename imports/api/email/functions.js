@@ -519,6 +519,10 @@ export const getDigestEmailOptions = ({template, data}) => {
         totalGoodScores: 0,
         totalFeedback: 0,
       },
+      orgInfo: {
+        haveActiveOrg: false,
+        totalEmployees: 0 // in active orgs.
+      },
       articles: {
         haveArticles: false,
         metricToImprove: "",
@@ -547,6 +551,7 @@ export const getDigestEmailOptions = ({template, data}) => {
   mailData.updateEmployeeList = digest.updateEmployeeList;
   mailData.sendingPlanStatus = digest.sendingPlanStatus;
   mailData.leadershipProgress = digest.leadershipProgress;
+  mailData.orgInfo = digest.orgInfo;
   mailData.articles = digest.articles;
   mailData.leaderProfileUrl = leaderInfo.leaderProfileUrl;
   mailData.orgUrl = `http://${leaderInfo.alias}.${domain}/app/organizations`;
