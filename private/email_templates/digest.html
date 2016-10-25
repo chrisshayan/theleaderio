@@ -126,19 +126,20 @@
                                                 <tr>
                                                     <td style="padding: 0 0 5px;">
                                                         <h4 style="margin-bottom: 5px; margin-top: 10px;">
-                                                            Want to improve your "{{articles.metricToImprove}}"?
+                                                            Want to improve your leadership? These articles could give
+                                                            you some ideas:
                                                         </h4>
                                                     </td>
                                                 </tr>
-                                                <tr>
-                                                    <td style="padding: 0 0 5px;">
-                                                        {{#each articles.articles}}
+                                                {{#each articles.articles}}
+                                                    <tr>
+                                                        <td style="padding: 0 0 5px;">
                                                             <a href="{{url}}">
                                                                 {{subject}}
                                                             </a>
-                                                        {{/each}}
-                                                    </td>
-                                                </tr>
+                                                        </td>
+                                                    </tr>
+                                                {{/each}}
                                             {{/if}}
                                         </table>
                                     </td>

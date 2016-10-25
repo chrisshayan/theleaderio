@@ -6,7 +6,7 @@ import ArticlesCollection from './collections';
 export const Articles = new ArticlesCollection('articles');
 
 // CONSTANTS
-const STATUS = {
+export const STATUS = {
   ACTIVE: "ACTIVE",
   DRAFT: "DRAFT",
   DELETED: "DELETED"

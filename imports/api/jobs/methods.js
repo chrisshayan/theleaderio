@@ -6,11 +6,13 @@ import {later} from 'meteor/mrt:later';
 import {AdminJobs} from '/imports/api/jobs/collections';
 
 // collections
+import {Accounts} from 'meteor/accounts-base';
 import {Organizations} from '/imports/api/organizations/index';
 import {Employees} from '/imports/api/employees/index';
 import {SendingPlans} from '/imports/api/sending_plans/index';
 import {Metrics} from '/imports/api/metrics/index';
 import {Feedbacks} from '/imports/api/feedbacks/index';
+import {Articles, STATUS} from '/imports/api/articles/index';
 import {LogsDigest} from '/imports/api/logs/index';
 
 // Job
@@ -27,6 +29,8 @@ import {add as addLogs} from '/imports/api/logs/functions';
 // constants
 import * as ERROR_CODE from '/imports/utils/error_code';
 import {LOG_LEVEL} from '/imports/utils/defaults';
+const {domain, mailDomain} = Meteor.settings.public;
+const SITE_NAME = Meteor.settings.public.name;
 
 /**
  * Function send email to leader to receive feedback for an employee who will be choose randomly
@@ -92,7 +96,8 @@ const sendFeedbackEmailToLeader = function (job, cb) {
  * @param job
  * @param cb
  */
-export const sendStatisticEmailToLeader = function (job, cb) {
+// export const sendStatisticEmailToLeader = function (job, cb) { // this is used for testing
+const sendStatisticEmailToLeader = function (job, cb) {
   const
     startDate = new Date(moment().subtract(12, 'day')),
     currentDate = new Date(),
@@ -101,11 +106,14 @@ export const sendStatisticEmailToLeader = function (job, cb) {
   let
     query = {},
     options = {},
+    leader = {},
     orgs = [],
     employee = [],
     plan = [],
     metrics = [],
     feedback = [],
+    articles = [],
+    alias = "",
     latestUpdatedAt = startDate,
     totalLeaders = 0,
     digest = {
@@ -131,13 +139,8 @@ export const sendStatisticEmailToLeader = function (job, cb) {
       },
       articles: {
         haveArticles: false,
-        metricToImprove: "",
-        articles: [
-          {
-            url: "",
-            subject: ""
-          }
-        ]
+        metricToImprove: [],
+        articles: []
       },
     },
     logName = "digest",
@@ -155,12 +158,16 @@ export const sendStatisticEmailToLeader = function (job, cb) {
     totalLeaders = leaderIdList.length;
     leaderIdList.map(leaderId => {
       // initiate
+      query = {};
       options = {};
+      leader = {};
+      alias = "";
       orgs = [];
       employee = [];
       plan = [];
       metrics = [];
       feedback = [];
+      articles = [];
       // latestUpdatedAt = startDate;
       // digest values
       digest = {
@@ -186,18 +193,26 @@ export const sendStatisticEmailToLeader = function (job, cb) {
         },
         articles: {
           haveArticles: false,
-          metricToImprove: "",
-          articles: [
-            {
-              url: "",
-              subject: ""
-            }
-          ]
+          metricToImprove: [],
+          articles: []
         },
       }
       ;
 
       logContentDetails.leaderId = leaderId;
+
+      // get leader information
+      query = {_id: leaderId};
+      options = {
+        fields: {
+          username: true
+        }
+      };
+      leader = Accounts.users.findOne(query, options);
+      if(!_.isEmpty(leader)) {
+        alias = leader.username;
+      }
+
       // get org information
       query = {leaderId, isPresent: true};
       // options = {
@@ -278,7 +293,33 @@ export const sendStatisticEmailToLeader = function (job, cb) {
       }
 
       // get article for leader base on the bad score of metric or the topics of negative feedback
-      // not implemented yet
+      query = {status: STATUS.ACTIVE};
+      options = {
+        fields: {
+          content: false
+        },
+        sort: {createdAt: -1},
+        limit: 2
+      };
+      articles = Articles.find().fetch();
+      if(!_.isEmpty(articles)) {
+        digest.articles.haveArticles = true;
+        articles.map(article => {
+          if(!_.isEmpty(article.tags)) {
+            article.tags.map(tag => {
+              digest.articles.metricToImprove.push(tag);
+            });
+          }
+          digest.articles.articles.push({
+            subject: article.subject,
+            url: `http://${alias}.${domain}/app/articles/view/${article.seoUrl}?_id=${article._id}`
+          });
+        });
+      }
+      // get uniq metric to improve & articles
+      digest.articles.metricToImprove = _.uniq(digest.articles.metricToImprove);
+      digest.articles.articles = _.uniq(digest.articles.articles);
+      // console.log(digest.articles.articles)
 
       // send digest email to leader
       const template = 'digest';
