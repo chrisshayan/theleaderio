@@ -557,7 +557,7 @@ export const getDigestEmailOptions = ({template, data}) => {
   mailData.orgUrl = `http://${leaderInfo.alias}.${domain}/app/organizations`;
 
   result.subject = mailData.subject;
-  // result.to = leaderInfo.leaderEmail;
+  result.to = leaderInfo.leaderEmail;
   result.html = buildHtml({template, data: mailData});
 
   return result;
