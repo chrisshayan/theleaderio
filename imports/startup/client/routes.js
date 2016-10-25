@@ -17,6 +17,10 @@ import BlankLayout from '/imports/ui/layouts/BlankLayout';
 import ManageIndustries from '/imports/ui/containers/admin/ManageIndustries';
 import ManageJobs from '/imports/ui/containers/admin/ManageJobs';
 
+import ArticlesContainer from '/imports/ui/containers/articles/ArticlesContainer';
+import EditArticle from '/imports/ui/containers/articles/EditArticle';
+import ViewArticle from '/imports/ui/containers/articles/ViewArticleContainer';
+
 import LandingPage from '/imports/ui/containers/LandingPage';
 
 import SignUpUser from '/imports/ui/containers/signup/SignUpUser';
@@ -472,6 +476,84 @@ appRoutes.route('/messages', {
     mount(MainLayout, {
       content() {
         return <Messages />;
+      }
+    });
+  }
+});
+
+/**
+ * Route for articles
+ */
+appRoutes.route('/articles', {
+  name: "app.articles",
+  action() {
+    mount(MainLayout, {
+      content() {
+        return <ArticlesContainer />;
+      }
+    });
+  }
+});
+
+/**
+ * Route for creating an article
+ */
+appRoutes.route('/articles/create', {
+  name: 'app.articles.create',
+  action(params) {
+    mount(MainLayout, {
+      content() {
+        return <EditArticle />
+      }
+    })
+  }
+});
+
+/**
+ * Route for edit an article
+ */
+appRoutes.route('/articles/:action/:seoUrl', {
+  name: 'app.articles.action',
+  action(params, queryParams) {
+    switch (params.action) {
+      case "edit": {
+        mount(MainLayout, {
+          content() {
+            return <EditArticle _id={queryParams._id}/>
+          }
+        });
+        break;
+      }
+      case "view": {
+        mount(MainLayout, {
+          content() {
+            return <ViewArticle _id={queryParams._id}/>
+          }
+        });
+        break;
+      }
+      default: {
+        mount(MainLayout, {
+          content() {
+            return <NoticeForm />
+          }
+        });
+      }
+    }
+
+  }
+});
+
+/**
+ * Route for view an article
+ */
+const viewArticleRoute = FlowRouter.route('/articles/view/:seoUrl', {
+  name: 'articles.view',
+  action(params, queryParams) {
+    // mount(ViewArticle, {_id: queryParams._id});
+    mount(BlankLayout, {
+      content() {
+        return <ViewArticle _id={queryParams._id}/>
       }
     });
   }

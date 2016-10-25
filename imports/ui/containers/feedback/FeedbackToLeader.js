@@ -59,26 +59,3 @@ const withMeteor = () => {
 }
 
 export default FeedbackToLeaderContainer = createContainer(withMeteor, FeedbackToLeader);
-
-// export class Container extends Component {
-//   constructor(props) {
-//     super(props);
-//     setPageHeading({
-//       title: 'Feedback',
-//       breadcrumb: [{
-//         label: 'Feedback',
-//         active: true
-//       }]
-//     });
-//
-//     Session.setDefault('FEEDBACK_TO_LEADER_PAGE', 1);
-//   }
-//
-//   render() {
-//     return (
-//       <div>
-//         <FeedbackToLeaderContainer />
-//       </div>
-//     );
-//   }
-// }
