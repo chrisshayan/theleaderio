@@ -290,11 +290,21 @@ aliasRoutes.route('/:action', {
 
 const requiredAuthentication = (context, redirect) => {
   if (!Meteor.isLoggingIn && !Meteor.userId()) {
-    const alias = Session.get('alias');
-    const params = {action: 'alias'};
+    const
+      alias = Session.get('alias'),
+      params = {action: 'alias'},
+      currentPath = FlowRouter.current().path
+      ;
     if (alias) {
       params.action = 'account';
     }
+
+    // console.log(currentPath)
+    // save the path that user left
+    if (!(currentPath === "/signin/account" || currentPath === "signin/alias")) {
+      Session.set("currentPath", currentPath);
+    }
+
     FlowRouter.go('SignInPage', params);
   }
 }
