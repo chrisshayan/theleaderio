@@ -14,6 +14,9 @@ import {IDValidator} from '/imports/utils';
 import {Tokens} from '/imports/api/tokens/index';
 import { Preferences } from '/imports/api/users/index';
 
+// functions
+import {formatAlias} from '/imports/api/users/functions';
+
 /**
  *  @summary set alias for account which will use Account username as alias
  *  @param tokenId
@@ -34,7 +37,7 @@ export const createAlias = new ValidatedMethod({
       if (!_.isEmpty(user)) {
         if (typeof user.username === 'undefined') {
           const userId = user._id;
-          Accounts.setUsername(userId, alias);
+          Accounts.setUsername(userId, formatAlias(alias));
           const verifyUser = Accounts.findUserByUsername(alias);
           if (_.isEmpty(verifyUser)) {
             throw new Meteor.Error('create-alias-failed',

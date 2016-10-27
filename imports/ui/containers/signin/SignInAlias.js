@@ -2,11 +2,21 @@ import React, {Component} from 'react';
 import {Meteor} from 'meteor/meteor';
 import _ from 'lodash';
 
+// components
 import AliasForm from '/imports/ui/components/AliasForm';
 import Copyright from '/imports/ui/common/Copyright';
+
+// methods
 import * as UserActions from '/imports/api/users/methods';
+
+// utils
 import * as SubdomainActions from '/imports/utils/subdomain';
+import {aliasValidator} from '/imports/utils/index';
+
+// defaults
 import {userHomeRoute, DOMAIN, routes} from '/imports/startup/client/routes';
+
+
 
 export default class SigninAliasPage extends Component {
   constructor() {
@@ -41,19 +51,26 @@ export default class SigninAliasPage extends Component {
       errors: null
     });
     if(inputValue.length > 0) {
-      UserActions.verify.call({alias: inputValue}, (error) => {
-        if(_.isEmpty(error)) {
-          this.setState({
-            aliasAllowed: true,
-            errors: null
-          });
-        } else {
-          this.setState({
-            aliasAllowed: false,
-            errors: `${inputValue}.${DOMAIN} doesn't exists. Please enter the correct one ...`
-          });
-        }
-      });
+      if(aliasValidator(inputValue)) {
+        UserActions.verify.call({alias: inputValue}, (error) => {
+          if(_.isEmpty(error)) {
+            this.setState({
+              aliasAllowed: true,
+              errors: null
+            });
+          } else {
+            this.setState({
+              aliasAllowed: false,
+              errors: `${inputValue}.${DOMAIN} doesn't exists. Please enter the correct one ...`
+            });
+          }
+        });
+      } else {
+        this.setState({
+          aliasAllowed: false,
+          errors: "Please use only letters (a-z), numbers."
+        });
+      }
     }
   }
 
