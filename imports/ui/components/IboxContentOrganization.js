@@ -39,7 +39,7 @@ export default class IboxContentOrganization extends Component {
             <h4>{title}</h4>
             <p className="stats-label">{name}</p>
             <span className="vertical-date">
-              <small>{startTime} {' - '} {isPresent ? "Current" : endTime}</small>
+              <small>{startTime} {' - '} {isPresent ? "Present" : endTime}</small>
             </span>
             {(noEmployees > 0) && (
               <p className="stats-label" style={{marginTop: 10}}>
