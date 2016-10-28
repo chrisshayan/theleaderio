@@ -239,8 +239,6 @@ export default ManageJobsContainer = createContainer((params) => {
     sub = Meteor.subscribe("administration"),
     ready = sub.ready(),
     AdminJobs = Administration.find({type: "job"}).fetch()
-    // sendFeedbackForEmployeeJob = Administration.findOne({type: "job", name: "feedback_for_employee"}),
-    // sendStatisticForLeaderJob = Administration.findOne({type: "job", name: "statistic_for_leader"})
     ;
 
   return {

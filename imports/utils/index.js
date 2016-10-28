@@ -7,6 +7,18 @@ export const IDValidator = {
   }
 };
 
+/**
+ * Function validate alias
+ * Only allow a-z, A-Z and Number 0-9
+ * @param alias
+ * @return true if alias's characters is allowed
+ */
+export const aliasValidator = (alias) => {
+  const regex = new RegExp("^[a-zA-Z0-9]*$");
+
+  return regex.test(alias);
+}
+
 export const getErrors = err => {
   let error = {};
   try {

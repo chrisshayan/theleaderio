@@ -161,6 +161,7 @@ export default class PublicProfile extends Component {
                                 data={{
                                   title: org.jobTitle,
                                   name: org.name,
+                                  isPresent: org.isPresent,
                                   startTime: new moment(org.startTime).format('MMMM YYYY'),
                                   endTime: new moment(org.endTime).format('MMMM YYYY'),
                                   noEmployees: org.employees.length

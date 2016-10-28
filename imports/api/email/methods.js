@@ -23,6 +23,8 @@ export const send = new ValidatedMethod({
       let
         options = {}
         ;
+
+      // get options base on template
       switch (template) {
         case 'welcome': {
           const {email, firstName, url} = data,
@@ -36,18 +38,16 @@ export const send = new ValidatedMethod({
           mailData.leaderName = firstName;
 
           const html = EmailFunctions.buildHtml({template, data: mailData});
-          const options = {
+          options = {
             to: email,
             from: `"${mailData.siteName}" <no-reply@mail.theleader.io>`,
             subject: `Welcome to ${mailData.siteName}`,
             html: html
           };
-          Email.send(options);
           break;
         }
         case 'thankyou': {
-          const options = EmailFunctions.getSurveyEmailOptions({template, data});
-          Email.send(options);
+          options = EmailFunctions.getSurveyEmailOptions({template, data});
           break;
         }
         case 'forgot_alias': {
@@ -66,13 +66,12 @@ export const send = new ValidatedMethod({
             // Get email html
             // const html = EmailFunctions.get({template, firstName, url: loginUrl, alias});
             const html = EmailFunctions.buildHtml({template, data: mailData});
-            const options = {
+            options = {
               to: email,
               from: `"${mailData.siteName}" <no-reply@mail.theleader.io>`,
               subject: `Get your alias`,
               html: html
             };
-            Email.send(options);
           } else {
             throw new Meteor.Error('user not found');
           }
@@ -95,36 +94,32 @@ export const send = new ValidatedMethod({
 
           // const html = EmailFunctions.get({template, url});
           const html = EmailFunctions.buildHtml({template, data: mailData});
-          const options = {
+          options = {
             to: email,
             from: `"${mailData.siteName}" <no-reply@mail.theleader.io>`,
             subject: `Forgot password`,
             html: html
           };
 
-          Meteor.defer(() => {
-            Email.send(options);
-          });
+          // Meteor.defer(() => {
+          //   Email.send(options);
+          // });
           break;
         }
         case 'survey': {
-          const options = EmailFunctions.getSurveyEmailOptions({template, data});
-          Email.send(options);
+          options = EmailFunctions.getSurveyEmailOptions({template, data});
           break;
         }
         case 'survey_error': {
-          const options = EmailFunctions.getSurveyEmailOptions({template, data});
-          Email.send(options);
+          options = EmailFunctions.getSurveyEmailOptions({template, data});
           break;
         }
         case 'feedback': {
-          const options = EmailFunctions.getSurveyEmailOptions({template, data});
-          Email.send(options);
+          options = EmailFunctions.getSurveyEmailOptions({template, data});
           break;
         }
         case "employee": {
           options = EmailFunctions.getEmployeeEmailOptions({template, data});
-          Email.send(options);
           break;
         }
         case 'migration': {
@@ -139,19 +134,27 @@ export const send = new ValidatedMethod({
           mailData.leaderName = firstName;
 
           const html = EmailFunctions.buildHtml({template, data: mailData});
-          const options = {
+          options = {
             to: email,
             from: `"${mailData.siteName}" <no-reply@mail.theleader.io>`,
             subject: `Leadership in Action`,
             html: html
           };
-          Email.send(options);
+          break;
+        }
+        case 'digest': {
+          options = EmailFunctions.getDigestEmailOptions({template, data});
           break;
         }
         default: {
-
+          throw new Meteor.Error(`Unknown template: ${template}`);
         }
       }
+
+      // send email
+      return Meteor.defer(() => {
+        Email.send(options);
+      });
     }
   }
 });

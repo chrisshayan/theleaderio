@@ -1,14 +1,15 @@
+import {Meteor} from 'meteor/meteor';
 import React, {Component} from 'react';
 import {FlowRouter} from 'meteor/kadira:flow-router';
 
 import {DOMAIN} from '/imports/startup/client/routes';
 import AliasForm from '/imports/ui/components/AliasForm';
 import Copyright from '/imports/ui/common/Copyright';
-import Spinner from '/imports/ui/common/Spinner';
 import * as UserActions from '/imports/api/users/methods';
 import * as SubdomainActions from '/imports/utils/subdomain';
-import {warning} from '/imports/api/notifications/methods';
 
+// utils
+import {aliasValidator} from '/imports/utils/index';
 
 export default class SignUpAlias extends Component {
   constructor() {
@@ -49,19 +50,26 @@ export default class SignUpAlias extends Component {
       errors: null
     });
     if (inputValue.length > 0) {
-      UserActions.verify.call({alias: inputValue}, (error) => {
-        if (!_.isEmpty(error)) {
-          this.setState({
-            aliasAllowed: true,
-            errors: null
-          });
-        } else {
-          this.setState({
-            aliasAllowed: false,
-            errors: `${inputValue}.${DOMAIN} is already taken. Please choose another one ...`
-          });
-        }
-      });
+      if(aliasValidator(inputValue)) {
+        UserActions.verify.call({alias: inputValue}, (error) => {
+          if (!_.isEmpty(error)) {
+            this.setState({
+              aliasAllowed: true,
+              errors: null
+            });
+          } else {
+            this.setState({
+              aliasAllowed: false,
+              errors: `${inputValue}.${DOMAIN} is already taken. Please choose another one ...`
+            });
+          }
+        });
+      } else {
+        this.setState({
+          aliasAllowed: false,
+          errors: "Please use only letters (a-z), numbers."
+        });
+      }
     }
   }
 

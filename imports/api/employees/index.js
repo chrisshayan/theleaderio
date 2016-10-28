@@ -41,6 +41,16 @@ Employees.schema = new SimpleSchema({
   },
   leaderId: {
     type: String
+  },
+  createdAt: {
+    type: Date,
+    defaultValue: new Date(),
+    optional: true
+  },
+  updatedAt: {
+    type: Date,
+    defaultValue: new Date(),
+    optional: true
   }
 });
 

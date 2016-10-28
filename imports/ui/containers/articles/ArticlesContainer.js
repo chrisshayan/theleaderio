@@ -4,7 +4,7 @@ import {createContainer} from 'meteor/react-meteor-data';
 import {setPageHeading, resetPageHeading} from '/imports/store/modules/pageHeading';
 
 // collections
-import {Articles} from '/imports/api/articles/index';
+import {Articles, STATUS} from '/imports/api/articles/index';
 
 // components
 import ArticleBox from '/imports/ui/containers/articles/ArticleBox';
@@ -117,7 +117,13 @@ export default ArticlesContainer = createContainer((params) => {
   const
     sub = Meteor.subscribe("articles"),
     ready = sub.ready(),
-    articles = Articles.find().fetch()
+    query = {status: STATUS.ACTIVE},  // not implemented yet
+    options = {
+      sort: {
+        createdAt: -1
+      }
+    },
+    articles = Articles.find({}, options).fetch()
     ;
 
   return {
