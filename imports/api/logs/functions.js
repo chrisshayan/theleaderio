@@ -1,6 +1,8 @@
+import {Meteor} from 'meteor/meteor';
 import {
   LogsSendingPlan,
-  LogsDigest
+  LogsDigest,
+  LogsEmail
 } from './index';
 
 /**
@@ -22,6 +24,16 @@ import {
  *    {String} leaderId
  *    {String} status (sent | failed)
  * {Date} date
+ *
+ * Mail Log Content
+ * {String} name
+ * {Object} content
+ *    {String} Subject
+ *    {String} From
+ *    {String} To
+ *    {String} template
+ *    {Object} data
+ * {Date} date
  */
 export const add = ({params}) => {
   const
@@ -30,11 +42,15 @@ export const add = ({params}) => {
     ;
   switch (name) {
     case "sending_plan": {
-      LogsSendingPlan.insert(content, date);
+      LogsSendingPlan.insert({content, date});
       break;
     }
     case "digest": {
-      LogsDigest.insert(content, date);
+      LogsDigest.insert({content, date});
+      break;
+    }
+    case "sendEmail": {
+      LogsEmail.insert({name, content, date});
       break;
     }
     default: {

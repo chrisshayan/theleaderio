@@ -5,6 +5,7 @@ import {Meteor} from 'meteor/meteor';
 
 // functions
 import * as EmailFunctions from '/imports/api/email/functions';
+import {add as addLogs} from '/imports/api/logs/functions';
 
 // constant
 const {domain, mailDomain} = Meteor.settings.public;
@@ -21,7 +22,15 @@ export const send = new ValidatedMethod({
   run({template, data}) {
     if (!this.isSimulation) {
       let
-        options = {}
+        options = {},
+        logName = "sendEmail",
+        logContent = {
+          subject: "",
+          from: "",
+          to: "",
+          template,
+          data
+        }
         ;
 
       // get options base on template
@@ -154,6 +163,14 @@ export const send = new ValidatedMethod({
       // send email
       return Meteor.defer(() => {
         Email.send(options);
+        // add log for a digest into log collection
+        logContent = {
+          ...logContent,
+          subject: options.subject,
+          from: options.from,
+          to: options.to
+        };
+        addLogs({params: {name: logName, content: logContent}});
       });
     }
   }
