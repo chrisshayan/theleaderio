@@ -40,4 +40,6 @@ import '/imports/api/admin/register.server';
 import '/imports/api/user_messages/register.server';
 // articles
 import '/imports/api/articles/register.server';
+// referrals
+import '/imports/api/referrals/register.server';
 

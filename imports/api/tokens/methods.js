@@ -16,7 +16,7 @@ export const generate = new ValidatedMethod({
     },
     action: {
       type: String,
-      allowedValues: ['email', 'password', 'alias', 'migration'],
+      allowedValues: ['email', 'password', 'alias', 'migration', 'referral'],
       optional: true
     }
   }).validator(),

@@ -23,10 +23,17 @@ Referrals.schema = new SimpleSchema({
     type: String,
     optional: true,
   },
+  email: {
+    type: String
+  },
+  userId: { // the userId of the invited user
+    type: String,
+    optional: true
+  },
   status: {
     type: String,
     optional: true,
-    allowedValues: [STATUS.INVITED, STATUS.CONFIRMED],
+    allowedValues: [STATUS.INVITED, STATUS.CONFIRMED, STATUS.WAITING],
     defaultValue: STATUS.WAITING
   },
   createdAt: {
