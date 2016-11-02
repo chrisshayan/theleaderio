@@ -28,7 +28,7 @@ export default class ResetPasswordPage extends Component {
     });
     UserActions.resetPassword.call({tokenId, password}, (error) => {
       if (_.isEmpty(error)) {
-        console.log(`token: ${tokenId} will be removed`);
+        // console.log(`token: ${tokenId} will be removed`);
         TokenActions.remove.call({tokenId, action: 'password'});
         // redirect to user homepage
         FlowRouter.go('homePage');

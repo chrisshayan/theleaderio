@@ -69,7 +69,7 @@ export const getRandomEmployee = ({params}) => {
               }
             } else {
               end = true;
-              console.log({message: `Employee ${currentPickedEmployeeId} not exists.`})
+              // console.log({message: `Employee ${currentPickedEmployeeId} not exists.`})
             }
           } else {
             end = false;

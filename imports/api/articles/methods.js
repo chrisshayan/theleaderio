@@ -50,13 +50,13 @@ export const edit = new ValidatedMethod({
 
     if(!_.isEmpty(user)) {
       if(Roles.userIsInRole(user._id, "admin")) {
-        console.log({
-          _id,
-          subject,
-          content,
-          tags,
-          status
-        })
+        // console.log({
+        //   _id,
+        //   subject,
+        //   content,
+        //   tags,
+        //   status
+        // })
         return Articles.update({_id}, {$set: {subject, content, tags, status}});
       } else {
         return new Meteor.Error(ERROR_CODE.PERMISSION_DENIED);

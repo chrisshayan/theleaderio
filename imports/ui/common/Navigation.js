@@ -36,6 +36,12 @@ class Navigation extends Component {
           label: 'Articles',
           icon: 'fa fa-newspaper-o'
         },
+        {
+          route: 'app.referrals',
+          path: FlowRouter.url('app.referrals'),
+          label: 'Referrals',
+          icon: 'fa fa-users'
+        },
       ]
     };
   }

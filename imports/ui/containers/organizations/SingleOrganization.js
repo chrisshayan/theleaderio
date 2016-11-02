@@ -64,10 +64,6 @@ class SingleOrganization extends Component {
 		];
 	}
 
-	componentDidMount() {
-		console.log('mounted')
-	}
-
 	render() {
 		const { currentTab } = this.props;
 		return (

@@ -178,23 +178,31 @@ export const invite = new ValidatedMethod({
             }
           }
 
-          console.log(invitation);
           // send invitation
           if (invitation.tokenId) {
             const
-              {tokenId} = invitation,
+              leader = Meteor.user(),
+              {tokenId, userId, profileId} = invitation,
               DOMAIN = Meteor.settings.public.domain,
               url = `http://${DOMAIN}/signup/referral?token=${tokenId}`,
               template = 'referral',
               data = {
                 email,
-                firstName: firstName,
-                url
+                firstName,
+                url,
+                userId,
+                profileId,
+                tokenId
               };
 
-              // send email
-            console.log({template, data})
+            if(!_.isEmpty(leader)) {
+              data.leaderName = `${leader.firstName} ${leader.lastName}`;
 
+              // send email
+              // invitation.sendEmail = sendEmail.call({template, data});
+
+              console.log(invitation);
+            }
           }
 
         } else {

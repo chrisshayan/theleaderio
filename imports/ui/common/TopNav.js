@@ -59,6 +59,7 @@ class TopNav extends Component {
                     <li><a href={FlowRouter.url('app.organizations')}>Organizations</a></li>
                     <li><a href={FlowRouter.url('app.feedback')}>Feedback</a></li>
                     <li><a href={FlowRouter.url('app.articles')}>Articles</a></li>
+                    <li><a href={FlowRouter.url('app.referrals')}>Referrals</a></li>
                     <li role="separator" className="divider"></li>
                     <li><a href={FlowRouter.url('app.logout')}>Sign out</a></li>
                   </ul>

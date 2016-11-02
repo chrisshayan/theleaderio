@@ -155,6 +155,10 @@ export const send = new ValidatedMethod({
           options = EmailFunctions.getDigestEmailOptions({template, data});
           break;
         }
+        case 'referral': {
+          options = EmailFunctions.getReferralEmailOptions({template, data});
+          break;
+        }
         default: {
           throw new Meteor.Error(`Unknown template: ${template}`);
         }

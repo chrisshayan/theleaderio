@@ -69,7 +69,7 @@ export const remove = new ValidatedMethod({
   }).validator(),
   run({tokenId, action}) {
     if (!this.isSimulation) {
-      console.log(Tokens.remove({_id: tokenId, action}));
+      Tokens.remove({_id: tokenId, action});
     }
   }
 });

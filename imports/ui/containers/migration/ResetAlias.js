@@ -73,7 +73,7 @@ export default class ResetAlias extends Component {
             createScheduler.call({userId, year, quarter, metrics});
           });
           // Remove token
-          console.log(tokenId)
+          // console.log(tokenId)
           TokenActions.remove.call({tokenId, action: 'migration'}, (error, result) => {
             if(!error) {
               // Redirect to user's login page

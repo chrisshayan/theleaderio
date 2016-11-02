@@ -563,3 +563,38 @@ export const getDigestEmailOptions = ({template, data}) => {
   return result;
 
 }
+
+/**
+ * Function to collect content data for referral email
+ * @param template
+ * @param data
+ */
+export const getReferralEmailOptions = ({template, data}) => {
+  const
+    {email, firstName, url} = data,
+    EMAIL_TEMPLATE_CONTENT = getDefaults.call({name: 'EMAIL_TEMPLATE_CONTENT'}).content,
+    siteInfo = getMailData({type: "site"}),
+    mailData = {
+      subject: "",
+      userName: firstName,
+      siteName: "",
+      registerUrl: url
+    };
+  let
+    result = {
+      from: `"${siteInfo.siteName} weekly" <no-reply@${mailDomain}>`,
+      to: "jackiekhuu.work@gmail.com",
+      subject: "",
+      html: ""
+    };
+
+  mailData.subject = `${leaderInfo.leaderName}, Here is your leadership progress last week.`;
+  mailData.leaderName = leaderInfo.leaderName;
+  mailData.siteName = siteInfo.siteName;
+
+  result.subject = mailData.subject;
+  result.to = leaderInfo.leaderEmail;
+  result.html = buildHtml({template, data: mailData});
+
+  return result;
+}

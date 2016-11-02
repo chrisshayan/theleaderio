@@ -1,11 +1,11 @@
-import { Mongo } from 'meteor/mongo';
-import { Organizations } from '/imports/api/organizations';
+import {Mongo} from 'meteor/mongo';
+import {Organizations} from '/imports/api/organizations';
 
 class EmployeesCollection extends Mongo.Collection {
   /**
    * Insert hooks
    *
-   * after insert employee, add employees array of that organization 
+   * after insert employee, add employees array of that organization
    */
   insert(doc, callback) {
     const
@@ -13,8 +13,8 @@ class EmployeesCollection extends Mongo.Collection {
       updatedAt = new Date()
       ;
 
-    if(employeeId) {
-      Organizations.update({ _id: doc.organizationId }, {
+    if (employeeId) {
+      Organizations.update({_id: doc.organizationId}, {
         $addToSet: {
           employees: employeeId
         },
@@ -37,15 +37,15 @@ class EmployeesCollection extends Mongo.Collection {
       updatedAt = new Date(),
       result = super.remove(selector, callback)
       ;
-    if(result) {
-      console.log(Organizations.update({ _id: doc.organizationId }, {
+    if (result) {
+      Organizations.update({_id: doc.organizationId}, {
         $pull: {
           employees: doc._id
         },
         $set: {
           updatedAt
         }
-      }));
+      });
     }
     return result;
   }

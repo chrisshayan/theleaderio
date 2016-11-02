@@ -45,6 +45,8 @@ import Feedback from '/imports/ui/containers/feedback/Feedback';
 
 import Messages from '/imports/ui/containers/messages/Messages';
 
+import ReferralsContainer from '/imports/ui/containers/referrals/ReferralsContainer';
+
 // methods
 import * as Notifications from '/imports/api/notifications/methods';
 
@@ -554,6 +556,20 @@ const viewArticleRoute = FlowRouter.route('/articles/view/:seoUrl', {
     mount(BlankLayout, {
       content() {
         return <ViewArticle _id={queryParams._id}/>
+      }
+    });
+  }
+});
+
+/**
+ * Route for referrals
+ */
+appRoutes.route('/referrals', {
+  name: "app.referrals",
+  action() {
+    mount(MainLayout, {
+      content() {
+        return <ReferralsContainer />;
       }
     });
   }
