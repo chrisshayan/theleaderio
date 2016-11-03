@@ -31,16 +31,16 @@ class Navigation extends Component {
           icon: 'fa fa-gift'
         },
         {
-          route: 'app.articles',
-          path: FlowRouter.url('app.articles'),
-          label: 'Articles',
-          icon: 'fa fa-newspaper-o'
-        },
-        {
           route: 'app.referrals',
           path: FlowRouter.url('app.referrals'),
           label: 'Referrals',
           icon: 'fa fa-users'
+        },
+        {
+          route: 'app.articles',
+          path: FlowRouter.url('app.articles'),
+          label: 'Articles',
+          icon: 'fa fa-newspaper-o'
         },
       ]
     };

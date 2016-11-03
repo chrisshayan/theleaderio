@@ -10,7 +10,7 @@ import {Organizations} from '/imports/api/organizations/index';
 // components
 import Spinner from '/imports/ui/common/Spinner';
 import Indicator from '/imports/ui/common/LoadingIndicator';
-import NoFeedback from './NoFeedback';
+import NoFeedback from '/imports/ui/components/NoContent';
 import FeedbackList from './FeedbackList';
 
 
@@ -39,7 +39,7 @@ class FeedbackToEmployees extends Component {
             )}
           </div>
         ) }
-        {loaded && !items.length && ( <NoFeedback /> )}
+        {loaded && !items.length && ( <NoFeedback icon="fa fa-comments-o" message="There is no feedback."/> )}
       </div>
     );
   }

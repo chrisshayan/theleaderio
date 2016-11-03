@@ -25,12 +25,12 @@ import {DEFAULT_SCHEDULER} from '/imports/utils/defaults';
  */
 export const create = new ValidatedMethod({
   name: "referral.create",
-  // mixins : [LoggedInMixin],
-  // checkLoggedInError: {
-  //   error: ERROR_CODE.UNAUTHENTICATED,
-  //   message: 'You need to be logged in to call this method',//Optional
-  //   reason: 'You need to login' //Optional
-  // },
+  mixins : [LoggedInMixin],
+  checkLoggedInError: {
+    error: ERROR_CODE.UNAUTHENTICATED,
+    message: 'You need to be logged in to call this method',//Optional
+    reason: 'You need to login' //Optional
+  },
   validate: new SimpleSchema({
     params: {
       type: Object
@@ -47,10 +47,13 @@ export const create = new ValidatedMethod({
     }
   }).validator(),
   run({params}) {
+    if (!Meteor.userId()) {
+      throw new Meteor.Error(ERROR_CODE.UNAUTHORIZED, "User not found");
+    }
     const
       {firstName, lastName, email} = params,
-      // leaderId = Meteor.userId(),
-      leaderId = Meteor.userId() || "abcd",
+      leaderId = Meteor.userId(),
+      // leaderId = Meteor.userId() || "abcd",
       status = STATUS.WAITING
       ;
 
@@ -125,12 +128,12 @@ export const setStatus = new ValidatedMethod({
  */
 export const invite = new ValidatedMethod({
   name: "referral.invite",
-  // mixins : [LoggedInMixin],
-  // checkLoggedInError: {
-  //   error: ERROR_CODE.UNAUTHENTICATED,
-  //   message: 'You need to be logged in to call this method',//Optional
-  //   reason: 'You need to login' //Optional
-  // },
+  mixins : [LoggedInMixin],
+  checkLoggedInError: {
+    error: ERROR_CODE.UNAUTHENTICATED,
+    message: 'You need to be logged in to call this method',//Optional
+    reason: 'You need to login' //Optional
+  },
   validate: new SimpleSchema({
     params: {
       type: Object
@@ -140,14 +143,14 @@ export const invite = new ValidatedMethod({
     }
   }).validator(),
   run({params}) {
-    // if (!Meteor.userId()) {
-    //   throw new Meteor.Error(ERROR_CODE.UNAUTHORIZED, "User not found");
-    // }
+    if (!Meteor.userId()) {
+      throw new Meteor.Error(ERROR_CODE.UNAUTHORIZED, "User not found");
+    }
     if (!this.isSimulation) {
       const
         {referralId} = params,
-        // leaderId = Meteor.userId(),
-        leaderId = Meteor.userId() || "abcd",
+        leaderId = Meteor.userId(),
+        // leaderId = Meteor.userId() || "abcd",
         referral = Referrals.findOne({_id: referralId, status: STATUS.WAITING, leaderId});
       ;
 

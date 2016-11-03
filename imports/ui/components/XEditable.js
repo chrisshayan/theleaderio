@@ -94,7 +94,7 @@ class XEditable extends Component {
 	}
 
 	render() {
-		const { placeholder } = this.props;
+		const { placeholder, disabled = false } = this.props;
 		const { value, error, isLoading } = this.state;
 		let className = ['form-control', 'inline-editor'];
 		if(error) className.push('error');
@@ -106,7 +106,7 @@ class XEditable extends Component {
 		  		type="text"
 		  		className={className.join(' ')}
 		  		value={ value || '' }
-		  		disabled={isLoading}
+		  		disabled={isLoading | disabled}
 		  		onChange={this.onChange}
 		  		onBlur={this.onBlur}
 		  		style={this.state.style}

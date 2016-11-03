@@ -15,7 +15,7 @@ import {STATUS} from '/imports/api/user_messages/index';
 // components
 import Spinner from '/imports/ui/common/Spinner';
 import Indicator from '/imports/ui/common/LoadingIndicator';
-import NoMessage from './NoMessage';
+import NoMessage from '/imports/ui/components/NoContent';
 import MessageList from './MessageList';
 
 
@@ -49,14 +49,14 @@ class Messages extends Component {
     Session.set('MESSAGE_PAGE', currentPage + 1);
   }
 
-  onClickUnReadMessage(messageId) {
+  _onClickUnReadMessage(messageId) {
       setStatus.call({
         messageId: messageId,
         status: STATUS.READ
       });
   }
 
-  onClickReadMessage(messageId) {
+  _onClickReadMessage(messageId) {
     setStatus.call({
       messageId: messageId,
       status: STATUS.UNREAD
@@ -73,8 +73,8 @@ class Messages extends Component {
           <div className="col-md-8">
             <MessageList
               items={items}
-              onClickUnReadMessage={this.onClickUnReadMessage}
-              onClickReadMessage={this.onClickReadMessage}
+              onClickUnReadMessage={this._onClickUnReadMessage}
+              onClickReadMessage={this._onClickReadMessage}
             />
             {/* Show loading*/}
             {!ready && page > 1 && (
@@ -85,7 +85,7 @@ class Messages extends Component {
             )}
           </div>
         ) }
-        {loaded && !items.length && ( <NoMessage /> )}
+        {loaded && !items.length && ( <NoMessage icon="fa fa-envelope-o" message="There is no message."/> )}
       </div>
     );
   }
