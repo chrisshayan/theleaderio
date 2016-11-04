@@ -66,6 +66,7 @@ class ReferralsComponent extends Component {
     const
       {
         ready = false,
+        maxAllowInvitation,
         waitingReferrals,
         invitedReferrals,
         confirmedReferrals,
@@ -79,8 +80,6 @@ class ReferralsComponent extends Component {
       statistic = `Waiting ${waitingReferrals} - Invited: ${invitedReferrals} - Confirmed: ${confirmedReferrals}`
       ;
     let isDisableInviting = false;
-
-    console.log({showAddDialog});
 
     if (ready) {
       isDisableInviting = !(isAdmin || isAllowAdding);
@@ -116,7 +115,7 @@ class ReferralsComponent extends Component {
             />
           )}
           <AddReferral
-            show={this.state.showAddDialog}
+            show={showAddDialog}
             onDismiss={this._onDismissDialog}
           />
         </div>
@@ -133,6 +132,7 @@ export default ReferralsContainer = createContainer((params) => {
   const
     leaderId = Meteor.userId(),
     sub = Meteor.subscribe("referrals"),
+    maxAllowInvitation = Meteor.settings.public.maxInvitation, // this value should get from settings file
     currentNotWaitingReferrals = Referrals.find({status: {$not: /WAITING/}}).count(),
     ready = sub.ready(),
     referrals = Referrals.find({leaderId}).fetch()
@@ -164,7 +164,8 @@ export default ReferralsContainer = createContainer((params) => {
 
   return {
     ready,
-    isAllowAdding: (currentNotWaitingReferrals < 3) ? true : false,
+    isAllowAdding: (currentNotWaitingReferrals < maxAllowInvitation) ? true : false,
+    maxAllowInvitation,
     waitingReferrals,
     invitedReferrals,
     confirmedReferrals,

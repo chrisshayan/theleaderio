@@ -27,6 +27,7 @@ export default class ReferralsTable extends Component {
           <tbody>
           {referrals.map((referral, key) => (
             <SingleReferral
+              _id={referral._id}
               key={key}
               position={key + 1}
               referral={referral}

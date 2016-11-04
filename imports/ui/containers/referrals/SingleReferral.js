@@ -6,7 +6,59 @@ import XEditable from '/imports/ui/components/XEditable';
 // constants
 import {STATUS} from '/imports/api/referrals/index';
 
+// methods
+import {send as sendReferral, remove as removeReferral} from '/imports/api/referrals/methods';
+import * as Notifications from '/imports/api/notifications/methods';
+import {getErrors} from '/imports/utils';
+
 export default class SingleReferral extends Component {
+
+  _onSendReferral() {
+    const {_id} = this.props;
+    if(typeof _id === 'undefined') {
+      const
+        closeButton = true,
+        title = 'Referral',
+        message = 'Referral not exists';
+      Notifications.error.call({closeButton, title, message});
+      return;
+    }
+    sendReferral.call({params: {referralId: _id}}, (error, result) => {
+      if(!error) {
+        console.log(result);
+      } else {
+        console.log(error)
+      }
+    });
+  }
+
+  _onRemoveReferral() {
+    const {_id} = this.props;
+    if(typeof _id === 'undefined') {
+      const
+        closeButton = true,
+        title = 'Referral',
+        message = 'Referral not exists';
+      Notifications.error.call({closeButton, title, message});
+      return;
+    }
+    removeReferral.call({params: {_id}}, (error, result) => {
+      if(!error) {
+        const
+          closeButton = true,
+          title = 'Referral',
+          message = 'Removed';
+        Notifications.success.call({closeButton, title, message});
+      } else {
+        const
+          closeButton = true,
+          title = 'Referral',
+          message = getErrors(error);
+        Notifications.error.call({closeButton, title, message});
+      }
+    });
+  }
+
   render() {
     const
       {position = '', referral, isDisableInviting} = this.props,
@@ -66,21 +118,25 @@ export default class SingleReferral extends Component {
           )}
         </td>
         <td className="text-right" style={styles.vAlign}>
-          <button
-            style={{marginBottom: 0}}
-            className="btn btn-primary"
-            disabled={isDisableInviting || disabled}
-          ><i className="fa fa-share"/>
-            {' '}Invite
-          </button>
+          {!(isDisableInviting || disabled) && (
+            <button
+              style={{marginBottom: 0}}
+              className="btn btn-primary"
+              onClick={this._onSendReferral.bind(this)}
+            ><i className="fa fa-share"/>
+              {' '}Send
+            </button>
+          )}
           {" "}
-          <button
-            style={{marginBottom: 0}}
-            className="btn btn-danger"
-            disabled={disabled}
-          ><i className="fa fa-trash"/>
-            {' '}Remove
-          </button>
+          {!disabled && (
+            <button
+              style={{marginBottom: 0}}
+              className="btn btn-danger"
+              onClick={this._onRemoveReferral.bind(this)}
+            ><i className="fa fa-trash"/>
+              {' '}Remove
+            </button>
+          )}
         </td>
       </tr>
     );

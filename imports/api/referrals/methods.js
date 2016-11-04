@@ -25,7 +25,7 @@ import {DEFAULT_SCHEDULER} from '/imports/utils/defaults';
  */
 export const create = new ValidatedMethod({
   name: "referral.create",
-  mixins : [LoggedInMixin],
+  mixins: [LoggedInMixin],
   checkLoggedInError: {
     error: ERROR_CODE.UNAUTHENTICATED,
     message: 'You need to be logged in to call this method',//Optional
@@ -98,6 +98,12 @@ export const edit = new ValidatedMethod({
  */
 export const setStatus = new ValidatedMethod({
   name: "referral.setStatus",
+  mixins: [LoggedInMixin],
+  checkLoggedInError: {
+    error: ERROR_CODE.UNAUTHENTICATED,
+    message: 'You need to be logged in to call this method',//Optional
+    reason: 'You need to login' //Optional
+  },
   validate: new SimpleSchema({
     params: {
       type: Object
@@ -111,6 +117,9 @@ export const setStatus = new ValidatedMethod({
     },
   }).validator(),
   run({params}) {
+    if (!Meteor.userId()) {
+      throw new Meteor.Error(ERROR_CODE.UNAUTHORIZED, "User not found");
+    }
     const
       {_id, status} = params
       ;
@@ -126,9 +135,9 @@ export const setStatus = new ValidatedMethod({
  * @param {String} lastName
  * @param {String} email
  */
-export const invite = new ValidatedMethod({
-  name: "referral.invite",
-  mixins : [LoggedInMixin],
+export const send = new ValidatedMethod({
+  name: "referral.send",
+  mixins: [LoggedInMixin],
   checkLoggedInError: {
     error: ERROR_CODE.UNAUTHENTICATED,
     message: 'You need to be logged in to call this method',//Optional
@@ -150,9 +159,17 @@ export const invite = new ValidatedMethod({
       const
         {referralId} = params,
         leaderId = Meteor.userId(),
+        maxAllowInvitation = Meteor.settings.maxInvitation, // this value should get from settings file
         // leaderId = Meteor.userId() || "abcd",
-        referral = Referrals.findOne({_id: referralId, status: STATUS.WAITING, leaderId});
-      ;
+        noOfInvited = Referrals.find({leaderId, status: {$not: /WAITING/}}).count(),
+        referral = Referrals.findOne({_id: referralId, status: STATUS.WAITING, leaderId})
+        ;
+
+      if (!Roles.userIsInRole(leaderId, "admin")) {
+        if (noOfInvited >= maxAllowInvitation) {
+          throw new Meteor.Error(ERROR_CODE.UNAUTHORIZED, "leader reached the invitation limit.");
+        }
+      }
 
       if (!_.isEmpty(referral)) {
         const
@@ -198,12 +215,14 @@ export const invite = new ValidatedMethod({
                 tokenId
               };
 
-            if(!_.isEmpty(leader)) {
+            if (!_.isEmpty(leader)) {
               data.leaderName = `${leader.firstName} ${leader.lastName}`;
 
               // send email
               // invitation.sendEmail = sendEmail.call({template, data});
 
+              // update status of referral to invited
+              setStatus.call({params: {_id: referralId, status: STATUS.INVITED}});
               console.log(invitation);
             }
           }
@@ -212,8 +231,76 @@ export const invite = new ValidatedMethod({
           throw new Meteor.Error(`${referral.email} is a leader already!`);
         }
       } else {
-        throw new Meteor.Error(`Referral ${referralId} isn't in WAITING status!`)
+        throw new Meteor.Error(`Referral ${referralId} is not found!`)
       }
     }
+  }
+});
+
+/**
+ * Method verify email of referral
+ * @param {String} email
+ * @return {Number} the number of referrals that match the email of that leader
+ */
+export const verify = new ValidatedMethod({
+  name: "referrals.verify",
+  mixins: [LoggedInMixin],
+  checkLoggedInError: {
+    error: ERROR_CODE.UNAUTHENTICATED,
+    message: 'You need to be logged in to call this method',//Optional
+    reason: 'You need to login' //Optional
+  },
+  validate: new SimpleSchema({
+    params: {
+      type: Object
+    },
+    "params.email": {
+      type: String
+    }
+  }).validator(),
+  run({params}) {
+    if (!Meteor.userId()) {
+      throw new Meteor.Error(ERROR_CODE.UNAUTHORIZED, "User not found");
+    }
+    const
+      leaderId = Meteor.userId(),
+      {email} = params
+      ;
+
+    return Referrals.find({email, leaderId}).count();
+  }
+});
+
+/**
+ * Method remove referral
+ * @param {String} _id
+ * @return remove status
+ */
+export const remove = new ValidatedMethod({
+  name: 'referrals.remove',
+  mixins: [LoggedInMixin],
+  checkLoggedInError: {
+    error: ERROR_CODE.UNAUTHENTICATED,
+    message: 'You need to be logged in to call this method',//Optional
+    reason: 'You need to login' //Optional
+  },
+  validate: new SimpleSchema({
+    params: {
+      type: Object
+    },
+    "params._id": {
+      type: {String}
+    }
+  }).validator(),
+  run({params}) {
+    if (!Meteor.userId()) {
+      throw new Meteor.Error(ERROR_CODE.UNAUTHORIZED, "User not found");
+    }
+    const
+      leaderId = Meteor.userId(),
+      {_id} = params
+      ;
+
+    return Referrals.remove({_id, leaderId});
   }
 });
