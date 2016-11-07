@@ -26,6 +26,7 @@ import LandingPage from '/imports/ui/containers/LandingPage';
 import SignUpUser from '/imports/ui/containers/signup/SignUpUser';
 import SignUpAlias from '/imports/ui/containers/signup/SignUpAlias';
 import ResetAlias from '/imports/ui/containers/migration/ResetAlias';
+import CreateAlias from '/imports/ui/containers/referrals/CreateAlias';
 
 import SignInAlias from '/imports/ui/containers/signin/SignInAlias';
 import SignInAccount from '/imports/ui/containers/signin/SignInAccount';
@@ -137,7 +138,11 @@ const homeRoute = FlowRouter.route('/', {
   action() {
     const alias = Session.get('alias');
     if (alias) {
-      mount(PublicProfile);
+      if(alias === "www") {
+        mount(LandingPage);
+      } else {
+        mount(PublicProfile);
+      }
     } else {
       mount(LandingPage);
     }
@@ -172,30 +177,45 @@ export const signUpRoutes = FlowRouter.group({
 signUpRoutes.route('/:action', {
   name: 'signUpPage',
   action(params, queryParams) {
-    // create new user
-    if (params.action == 'user') {
-      mount(SignUpUser);
-    }
-    // create new alias
-    if (params.action == 'alias') {
-      if (!Meteor.loggingIn() && !Meteor.userId()) {
-        const
-          closeButton = false,
-          title = "Signup user",
-          message = "Please enter your basic informations first";
-        Notifications.warning.call({closeButton, title, message});
-        FlowRouter.go('signUpPage', {action: 'user'});
-      } else {
-        mount(SignUpAlias);
+    const {action} = params;
+    switch (action) {
+      // register user
+      case 'user': {
+        mount(SignUpUser);
+        break;
       }
-    }
-    // email confirmation
-    if (params.action == 'confirm') {
-      mount(ConfirmEmail);
-    }
-    // create alias for migrated user
-    if (params.action == 'migration') {
-      mount(ResetAlias);
+      // register alias
+      case 'alias': {
+        if (!Meteor.loggingIn() && !Meteor.userId()) {
+          const
+            closeButton = false,
+            title = "Signup user",
+            message = "Please enter your basic informations first";
+          Notifications.warning.call({closeButton, title, message});
+          FlowRouter.go('signUpPage', {action: 'user'});
+        } else {
+          mount(SignUpAlias);
+        }
+        break;
+      }
+      // email confirmation
+      case 'confirm': {
+        mount(ConfirmEmail);
+        break;
+      }
+      // create alias for migrated user
+      case 'migration': {
+        mount(ResetAlias);
+        break;
+      }
+      // create alias for referral user
+      case 'referral': {
+        mount(CreateAlias);
+        break;
+      }
+      default: {
+        throw new Meteor.Error(`Unknow action: ${action}`);
+      }
     }
   }
 });

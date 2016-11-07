@@ -1,13 +1,17 @@
+import {Meteor} from 'meteor/meteor';
 import React, {Component} from 'react';
 import {FlowRouter} from 'meteor/kadira:flow-router';
 
+// components
 import SingleInputForm from '/imports/ui/common/SingleInputForm';
 import NoticeForm from '/imports/ui/common/NoticeForm';
 import Spinner from '/imports/ui/common/Spinner';
 import Copyright from '/imports/ui/common/Copyright';
 
+// methods
 import * as UserActions from '/imports/api/users/methods';
 import * as TokenActions from '/imports/api/tokens/methods';
+import {getSubdomain} from '/imports/utils/subdomain';
 
 export default class ResetPasswordPage extends Component {
   constructor() {
@@ -21,17 +25,31 @@ export default class ResetPasswordPage extends Component {
   }
 
   _inputSubmit({inputValue}) {
-    const password = inputValue;
-    const tokenId = FlowRouter.getQueryParam("token");
+    const
+      password = inputValue,
+      tokenId = FlowRouter.getQueryParam("token")
+      ;
     this.setState({
       loading: true
     });
     UserActions.resetPassword.call({tokenId, password}, (error) => {
       if (_.isEmpty(error)) {
+        const alias = getSubdomain();
         // console.log(`token: ${tokenId} will be removed`);
         TokenActions.remove.call({tokenId, action: 'password'});
-        // redirect to user homepage
-        FlowRouter.go('homePage');
+
+        // login user automatically
+        Meteor.loginWithPassword({username: alias}, password, (error) => {
+          if(!error) {
+            // redirect to user homepage
+            FlowRouter.go('app.organizations');
+          } else {
+            this.setState({
+              tokenVerified :false,
+              errors: error.reason
+            });
+          }
+        });
       } else {
         this.setState({
           errors: error.reason
@@ -70,7 +88,15 @@ export default class ResetPasswordPage extends Component {
   }
 
   render() {
-    if (this.state.loading) {
+    const
+      {
+        loading,
+        tokenVerified,
+        showPassword,
+        errors
+      } = this.state
+      ;
+    if (loading) {
       return (
         <div>
           <Spinner
@@ -79,19 +105,20 @@ export default class ResetPasswordPage extends Component {
         </div>
       );
     }
-    if (this.state.tokenVerified) {
+    if (tokenVerified) {
       return (
         <div id="page-top">
-          <div className="middle-box text-center loginscreen   animated fadeInDown">
+          <div className="middle-box text-center loginscreen animated fadeInDown">
             <div>
               <h1 className="logo-name">TL+</h1>
             </div>
             <h3>Enter your new password</h3>
             <SingleInputForm
-              inputType='password'
+              inputType={showPassword ? "text" : "password"}
               inputHolder='Password'
+              havePasswordForm={true}
               buttonLabel='Reset'
-              errors={ this.state.errors }
+              errors={ errors }
               onSubmit={ this._inputSubmit.bind(this) }
             />
             <Copyright />
@@ -103,7 +130,7 @@ export default class ResetPasswordPage extends Component {
         <div id="page-top">
           <NoticeForm
             code='404'
-            message={ this.state.errors }
+            message={ errors }
             description='Sorry, but the page you are looking for has note been found. Try checking the URL for error, then hit the refresh button on your browser or try found something else in our app.'
             buttonLabel='Come back to HomePage'
             redirectUrl='/'

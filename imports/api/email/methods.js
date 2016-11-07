@@ -166,6 +166,7 @@ export const send = new ValidatedMethod({
 
       // send email
       return Meteor.defer(() => {
+        // console.log(options);
         Email.send(options);
         // add log for a digest into log collection
         logContent = {

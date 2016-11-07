@@ -1,11 +1,15 @@
 import React, {Component} from 'react';
 
+// components
+import CheckBox from '/imports/ui/components/CheckBox1';
+
 export default class SingleInputForm extends Component {
 
   constructor() {
     super();
 
     this.state = {
+      showPassword: false,
       errors: null
     };
   }
@@ -25,10 +29,13 @@ export default class SingleInputForm extends Component {
   }
 
   render() {
-    const {
+    const
+      {showPassword} = this.state,
+      {
       inputType = 'email',
       inputHolder = 'Email address',
       buttonLabel = 'Send new password',
+      havePasswordForm = false,
       errors = null
     } = this.props;
 
@@ -39,12 +46,21 @@ export default class SingleInputForm extends Component {
                     }}>
         <div className="form-group">
           <input ref="input"
-                 type={ inputType }
+                 type={havePasswordForm ? (showPassword ? "text" : "password") : inputType }
                  className="form-control"
                  placeholder={ inputHolder }
                  autoFocus
           />
         </div>
+        {havePasswordForm && (
+          <div className="form-group text-left">
+            <CheckBox
+              label=" show password"
+              checked={showPassword}
+              onChange={value => this.setState({ showPassword: value })}
+            />
+          </div>
+        )}
         <div className="form-group">
           {!_.isEmpty(errors) && (
             <p ref="error" className="alert-danger text-center">{errors}</p>

@@ -571,29 +571,30 @@ export const getDigestEmailOptions = ({template, data}) => {
  */
 export const getReferralEmailOptions = ({template, data}) => {
   const
-    {email, firstName, url} = data,
+    {email, firstName, url, leaderName} = data,
     EMAIL_TEMPLATE_CONTENT = getDefaults.call({name: 'EMAIL_TEMPLATE_CONTENT'}).content,
     siteInfo = getMailData({type: "site"}),
+    subject = `${firstName}, You're invited to sign up for a leadership tool by ${leaderName}.`,
     mailData = {
-      subject: "",
+      subject,
       userName: firstName,
-      siteName: "",
-      registerUrl: url
+      leaderName,
+      siteName: siteInfo.siteName,
+      siteUrl: siteInfo.siteUrl,
+      registerUrl: url,
+      message: ""
     };
   let
     result = {
-      from: `"${siteInfo.siteName} weekly" <no-reply@${mailDomain}>`,
+      from: `"${siteInfo.siteName}" <no-reply@${mailDomain}>`,
       to: "jackiekhuu.work@gmail.com",
-      subject: "",
+      subject,
       html: ""
     };
 
-  mailData.subject = `${leaderInfo.leaderName}, Here is your leadership progress last week.`;
-  mailData.leaderName = leaderInfo.leaderName;
-  mailData.siteName = siteInfo.siteName;
+  mailData.message = `"${leaderName}" was using <strong>theLeader.io</strong> as a useful tool to become a great leader.`;
 
-  result.subject = mailData.subject;
-  result.to = leaderInfo.leaderEmail;
+  result.to = email;
   result.html = buildHtml({template, data: mailData});
 
   return result;

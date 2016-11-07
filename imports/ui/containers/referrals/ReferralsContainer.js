@@ -11,6 +11,7 @@ import Box from '/imports/ui/components/Box';
 import Indicator from '/imports/ui/common/LoadingIndicator';
 import ReferralsTable from '/imports/ui/containers/referrals/ReferralsTable';
 import AddReferral from '/imports/ui/containers/referrals/AddReferral';
+import NoReferral from '/imports/ui/components/NoContent';
 
 // methods
 import {verifyAdminRole} from '/imports/api/users/methods';
@@ -26,13 +27,25 @@ class ReferralsComponent extends Component {
   }
 
   componentWillMount() {
+    const
+      actions = (
+        <a className="btn btn-primary"
+           onClick={this._onClickShowDialog}
+        >
+          <i className="fa fa-plus"/>
+          {' '}
+          Add referral
+        </a>
+      )
+      ;
     setPageHeading({
       title: 'Referrals',
       breadcrumb: [{
         label: 'Referrals',
         route: FlowRouter.url('app.referrals'),
         active: true
-      }]
+      }],
+      actions
     });
 
     this.setState({
@@ -90,15 +103,6 @@ class ReferralsComponent extends Component {
               <div className="row">
                 <div className="col-md-6 text-left">
                   <h4>{statistic}</h4>
-                </div>
-                <div className="col-md-6 text-right">
-                  <a className="btn btn-primary"
-                     onClick={this._onClickShowDialog}
-                  >
-                    <i className="fa fa-plus"/>
-                    {' '}
-                    Add referral
-                  </a>
                 </div>
               </div>
               <div className="row">

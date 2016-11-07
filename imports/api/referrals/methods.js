@@ -3,9 +3,11 @@ import {ValidatedMethod} from 'meteor/mdg:validated-method';
 import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 import {LoggedInMixin} from 'meteor/tunifight:loggedin-mixin';
 import {Accounts} from 'meteor/accounts-base';
+import {words as capitalize} from 'capitalize';
 
 // collection
 import {Referrals, STATUS} from './index';
+import {Profiles} from '/imports/api/profiles/index';
 
 // methods
 import {create as createProfile} from '/imports/api/profiles/methods';
@@ -201,29 +203,30 @@ export const send = new ValidatedMethod({
           // send invitation
           if (invitation.tokenId) {
             const
-              leader = Meteor.user(),
+              leader = Profiles.findOne({userId: leaderId}),
               {tokenId, userId, profileId} = invitation,
               DOMAIN = Meteor.settings.public.domain,
               url = `http://${DOMAIN}/signup/referral?token=${tokenId}`,
               template = 'referral',
               data = {
                 email,
-                firstName,
+                firstName: capitalize(firstName),
                 url,
                 userId,
                 profileId,
                 tokenId
               };
 
+
             if (!_.isEmpty(leader)) {
-              data.leaderName = `${leader.firstName} ${leader.lastName}`;
+              data.leaderName = `${capitalize(leader.firstName)} ${capitalize(leader.lastName)}`;
 
               // send email
-              // invitation.sendEmail = sendEmail.call({template, data});
+              invitation.sendEmail = sendEmail.call({template, data});
 
               // update status of referral to invited
               setStatus.call({params: {_id: referralId, status: STATUS.INVITED}});
-              console.log(invitation);
+              return invitation;
             }
           }
 
