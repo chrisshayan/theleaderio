@@ -117,7 +117,7 @@ export default class ResetPasswordPage extends Component {
               inputType={showPassword ? "text" : "password"}
               inputHolder='Password'
               havePasswordForm={true}
-              buttonLabel='Reset'
+              buttonLabel='Set password'
               errors={ errors }
               onSubmit={ this._inputSubmit.bind(this) }
             />

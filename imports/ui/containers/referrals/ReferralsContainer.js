@@ -90,6 +90,7 @@ class ReferralsComponent extends Component {
         isAdmin,
         showAddDialog
       } = this.state,
+      remainInvitation = maxAllowInvitation - (invitedReferrals + confirmedReferrals),
       statistic = `Waiting ${waitingReferrals} - Invited: ${invitedReferrals} - Confirmed: ${confirmedReferrals}`
       ;
     let isDisableInviting = false;
@@ -100,6 +101,9 @@ class ReferralsComponent extends Component {
         <div>
           {!_.isEmpty(referrals) ? (
             <Box>
+              <div className="alert alert-warning">
+                You could send {remainInvitation} {remainInvitation > 1 ? "invitations" : "invitation"}.
+              </div>
               <div className="row">
                 <div className="col-md-6 text-left">
                   <h4>{statistic}</h4>
