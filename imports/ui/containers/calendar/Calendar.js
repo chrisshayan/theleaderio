@@ -29,7 +29,7 @@ class Calendar extends Component {
         lazyFetching: true,
         timezone: moment.tz.guess(),
         events: (start, end, timezone, callback) => {
-          console.log(start.toISOString())
+          // console.log(start.toISOString())
           Meteor.call('sendingPlans.getCalendar', {
             start: start.toDate(),
             end: end.toDate(),
@@ -64,7 +64,7 @@ class Calendar extends Component {
         }
       });
     } catch (e) {
-      console.log(e);
+      // console.log(e);
     }
 
   }

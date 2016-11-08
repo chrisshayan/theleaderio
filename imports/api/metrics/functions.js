@@ -21,7 +21,7 @@ function onScoringFailed({planId, employeeId, leaderId, organizationId, metric})
   };
   sendEmail.call({template, data}, (error) => {
     if (!_.isEmpty(error)) {
-      console.log(error)
+      // console.log(error)
       return error.reason;
     }
   });
@@ -48,7 +48,7 @@ function onScoringSuccess({planId, employeeId, leaderId, organizationId, metric,
         };
         sendEmail.call({template, data}, (error) => {
           if (!_.isEmpty(error)) {
-            console.log(error)
+            // console.log(error)
             return error.reason;
           }
         });
@@ -64,7 +64,7 @@ function onScoringSuccess({planId, employeeId, leaderId, organizationId, metric,
         };
         sendEmail.call({template, data}, (error) => {
           if (!_.isEmpty(error)) {
-            console.log(error)
+            // console.log(error)
             return error.reason;
           }
         });

@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import Copyright from '/imports/ui/common/Copyright';
 import {Accounts} from 'meteor/accounts-base';
+import {Roles} from 'meteor/alanning:roles';
 import moment from 'moment';
 import momentTZ from 'moment-timezone';
 
@@ -39,6 +40,11 @@ export default class SignUpUser extends Component {
           userId = Accounts.userId(),
           timezone = momentTZ.tz.guess()
           ;
+
+        // add role for user
+        Roles.addUsersToRoles(userId, "user");
+
+        // create user profile
         ProfileActions.create.call({userId, firstName, lastName, timezone}, (error) => {
           if (error) {
             this.setState({

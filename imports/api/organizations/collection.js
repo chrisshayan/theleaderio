@@ -11,7 +11,7 @@ class OrganizationsCollection extends Mongo.Collection {
 		var result = super.insert(doc, callback);
 		if(Meteor.isServer) {
 			var intercom = require('/imports/api/intercom');
-			console.log(intercom)
+			// console.log(intercom)
 		}
 		return result;
 	}

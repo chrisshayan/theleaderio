@@ -23,7 +23,7 @@ export const feedbackLeader = ({planId, employeeId, leaderId, organizationId, me
       };
       sendEmail.call({template, data}, (error) => {
         if (!_.isEmpty(error)) {
-          console.log(error)
+          // console.log(error)
           return error.reason;
         }
       });

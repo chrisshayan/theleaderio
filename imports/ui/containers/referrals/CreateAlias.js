@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
 import {FlowRouter} from 'meteor/kadira:flow-router';
 
+// collections
+import {Referrals} from '/imports/api/referrals/index';
+
 // components
 import AliasForm from '/imports/ui/components/AliasForm';
 import Copyright from '/imports/ui/common/Copyright';
@@ -8,13 +11,15 @@ import NoticeForm from '/imports/ui/common/NoticeForm';
 
 // methods
 import * as UserActions from '/imports/api/users/methods';
-import * as SubdomainActions from '/imports/utils/subdomain';
+import {addSubdomain} from '/imports/utils/subdomain';
 import * as TokenActions from '/imports/api/tokens/methods';
 import { createForMigration as createScheduler } from '/imports/api/scheduler/methods';
+import {setStatus} from '/imports/api/referrals/methods';
 
 // constants
 import {DOMAIN} from '/imports/startup/client/routes';
 import { DEFAULT_SCHEDULER } from '/imports/utils/defaults';
+import {STATUS} from '/imports/api/referrals/index';
 
 export default class ResetAlias extends Component {
   constructor() {
@@ -31,7 +36,7 @@ export default class ResetAlias extends Component {
 
   componentWillMount() {
     const tokenId = FlowRouter.getQueryParam("token");
-    TokenActions.verify.call({tokenId, action: 'migration'}, (error, email) => {
+    TokenActions.verify.call({tokenId, action: 'referral'}, (error, email) => {
       if (_.isEmpty(error)) {
         this.setState({
           tokenId,
@@ -66,23 +71,39 @@ export default class ResetAlias extends Component {
       // Call methods createAlias
       UserActions.createAlias.call({email, alias}, (error, userId) => {
         if (_.isEmpty(error)) {
+          const referral = Referrals.findOne({email});
           // create default user scheduler
           DEFAULT_SCHEDULER.map(scheduler => {
             const year = moment().year();
             const {quarter, metrics} = scheduler;
             createScheduler.call({userId, year, quarter, metrics});
           });
+
+          // confirm the referral
+          if(!_.isEmpty(referral)) {
+            setStatus.call({params: {_id: referral._id, status: STATUS.CONFIRMED}});
+          }
+
           // Remove token
           // console.log(tokenId)
-          TokenActions.remove.call({tokenId, action: 'migration'}, (error, result) => {
+          TokenActions.remove.call({tokenId, action: 'referral'}, (error, result) => {
             if(!error) {
-              // Redirect to user's login page
-              // Need the cookie sharing login information here
-              this.setState({
-                errors: null
+              // create token to set password
+              const newTokenId = TokenActions.generate.call({email, action: 'password'}, (error) => {
+                if(!error) {
+                  // Redirect to set password page
+                  // Need the cookie sharing login information here
+                  this.setState({
+                    errors: null
+                  });
+                  // Sign out user before route to subdomain
+                  addSubdomain({alias, route: FlowRouter.path('passwordPage', {action: 'set'}, {token: newTokenId})});
+                } else {
+                  this.setState({
+                    errors: error.reason
+                  });
+                }
               });
-              // Sign out user before route to subdomain
-              SubdomainActions.addSubdomain({alias, route: FlowRouter.path('SignInPage', {action: 'account'})});
             } else {
               this.setState({
                 errors: error.reason

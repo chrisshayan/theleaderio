@@ -31,6 +31,12 @@ class Navigation extends Component {
           icon: 'fa fa-gift'
         },
         {
+          route: 'app.referrals',
+          path: FlowRouter.url('app.referrals'),
+          label: 'Referrals',
+          icon: 'fa fa-users'
+        },
+        {
           route: 'app.articles',
           path: FlowRouter.url('app.articles'),
           label: 'Articles',

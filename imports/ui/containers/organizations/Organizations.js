@@ -13,7 +13,7 @@ import {DEFAULT_ORGANIZATION_PHOTO} from '/imports/utils/defaults';
 // components
 import ProfilePhoto from '/imports/ui/components/ProfilePhoto';
 // Views
-import NoOrganization from './NoOrganization';
+import NoOrganization from '/imports/ui/components/NoContent';
 import Box from '/imports/ui/components/Box';
 import Spinner from '/imports/ui/common/Spinner';
 
@@ -64,7 +64,7 @@ class Organizations extends Component {
       <div className="animated fadeInRight">
         {isLoading && !loaded && (<Spinner />)}
         {!isLoading && !organizations.length && (
-          <NoOrganization />
+          <NoOrganization icon="fa fa-folder-o" message="There is no organization."/>
         )}
         {/* Organization list */}
         <div className="row">

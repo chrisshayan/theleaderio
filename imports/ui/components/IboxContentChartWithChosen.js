@@ -24,7 +24,7 @@ export default class IboxContentChartWithChosen extends Component {
   }
 
   onChooseMetric(selected) {
-    console.log(selected)
+    // console.log(selected)
     $.map(this.props.data, (value, key) => {
       if (selected === key) {
         this.setState({chartData: value});
@@ -35,7 +35,7 @@ export default class IboxContentChartWithChosen extends Component {
   render() {
     // metrics chart
     const
-      {label, data} = this.props,
+      {label, data, status} = this.props,
       {loading, chartData} = this.state
       ;
 
@@ -52,6 +52,9 @@ export default class IboxContentChartWithChosen extends Component {
 
         return (
           <div className="ibox-content">
+            {status && (
+              <span className="label label-info pull-right">{status}</span>
+            )}
             <h3 className="font-bold no-margins">
               {label}
             </h3>

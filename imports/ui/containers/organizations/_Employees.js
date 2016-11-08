@@ -216,7 +216,7 @@ class OrganizationEmployees extends Component {
 					show={this.state.showAddDialog}
 					onDismiss={this._onDismissDialog}
 					organizationId={this.props.orgId}
-				/> < /div>
+				/> </div>
 );
 }
 }

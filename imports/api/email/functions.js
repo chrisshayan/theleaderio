@@ -563,3 +563,39 @@ export const getDigestEmailOptions = ({template, data}) => {
   return result;
 
 }
+
+/**
+ * Function to collect content data for referral email
+ * @param template
+ * @param data
+ */
+export const getReferralEmailOptions = ({template, data}) => {
+  const
+    {email, firstName, url, leaderName} = data,
+    EMAIL_TEMPLATE_CONTENT = getDefaults.call({name: 'EMAIL_TEMPLATE_CONTENT'}).content,
+    siteInfo = getMailData({type: "site"}),
+    subject = `${firstName}, You're invited to sign up for a leadership tool by ${leaderName}.`,
+    mailData = {
+      subject,
+      userName: firstName,
+      leaderName,
+      siteName: siteInfo.siteName,
+      siteUrl: siteInfo.siteUrl,
+      registerUrl: url,
+      message: ""
+    };
+  let
+    result = {
+      from: `"${siteInfo.siteName}" <no-reply@${mailDomain}>`,
+      to: "jackiekhuu.work@gmail.com",
+      subject,
+      html: ""
+    };
+
+  mailData.message = `"${leaderName}" was using <strong>theLeader.io</strong> as a useful tool to become a great leader.`;
+
+  result.to = email;
+  result.html = buildHtml({template, data: mailData});
+
+  return result;
+}
