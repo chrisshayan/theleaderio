@@ -21,7 +21,7 @@ import {DOMAIN} from '/imports/startup/client/routes';
 import { DEFAULT_SCHEDULER } from '/imports/utils/defaults';
 import {STATUS} from '/imports/api/referrals/index';
 
-export default class ResetAlias extends Component {
+export default class ConfirmReferral extends Component {
   constructor() {
     super();
 

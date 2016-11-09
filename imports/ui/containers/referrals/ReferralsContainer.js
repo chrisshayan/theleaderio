@@ -44,8 +44,7 @@ class ReferralsComponent extends Component {
         label: 'Referrals',
         route: FlowRouter.url('app.referrals'),
         active: true
-      }],
-      actions
+      }]
     });
 
     this.setState({
@@ -72,7 +71,7 @@ class ReferralsComponent extends Component {
   }
 
   _onDismissDialog = e => {
-    this.setState({ showAddDialog: false });
+    this.setState({showAddDialog: false});
   }
 
   render() {
@@ -91,7 +90,7 @@ class ReferralsComponent extends Component {
         showAddDialog
       } = this.state,
       remainInvitation = maxAllowInvitation - (invitedReferrals + confirmedReferrals),
-      statistic = `Waiting ${waitingReferrals} - Invited: ${invitedReferrals} - Confirmed: ${confirmedReferrals}`
+      statistic = `Invited: ${invitedReferrals} - Confirmed: ${confirmedReferrals}`
       ;
     let isDisableInviting = false;
 
@@ -101,13 +100,26 @@ class ReferralsComponent extends Component {
         <div>
           {!_.isEmpty(referrals) ? (
             <Box>
-              <div className="alert alert-warning">
-                You could send {remainInvitation} {remainInvitation > 1 ? "invitations" : "invitation"}.
-              </div>
+              {(!isAdmin && invitedReferrals >= maxAllowInvitation) && (
+                <div className="alert alert-warning">
+                  You've invited <strong>{maxAllowInvitation} leaders</strong> already. At this moment each leader can only invite {maxAllowInvitation} leaders. If you wanna invite more please ask your friends to <strong>confirm</strong> the invitation or <strong>cancel</strong> one.
+                </div>
+              )}
               <div className="row">
                 <div className="col-md-6 text-left">
                   <h4>{statistic}</h4>
                 </div>
+                {!isDisableInviting && (
+                  <div className="col-md-6 text-right">
+                    <a className="btn btn-primary"
+                       onClick={this._onClickShowDialog}
+                    >
+                      <i className="fa fa-plus"/>
+                      {' '}
+                      Add referral
+                    </a>
+                  </div>
+                )}
               </div>
               <div className="row">
                 <ReferralsTable
@@ -117,10 +129,23 @@ class ReferralsComponent extends Component {
               </div>
             </Box>
           ) : (
-            <NoReferral
-              icon="fa fa-users"
-              message="There is no referral."
-            />
+            <Box>
+              <div className="row text-right">
+                <a className="btn btn-primary"
+                   onClick={this._onClickShowDialog}
+                >
+                  <i className="fa fa-plus"/>
+                  {' '}
+                  Add referral
+                </a>
+              </div>
+              <div className="row">
+                <NoReferral
+                  icon="fa fa-users"
+                  message="There is no referral."
+                />
+              </div>
+            </Box>
           )}
           <AddReferral
             show={showAddDialog}
@@ -142,6 +167,7 @@ export default ReferralsContainer = createContainer((params) => {
     sub = Meteor.subscribe("referrals"),
     maxAllowInvitation = Meteor.settings.public.maxInvitation, // this value should get from settings file
     currentNotWaitingReferrals = Referrals.find({status: {$not: /WAITING/}}).count(),
+    currentInvitedReferrals = Referrals.find({status: STATUS.INVITED}).count(),
     ready = sub.ready(),
     referrals = Referrals.find({leaderId}).fetch()
     ;
@@ -149,9 +175,9 @@ export default ReferralsContainer = createContainer((params) => {
     waitingReferrals = 0,
     invitedReferrals = 0,
     confirmedReferrals = 0
-  ;
+    ;
 
-  if(!_.isEmpty(referrals)) {
+  if (!_.isEmpty(referrals)) {
     referrals.map(referral => {
       switch (referral.status) {
         case STATUS.WAITING: {
@@ -172,7 +198,7 @@ export default ReferralsContainer = createContainer((params) => {
 
   return {
     ready,
-    isAllowAdding: (currentNotWaitingReferrals < maxAllowInvitation) ? true : false,
+    isAllowAdding: (currentInvitedReferrals < maxAllowInvitation) ? true : false,
     maxAllowInvitation,
     waitingReferrals,
     invitedReferrals,

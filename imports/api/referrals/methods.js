@@ -8,12 +8,12 @@ import {words as capitalize} from 'capitalize';
 // collection
 import {Referrals, STATUS} from './index';
 import {Profiles} from '/imports/api/profiles/index';
+import {Tokens} from '/imports/api/tokens/index';
 
 // methods
 import {create as createProfile} from '/imports/api/profiles/methods';
 import {generate as generateToken} from '/imports/api/tokens/methods';
 import {send as sendEmail} from '/imports/api/email/methods';
-import {create as createScheduler} from '/imports/api/scheduler/methods';
 
 // constants
 import * as ERROR_CODE from '/imports/utils/error_code';
@@ -163,26 +163,29 @@ export const send = new ValidatedMethod({
         leaderId = Meteor.userId(),
         maxAllowInvitation = Meteor.settings.maxInvitation, // this value should get from settings file
         // leaderId = Meteor.userId() || "abcd",
-        noOfInvited = Referrals.find({leaderId, status: {$not: /WAITING/}}).count(),
-        referral = Referrals.findOne({_id: referralId, status: STATUS.WAITING, leaderId})
+        noOfInvited = Referrals.find({leaderId, status: STATUS.INVITED}).count(),
+        referral = Referrals.findOne({_id: referralId, status: {$nin: [STATUS.CANCELED, STATUS.CONFIRMED]}, leaderId})
         ;
 
       if (!Roles.userIsInRole(leaderId, "admin")) {
-        if (noOfInvited >= maxAllowInvitation) {
-          throw new Meteor.Error(ERROR_CODE.UNAUTHORIZED, "leader reached the invitation limit.");
+        if (referral.status === STATUS.WAITING) {
+          if (noOfInvited >= maxAllowInvitation) {
+            throw new Meteor.Error(ERROR_CODE.UNAUTHORIZED, "leader reached the invitation limit.");
+          }
         }
       }
 
       if (!_.isEmpty(referral)) {
         const
           {firstName, lastName, email} = referral,
-          timezone = Meteor.settings.public.localTimezone
+          timezone = Meteor.settings.public.localTimezone,
+          user = Accounts.findUserByEmail(email),
+          leader = Profiles.findOne({userId: leaderId}),
+          token = Tokens.findOne({email, action: 'referral'}),
+          invitation = {}
           ;
-        if (_.isEmpty(Accounts.findUserByEmail(email))) {
-          const
-            invitation = {}
-            ;
 
+        if (referral.status === STATUS.WAITING || _.isEmpty(user)) {
           // create User
           invitation.userId = Accounts.createUser({email});
 
@@ -199,42 +202,55 @@ export const send = new ValidatedMethod({
               invitation.tokenId = generateToken.call({email, action: 'referral'});
             }
           }
-
-          // send invitation
-          if (invitation.tokenId) {
-            const
-              leader = Profiles.findOne({userId: leaderId}),
-              {tokenId, userId, profileId} = invitation,
-              DOMAIN = Meteor.settings.public.domain,
-              url = `http://${DOMAIN}/signup/referral?token=${tokenId}`,
-              template = 'referral',
-              data = {
-                email,
-                firstName: capitalize(firstName),
-                url,
-                userId,
-                profileId,
-                tokenId
-              };
-
-
+        } else if (referral.status === STATUS.INVITED) {
+          if (!_.isEmpty(user)) {
+            invitation.userId = user._id;
             if (!_.isEmpty(leader)) {
-              data.leaderName = `${capitalize(leader.firstName)} ${capitalize(leader.lastName)}`;
-
-              // send email
-              invitation.sendEmail = sendEmail.call({template, data});
-
-              // update status of referral to invited
-              setStatus.call({params: {_id: referralId, status: STATUS.INVITED}});
-              return invitation;
+              invitation.profileId = leader._id;
+              if (!_.isEmpty(token)) {
+                invitation.tokenId = token._id;
+              }
             }
+          } else {
+            throw new Meteor.Error(ERROR_CODE.RESOURCE_NOT_FOUND, `${email} was invited but has no account.`);
           }
-
         } else {
-          throw new Meteor.Error(`${referral.email} is a leader already!`);
+          return {};
+        }
+
+        // send invitation
+        if (invitation.tokenId) {
+          const
+            leader = Profiles.findOne({userId: leaderId}),
+            {tokenId, userId, profileId} = invitation,
+            DOMAIN = Meteor.settings.public.domain,
+            registerUrl = `http://${DOMAIN}/signup/referral?response=confirm&token=${tokenId}`,
+            cancelUrl = `http://${DOMAIN}/signup/referral?response=cancel&_id=${referralId}`,
+            template = 'referral',
+            data = {
+              email,
+              firstName: capitalize(firstName),
+              registerUrl,
+              cancelUrl,
+              userId,
+              profileId,
+              tokenId
+            };
+
+
+          if (!_.isEmpty(leader)) {
+            data.leaderName = `${capitalize(leader.firstName)} ${capitalize(leader.lastName)}`;
+
+            // send email
+            invitation.sendEmail = sendEmail.call({template, data});
+
+            // update status of referral to invited
+            setStatus.call({params: {_id: referralId, status: STATUS.INVITED}});
+            return invitation;
+          }
         }
       } else {
-        throw new Meteor.Error(`Referral ${referralId} is not found!`)
+        throw new Meteor.Error(ERROR_CODE.RESOURCE_NOT_FOUND, `Referral ${referralId} is not found!`)
       }
     }
   }

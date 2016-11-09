@@ -10,3 +10,11 @@ Meteor.publish('referrals', function () {
 
   return Referrals.find({leaderId: this.userId});
 });
+
+Meteor.publish('referrals.cancellation', function (_id) {
+  if(_.isEmpty(_id)) {
+    return this.ready();
+  }
+
+  return Referrals.findOne({_id});
+});

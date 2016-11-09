@@ -11,3 +11,15 @@ Meteor.publish('employees', function() {
   });
   
 });
+
+
+Meteor.publish("statistic.employees", function() {
+  if(!this.userId) {
+    return this.ready();
+  }
+  if(!Roles.userIsInRole(this.userId, "admin")) {
+    throw new Meteor.Error(ERROR_CODE.PERMISSION_DENIED);
+  }
+
+  return Employees.find();
+});

@@ -7,7 +7,8 @@ import ReferralsCollection from './collections';
 export const STATUS = {
   WAITING: "WAITING",
   INVITED: "INVITED",
-  CONFIRMED: "CONFIRMED"
+  CONFIRMED: "CONFIRMED",
+  CANCELED: "CANCELED"
 };
 
 export const Referrals = new ReferralsCollection("referrals");
@@ -33,7 +34,7 @@ Referrals.schema = new SimpleSchema({
   status: {
     type: String,
     optional: true,
-    allowedValues: [STATUS.INVITED, STATUS.CONFIRMED, STATUS.WAITING],
+    allowedValues: [STATUS.INVITED, STATUS.CONFIRMED, STATUS.WAITING, STATUS.CANCELED],
     defaultValue: STATUS.WAITING
   },
   createdAt: {

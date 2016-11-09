@@ -5,6 +5,7 @@ import {getErrors} from '/imports/utils';
 
 // methods
 import {create as createReferral} from '/imports/api/referrals/methods';
+import {send as sendReferral} from '/imports/api/referrals/methods';
 import * as Notifications from '/imports/api/notifications/methods';
 import {verify as verifyEmail} from '/imports/api/users/methods';
 import {verify as verifyReferral} from '/imports/api/referrals/methods';
@@ -54,22 +55,27 @@ export default class AddReferral extends Component {
               // create referral
               createReferral.call({params: doc}, (error, referralId) => {
                 if (!error) {
-                  const
-                    closeButton = true,
-                    title = 'Referral',
-                    message = 'Added';
-                  Notifications.success.call({closeButton, title, message});
-                  // window.trackEvent('add_referral', {
-                  //   referralId,
-                  //   name: [data['firstName'], data['lastName']].join(' '),
-                  //   email: data['email']
-                  // });
+                  sendReferral.call({params: {referralId}}, (error, result) => {
+                    if(!error) {
+                      const
+                        closeButton = true,
+                        title = 'Referral',
+                        message = 'Invited';
+                      Notifications.success.call({closeButton, title, message});
+                    } else {
+                      const
+                        closeButton = true,
+                        title = 'Referral',
+                        message = `Invite failed: ${error.reason}`;
+                      Notifications.error.call({closeButton, title, message});
+                    }
+                  });
                   this._onCancel();
                 } else {
                   const
                     closeButton = true,
                     title = 'Referral',
-                    message = getErrors(error);
+                    message = error.reason;
                   Notifications.error.call({closeButton, title, message});
                 }
               });
@@ -84,7 +90,7 @@ export default class AddReferral extends Component {
         const
           closeButton = true,
           title = 'Referral',
-          message = getErrors(error);
+          message = error.reason;
         Notifications.error.call({closeButton, title, message});
       }
     });
@@ -130,7 +136,7 @@ export default class AddReferral extends Component {
           <div className="form-group">
             <a href="#" className="btn btn-default" onClick={this._onCancel}>Cancel</a>
             {' '}
-            <button className="btn btn-primary" onClick={this._onSave}>Save</button>
+            <button className="btn btn-primary" onClick={this._onSave}>Send</button>
           </div>
         </form>
       </SkyLightStateless>
