@@ -100,12 +100,12 @@ export const edit = new ValidatedMethod({
  */
 export const setStatus = new ValidatedMethod({
   name: "referral.setStatus",
-  mixins: [LoggedInMixin],
-  checkLoggedInError: {
-    error: ERROR_CODE.UNAUTHENTICATED,
-    message: 'You need to be logged in to call this method',//Optional
-    reason: 'You need to login' //Optional
-  },
+  // mixins: [LoggedInMixin],
+  // checkLoggedInError: {
+  //   error: ERROR_CODE.UNAUTHENTICATED,
+  //   message: 'You need to be logged in to call this method',//Optional
+  //   reason: 'You need to login' //Optional
+  // },
   validate: new SimpleSchema({
     params: {
       type: Object
@@ -115,17 +115,23 @@ export const setStatus = new ValidatedMethod({
     },
     "params.status": {
       type: String,
-      allowedValues: [STATUS.INVITED, STATUS.CONFIRMED],
+      allowedValues: [STATUS.INVITED, STATUS.CONFIRMED, STATUS.CANCELED, STATUS.WAITING],
     },
   }).validator(),
   run({params}) {
-    if (!Meteor.userId()) {
-      throw new Meteor.Error(ERROR_CODE.UNAUTHORIZED, "User not found");
-    }
     const
       {_id, status} = params
       ;
 
+    // don't need to login to cancel the invitation
+    if(status === STATUS.CANCELED) {
+      // set status for the referral
+      return Referrals.update({_id}, {$set: {status}});
+    }
+
+    if (!Meteor.userId()) {
+      throw new Meteor.Error(ERROR_CODE.UNAUTHORIZED, "User not found");
+    }
     // set status for the referral
     return Referrals.update({_id}, {$set: {status}});
   }
