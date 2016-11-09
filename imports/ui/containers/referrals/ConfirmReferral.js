@@ -65,6 +65,7 @@ export default class ConfirmReferral extends Component {
   _inputSubmit({inputValue}) {
     const
       alias = inputValue,
+      _id = FlowRouter.getQueryParam("_id"),
       {email, tokenId} = this.state
       ;
     if(!_.isEmpty(email)) {
@@ -80,9 +81,13 @@ export default class ConfirmReferral extends Component {
           });
 
           // confirm the referral
-          if(!_.isEmpty(referral)) {
-            setStatus.call({params: {_id: referral._id, status: STATUS.CONFIRMED}});
-          }
+          setStatus.call({params: {_id, status: STATUS.CONFIRMED}}, (error) => {
+            if(!!error) {
+              this.setState({
+                errors: error.reason
+              });
+            }
+          });
 
           // Remove token
           // console.log(tokenId)
@@ -110,7 +115,6 @@ export default class ConfirmReferral extends Component {
               });
             }
           });
-
         } else {
           this.setState({
             errors: error.reason

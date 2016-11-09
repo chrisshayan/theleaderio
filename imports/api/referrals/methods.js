@@ -124,7 +124,7 @@ export const setStatus = new ValidatedMethod({
       ;
 
     // don't need to login to cancel the invitation
-    if(status === STATUS.CANCELED) {
+    if(status === STATUS.CANCELED || status === STATUS.CONFIRMED) {
       // set status for the referral
       return Referrals.update({_id}, {$set: {status}});
     }
@@ -230,7 +230,7 @@ export const send = new ValidatedMethod({
             leader = Profiles.findOne({userId: leaderId}),
             {tokenId, userId, profileId} = invitation,
             DOMAIN = Meteor.settings.public.domain,
-            registerUrl = `http://${DOMAIN}/signup/referral?response=confirm&token=${tokenId}`,
+            registerUrl = `http://${DOMAIN}/signup/referral?response=confirm&_id=${referralId}&token=${tokenId}`,
             cancelUrl = `http://${DOMAIN}/signup/referral?response=cancel&_id=${referralId}`,
             template = 'referral',
             data = {
