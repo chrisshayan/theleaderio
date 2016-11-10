@@ -22,6 +22,9 @@ import {DOMAIN} from '/imports/startup/client/routes';
 import { DEFAULT_SCHEDULER } from '/imports/utils/defaults';
 import {STATUS} from '/imports/api/referrals/index';
 
+// utils
+import {aliasValidator} from '/imports/utils/index';
+
 export default class ConfirmReferral extends Component {
   constructor() {
     super();
@@ -141,19 +144,26 @@ export default class ConfirmReferral extends Component {
       errors: null
     });
     if (inputValue.length > 0) {
-      UserActions.verify.call({alias: inputValue}, (error) => {
-        if (!_.isEmpty(error)) {
-          this.setState({
-            aliasAllowed: true,
-            errors: null
-          });
-        } else {
-          this.setState({
-            aliasAllowed: false,
-            errors: `${inputValue}.${DOMAIN} is already taken. Please choose another one ...`
-          });
-        }
-      });
+      if(aliasValidator(inputValue)) {
+        UserActions.verify.call({alias: inputValue}, (error) => {
+          if (!_.isEmpty(error)) {
+            this.setState({
+              aliasAllowed: true,
+              errors: null
+            });
+          } else {
+            this.setState({
+              aliasAllowed: false,
+              errors: `${inputValue}.${DOMAIN} is already taken. Please choose another one ...`
+            });
+          }
+        });
+      } else {
+        this.setState({
+          aliasAllowed: false,
+          errors: "Please use only letters (a-z), numbers."
+        });
+      }
     }
   }
 
