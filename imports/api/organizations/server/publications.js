@@ -1,5 +1,7 @@
+import {Meteor} from 'meteor/meteor';
 import { Organizations } from '../index';
 import { Employees } from '/imports/api/employees';
+import {Roles} from 'meteor/alanning:roles';
 
 const PAGE_LIMIT = 9;
 
@@ -61,4 +63,15 @@ Meteor.publishComposite('organizations.details', function({ _id }) {
 			}
 		]
 	};
-})
+});
+
+Meteor.publish("statistic.organizations", function() {
+	if(!this.userId) {
+		return this.ready();
+	}
+	if(!Roles.userIsInRole(this.userId, "admin")) {
+		throw new Meteor.Error(ERROR_CODE.PERMISSION_DENIED);
+	}
+
+	return Organizations.find();
+});

@@ -24,20 +24,10 @@ export default class LineChart extends Component {
   lineChart() {
     const canvas = document.getElementById("lineChart");
     if (canvas) {
-      const {label, data} = this.props;
+      const {labels, datasets} = this.props;
       const lineData = {
-        labels: label,
-        datasets: [
-          {
-            data: data,
-            fillColor: "rgba(26,179,148,0.5)",
-            strokeColor: "rgba(26,179,148,0.7)",
-            pointColor: "rgba(26,179,148,1)",
-            pointStrokeColor: "#fff",
-            pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(26,179,148,1)"
-          }
-        ]
+        labels,
+        datasets
       };
       const lineOptions = {
         scaleShowGridLines: true,
