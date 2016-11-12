@@ -22,7 +22,11 @@ export default class LineChart extends Component {
   }
 
   lineChart() {
-    const canvas = document.getElementById("lineChart");
+    const
+      {id = ""} = this.props,
+      lineChartId = `lineChart${id}`,
+      canvas = document.getElementById(lineChartId)
+      ;
     if (canvas) {
       const {labels, datasets} = this.props;
       const lineData = {
@@ -52,9 +56,14 @@ export default class LineChart extends Component {
   }
 
   render() {
+    const
+      {id = ""} = this.props,
+      lineChartId = `lineChart${id}`
+      ;
+    console.log(lineChartId)
     return (
       <div>
-        <canvas id="lineChart" height="140"></canvas>
+        <canvas id={lineChartId} height="140"></canvas>
       </div>
     );
   }

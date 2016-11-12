@@ -64,35 +64,222 @@ export default class StatisticComponent extends Component {
         newCreationDataSets = [
           {
             data: users,
-            fillColor: "rgba(26,179,148,0.5)",
-            strokeColor: "rgba(26,179,148,0.7)",
-            pointColor: "rgba(26,179,148,1)",
+            fillColor: "rgba(26, 179, 148, 0.5)",
+            strokeColor: "rgba(26, 179, 148, 0.7)",
+            pointColor: "rgba(26, 179, 148, 1)",
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(26,179,148,1)",
+            pointHighlightStroke: "rgba(26, 179, 148, 1)",
           },
           {
             data: organizations,
-            fillColor: "rgba(220,220,220,0.5)",
-            strokeColor: "rgba(220,220,220,1)",
-            pointColor: "rgba(220,220,220,1)",
+            fillColor: "rgba(220, 220, 220, 0.5)",
+            strokeColor: "rgba(220, 220, 220, 1)",
+            pointColor: "rgba(220, 220, 220, 1)",
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
             pointHighlightStroke: "rgba(220,220,220,1)",
           },
+          {
+            data: employees,
+            fillColor: "rgba(181, 184, 207, 0.5)",
+            strokeColor: "rgba(181, 184, 207, 1)",
+            pointColor: "rgba(181, 184, 207, 1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(181, 184, 207, 1)",
+          }
+        ],
+        emailRegistrationDataSets = [
+          {
+            data: emailRegistration,
+            fillColor: "rgba(26, 179, 148, 0.5)",
+            strokeColor: "rgba(26, 179, 148, 0.7)",
+            pointColor: "rgba(26, 179, 148, 1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(26, 179, 148, 1)",
+          }
+        ],
+        emailSupportDataSets = [
+          {
+            data: emailForgotPassword,
+            fillColor: "rgba(26, 179, 148, 0.5)",
+            strokeColor: "rgba(26, 179, 148, 0.7)",
+            pointColor: "rgba(26, 179, 148, 1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(26, 179, 148, 1)",
+          },
+          {
+            data: emailForgotAlias,
+            fillColor: "rgba(220, 220, 220, 0.5)",
+            strokeColor: "rgba(220, 220, 220, 1)",
+            pointColor: "rgba(220, 220, 220, 1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(220,220,220,1)",
+          }
+        ],
+        emailToEmployeesDataSets = [
+          {
+            data: emailSurveys,
+            fillColor: "rgba(26, 179, 148, 0.5)",
+            strokeColor: "rgba(26, 179, 148, 0.7)",
+            pointColor: "rgba(26, 179, 148, 1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(26, 179, 148, 1)",
+          },
+          {
+            data: emailScoringErrors,
+            fillColor: "rgba(220, 220, 220, 0.5)",
+            strokeColor: "rgba(220, 220, 220, 1)",
+            pointColor: "rgba(220, 220, 220, 1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(220,220,220,1)",
+          },
+          {
+            data: emailFeedbackToLeaders,
+            fillColor: "rgba(181, 184, 207, 0.5)",
+            strokeColor: "rgba(181, 184, 207, 1)",
+            pointColor: "rgba(181, 184, 207, 1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(181, 184, 207, 1)",
+          }
+        ],
+        emailToLeadersDataSets = [
+          {
+            data: emailFeedbackToEmployees,
+            fillColor: "rgba(26, 179, 148, 0.5)",
+            strokeColor: "rgba(26, 179, 148, 0.7)",
+            pointColor: "rgba(26, 179, 148, 1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(26, 179, 148, 1)",
+          },
+          {
+            data: emailWeeklyDigest,
+            fillColor: "rgba(220, 220, 220, 0.5)",
+            strokeColor: "rgba(220, 220, 220, 1)",
+            pointColor: "rgba(220, 220, 220, 1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(220,220,220,1)",
+          }
+        ],
+        emailReferralDataSets = [
+          {
+            data: emailReferral,
+            fillColor: "rgba(26, 179, 148, 0.5)",
+            strokeColor: "rgba(26, 179, 148, 0.7)",
+            pointColor: "rgba(26, 179, 148, 1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(26, 179, 148, 1)",
+          }
         ]
         ;
 
       return (
-        <div>
-          <LineChart
-            labels={labels}
-            datasets={newCreationDataSets}
-          />
-          <a className="btn btn-primary btn-bitbucket"></a> Users
-          <br/>
-          <a className="btn btn-default btn-bitbucket"
-             style={{backgroundColor: '#DCDCDC', borderColor: '#DCDCDC', color: '#FFFFFF'}}></a> Organizations
+        <div className="row">
+          <div className="col-md-8">
+            <div className="ibox float-e-margins">
+              <div className="ibox-title">
+                <h3>New Creation</h3>
+              </div>
+              <div className="ibox-content">
+                <LineChart
+                  id="newCreation"
+                  labels={labels}
+                  datasets={newCreationDataSets}
+                />
+                <a className="btn btn-primary btn-bitbucket">
+                </a> Users
+                <br/>
+                <a className="btn btn-default btn-bitbucket"
+                   style={{backgroundColor: '#DCDCDC', borderColor: '#DCDCDC', color: '#FFFFFF'}}>
+                </a> Organizations
+                <br/>
+                <a className="btn btn-default btn-bitbucket"
+                   style={{backgroundColor: '#b5b8cf', borderColor: '#b5b8cf', color: '#FFFFFF'}}>
+                </a> Employees
+              </div>
+            </div>
+            <div className="ibox float-e-margins">
+              <div className="ibox-title">
+                <h3>Emails sent</h3>
+              </div>
+              <div className="ibox-content">
+                <h4>Registration</h4>
+                <LineChart
+                  id="registration"
+                  labels={labels}
+                  datasets={emailRegistrationDataSets}
+                />
+                <a className="btn btn-primary btn-bitbucket">
+                </a> Welcome
+              </div>
+            </div>
+            <div className="ibox-content">
+              <h4>Support</h4>
+              <LineChart
+                id="support"
+                labels={labels}
+                datasets={emailSupportDataSets}
+              />
+              <a className="btn btn-primary btn-bitbucket">
+              </a> Forgot Password
+              <br/>
+              <a className="btn btn-default btn-bitbucket"
+                 style={{backgroundColor: '#DCDCDC', borderColor: '#DCDCDC', color: '#FFFFFF'}}>
+              </a> Forgot Alias
+            </div>
+            <div className="ibox-content">
+              <h4>To Employees</h4>
+              <LineChart
+                id="toEmployees"
+                labels={labels}
+                datasets={emailToEmployeesDataSets}
+              />
+              <a className="btn btn-primary btn-bitbucket">
+              </a> Surveys
+              <br/>
+              <a className="btn btn-default btn-bitbucket"
+                 style={{backgroundColor: '#DCDCDC', borderColor: '#DCDCDC', color: '#FFFFFF'}}>
+              </a> Scoring Errors
+              <br/>
+              <a className="btn btn-default btn-bitbucket"
+                 style={{backgroundColor: '#b5b8cf', borderColor: '#b5b8cf', color: '#FFFFFF'}}>
+              </a> Feedback to Leaders
+            </div>
+            <div className="ibox-content">
+              <h4>To Leaders</h4>
+              <LineChart
+                id="toLeaders"
+                labels={labels}
+                datasets={emailToLeadersDataSets}
+              />
+              <a className="btn btn-primary btn-bitbucket">
+              </a> Feedback to Employees
+              <br/>
+              <a className="btn btn-default btn-bitbucket"
+                 style={{backgroundColor: '#DCDCDC', borderColor: '#DCDCDC', color: '#FFFFFF'}}>
+              </a> Weekly Digest
+            </div>
+            <div className="ibox-content">
+              <h4>Referrals</h4>
+              <LineChart
+                id="referrals"
+                labels={labels}
+                datasets={emailReferralDataSets}
+              />
+              <a className="btn btn-primary btn-bitbucket">
+              </a> Referrals
+            </div>
+          </div>
         </div>
       );
     } else {
@@ -102,55 +289,3 @@ export default class StatisticComponent extends Component {
     }
   }
 }
-
-// export default StatisticContainer = createContainer((params) => {
-//   // const
-//   //   today = new Date(),
-//   //   year = today.getFullYear(),
-//   //   month = today.getMonth(),
-//   //   day = today.getDate(),
-//   //   currentDay = new Date(year, month, day),
-//   //   lastWeek = new Date(moment(currentDay).subtract(7, 'days')),
-//   //
-//   //   subUsers = Meteor.subscribe("statistic.users"),
-//   //   subEmployees = Meteor.subscribe("statistic.employees"),
-//   //   subOrganizations = Meteor.subscribe("statistic.organizations"),
-//   //   subLogsEmail = Meteor.subscribe("logs.email"),
-//   //
-//   //   timeComparison = {$gte: lastWeek},
-//   //   users = Accounts.users.find({createdAt: timeComparison}).fetch(),
-//   //   employees = Employees.find({createdAt: timeComparison}).fetch(),
-//   //   organizations = Organizations.find({createdAt: timeComparison}).fetch(),
-//   //   emailLogs = LogsEmail.find({date: timeComparison}).fetch()
-//   //   ;
-//   //
-//   // console.log({today, currentDay, lastWeek})
-//   // return {
-//   //   ready: subUsers.ready() & subEmployees.ready() & subOrganizations.ready() & subLogsEmail.ready(),
-//   //   users,
-//   //   employees,
-//   //   organizations,
-//   //   emailLogs
-//   // };
-//   let
-//     ready: false,
-//     errors: null,
-//     statistic: {}
-//   ;
-//
-//   measureAdminStatistic.call({params: {days: 7}}, (error, statistic) => {
-//     if(!error) {
-//       ready = statistic.ready;
-//       statistic = statistic;
-//     } else {
-//       errors = error.reason;
-//     }
-//   });
-//
-//   return {
-//     ready,
-//     errors,
-//     statistic
-//   };
-//
-// }, StatisticComponent);
