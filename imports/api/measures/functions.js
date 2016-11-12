@@ -34,6 +34,13 @@ export const measure = ({data}) => {
 
       break;
     }
+    case "statistic":
+    {
+      query = {type, interval, year, month, day, key};
+      update = {$set: {value}};
+      options = {upsert: true};
+      break;
+    }
     default:
     {
       return `unknown type: ${type}`;
