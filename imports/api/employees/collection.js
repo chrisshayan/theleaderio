@@ -9,9 +9,17 @@ class EmployeesCollection extends Mongo.Collection {
    */
   insert(doc, callback) {
     const
-      employeeId = super.insert(doc, callback),
+      createdAt = new Date(),
       updatedAt = new Date()
       ;
+    let
+      employeeId = "";
+
+    if(typeof doc.createdAt === 'undefined') {
+      doc.createdAt = createdAt;
+    }
+
+    employeeId = super.insert(doc, callback);
 
     if (employeeId) {
       Organizations.update({_id: doc.organizationId}, {

@@ -5,22 +5,14 @@ import {setPageHeading, resetPageHeading} from '/imports/store/modules/pageHeadi
 // components
 import Tabs from '/imports/ui/components/Tabs';
 import Box from '/imports/ui/components/Box';
-import FeedbackToLeaderContainer from '/imports/ui/containers/feedback/FeedbackToLeader';
-import FeedbackToEmployeesContainer from '/imports/ui/containers/feedback/FeedbackToEmployees';
+import ManageJobs from './ManageJobs';
+import ManageIndustries from './ManageIndustries';
+import Statistic from './StatisticContainer';
 
-export default class Feedback extends Component {
-  constructor(props) {
-    super(props);
-    setPageHeading({
-      title: 'Feedback',
-      breadcrumb: [{
-        label: 'Feedback',
-        active: true
-      }]
-    });
+export default class ManagementComponent extends Component {
 
-    Session.setDefault('FEEDBACK_TO_LEADER_PAGE', 1);
-    Session.setDefault('FEEDBACK_TO_EMPLOYEES_PAGE', 1);
+  constructor() {
+    super();
 
     this.state = {
       ready: false,
@@ -29,22 +21,36 @@ export default class Feedback extends Component {
     };
   }
 
+  componentWillMount() {
+    setPageHeading({
+      title: 'Admin',
+      breadcrumb: [{
+        label: 'Admin',
+        active: true
+      }]
+    });
+  }
+
   componentWillUnmount() {
     resetPageHeading();
   }
 
-
   getTabs() {
-    let tabs = [
+    const tabs = [
       {
-        key: "toLeader",
-        title: "To Leader",
-        component: <FeedbackToLeaderContainer/>
+        key: "Statistic",
+        title: "Statistic",
+        component: <Statistic/>
       },
       {
-        key: "toEmployees",
-        title: "To Employees",
-        component: <FeedbackToEmployeesContainer/>
+        key: "Jobs",
+        title: "Jobs",
+        component: <ManageJobs/>
+      },
+      {
+        key: "Industries",
+        title: "Industries",
+        component: <ManageIndustries/>
       }
     ];
 
@@ -53,11 +59,8 @@ export default class Feedback extends Component {
 
   render() {
     const
-      {currentTab} = this.state
-      ;
-
-
-
+    {currentTab} = this.state
+    ;
     return (
       <div>
         <Box>

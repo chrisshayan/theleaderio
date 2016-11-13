@@ -571,7 +571,7 @@ export const getDigestEmailOptions = ({template, data}) => {
  */
 export const getReferralEmailOptions = ({template, data}) => {
   const
-    {email, firstName, url, leaderName} = data,
+    {email, firstName, leaderName, registerUrl, cancelUrl} = data,
     EMAIL_TEMPLATE_CONTENT = getDefaults.call({name: 'EMAIL_TEMPLATE_CONTENT'}).content,
     siteInfo = getMailData({type: "site"}),
     subject = `${firstName}, You're invited to sign up for a leadership tool by ${leaderName}.`,
@@ -581,7 +581,8 @@ export const getReferralEmailOptions = ({template, data}) => {
       leaderName,
       siteName: siteInfo.siteName,
       siteUrl: siteInfo.siteUrl,
-      registerUrl: url,
+      registerUrl,
+      cancelUrl,
       message: ""
     };
   let

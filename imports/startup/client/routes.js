@@ -14,8 +14,9 @@ import ConfirmEmail from '/imports/ui/components/ConfirmEmail';
 import MainLayout from '/imports/ui/layouts/MainLayout';
 import BlankLayout from '/imports/ui/layouts/BlankLayout';
 
-import ManageIndustries from '/imports/ui/containers/admin/ManageIndustries';
-import ManageJobs from '/imports/ui/containers/admin/ManageJobs';
+// import ManageIndustries from '/imports/ui/containers/admin/ManageIndustries';
+// import ManageJobs from '/imports/ui/containers/admin/ManageJobs';
+import Management from '/imports/ui/containers/admin/Management';
 
 import ArticlesContainer from '/imports/ui/containers/articles/ArticlesContainer';
 import EditArticle from '/imports/ui/containers/articles/EditArticle';
@@ -26,7 +27,8 @@ import LandingPage from '/imports/ui/containers/LandingPage';
 import SignUpUser from '/imports/ui/containers/signup/SignUpUser';
 import SignUpAlias from '/imports/ui/containers/signup/SignUpAlias';
 import ResetAlias from '/imports/ui/containers/migration/ResetAlias';
-import CreateAlias from '/imports/ui/containers/referrals/CreateAlias';
+import ConfirmReferral from '/imports/ui/containers/referrals/ConfirmReferral';
+import CancelReferral from '/imports/ui/containers/referrals/CancelReferral';
 
 import SignInAlias from '/imports/ui/containers/signin/SignInAlias';
 import SignInAccount from '/imports/ui/containers/signin/SignInAccount';
@@ -210,7 +212,19 @@ signUpRoutes.route('/:action', {
       }
       // create alias for referral user
       case 'referral': {
-        mount(CreateAlias);
+        const
+          {response} = queryParams;
+        switch (response) {
+          case 'confirm': {
+            mount(ConfirmReferral);
+            break;
+          }
+          case 'cancel': {
+            const {_id} = queryParams;
+            mount(CancelReferral, {_id});
+            break;
+          }
+        }
         break;
       }
       default: {
@@ -387,26 +401,40 @@ const adminRoutes = FlowRouter.group({
 /**
  * Route: Admin industries
  */
-adminRoutes.route('/industries', {
-  name: 'admin.industries',
-  action() {
-    mount(MainLayout, {
-      content() {
-        return <ManageIndustries />
-      }
-    })
-  }
-});
+// adminRoutes.route('/industries', {
+//   name: 'admin.industries',
+//   action() {
+//     mount(MainLayout, {
+//       content() {
+//         return <ManageIndustries />
+//       }
+//     })
+//   }
+// });
 
 /**
  * Route: Admin jobs
  */
-adminRoutes.route('/jobs', {
-  name: 'admin.jobs',
+// adminRoutes.route('/jobs', {
+//   name: 'admin.jobs',
+//   action() {
+//     mount(MainLayout, {
+//       content() {
+//         return <ManageJobs />
+//       }
+//     })
+//   }
+// });
+
+/**
+ * Route: Admin jobs
+ */
+adminRoutes.route('/management', {
+  name: 'admin.management',
   action() {
     mount(MainLayout, {
       content() {
-        return <ManageJobs />
+        return <Management />
       }
     })
   }

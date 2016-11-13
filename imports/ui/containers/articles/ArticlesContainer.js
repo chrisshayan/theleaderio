@@ -7,6 +7,7 @@ import {setPageHeading, resetPageHeading} from '/imports/store/modules/pageHeadi
 import {Articles, STATUS} from '/imports/api/articles/index';
 
 // components
+import Spinner from '/imports/ui/common/Spinner';
 import ArticleBox from '/imports/ui/containers/articles/ArticleBox';
 import NoArticle from '/imports/ui/components/NoContent';
 
@@ -102,7 +103,9 @@ class ArticlesComponent extends Component {
       }
     } else {
       return (
-        <div>Loading...</div>
+        <div>
+          <Spinner />
+        </div>
       );
     }
   }

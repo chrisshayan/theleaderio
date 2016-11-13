@@ -28,7 +28,7 @@ export default class NoticeForm extends Component {
       <div className="middle-box text-center animated fadeInDown">
         <div>
           <div>
-            <h1 className="logo-name">{ code }</h1>
+            <h1 className="logo-name" style={{textTransform: 'capitalize'}}>{ code }</h1>
           </div>
           <div className="row">
             <div className="col-md-12">

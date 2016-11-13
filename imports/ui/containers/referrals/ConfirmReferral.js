@@ -15,13 +15,17 @@ import {addSubdomain} from '/imports/utils/subdomain';
 import * as TokenActions from '/imports/api/tokens/methods';
 import { createForMigration as createScheduler } from '/imports/api/scheduler/methods';
 import {setStatus} from '/imports/api/referrals/methods';
+import {confirm as confirmEmail} from '/imports/api/users/methods';
 
 // constants
 import {DOMAIN} from '/imports/startup/client/routes';
 import { DEFAULT_SCHEDULER } from '/imports/utils/defaults';
 import {STATUS} from '/imports/api/referrals/index';
 
-export default class ResetAlias extends Component {
+// utils
+import {aliasValidator} from '/imports/utils/index';
+
+export default class ConfirmReferral extends Component {
   constructor() {
     super();
 
@@ -65,6 +69,7 @@ export default class ResetAlias extends Component {
   _inputSubmit({inputValue}) {
     const
       alias = inputValue,
+      _id = FlowRouter.getQueryParam("_id"),
       {email, tokenId} = this.state
       ;
     if(!_.isEmpty(email)) {
@@ -80,24 +85,31 @@ export default class ResetAlias extends Component {
           });
 
           // confirm the referral
-          if(!_.isEmpty(referral)) {
-            setStatus.call({params: {_id: referral._id, status: STATUS.CONFIRMED}});
-          }
-
-          // Remove token
-          // console.log(tokenId)
-          TokenActions.remove.call({tokenId, action: 'referral'}, (error, result) => {
+          setStatus.call({params: {_id, status: STATUS.CONFIRMED}}, (error) => {
             if(!error) {
-              // create token to set password
-              const newTokenId = TokenActions.generate.call({email, action: 'password'}, (error) => {
+              // verify email address
+              confirmEmail.call({tokenId});
+
+              // Remove token
+              // console.log(tokenId)
+              TokenActions.remove.call({tokenId, action: 'referral'}, (error, result) => {
                 if(!error) {
-                  // Redirect to set password page
-                  // Need the cookie sharing login information here
-                  this.setState({
-                    errors: null
+                  // create token to set password
+                  const newTokenId = TokenActions.generate.call({email, action: 'password'}, (error) => {
+                    if(!error) {
+                      // Redirect to set password page
+                      // Need the cookie sharing login information here
+                      this.setState({
+                        errors: null
+                      });
+                      // Sign out user before route to subdomain
+                      addSubdomain({alias, route: FlowRouter.path('passwordPage', {action: 'set'}, {token: newTokenId})});
+                    } else {
+                      this.setState({
+                        errors: error.reason
+                      });
+                    }
                   });
-                  // Sign out user before route to subdomain
-                  addSubdomain({alias, route: FlowRouter.path('passwordPage', {action: 'set'}, {token: newTokenId})});
                 } else {
                   this.setState({
                     errors: error.reason
@@ -132,19 +144,26 @@ export default class ResetAlias extends Component {
       errors: null
     });
     if (inputValue.length > 0) {
-      UserActions.verify.call({alias: inputValue}, (error) => {
-        if (!_.isEmpty(error)) {
-          this.setState({
-            aliasAllowed: true,
-            errors: null
-          });
-        } else {
-          this.setState({
-            aliasAllowed: false,
-            errors: `${inputValue}.${DOMAIN} is already taken. Please choose another one ...`
-          });
-        }
-      });
+      if(aliasValidator(inputValue)) {
+        UserActions.verify.call({alias: inputValue}, (error) => {
+          if (!_.isEmpty(error)) {
+            this.setState({
+              aliasAllowed: true,
+              errors: null
+            });
+          } else {
+            this.setState({
+              aliasAllowed: false,
+              errors: `${inputValue}.${DOMAIN} is already taken. Please choose another one ...`
+            });
+          }
+        });
+      } else {
+        this.setState({
+          aliasAllowed: false,
+          errors: "Please use only letters (a-z), numbers."
+        });
+      }
     }
   }
 

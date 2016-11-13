@@ -15,6 +15,7 @@ import Box from '/imports/ui/components/Box';
 import Tabs from '/imports/ui/components/Tabs';
 import LoadingIndicator from '/imports/ui/common/LoadingIndicator';
 import Spinner from '/imports/ui/common/Spinner';
+import Calendar from '/imports/ui/containers/calendar/Calendar';
 
 import OrganizationInfoForm from './_OrganizationInformationForm';
 import OrganizationEmployees from './_Employees';

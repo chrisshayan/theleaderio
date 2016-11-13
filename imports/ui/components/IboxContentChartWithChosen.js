@@ -43,7 +43,20 @@ export default class IboxContentChartWithChosen extends Component {
     if (!loading) {
       if (!_.isEmpty(data)) {
         // Chosen metric options
-        const options = [];
+        const
+          options = [],
+          chartDataSets = [
+            {
+              data: chartData,
+              fillColor: "rgba(26,179,148,0.5)",
+              strokeColor: "rgba(26,179,148,0.7)",
+              pointColor: "rgba(26,179,148,1)",
+              pointStrokeColor: "#fff",
+              pointHighlightFill: "#fff",
+              pointHighlightStroke: "rgba(26,179,148,1)",
+            }
+          ]
+          ;
         $.map(data, (value, key) => {
           if (key !== 'label') {
             options.push(key);
@@ -67,8 +80,8 @@ export default class IboxContentChartWithChosen extends Component {
               onChange={this.onChooseMetric.bind(this)}
             />
             <LineChart
-              label={data.label}
-              data={chartData}
+              labels={data.label}
+              datasets={chartDataSets}
             />
           </div>
         );

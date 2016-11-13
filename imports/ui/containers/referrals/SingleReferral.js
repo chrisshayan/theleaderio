@@ -13,7 +13,7 @@ import {getErrors} from '/imports/utils';
 
 export default class SingleReferral extends Component {
 
-  _onSendReferral() {
+  _onResendReferral() {
     const {_id} = this.props;
     if(typeof _id === 'undefined') {
       const
@@ -25,45 +25,53 @@ export default class SingleReferral extends Component {
     }
     sendReferral.call({params: {referralId: _id}}, (error, result) => {
       if(!error) {
-        console.log(result);
-      } else {
-        console.log(error)
-      }
-    });
-  }
-
-  _onRemoveReferral() {
-    const {_id} = this.props;
-    if(typeof _id === 'undefined') {
-      const
-        closeButton = true,
-        title = 'Referral',
-        message = 'Referral not exists';
-      Notifications.error.call({closeButton, title, message});
-      return;
-    }
-    removeReferral.call({params: {_id}}, (error, result) => {
-      if(!error) {
         const
           closeButton = true,
           title = 'Referral',
-          message = 'Removed';
+          message = 'Invited';
         Notifications.success.call({closeButton, title, message});
       } else {
         const
           closeButton = true,
           title = 'Referral',
-          message = getErrors(error);
+          message = `Invite failed: ${error.reason}`;
         Notifications.error.call({closeButton, title, message});
       }
     });
   }
 
+  // _onRemoveReferral() {
+  //   const {_id} = this.props;
+  //   if(typeof _id === 'undefined') {
+  //     const
+  //       closeButton = true,
+  //       title = 'Referral',
+  //       message = 'Referral not exists';
+  //     Notifications.error.call({closeButton, title, message});
+  //     return;
+  //   }
+  //   removeReferral.call({params: {_id}}, (error, result) => {
+  //     if(!error) {
+  //       const
+  //         closeButton = true,
+  //         title = 'Referral',
+  //         message = 'Removed';
+  //       Notifications.success.call({closeButton, title, message});
+  //     } else {
+  //       const
+  //         closeButton = true,
+  //         title = 'Referral',
+  //         message = getErrors(error);
+  //       Notifications.error.call({closeButton, title, message});
+  //     }
+  //   });
+  // }
+
   render() {
     const
       {position = '', referral, isDisableInviting} = this.props,
       {_id, firstName, lastName, email, status} = referral,
-      disabled = (referral.status !== STATUS.WAITING) ? true : false,
+      disabled = (referral.status !== STATUS.CONFIRMED && referral.status !== STATUS.CANCELED) ? false : true,
       styles = {
         vAlign: {
           verticalAlign: 'middle'
@@ -79,9 +87,7 @@ export default class SingleReferral extends Component {
             placeholder="First name"
             valueName="value"
             value={firstName}
-            method="referrals.updateSingleField"
-            selector={{_id, field: 'firstName'}}
-            disabled={disabled}
+            disabled={true}
           />
         </td>
         <td style={styles.vAlign}>
@@ -90,9 +96,7 @@ export default class SingleReferral extends Component {
             placeholder="Last name"
             valueName="value"
             value={lastName}
-            method="referrals.updateSingleField"
-            selector={{_id, field: 'lastName'}}
-            disabled={disabled}
+            disabled={true}
           />
         </td>
         <td style={styles.vAlign}>
@@ -101,9 +105,7 @@ export default class SingleReferral extends Component {
             placeholder="Email"
             valueName="value"
             value={email}
-            method="referrals.updateSingleField"
-            selector={{_id, field: 'lastName'}}
-            disabled={disabled}
+            disabled={true}
           />
         </td>
         <td className="client-status" style={styles.vAlign}>
@@ -116,25 +118,18 @@ export default class SingleReferral extends Component {
           {status === STATUS.CONFIRMED && (
             <span className="label label-primary">{status.toLowerCase()}</span>
           )}
+          {status === STATUS.CANCELED && (
+            <span className="label label-default">{status.toLowerCase()}</span>
+          )}
         </td>
         <td className="text-right" style={styles.vAlign}>
-          {!(isDisableInviting || disabled) && (
+          {!(disabled) && (
             <button
               style={{marginBottom: 0}}
               className="btn btn-primary"
-              onClick={this._onSendReferral.bind(this)}
+              onClick={this._onResendReferral.bind(this)}
             ><i className="fa fa-share"/>
-              {' '}Send
-            </button>
-          )}
-          {" "}
-          {!disabled && (
-            <button
-              style={{marginBottom: 0}}
-              className="btn btn-danger"
-              onClick={this._onRemoveReferral.bind(this)}
-            ><i className="fa fa-trash"/>
-              {' '}Remove
+              {' '}Resend
             </button>
           )}
         </td>
