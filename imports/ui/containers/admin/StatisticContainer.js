@@ -212,31 +212,6 @@ export default class StatisticComponent extends Component {
               <div className="ibox-title">
                 <h3>Emails sent</h3>
               </div>
-              <div className="ibox-content">
-                <h4>Registration</h4>
-                <LineChart
-                  id="registration"
-                  labels={labels}
-                  datasets={emailRegistrationDataSets}
-                />
-                <a className="btn btn-primary btn-bitbucket">
-                </a> Welcome
-              </div>
-            </div>
-            <div className="ibox-content">
-              <h4>Support</h4>
-              <LineChart
-                id="support"
-                labels={labels}
-                datasets={emailSupportDataSets}
-              />
-              <a className="btn btn-primary btn-bitbucket">
-              </a> Forgot Password
-              <br/>
-              <a className="btn btn-default btn-bitbucket"
-                 style={{backgroundColor: '#DCDCDC', borderColor: '#DCDCDC', color: '#FFFFFF'}}>
-              </a> Forgot Alias
-            </div>
             <div className="ibox-content">
               <h4>To Employees</h4>
               <LineChart
@@ -278,6 +253,31 @@ export default class StatisticComponent extends Component {
               />
               <a className="btn btn-primary btn-bitbucket">
               </a> Referrals
+            </div>
+              <div className="ibox-content">
+                <h4>Registration</h4>
+                <LineChart
+                  id="registration"
+                  labels={labels}
+                  datasets={emailRegistrationDataSets}
+                />
+                <a className="btn btn-primary btn-bitbucket">
+                </a> Welcome
+              </div>
+            </div>
+            <div className="ibox-content">
+              <h4>Support</h4>
+              <LineChart
+                id="support"
+                labels={labels}
+                datasets={emailSupportDataSets}
+              />
+              <a className="btn btn-primary btn-bitbucket">
+              </a> Forgot Password
+              <br/>
+              <a className="btn btn-default btn-bitbucket"
+                 style={{backgroundColor: '#DCDCDC', borderColor: '#DCDCDC', color: '#FFFFFF'}}>
+              </a> Forgot Alias
             </div>
           </div>
         </div>
