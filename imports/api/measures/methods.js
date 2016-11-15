@@ -17,7 +17,7 @@ import {LogsEmail} from '/imports/api/logs/index';
 
 // functions
 import {arraySum} from '/imports/utils/index';
-import {measure} from './functions';
+import {measure, getMetricStatistic, STATISTIC_METRICS} from './functions';
 
 // constants
 import * as ERROR_CODE from '/imports/utils/error_code';
@@ -97,7 +97,7 @@ export const getChartData = new ValidatedMethod({
         selector = {}, // conditions for query database
         fields = {}, // fields will receive from database
         MeasuresData = []
-      ;
+        ;
 
       // get labels
       metrics.label = month.name;
@@ -137,7 +137,7 @@ export const getChartData = new ValidatedMethod({
     }
     // return empty if no chart data
     countChartData = arraySum(result.overall);
-    if(countChartData === 0) {
+    if (countChartData === 0) {
       result = [];
     } else {
       // reorder the values
@@ -190,16 +190,16 @@ export const measureMonthlyMetricScore = new ValidatedMethod({
       ;
 
     // Get list of leaders
-    if(haveLeaderId) {
+    if (haveLeaderId) {
       selector.leaderId = params.leaderId;
     }
-    if(haveOrgId) {
+    if (haveOrgId) {
       selector.organizationId = params.organizationId;
     }
     selector.date = {
-        $gte: new Date(year, month, 1),
-        $lt: new Date(year, nextMonth, 1)
-      }
+      $gte: new Date(year, month, 1),
+      $lt: new Date(year, nextMonth, 1)
+    }
     ; // only get data in current month
     modifier = {
       fields: {
@@ -217,12 +217,12 @@ export const measureMonthlyMetricScore = new ValidatedMethod({
       MiniMongo.remove({});
       docs.map(doc => {
         MiniMongo.insert(doc);
-        if(!haveLeaderId) {
+        if (!haveLeaderId) {
           leaderList.push(doc.leaderId);
         }
       });
 
-      if(haveLeaderId) {
+      if (haveLeaderId) {
         leaderList.push(params.leaderId);
       } else {
         leaderList = _.uniq(leaderList); // get unique leader only
@@ -231,7 +231,7 @@ export const measureMonthlyMetricScore = new ValidatedMethod({
       // get average score for every leader
       leaderList.map(leaderId => {
         //get list of organization for specific leader
-        if(haveOrgId) {
+        if (haveOrgId) {
           orgList.push(params.organizationId);
         } else {
           leaderDocs = MiniMongo.find({leaderId}).fetch();
@@ -253,7 +253,7 @@ export const measureMonthlyMetricScore = new ValidatedMethod({
             metricDocs = MiniMongo.find({leaderId, organizationId, metric}).fetch();
             metricDocs.map(metricDoc => {
               const {score} = metricDoc;
-              if(score > 3) {
+              if (score > 3) {
                 noOfGoodScores++;
               } else {
                 noOfBadScores++;
@@ -262,7 +262,7 @@ export const measureMonthlyMetricScore = new ValidatedMethod({
             });
 
             noOfScores = scoreList.length;
-            if(noOfScores > 0) {
+            if (noOfScores > 0) {
               averageScore = Number(arraySum(scoreList) / scoreList.length).toFixed(1);
             }
 
@@ -299,80 +299,91 @@ export const measureMonthlyMetricScore = new ValidatedMethod({
 
 /**
  * Method measure admin statistic
- * @param {}
+ * @param {String} type
+ * @param {String} interval - LAST_WEEK, LAST_2_WEEKS, LAST_MONTH, LAST_3_MONTHS
+ *
  */
 export const measureAdminStatistic = new ValidatedMethod({
   name: "measures.adminStatistic",
-  mixins: [LoggedInMixin],
-  checkLoggedInError: {
-    error: ERROR_CODE.UNAUTHENTICATED,
-    message: 'You need to be logged in to call this method',//Optional
-    reason: 'You need to login' //Optional
-  },
+  // mixins: [LoggedInMixin],
+  // checkLoggedInError: {
+  //   error: ERROR_CODE.UNAUTHENTICATED,
+  //   message: 'You need to be logged in to call this method',//Optional
+  //   reason: 'You need to login' //Optional
+  // },
   validate: new SimpleSchema({
     params: {
       type: Object
     },
-    "params.days": {
-      type: Number
+    "params.type": {
+      type: String,
+      allowedValues: ["NEW_CREATION", "EMAIL_TO_LEADERS", "EMAIL_TO_EMPLOYEES", "EMAIL_REFERRALS",
+        "EMAIL_REGISTRATION", "EMAIL_SUPPORT"]
+    },
+    "params.interval": {
+      type: String,
+      allowedValues: ["LAST_WEEK", "LAST_2_WEEKS", "LAST_MONTH", "LAST_3_MONTHS"]
     }
   }).validator(),
   run({params}) {
     const
-      {days} = params,
-      MiniMongo = new Mongo.Collection(null),
-      today = new Date(),
-      endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate()),
-      startDate = new Date(moment(endDate).subtract(days, 'days')),
+      {type, interval} = params,
+      endDate = new Date(),
+      today = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()),
       userId = Meteor.userId(),
-      STATISTIC_TYPES = [
-        "users",
-        "organizations",
-        "employees",
-        "emailRegistration",
-        "emailForgotAlias",
-        "emailForgotPassword",
-        "emailSurveys",
-        "emailScoringErrors",
-        "emailFeedbackToLeaders",
-        "emailFeedbackToEmployees",
-        "emailWeeklyDigest",
-        "emailReferrals",
-      ],
-      measureDoc = {
-        type: "statistic",
-        interval: "daily",
-        year: 0,
-        month: 0,
-        day: 0,
-        key: "",
-        value: {}
-      }
-      ;
+      STATISTIC_TYPES = {
+        NEW_CREATION: [
+          STATISTIC_METRICS.USERS,
+          STATISTIC_METRICS.ORGANIZATIONS,
+          STATISTIC_METRICS.EMPLOYEES
+        ],
+        EMAIL_TO_EMPLOYEES: [
+          STATISTIC_METRICS.EMAILS.SURVEYS,
+          STATISTIC_METRICS.EMAILS.SCORING_SUCCESSES,
+          STATISTIC_METRICS.EMAILS.SCORING_ERRORS,
+          STATISTIC_METRICS.EMAILS.FEEDBACK_TO_LEADERS
+        ],
+        EMAIL_TO_LEADERS: [
+          STATISTIC_METRICS.EMAILS.FEEDBACK_TO_EMPLOYEES,
+          STATISTIC_METRICS.EMAILS.WEEKLY_DIGEST
+        ],
+        EMAIL_REFERRALS: [
+          STATISTIC_METRICS.EMAILS.REFERRALS
+        ],
+        EMAIL_REGISTRATION: [
+          STATISTIC_METRICS.EMAILS.REGISTRATION
+        ],
+        EMAIL_SUPPORT: [
+          STATISTIC_METRICS.EMAILS.FORGOT_ALIAS,
+          STATISTIC_METRICS.EMAILS.FORGOT_PASSWORD
+        ]
+      },
+      STATISTIC_INTERVAL = {
+        LAST_WEEK: {
+          interval: {days: 7},
+          offset: {days: 1}
+        },
+        LAST_2_WEEKS: {
+          interval: {days: 14},
+          offset: {days: 2}
+        },
+        LAST_MONTH: {
+          interval: {months: 1},
+          offset: {days: 7}
+        },
+        LAST_3_MONTHS: {
+          interval: {months: 3},
+          offset: {days: 14}
+        }
+      };
     let
-      query = {},
-      options = {},
-      users = [],
-      organizations = [],
-      employees = [],
-      emails = [],
+      startDate = new Date(),
       result = {
         ready: false,
         labels: [],
-        users: [],
-        organizations: [],
-        employees: [],
-        emailRegistration: [],
-        emailForgotAlias: [],
-        emailForgotPassword: [],
-        emailSurveys: [],
-        emailScoringErrors: [],
-        emailFeedbackToLeaders: [],
-        emailFeedbackToEmployees: [],
-        emailWeeklyDigest: [],
-        emailReferrals: [],
+        data: []
       }
-    ;
+      ;
 
     if(!this.isSimulation) {
       if(!Roles.userIsInRole(userId, "admin")) {
@@ -380,148 +391,20 @@ export const measureAdminStatistic = new ValidatedMethod({
       }
     }
 
-    // Import data to cache
-    // New Creation
-    // users
-    query = {createdAt: {$gte: startDate}};
-    options = {fields: {createdAt: true}};
-    users = Accounts.users.find(query, options).fetch();
+    startDate = new Date(moment(today).subtract(STATISTIC_INTERVAL[interval].interval));
 
-    if(!_.isEmpty(users)) {
-      users.map(user => {
-        MiniMongo.insert({type: "users", data: {userId: user._id, createdAt: user.createdAt}});
+    STATISTIC_TYPES[type].map(type => {
+      const data = getMetricStatistic({
+        params: {
+          metric: type,
+          startDate,
+          endDate,
+          offset: STATISTIC_INTERVAL[interval].offset
+        }
       });
-    }
-    // organizations
-    query = {createdAt: {$gte: startDate}};
-    options = {fields: {createdAt: true}};
-    organizations = Organizations.find(query, options).fetch();
-
-    if(!_.isEmpty(organizations)) {
-      organizations.map(organization => {
-        MiniMongo.insert({type: "organizations", data: {orgId: organization._id, createdAt: organization.createdAt}});
-      });
-    }
-    // employees
-    query = {createdAt: {$gte: startDate}};
-    options = {fields: {createdAt: true}};
-    employees = Employees.find(query, options).fetch();
-
-    if(!_.isEmpty(employees)) {
-      employees.map(employee => {
-        MiniMongo.insert({type: "employees", data: {employeeId: employee._id, createdAt: employee.createdAt}});
-      });
-    }
-
-    // Emails
-    // registration
-    query = {"content.template": "welcome", date: {$gte: startDate}};
-    options = {fields: {date: true}};
-    emails = LogsEmail.find(query, options).fetch();
-
-    if(!_.isEmpty(emails)) {
-      emails.map(email => {
-        MiniMongo.insert({type: "emailRegistration", data: {emailId: email._id, createdAt: email.date}});
-      });
-    }
-    // user support
-    query = {"content.template": "forgot_alias", date: {$gte: startDate}};
-    options = {fields: {date: true}};
-    emails = LogsEmail.find(query, options).fetch();
-
-    if(!_.isEmpty(emails)) {
-      emails.map(email => {
-        MiniMongo.insert({type: "emailForgotAlias", data: {emailId: email._id, createdAt: email.date}});
-      });
-    }
-    // user support
-    query = {"content.template": "forgot_password", date: {$gte: startDate}};
-    options = {fields: {date: true}};
-    emails = LogsEmail.find(query, options).fetch();
-
-    if(!_.isEmpty(emails)) {
-      emails.map(email => {
-        MiniMongo.insert({type: "emailForgotPassword", data: {emailId: email._id, createdAt: email.date}});
-      });
-    }
-    // surveys
-    query = {"content.template": "survey", date: {$gte: startDate}};
-    options = {fields: {date: true}};
-    emails = LogsEmail.find(query, options).fetch();
-
-    if(!_.isEmpty(emails)) {
-      emails.map(email => {
-        MiniMongo.insert({type: "emailSurveys", data: {emailId: email._id, createdAt: email.date}});
-      });
-    }
-    // scoring Errors
-    query = {"content.template": "survey_error", date: {$gte: startDate}};
-    options = {fields: {date: true}};
-    emails = LogsEmail.find(query, options).fetch();
-
-    if(!_.isEmpty(emails)) {
-      emails.map(email => {
-        MiniMongo.insert({type: "emailScoringErrors", data: {emailId: email._id, createdAt: email.date}});
-      });
-    }
-    // feedback to Leaders
-    query = {"content.template": "feedback", date: {$gte: startDate}};
-    options = {fields: {date: true}};
-    emails = LogsEmail.find(query, options).fetch();
-
-    if(!_.isEmpty(emails)) {
-      emails.map(email => {
-        MiniMongo.insert({type: "emailFeedbackToLeaders", data: {emailId: email._id, createdAt: email.date}});
-      });
-    }
-    // feedback to Leaders
-    query = {"content.template": "employee", "content.data.type": "feedback", date: {$gte: startDate}};
-    options = {fields: {date: true}};
-    emails = LogsEmail.find(query, options).fetch();
-
-    if(!_.isEmpty(emails)) {
-      emails.map(email => {
-        MiniMongo.insert({type: "emailFeedbackToEmployees", data: {emailId: email._id, createdAt: email.date}});
-      });
-    }
-    // weekly digest
-    query = {"content.template": "digest", date: {$gte: startDate}};
-    options = {fields: {date: true}};
-    emails = LogsEmail.find(query, options).fetch();
-
-    if(!_.isEmpty(emails)) {
-      emails.map(email => {
-        MiniMongo.insert({type: "emailWeeklyDigest", data: {emailId: email._id, createdAt: email.date}});
-      });
-    }
-    // Referrals
-    query = {"content.template": "referral", date: {$gte: startDate}};
-    options = {fields: {date: true}};
-    emails = LogsEmail.find(query, options).fetch();
-
-    if(!_.isEmpty(emails)) {
-      emails.map(email => {
-        MiniMongo.insert({type: "emailReferrals", data: {emailId: email._id, createdAt: email.date}});
-      });
-    }
-
-    // Calculate statistic
-    for(let day = startDate, end = endDate; day <= end; day = new Date(moment(day).add(1, 'day'))) {
-      const
-        label = moment(day).format('MMM Do'),
-        query = {type: "", "data.createdAt": {$gte: day, $lt: new Date(moment(day).add(1, 'day'))}},
-        statistic = MiniMongo.find().fetch();
-
-      // result labels
-      result.labels.push(label);
-
-      STATISTIC_TYPES.map(type => {
-        query.type = type;
-        result[type].push(MiniMongo.find(query).count());
-      });
-    }
-
-    // console.log(result);
+      result.labels = data.labels;
+      result.data.push(data.data);
+    });
     result.ready = true;
     return result;
   }
