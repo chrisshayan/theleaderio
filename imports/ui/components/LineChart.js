@@ -60,7 +60,7 @@ export default class LineChart extends Component {
       {id = ""} = this.props,
       lineChartId = `lineChart${id}`
       ;
-    console.log(lineChartId)
+
     return (
       <div>
         <canvas id={lineChartId} height="140"></canvas>

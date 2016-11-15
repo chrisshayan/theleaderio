@@ -14,6 +14,7 @@ import LineChart from '/imports/ui/components/LineChart';
 
 // methods
 import {measureAdminStatistic} from '/imports/api/measures/methods';
+import * as Notifications from '/imports/api/notifications/methods';
 
 export default class StatisticComponent extends Component {
   constructor() {
@@ -31,7 +32,8 @@ export default class StatisticComponent extends Component {
       if (!error) {
         this.setState({
           ready: true,
-          statistic
+          statistic,
+          errors: null
         });
       } else {
         this.setState({
@@ -47,7 +49,7 @@ export default class StatisticComponent extends Component {
       {ready, errors, statistic} = this.state
       ;
 
-    // console.log(this.props)
+    console.log({statistic, errors})
 
     if (ready) {
       const
@@ -59,7 +61,7 @@ export default class StatisticComponent extends Component {
           emailSurveys, emailScoringErrors, emailFeedbackToLeaders,
           emailFeedbackToEmployees,
           emailWeeklyDigest,
-          emailReferral
+          emailReferrals
         } = statistic,
         newCreationDataSets = [
           {
@@ -172,7 +174,7 @@ export default class StatisticComponent extends Component {
         ],
         emailReferralDataSets = [
           {
-            data: emailReferral,
+            data: emailReferrals,
             fillColor: "rgba(26, 179, 148, 0.5)",
             strokeColor: "rgba(26, 179, 148, 0.7)",
             pointColor: "rgba(26, 179, 148, 1)",

@@ -1,3 +1,4 @@
+import {Meteor} from 'meteor/meteor';
 import {ValidatedMethod} from 'meteor/mdg:validated-method';
 import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 import {LoggedInMixin} from 'meteor/tunifight:loggedin-mixin';
@@ -302,12 +303,12 @@ export const measureMonthlyMetricScore = new ValidatedMethod({
  */
 export const measureAdminStatistic = new ValidatedMethod({
   name: "measures.adminStatistic",
-  // mixins: [LoggedInMixin],
-  // checkLoggedInError: {
-  //   error: ERROR_CODE.UNAUTHENTICATED,
-  //   message: 'You need to be logged in to call this method',//Optional
-  //   reason: 'You need to login' //Optional
-  // },
+  mixins: [LoggedInMixin],
+  checkLoggedInError: {
+    error: ERROR_CODE.UNAUTHENTICATED,
+    message: 'You need to be logged in to call this method',//Optional
+    reason: 'You need to login' //Optional
+  },
   validate: new SimpleSchema({
     params: {
       type: Object
@@ -336,7 +337,7 @@ export const measureAdminStatistic = new ValidatedMethod({
         "emailFeedbackToLeaders",
         "emailFeedbackToEmployees",
         "emailWeeklyDigest",
-        "emailReferral",
+        "emailReferrals",
       ],
       measureDoc = {
         type: "statistic",
@@ -369,13 +370,15 @@ export const measureAdminStatistic = new ValidatedMethod({
         emailFeedbackToLeaders: [],
         emailFeedbackToEmployees: [],
         emailWeeklyDigest: [],
-        emailReferral: [],
+        emailReferrals: [],
       }
     ;
 
-    // if(!Roles.userIsInRole(userId, "admin")) {
-    //   throw new Meteor.Error(ERROR_CODE.PERMISSION_DENIED, `user: ${userId} isn't an admin.`);
-    // }
+    if(!this.isSimulation) {
+      if(!Roles.userIsInRole(userId, "admin")) {
+        throw new Meteor.Error(ERROR_CODE.PERMISSION_DENIED, `user: ${userId} isn't an admin.`);
+      }
+    }
 
     // Import data to cache
     // New Creation
@@ -508,10 +511,6 @@ export const measureAdminStatistic = new ValidatedMethod({
         label = moment(day).format('MMM Do'),
         query = {type: "", "data.createdAt": {$gte: day, $lt: new Date(moment(day).add(1, 'day'))}},
         statistic = MiniMongo.find().fetch();
-      // const statistic = MiniMongo.find().fetch();
-      // console.log(day);
-      // console.log(statistic);
-      // console.log('\n');
 
       // result labels
       result.labels.push(label);
@@ -522,20 +521,8 @@ export const measureAdminStatistic = new ValidatedMethod({
       });
     }
 
+    // console.log(result);
     result.ready = true;
     return result;
-    // console.log(result);
-    // console.log(MiniMongo.find({type: "users"}).count());
-    // console.log(MiniMongo.find({type: "organizations"}).count());
-    // console.log(MiniMongo.find({type: "employees"}).count());
-    // console.log(MiniMongo.find({type: "emailRegistration"}).count());
-    // console.log(MiniMongo.find({type: "forgotAlias"}).count());
-    // console.log(MiniMongo.find({type: "forgotPassword"}).count());
-    // console.log(MiniMongo.find({type: "surveys"}).count());
-    // console.log(MiniMongo.find({type: "scoringErrors"}).count());
-    // console.log(MiniMongo.find({type: "feedbackToLeaders"}).count());
-    // console.log(MiniMongo.find({type: "feedbackToEmployees"}).count());
-    // console.log(MiniMongo.find({type: "weeklyDigest"}).count());
-    // console.log(MiniMongo.find({type: "referrals"}).count());
   }
 });
