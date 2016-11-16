@@ -3,7 +3,8 @@ import {Mongo} from 'meteor/mongo';
 
 // collections
 import {Feedbacks} from '/imports/api/feedbacks/index';
-import {Employees} from '/imports/api/employees/index';
+import {Employees, STATUS_ACTIVE} from '/imports/api/employees/index';
+import {Accounts} from 'meteor/accounts-base';
 
 // methods
 import {checkExists as checkExistsScore} from '/imports/api/metrics/methods';
@@ -146,14 +147,16 @@ Api.addRoute('employee/:action', {authRequired: false}, {
             case "feedback": {
               type = "LEADER_TO_EMPLOYEE";
               feedback = removeWebGmailClientContent(content)[0];
-              verifySender = verifySenderEmail({params: {
-                type: "leader",
-                email: sender,
-                id: leaderId
-              }});
+              verifySender = verifySenderEmail({
+                params: {
+                  type: "leader",
+                  email: sender,
+                  id: leaderId
+                }
+              });
 
-              if(!_.isEmpty(verifySender)) {
-                if(verifySender.isLeader) {
+              if (!_.isEmpty(verifySender)) {
+                if (verifySender.isLeader) {
                   const feedbackId = Feedbacks.insert({employeeId, organizationId, leaderId, type, feedback, date});
                   if (!_.isEmpty(feedbackId)) {
                     const
@@ -174,7 +177,7 @@ Api.addRoute('employee/:action', {authRequired: false}, {
                           }
                         });
                         employee = Employees.findOne({_id: employeeId});
-                        if(!_.isEmpty(employee)) {
+                        if (!_.isEmpty(employee)) {
                           addMessages.call({
                             userId: leaderId,
                             type: TYPE.FB_TO_EMPLOYEE,
@@ -222,6 +225,55 @@ Api.addRoute('employee/:action', {authRequired: false}, {
         }
       }
       this.done();
+    }
+  }
+});
+
+Api.addRoute('statistic/:type', {authRequired: false}, {
+  get: {
+    action: function () {
+      const
+        name = "api",
+        apiName = `get${type}`,
+        {type} = this.urlParams
+        ;
+      let data = "";
+
+      switch (type) {
+        case "users": {
+          data = {
+            total: Accounts.users.find().count(),
+            active: Accounts.users.find({username: {$exists: false}}).count()
+          };
+          break;
+        }
+        case "employees": {
+          data = {
+            total: Employees.find().count(),
+            active: Employees.find({status: STATUS_ACTIVE}).count()
+          };
+          break;
+        }
+        default: {
+          const message = `Unknown request for ${type}.`;
+          return {
+            statusCode: 404,
+            headers: {
+              'Content-Type': 'text/plain'
+            },
+            body: message
+          };
+        }
+      }
+
+      return {
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'text/plain',
+          'X-Custom-Header': type
+        },
+        data
+      };
     }
   }
 });

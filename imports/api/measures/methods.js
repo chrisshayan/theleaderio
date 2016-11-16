@@ -305,20 +305,19 @@ export const measureMonthlyMetricScore = new ValidatedMethod({
  */
 export const measureAdminStatistic = new ValidatedMethod({
   name: "measures.adminStatistic",
-  // mixins: [LoggedInMixin],
-  // checkLoggedInError: {
-  //   error: ERROR_CODE.UNAUTHENTICATED,
-  //   message: 'You need to be logged in to call this method',//Optional
-  //   reason: 'You need to login' //Optional
-  // },
+  mixins: [LoggedInMixin],
+  checkLoggedInError: {
+    error: ERROR_CODE.UNAUTHENTICATED,
+    message: 'You need to be logged in to call this method',//Optional
+    reason: 'You need to login' //Optional
+  },
   validate: new SimpleSchema({
     params: {
       type: Object
     },
     "params.type": {
       type: String,
-      allowedValues: ["NEW_CREATION", "EMAIL_TO_LEADERS", "EMAIL_TO_EMPLOYEES", "EMAIL_REFERRALS",
-        "EMAIL_REGISTRATION", "EMAIL_SUPPORT"]
+      allowedValues: ["NEW_CREATION", "EMAIL_SENT"]
     },
     "params.interval": {
       type: String,
@@ -337,23 +336,15 @@ export const measureAdminStatistic = new ValidatedMethod({
           STATISTIC_METRICS.ORGANIZATIONS,
           STATISTIC_METRICS.EMPLOYEES
         ],
-        EMAIL_TO_EMPLOYEES: [
+        EMAIL_SENT: [
           STATISTIC_METRICS.EMAILS.SURVEYS,
           STATISTIC_METRICS.EMAILS.SCORING_SUCCESSES,
           STATISTIC_METRICS.EMAILS.SCORING_ERRORS,
-          STATISTIC_METRICS.EMAILS.FEEDBACK_TO_LEADERS
-        ],
-        EMAIL_TO_LEADERS: [
+          STATISTIC_METRICS.EMAILS.FEEDBACK_TO_LEADERS,
           STATISTIC_METRICS.EMAILS.FEEDBACK_TO_EMPLOYEES,
-          STATISTIC_METRICS.EMAILS.WEEKLY_DIGEST
-        ],
-        EMAIL_REFERRALS: [
-          STATISTIC_METRICS.EMAILS.REFERRALS
-        ],
-        EMAIL_REGISTRATION: [
-          STATISTIC_METRICS.EMAILS.REGISTRATION
-        ],
-        EMAIL_SUPPORT: [
+          STATISTIC_METRICS.EMAILS.WEEKLY_DIGEST,
+          STATISTIC_METRICS.EMAILS.REFERRALS,
+          STATISTIC_METRICS.EMAILS.REGISTRATION,
           STATISTIC_METRICS.EMAILS.FORGOT_ALIAS,
           STATISTIC_METRICS.EMAILS.FORGOT_PASSWORD
         ]
