@@ -243,7 +243,7 @@ Api.addRoute('statistic/:type', {authRequired: false}, {
         case "users": {
           data = {
             total: Accounts.users.find().count(),
-            active: Accounts.users.find({username: {$exists: false}}).count()
+            active: Accounts.users.find({username: {$exists: true}}).count()
           };
           break;
         }

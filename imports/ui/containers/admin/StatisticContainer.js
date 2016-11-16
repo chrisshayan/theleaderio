@@ -4,34 +4,27 @@ import {createContainer} from 'meteor/react-meteor-data';
 
 // collections
 import {Accounts} from 'meteor/accounts-base';
-import {Organizations} from '/imports/api/organizations/index';
-import {Employees} from '/imports/api/employees/index';
-import {LogsEmail} from '/imports/api/logs/index';
+import {Employees, STATUS_ACTIVE} from '/imports/api/employees/index';
 
 // components
 import Spinner from '/imports/ui/common/Spinner';
 import LineChart from '/imports/ui/components/LineChart';
 import Indicator from '/imports/ui/common/LoadingIndicator';
 import Chosen from '/imports/ui/components/Chosen';
+import IboxDashboard from '/imports/ui/components/IboxDashboard';
 
 // methods
 import {measureAdminStatistic} from '/imports/api/measures/methods';
 import * as Notifications from '/imports/api/notifications/methods';
 
-export default class StatisticComponent extends Component {
+class StatisticComponent extends Component {
   constructor() {
     super();
 
     this.state = {
-      ready: false,
       errors: null,
       newCreationStatistic: {},
-      emailSentStatistic: {},
-      emailToLeadersStatistic: {},
-      emailToEmployeesStatistic: {},
-      emailReferralsStatistic: {},
-      emailRegistrationStatistic: {},
-      emailSupportStatistic: {}
+      emailSentStatistic: {}
     };
   }
 
@@ -78,20 +71,12 @@ export default class StatisticComponent extends Component {
   render() {
     const
       {
-        // ready,
         errors,
         newCreationStatistic,
         emailSentStatistic,
-        // emailToLeadersStatistic,
-        // emailToEmployeesStatistic,
-        // emailReferralsStatistic,
-        // emailRegistrationStatistic,
-        // emailSupportStatistic
       } = this.state,
+      {statisticReady, totalActiveUsers, totalActiveEmployees} = this.props,
       ready = newCreationStatistic.ready || emailSentStatistic.ready,
-        // emailToLeadersStatistic.ready ||
-        // emailToEmployeesStatistic.ready || emailReferralsStatistic.ready ||
-        // emailRegistrationStatistic.ready || emailSupportStatistic.ready,
       dataSetsColors = [
         {
           fillColor: "rgba(26, 179, 148, 0.5)",
@@ -131,7 +116,6 @@ export default class StatisticComponent extends Component {
     if (ready) {
       let
         newCreationDataSets = [],
-        emailSentDataSets = [],
         emailToEmployeesDataSets = [],
         emailToLeadersDataSets = [],
         emailReferralsDataSets = [],
@@ -144,7 +128,7 @@ export default class StatisticComponent extends Component {
           newCreationDataSets.push({...dataSetsColors[key], data: dataset});
         })
       );
-      if(!_.isEmpty(emailSentStatistic.data)) {
+      if (!_.isEmpty(emailSentStatistic.data)) {
         // to employees
         emailToEmployeesDataSets.push({...dataSetsColors[0], data: emailSentStatistic.data[0]});
         emailToEmployeesDataSets.push({...dataSetsColors[1], data: emailSentStatistic.data[1]});
@@ -160,127 +144,150 @@ export default class StatisticComponent extends Component {
         // support
         emailSupportDataSets.push({...dataSetsColors[0], data: emailSentStatistic.data[8]});
         emailSupportDataSets.push({...dataSetsColors[1], data: emailSentStatistic.data[9]});
-    };
+      }
+      ;
 
       return (
-        <div className="row">
-          <div className="col-md-8">
-            <div className="ibox float-e-margins">
-              <div className="ibox-title">
-                <h3>New Creation</h3>
-              </div>
-              <div className="ibox-content">
-                {newCreationStatistic.ready ? (
-                  <LineChart
-                    id="newCreation"
-                    labels={newCreationStatistic.labels}
-                    datasets={newCreationDataSets}
-                  />
-                ) : (
-                  <Indicator />
-                )}
-                <a className="btn btn-primary btn-bitbucket">
-                </a> Users
-                <br/>
-                <a className="btn btn-default btn-bitbucket"
-                   style={{backgroundColor: '#DCDCDC', borderColor: '#DCDCDC', color: '#FFFFFF'}}>
-                </a> Organizations
-                <br/>
-                <a className="btn btn-default btn-bitbucket"
-                   style={{backgroundColor: '#b5b8cf', borderColor: '#b5b8cf', color: '#FFFFFF'}}>
-                </a> Employees
-              </div>
-            </div>
-            <div className="ibox float-e-margins">
-              <div className="ibox-title">
-                <h3>Emails sent</h3>
-              </div>
-              <div className="ibox-content">
-                <h4>To Employees</h4>
-                {emailSentStatistic.ready ? (
-                  <LineChart
-                    id="toEmployees"
-                    labels={emailSentStatistic.labels}
-                    datasets={emailToEmployeesDataSets}
-                  />
-                ) : (
-                  <Indicator />
-                )}
-                <a className="btn btn-primary btn-bitbucket">
-                </a> Surveys
-                <br/>
-                <a className="btn btn-default btn-bitbucket"
-                   style={{backgroundColor: '#DCDCDC', borderColor: '#DCDCDC', color: '#FFFFFF'}}>
-                </a> Scoring Errors
-                <br/>
-                <a className="btn btn-default btn-bitbucket"
-                   style={{backgroundColor: '#b5b8cf', borderColor: '#b5b8cf', color: '#FFFFFF'}}>
-                </a> Feedback to Leaders
-              </div>
-              <div className="ibox-content">
-                <h4>To Leaders</h4>
-                {emailSentStatistic.ready ? (
-                  <LineChart
-                    id="toLeaders"
-                    labels={emailSentStatistic.labels}
-                    datasets={emailToLeadersDataSets}
-                  />
-                ) : (
-                  <Indicator />
-                )}
-                <a className="btn btn-primary btn-bitbucket">
-                </a> Feedback to Employees
-                <br/>
-                <a className="btn btn-default btn-bitbucket"
-                   style={{backgroundColor: '#DCDCDC', borderColor: '#DCDCDC', color: '#FFFFFF'}}>
-                </a> Weekly Digest
-              </div>
-              <div className="ibox-content">
-                <h4>Referrals</h4>
-                {emailSentStatistic.ready ? (
-                  <LineChart
-                    id="referrals"
-                    labels={emailSentStatistic.labels}
-                    datasets={emailReferralsDataSets}
-                  />
-                ) : (
-                  <Indicator />
-                )}
-                <a className="btn btn-primary btn-bitbucket">
-                </a> Referrals
-              </div>
-              <div className="ibox-content">
-                <h4>Registration</h4>
-                {emailSentStatistic.ready ? (
-                  <LineChart
-                    id="registration"
-                    labels={emailSentStatistic.labels}
-                    datasets={emailRegistrationDataSets}
-                  />
-                ) : (
-                  <Indicator />
-                )}
-                <a className="btn btn-primary btn-bitbucket">
-                </a> Welcome
-              </div>
-            </div>
-            <div className="ibox-content">
-              <h4>Support</h4>
-              {emailSentStatistic.ready ? (
-                <LineChart
-                  id="support"
-                  labels={emailSentStatistic.labels}
-                  datasets={emailSupportDataSets}
+        <div>
+          {statisticReady && (
+            <div className="row">
+              <div className="col-md-3">
+                <IboxDashboard
+                  interval="active"
+                  label="Users"
+                  content={totalActiveUsers}
+                  description="have alias"
                 />
-              ) : (
-                <Indicator />
-              )}
-              <a className="btn btn-primary btn-bitbucket">
-              </a> Forgot Password
-              <br/>
-              <a className="btn btn-default btn-bitbucket"
-                 style={{backgroundColor: '#DCDCDC', borderColor: '#DCDCDC', color: '#FFFFFF'}}>
-              </a> Forgot Alias
+              </div>
+              <div className="col-md-3">
+                <IboxDashboard
+                  interval="active"
+                  label="Employees"
+                  content={totalActiveEmployees}
+                  description=""
+                />
+              </div>
+            </div>
+          )}
+          <div className="row">
+            <div className="col-md-8">
+              <div className="ibox float-e-margins">
+                <div className="ibox-title">
+                  <h3>New Creation</h3>
+                </div>
+                <div className="ibox-content">
+                  {newCreationStatistic.ready ? (
+                    <LineChart
+                      id="newCreation"
+                      labels={newCreationStatistic.labels}
+                      datasets={newCreationDataSets}
+                    />
+                  ) : (
+                    <Indicator />
+                  )}
+                  <a className="btn btn-primary btn-bitbucket">
+                  </a> Users
+                  <br/>
+                  <a className="btn btn-default btn-bitbucket"
+                     style={{backgroundColor: '#DCDCDC', borderColor: '#DCDCDC', color: '#FFFFFF'}}>
+                  </a> Organizations
+                  <br/>
+                  <a className="btn btn-default btn-bitbucket"
+                     style={{backgroundColor: '#b5b8cf', borderColor: '#b5b8cf', color: '#FFFFFF'}}>
+                  </a> Employees
+                </div>
+              </div>
+              <div className="ibox float-e-margins">
+                <div className="ibox-title">
+                  <h3>Emails sent</h3>
+                </div>
+                <div className="ibox-content">
+                  <h4>To Employees</h4>
+                  {emailSentStatistic.ready ? (
+                    <LineChart
+                      id="toEmployees"
+                      labels={emailSentStatistic.labels}
+                      datasets={emailToEmployeesDataSets}
+                    />
+                  ) : (
+                    <Indicator />
+                  )}
+                  <a className="btn btn-primary btn-bitbucket">
+                  </a> Surveys
+                  <br/>
+                  <a className="btn btn-default btn-bitbucket"
+                     style={{backgroundColor: '#DCDCDC', borderColor: '#DCDCDC', color: '#FFFFFF'}}>
+                  </a> Scoring Errors
+                  <br/>
+                  <a className="btn btn-default btn-bitbucket"
+                     style={{backgroundColor: '#b5b8cf', borderColor: '#b5b8cf', color: '#FFFFFF'}}>
+                  </a> Feedback to Leaders
+                </div>
+                <div className="ibox-content">
+                  <h4>To Leaders</h4>
+                  {emailSentStatistic.ready ? (
+                    <LineChart
+                      id="toLeaders"
+                      labels={emailSentStatistic.labels}
+                      datasets={emailToLeadersDataSets}
+                    />
+                  ) : (
+                    <Indicator />
+                  )}
+                  <a className="btn btn-primary btn-bitbucket">
+                  </a> Feedback to Employees
+                  <br/>
+                  <a className="btn btn-default btn-bitbucket"
+                     style={{backgroundColor: '#DCDCDC', borderColor: '#DCDCDC', color: '#FFFFFF'}}>
+                  </a> Weekly Digest
+                </div>
+                <div className="ibox-content">
+                  <h4>Referrals</h4>
+                  {emailSentStatistic.ready ? (
+                    <LineChart
+                      id="referrals"
+                      labels={emailSentStatistic.labels}
+                      datasets={emailReferralsDataSets}
+                    />
+                  ) : (
+                    <Indicator />
+                  )}
+                  <a className="btn btn-primary btn-bitbucket">
+                  </a> Referrals
+                </div>
+                <div className="ibox-content">
+                  <h4>Registration</h4>
+                  {emailSentStatistic.ready ? (
+                    <LineChart
+                      id="registration"
+                      labels={emailSentStatistic.labels}
+                      datasets={emailRegistrationDataSets}
+                    />
+                  ) : (
+                    <Indicator />
+                  )}
+                  <a className="btn btn-primary btn-bitbucket">
+                  </a> Welcome
+                </div>
+              </div>
+              <div className="ibox-content">
+                <h4>Support</h4>
+                {emailSentStatistic.ready ? (
+                  <LineChart
+                    id="support"
+                    labels={emailSentStatistic.labels}
+                    datasets={emailSupportDataSets}
+                  />
+                ) : (
+                  <Indicator />
+                )}
+                <a className="btn btn-primary btn-bitbucket">
+                </a> Forgot Password
+                <br/>
+                <a className="btn btn-default btn-bitbucket"
+                   style={{backgroundColor: '#DCDCDC', borderColor: '#DCDCDC', color: '#FFFFFF'}}>
+                </a> Forgot Alias
+              </div>
             </div>
           </div>
         </div>
@@ -292,3 +299,22 @@ export default class StatisticComponent extends Component {
     }
   }
 }
+
+export default StatisticComponentContainer = createContainer(() => {
+  const
+    subUsers = Meteor.subscribe('statistic.users'),
+    subEmployees = Meteor.subscribe('statistic.employees'),
+    statisticReady = subUsers.ready() && subEmployees.ready(),
+    totalActiveUsers = Accounts.users.find({username: {$exists: true}}).count(),
+    totalActiveEmployees = Employees.find({status: STATUS_ACTIVE}).count()
+    ;
+
+  console.log(Accounts.users.find({username: {$exists: true}}).count());
+  console.log(Accounts.users.find().count());
+
+  return {
+    statisticReady,
+    totalActiveUsers,
+    totalActiveEmployees
+  };
+}, StatisticComponent);
