@@ -150,8 +150,8 @@ class EditArticle extends Component {
       {articleId} = this.state,
       articleData = {
         subject: this.refs.subject.value,
-        content: this.refs.summernote.getContent(),
-        tags: this.refs.selectedTags.getValue()
+        content: this.refs.summernote.getContent() || "",
+        tags: this.refs.selectedTags.getValue() || []
       }
       ;
 

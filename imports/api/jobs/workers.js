@@ -168,7 +168,7 @@ const enqueueSurveys = function (job, cb) {
         } else {
           totalQueuedEmailsToEmployeesOfOrg = 0;
           logContent.details.map(org => {
-            totalQueuedEmailsToEmployeesOfOrg += org.noOfQueuedEmailsToEmployees;
+            totalQueuedEmailsToEmployeesOfOrg += logDetail.noOfQueuedEmailsToEmployees;
           });
           if(totalQueuedEmailsToEmployeesOfOrg === 0) {
             setSendingPlanStatus.call({_id: logContent.planId, status: "FAILED", reason: `No active employee in any active organization.`});

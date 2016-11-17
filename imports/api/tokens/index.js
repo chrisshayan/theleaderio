@@ -14,7 +14,7 @@ Tokens.schema = new SimpleSchema({
   },
   action: {
     type: String,
-    allowedValues: ['email', 'password', 'alias'],
+    allowedValues: ['email', 'password', 'alias', 'referral', 'referral'],
     optional: true
   }
 });

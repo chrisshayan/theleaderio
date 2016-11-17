@@ -14,8 +14,9 @@ import ConfirmEmail from '/imports/ui/components/ConfirmEmail';
 import MainLayout from '/imports/ui/layouts/MainLayout';
 import BlankLayout from '/imports/ui/layouts/BlankLayout';
 
-import ManageIndustries from '/imports/ui/containers/admin/ManageIndustries';
-import ManageJobs from '/imports/ui/containers/admin/ManageJobs';
+// import ManageIndustries from '/imports/ui/containers/admin/ManageIndustries';
+// import ManageJobs from '/imports/ui/containers/admin/ManageJobs';
+import Management from '/imports/ui/containers/admin/Management';
 
 import ArticlesContainer from '/imports/ui/containers/articles/ArticlesContainer';
 import EditArticle from '/imports/ui/containers/articles/EditArticle';
@@ -26,6 +27,8 @@ import LandingPage from '/imports/ui/containers/LandingPage';
 import SignUpUser from '/imports/ui/containers/signup/SignUpUser';
 import SignUpAlias from '/imports/ui/containers/signup/SignUpAlias';
 import ResetAlias from '/imports/ui/containers/migration/ResetAlias';
+import ConfirmReferral from '/imports/ui/containers/referrals/ConfirmReferral';
+import CancelReferral from '/imports/ui/containers/referrals/CancelReferral';
 
 import SignInAlias from '/imports/ui/containers/signin/SignInAlias';
 import SignInAccount from '/imports/ui/containers/signin/SignInAccount';
@@ -44,6 +47,8 @@ import UpdateOrganization from '/imports/ui/containers/organizations/UpdateOrgan
 import Feedback from '/imports/ui/containers/feedback/Feedback';
 
 import Messages from '/imports/ui/containers/messages/Messages';
+
+import ReferralsContainer from '/imports/ui/containers/referrals/ReferralsContainer';
 
 // methods
 import * as Notifications from '/imports/api/notifications/methods';
@@ -135,7 +140,11 @@ const homeRoute = FlowRouter.route('/', {
   action() {
     const alias = Session.get('alias');
     if (alias) {
-      mount(PublicProfile);
+      if(alias === "www") {
+        mount(LandingPage);
+      } else {
+        mount(PublicProfile);
+      }
     } else {
       mount(LandingPage);
     }
@@ -170,30 +179,57 @@ export const signUpRoutes = FlowRouter.group({
 signUpRoutes.route('/:action', {
   name: 'signUpPage',
   action(params, queryParams) {
-    // create new user
-    if (params.action == 'user') {
-      mount(SignUpUser);
-    }
-    // create new alias
-    if (params.action == 'alias') {
-      if (!Meteor.loggingIn() && !Meteor.userId()) {
-        const
-          closeButton = false,
-          title = "Signup user",
-          message = "Please enter your basic informations first";
-        Notifications.warning.call({closeButton, title, message});
-        FlowRouter.go('signUpPage', {action: 'user'});
-      } else {
-        mount(SignUpAlias);
+    const {action} = params;
+    switch (action) {
+      // register user
+      case 'user': {
+        mount(SignUpUser);
+        break;
       }
-    }
-    // email confirmation
-    if (params.action == 'confirm') {
-      mount(ConfirmEmail);
-    }
-    // create alias for migrated user
-    if (params.action == 'migration') {
-      mount(ResetAlias);
+      // register alias
+      case 'alias': {
+        if (!Meteor.loggingIn() && !Meteor.userId()) {
+          const
+            closeButton = false,
+            title = "Signup user",
+            message = "Please enter your basic informations first";
+          Notifications.warning.call({closeButton, title, message});
+          FlowRouter.go('signUpPage', {action: 'user'});
+        } else {
+          mount(SignUpAlias);
+        }
+        break;
+      }
+      // email confirmation
+      case 'confirm': {
+        mount(ConfirmEmail);
+        break;
+      }
+      // create alias for migrated user
+      case 'migration': {
+        mount(ResetAlias);
+        break;
+      }
+      // create alias for referral user
+      case 'referral': {
+        const
+          {response} = queryParams;
+        switch (response) {
+          case 'confirm': {
+            mount(ConfirmReferral);
+            break;
+          }
+          case 'cancel': {
+            const {_id} = queryParams;
+            mount(CancelReferral, {_id});
+            break;
+          }
+        }
+        break;
+      }
+      default: {
+        throw new Meteor.Error(`Unknow action: ${action}`);
+      }
     }
   }
 });
@@ -365,26 +401,40 @@ const adminRoutes = FlowRouter.group({
 /**
  * Route: Admin industries
  */
-adminRoutes.route('/industries', {
-  name: 'admin.industries',
-  action() {
-    mount(MainLayout, {
-      content() {
-        return <ManageIndustries />
-      }
-    })
-  }
-});
+// adminRoutes.route('/industries', {
+//   name: 'admin.industries',
+//   action() {
+//     mount(MainLayout, {
+//       content() {
+//         return <ManageIndustries />
+//       }
+//     })
+//   }
+// });
 
 /**
  * Route: Admin jobs
  */
-adminRoutes.route('/jobs', {
-  name: 'admin.jobs',
+// adminRoutes.route('/jobs', {
+//   name: 'admin.jobs',
+//   action() {
+//     mount(MainLayout, {
+//       content() {
+//         return <ManageJobs />
+//       }
+//     })
+//   }
+// });
+
+/**
+ * Route: Admin jobs
+ */
+adminRoutes.route('/management', {
+  name: 'admin.management',
   action() {
     mount(MainLayout, {
       content() {
-        return <ManageJobs />
+        return <Management />
       }
     })
   }
@@ -554,6 +604,20 @@ const viewArticleRoute = FlowRouter.route('/articles/view/:seoUrl', {
     mount(BlankLayout, {
       content() {
         return <ViewArticle _id={queryParams._id}/>
+      }
+    });
+  }
+});
+
+/**
+ * Route for referrals
+ */
+appRoutes.route('/referrals', {
+  name: "app.referrals",
+  action() {
+    mount(MainLayout, {
+      content() {
+        return <ReferralsContainer />;
       }
     });
   }

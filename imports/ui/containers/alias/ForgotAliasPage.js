@@ -55,7 +55,7 @@ export default class ForgotAliasPage extends Component {
           }
         });
       } else {
-        console.log(error);
+        // console.log(error);
         this.setState({
           loading: false,
           errors: `${email} doesn't exists in ${DOMAIN}`

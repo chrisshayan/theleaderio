@@ -7,8 +7,9 @@ import {setPageHeading, resetPageHeading} from '/imports/store/modules/pageHeadi
 import {Articles, STATUS} from '/imports/api/articles/index';
 
 // components
+import Spinner from '/imports/ui/common/Spinner';
 import ArticleBox from '/imports/ui/containers/articles/ArticleBox';
-import NoArticle from '/imports/ui/containers/articles/NoArticle';
+import NoArticle from '/imports/ui/components/NoContent';
 
 // methods
 import {verifyAdminRole} from '/imports/api/users/methods';
@@ -16,14 +17,6 @@ import {verifyAdminRole} from '/imports/api/users/methods';
 class ArticlesComponent extends Component {
   constructor() {
     super();
-
-    // setPageHeading({
-    //   title: 'Articles',
-    //   breadcrumb: [{
-    //     label: 'Articles',
-    //     active: true
-    //   }]
-    // });
 
     this.state = {
       isAdmin: false
@@ -101,13 +94,18 @@ class ArticlesComponent extends Component {
       } else {
         return (
           <div>
-            <NoArticle />
+            <NoArticle
+              icon="fa fa-newspaper-o"
+              message="There is no article."
+            />
           </div>
         );
       }
     } else {
       return (
-        <div>Loading...</div>
+        <div>
+          <Spinner />
+        </div>
       );
     }
   }

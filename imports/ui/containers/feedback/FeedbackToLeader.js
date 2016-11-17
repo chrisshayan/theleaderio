@@ -3,7 +3,7 @@ import { createContainer } from 'meteor/react-meteor-data';
 import {Feedbacks} from '/imports/api/feedbacks';
 import Spinner from '/imports/ui/common/Spinner';
 import Indicator from '/imports/ui/common/LoadingIndicator';
-import NoFeedback from './NoFeedback';
+import NoFeedback from '/imports/ui/components/NoContent';
 import FeedbackList from './FeedbackList';
 
 
@@ -32,7 +32,7 @@ class FeedbackToLeader extends Component {
             )}
           </div>
         ) }
-        {loaded && !items.length && ( <NoFeedback /> )}
+        {loaded && !items.length && ( <NoFeedback icon="fa fa-comments-o" message="There is no feedback."/> )}
       </div>
     );
   }

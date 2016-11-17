@@ -4,9 +4,40 @@ import _ from 'lodash';
 // collections
 import {Measures} from './index';
 import {Metrics} from '/imports/api/metrics/index';
+import {MiniMongo} from '/imports/api/cache/index';
+import {Accounts} from 'meteor/accounts-base';
+import {Organizations} from '/imports/api/organizations/index';
+import {Employees} from '/imports/api/employees/index';
+import {LogsEmail} from '/imports/api/logs/index';
 
 // functions
 import {arraySum} from '/imports/utils/index';
+
+// constants
+import * as ERROR_CODE from '/imports/utils/error_code';
+export const STATISTIC_METRICS = {
+  USERS: "users",
+  ORGANIZATIONS: "organizations",
+  EMPLOYEES: "employees",
+  EMAILS: {
+    REGISTRATION: "emailRegistration",
+    FORGOT_ALIAS: "emailForgotAlias",
+    FORGOT_PASSWORD: "emailForgotPassword",
+    SURVEYS: "emailSurveys",
+    SCORING_ERRORS: "emailScoringErrors",
+    SCORING_SUCCESSES: "emailScoringSuccesses",
+    FEEDBACK_TO_LEADERS: "emailFeedbackToLeaders",
+    FEEDBACK_TO_EMPLOYEES: "emailFeedbackToEmployees",
+    WEEKLY_DIGEST: "emailWeeklyDigest",
+    REFERRALS: "emailReferrals"
+  },
+};
+export const STATISTIC_INTERVAL = {
+  LAST_WEEK: {days: 7},
+  LAST_2_WEEKS: {days: 14},
+  LAST_MONTH: {months: 1},
+  LAST_3_MONTHS: {months: 3}
+};
 
 /**
  * @summary this function used to insert/update the measure data which collect data for measurement
@@ -32,6 +63,13 @@ export const measure = ({data}) => {
     case "feedback":
     {
 
+      break;
+    }
+    case "statistic":
+    {
+      query = {type, interval, year, month, day, key};
+      update = {$set: {value}};
+      options = {upsert: true};
       break;
     }
     default:
@@ -165,4 +203,218 @@ export const measureMonthlyMetricScore = () => {
   } else {
     return false;
   }
+}
+
+/**
+ * Function get statistic of 1 metric with the inteval
+ * @param {String} metric - 1 metric in STATISTIC_METRICS object
+ * @param {String} interval - 1 interval in STATISTIC_INTERVAL object
+ * @return {{ready: boolean, labels: Array, data: Array}}
+ */
+export const getMetricStatistic = ({params}) => {
+  const
+    {metric, startDate, endDate, offset} = params,
+    MiniMongo = new Mongo.Collection(null)
+    ;
+  let
+    query = {},
+    options = {},
+    data = [],
+    result = {
+      labels: [],
+      data: []
+    }
+    ;
+
+  switch (metric) {
+    // new creation
+    case STATISTIC_METRICS.USERS: {
+      query = {createdAt: {$gte: startDate}};
+      options = {fields: {createdAt: true}};
+      data = Accounts.users.find(query, options).fetch();
+
+      if (!_.isEmpty(data)) {
+        data.map(user => {
+          MiniMongo.insert({type: metric, data: {userId: user._id, createdAt: user.createdAt}});
+        });
+      }
+      break;
+    }
+    case STATISTIC_METRICS.ORGANIZATIONS: {
+      query = {createdAt: {$gte: startDate}};
+      options = {fields: {createdAt: true}};
+      data = Organizations.find(query, options).fetch();
+
+      if (!_.isEmpty(data)) {
+        data.map(organization => {
+          MiniMongo.insert({type: metric, data: {orgId: organization._id, createdAt: organization.createdAt}});
+        });
+      }
+      break;
+    }
+    case STATISTIC_METRICS.EMPLOYEES: {
+      query = {createdAt: {$gte: startDate}};
+      options = {fields: {createdAt: true}};
+      data = Employees.find(query, options).fetch();
+
+      if (!_.isEmpty(data)) {
+        data.map(employee => {
+          MiniMongo.insert({type: metric, data: {employeeId: employee._id, createdAt: employee.createdAt}});
+        });
+      }
+      break;
+    }
+    // emails to employees
+    case STATISTIC_METRICS.EMAILS.SURVEYS: {
+      query = {"content.template": "survey", date: {$gte: startDate}};
+      options = {fields: {date: true}};
+      data = LogsEmail.find(query, options).fetch();
+
+      if (!_.isEmpty(data)) {
+        data.map(email => {
+          MiniMongo.insert({type: metric, data: {emailId: email._id, createdAt: email.date}});
+        });
+      }
+      break;
+    }
+    case STATISTIC_METRICS.EMAILS.SCORING_SUCCESSES: {
+      Collection = LogsEmail;
+      query = {"content.template": "thankyou", "content.data.type": "scoring", date: {$gte: startDate}};
+      options = {fields: {date: true}};
+      data = LogsEmail.find(query, options).fetch();
+
+      if (!_.isEmpty(data)) {
+        data.map(email => {
+          MiniMongo.insert({type: metric, data: {emailId: email._id, createdAt: email.date}});
+        });
+      }
+      break;
+    }
+    case STATISTIC_METRICS.EMAILS.SCORING_ERRORS: {
+      Collection = LogsEmail;
+      query = {"content.template": "survey_error", date: {$gte: startDate}};
+      options = {fields: {date: true}};
+      data = LogsEmail.find(query, options).fetch();
+
+      if (!_.isEmpty(data)) {
+        data.map(email => {
+          MiniMongo.insert({type: metric, data: {emailId: email._id, createdAt: email.date}});
+        });
+      }
+      break;
+    }
+    case STATISTIC_METRICS.EMAILS.FEEDBACK_TO_LEADERS: {
+      Collection = LogsEmail;
+      query = {"content.template": "feedback", date: {$gte: startDate}};
+      options = {fields: {date: true}};
+      data = LogsEmail.find(query, options).fetch();
+
+      if (!_.isEmpty(data)) {
+        data.map(email => {
+          MiniMongo.insert({type: metric, data: {emailId: email._id, createdAt: email.date}});
+        });
+      }
+      break;
+    }
+    // emails to leaders
+    case STATISTIC_METRICS.EMAILS.FEEDBACK_TO_EMPLOYEES: {
+      Collection = LogsEmail;
+      query = {"content.template": "employee", "content.data.type": "feedback", date: {$gte: startDate}};
+      options = {fields: {date: true}};
+      data = LogsEmail.find(query, options).fetch();
+
+      if (!_.isEmpty(data)) {
+        data.map(email => {
+          MiniMongo.insert({type: metric, data: {emailId: email._id, createdAt: email.date}});
+        });
+      }
+      break;
+    }
+    case STATISTIC_METRICS.EMAILS.WEEKLY_DIGEST: {
+      Collection = LogsEmail;
+      query = {"content.template": "digest", date: {$gte: startDate}};
+      options = {fields: {date: true}};
+      data = LogsEmail.find(query, options).fetch();
+
+      if (!_.isEmpty(data)) {
+        data.map(email => {
+          MiniMongo.insert({type: metric, data: {emailId: email._id, createdAt: email.date}});
+        });
+      }
+      break;
+    }
+    // emails referral
+    case STATISTIC_METRICS.EMAILS.REFERRALS: {
+      Collection = LogsEmail;
+      query = {"content.template": "referral", date: {$gte: startDate}};
+      options = {fields: {date: true}};
+      data = LogsEmail.find(query, options).fetch();
+
+      if (!_.isEmpty(data)) {
+        data.map(email => {
+          MiniMongo.insert({type: metric, data: {emailId: email._id, createdAt: email.date}});
+        });
+      }
+      break;
+    }
+    // email registration
+    case STATISTIC_METRICS.EMAILS.REGISTRATION: {
+      Collection = LogsEmail;
+      query = {"content.template": "welcome", date: {$gte: startDate}};
+      options = {fields: {date: true}};
+      data = LogsEmail.find(query, options).fetch();
+
+      if (!_.isEmpty(data)) {
+        data.map(email => {
+          MiniMongo.insert({type: metric, data: {emailId: email._id, createdAt: email.date}});
+        });
+      }
+      break;
+    }
+    // emails support
+    case STATISTIC_METRICS.EMAILS.FORGOT_ALIAS: {
+      Collection = LogsEmail;
+      query = {"content.template": "forgot_alias", date: {$gte: startDate}};
+      options = {fields: {date: true}};
+      data = LogsEmail.find(query, options).fetch();
+
+      if (!_.isEmpty(data)) {
+        data.map(email => {
+          MiniMongo.insert({type: metric, data: {emailId: email._id, createdAt: email.date}});
+        });
+      }
+      break;
+    }
+    case STATISTIC_METRICS.EMAILS.FORGOT_PASSWORD: {
+      Collection = LogsEmail;
+      query = {"content.template": "forgot_password", date: {$gte: startDate}};
+      options = {fields: {date: true}};
+      data = LogsEmail.find(query, options).fetch();
+
+      if (!_.isEmpty(data)) {
+        data.map(email => {
+          MiniMongo.insert({type: metric, data: {emailId: email._id, createdAt: email.date}});
+        });
+      }
+      break;
+    }
+    default: {
+      throw new Meteor.Error(ERROR_CODE.INVALID_PARAMETER, `Unknown metric: ${metric} to measure`);
+    }
+  }
+
+  // Calculate statistic
+  for (let day = startDate, end = endDate; day <= end; day = new Date(moment(day).add(offset))) {
+    const
+      label = moment(day).format('MMM Do'),
+      query = {type: metric, "data.createdAt": {$gte: day, $lt: new Date(moment(day).add(offset))}}
+      ;
+
+    // result labels & data
+    result.labels.push(label);
+    result.data.push(MiniMongo.find(query).count());
+  }
+
+  // console.log(result);
+  return result;
 }

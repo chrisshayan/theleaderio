@@ -2,7 +2,6 @@ import {Meteor} from 'meteor/meteor';
 import React, {Component} from 'react';
 import {setPageHeading, resetPageHeading} from '/imports/store/modules/pageHeading';
 
-
 // components
 import Tabs from '/imports/ui/components/Tabs';
 import Box from '/imports/ui/components/Box';

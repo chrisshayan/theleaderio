@@ -5,6 +5,7 @@ import {Meteor} from 'meteor/meteor';
 
 // functions
 import * as EmailFunctions from '/imports/api/email/functions';
+import {add as addLogs} from '/imports/api/logs/functions';
 
 // constant
 const {domain, mailDomain} = Meteor.settings.public;
@@ -21,7 +22,15 @@ export const send = new ValidatedMethod({
   run({template, data}) {
     if (!this.isSimulation) {
       let
-        options = {}
+        options = {},
+        logName = "sendEmail",
+        logContent = {
+          subject: "",
+          from: "",
+          to: "",
+          template,
+          data
+        }
         ;
 
       // get options base on template
@@ -146,6 +155,10 @@ export const send = new ValidatedMethod({
           options = EmailFunctions.getDigestEmailOptions({template, data});
           break;
         }
+        case 'referral': {
+          options = EmailFunctions.getReferralEmailOptions({template, data});
+          break;
+        }
         default: {
           throw new Meteor.Error(`Unknown template: ${template}`);
         }
@@ -153,7 +166,16 @@ export const send = new ValidatedMethod({
 
       // send email
       return Meteor.defer(() => {
+        // console.log(options);
         Email.send(options);
+        // add log for a digest into log collection
+        logContent = {
+          ...logContent,
+          subject: options.subject,
+          from: options.from,
+          to: options.to
+        };
+        addLogs({params: {name: logName, content: logContent}});
       });
     }
   }

@@ -24,7 +24,7 @@ export default class IboxContentChartWithChosen extends Component {
   }
 
   onChooseMetric(selected) {
-    console.log(selected)
+    // console.log(selected)
     $.map(this.props.data, (value, key) => {
       if (selected === key) {
         this.setState({chartData: value});
@@ -35,7 +35,7 @@ export default class IboxContentChartWithChosen extends Component {
   render() {
     // metrics chart
     const
-      {label, data} = this.props,
+      {label, data, status} = this.props,
       {loading, chartData} = this.state
       ;
 
@@ -43,7 +43,20 @@ export default class IboxContentChartWithChosen extends Component {
     if (!loading) {
       if (!_.isEmpty(data)) {
         // Chosen metric options
-        const options = [];
+        const
+          options = [],
+          chartDataSets = [
+            {
+              data: chartData,
+              fillColor: "rgba(26,179,148,0.5)",
+              strokeColor: "rgba(26,179,148,0.7)",
+              pointColor: "rgba(26,179,148,1)",
+              pointStrokeColor: "#fff",
+              pointHighlightFill: "#fff",
+              pointHighlightStroke: "rgba(26,179,148,1)",
+            }
+          ]
+          ;
         $.map(data, (value, key) => {
           if (key !== 'label') {
             options.push(key);
@@ -52,6 +65,9 @@ export default class IboxContentChartWithChosen extends Component {
 
         return (
           <div className="ibox-content">
+            {status && (
+              <span className="label label-info pull-right">{status}</span>
+            )}
             <h3 className="font-bold no-margins">
               {label}
             </h3>
@@ -64,8 +80,8 @@ export default class IboxContentChartWithChosen extends Component {
               onChange={this.onChooseMetric.bind(this)}
             />
             <LineChart
-              label={data.label}
-              data={chartData}
+              labels={data.label}
+              datasets={chartDataSets}
             />
           </div>
         );

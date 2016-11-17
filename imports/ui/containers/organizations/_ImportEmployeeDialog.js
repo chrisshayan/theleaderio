@@ -65,7 +65,7 @@ class ImportEmployeeDialog extends Component {
             }
           },
           complete: function(results, file) {
-            console.log(employees);
+            // console.log(employees);
           }
         });
       };

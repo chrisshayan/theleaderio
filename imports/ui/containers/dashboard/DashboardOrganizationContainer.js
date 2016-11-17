@@ -182,6 +182,7 @@ class DashboardOrganization extends Component {
               label="Half-year leadership progress"
               preferences={preferences.metrics}
               data={{chart, metrics}}
+              haveCalendar={true}
             />
           </div>
         </div>

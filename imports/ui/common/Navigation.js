@@ -31,6 +31,12 @@ class Navigation extends Component {
           icon: 'fa fa-gift'
         },
         {
+          route: 'app.referrals',
+          path: FlowRouter.url('app.referrals'),
+          label: 'Referrals',
+          icon: 'fa fa-users'
+        },
+        {
           route: 'app.articles',
           path: FlowRouter.url('app.articles'),
           label: 'Articles',
@@ -44,7 +50,7 @@ class Navigation extends Component {
     if(this.props.isAdmin !== nextProps.isAdmin) {
       let menuItems = this.state.menuItems;
       if(nextProps.isAdmin) {
-        menuItems.push({route: 'admin.jobs', path: FlowRouter.url('admin.jobs'), label: 'Admin', icon: 'fa fa-user-md'});
+        menuItems.push({route: 'admin.management', path: FlowRouter.url('admin.management'), label: 'Admin', icon: 'fa fa-user-md'});
         this.setState({
           menuItems
         });

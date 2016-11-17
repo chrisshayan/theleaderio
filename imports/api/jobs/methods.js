@@ -239,7 +239,7 @@ const sendStatisticEmailToLeader = function (job, cb) {
           digest.sendingPlanStatus.sendFailed = true;
           digest.sendingPlanStatus.message = `The "${plan[0].metric}" survey couldn't be sent on ${moment(plan[0].sendDate).format('MMMM Do, YYYY')}.`;
           if (typeof plan[0].reason !== 'undefined') {
-            digest.sendingPlanStatus.reason = `Because ${plan[0].reason}`;
+            digest.sendingPlanStatus.reason = `Because of ${plan[0].reason}`;
           }
           digest.sendingPlanStatus.suggest = "Please make sure that you have at least one current organization and there are employees in it.";
         } else {

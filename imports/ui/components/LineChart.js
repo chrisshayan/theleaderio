@@ -16,55 +16,55 @@ export default class LineChart extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (!_.isEqual(prevProps.data, this.props.data)) {
+    if (!_.isEqual(prevProps.datasets, this.props.datasets)) {
+      console.log(`redraw chart`)
       this.lineChart();
     }
   }
 
   lineChart() {
-    const canvas = document.getElementById("lineChart");
+    const
+      {id = ""} = this.props,
+      lineChartId = `lineChart${id}`,
+      canvas = document.getElementById(lineChartId)
+      ;
     if (canvas) {
-      const {label, data} = this.props;
-      const lineData = {
-        labels: label,
-        datasets: [
-          {
-            data: data,
-            fillColor: "rgba(26,179,148,0.5)",
-            strokeColor: "rgba(26,179,148,0.7)",
-            pointColor: "rgba(26,179,148,1)",
-            pointStrokeColor: "#fff",
-            pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(26,179,148,1)"
-          }
-        ]
-      };
-      const lineOptions = {
-        scaleShowGridLines: true,
-        scaleGridLineColor: "rgba(0,0,0,.05)",
-        scaleGridLineWidth: 1,
-        bezierCurve: true,
-        bezierCurveTension: 0.4,
-        pointDot: true,
-        pointDotRadius: 4,
-        pointDotStrokeWidth: 1,
-        pointHitDetectionRadius: 20,
-        datasetStroke: true,
-        datasetStrokeWidth: 3,
-        datasetFill: true,
-        responsive: true,
-      };
-      const ctx = canvas.getContext("2d");
-      // console.log(lineData)
+      const {labels, datasets} = this.props,
+        lineData = {
+          labels,
+          datasets
+        },
+        lineOptions = {
+          scaleShowGridLines: true,
+          scaleGridLineColor: "rgba(0,0,0,.05)",
+          scaleGridLineWidth: 1,
+          bezierCurve: true,
+          bezierCurveTension: 0.4,
+          pointDot: true,
+          pointDotRadius: 4,
+          pointDotStrokeWidth: 1,
+          pointHitDetectionRadius: 20,
+          datasetStroke: true,
+          datasetStrokeWidth: 3,
+          datasetFill: true,
+          responsive: true,
+        },
+        ctx = canvas.getContext("2d");
+      console.log(lineData)
       // console.log(lineOptions)
       const metricChart = new Chart(ctx).Line(lineData, lineOptions);
     }
   }
 
   render() {
+    const
+      {id = ""} = this.props,
+      lineChartId = `lineChart${id}`
+      ;
+
     return (
       <div>
-        <canvas id="lineChart" height="140"></canvas>
+        <canvas id={lineChartId} height="140"></canvas>
       </div>
     );
   }
