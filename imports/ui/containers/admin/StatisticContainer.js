@@ -300,17 +300,17 @@ class StatisticComponent extends Component {
               </div>
               <div className="ibox float-e-margins">
                 <div className="ibox-title">
+                  <span className="pull-right">
+                    <Chosen
+                      options={chosenOptions}
+                      defaultValue={chosenOptions[0]}
+                      chosenClass="chosen-select"
+                      isMultiple={false}
+                      placeHolder='Choose one option ...'
+                      onChange={this.onChooseEmailSentInterval.bind(this)}
+                    />
+                  </span>
                   <h3>Emails sent</h3>
-                </div>
-                <div className="pull-right">
-                  <Chosen
-                    options={chosenOptions}
-                    defaultValue={chosenOptions[0]}
-                    chosenClass="chosen-select"
-                    isMultiple={false}
-                    placeHolder='Choose one option ...'
-                    onChange={this.onChooseEmailSentInterval.bind(this)}
-                  />
                 </div>
                 <div className="ibox-content">
                   <h4>To Employees</h4>
@@ -419,9 +419,6 @@ export default StatisticComponentContainer = createContainer(() => {
     totalActiveUsers = Accounts.users.find({username: {$exists: true}}).count(),
     totalActiveEmployees = Employees.find({status: STATUS_ACTIVE}).count()
     ;
-
-  // console.log(Accounts.users.find({username: {$exists: true}}).count());
-  // console.log(Accounts.users.find().count());
 
   return {
     statisticReady,

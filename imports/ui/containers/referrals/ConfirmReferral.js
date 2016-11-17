@@ -23,7 +23,7 @@ import { DEFAULT_SCHEDULER } from '/imports/utils/defaults';
 import {STATUS} from '/imports/api/referrals/index';
 
 // utils
-import {aliasValidator} from '/imports/utils/index';
+import {aliasValidator, googleTrackConversion} from '/imports/utils/index';
 
 export default class ConfirmReferral extends Component {
   constructor() {
@@ -97,6 +97,9 @@ export default class ConfirmReferral extends Component {
                   // create token to set password
                   const newTokenId = TokenActions.generate.call({email, action: 'password'}, (error) => {
                     if(!error) {
+                      // google conversion tracking
+                      googleTrackConversion();
+
                       // Redirect to set password page
                       // Need the cookie sharing login information here
                       this.setState({
