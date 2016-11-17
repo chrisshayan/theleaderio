@@ -318,15 +318,11 @@ export const measureAdminStatistic = new ValidatedMethod({
     "params.type": {
       type: String,
       allowedValues: ["NEW_CREATION", "EMAIL_SENT"]
-    },
-    "params.interval": {
-      type: String,
-      allowedValues: ["LAST_WEEK", "LAST_2_WEEKS", "LAST_MONTH", "LAST_3_MONTHS"]
     }
   }).validator(),
   run({params}) {
     const
-      {type, interval} = params,
+      {type} = params,
       endDate = new Date(),
       today = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()),
       userId = Meteor.userId(),
@@ -351,19 +347,19 @@ export const measureAdminStatistic = new ValidatedMethod({
       },
       STATISTIC_INTERVAL = {
         LAST_WEEK: {
-          interval: {days: 7},
+          period: {days: 7},
           offset: {days: 1}
         },
         LAST_2_WEEKS: {
-          interval: {days: 14},
+          period: {days: 14},
           offset: {days: 2}
         },
         LAST_MONTH: {
-          interval: {months: 1},
+          period: {months: 1},
           offset: {days: 7}
         },
         LAST_3_MONTHS: {
-          interval: {months: 3},
+          period: {months: 3},
           offset: {days: 14}
         }
       };
@@ -371,8 +367,22 @@ export const measureAdminStatistic = new ValidatedMethod({
       startDate = new Date(),
       result = {
         ready: false,
-        labels: [],
-        data: []
+        LAST_WEEK: {
+          labels: [],
+          data: []
+        },
+        LAST_2_WEEKS: {
+          labels: [],
+          data: []
+        },
+        LAST_MONTH: {
+          labels: [],
+          data: []
+        },
+        LAST_3_MONTHS: {
+          labels: [],
+          data: []
+        },
       }
       ;
 
@@ -382,20 +392,23 @@ export const measureAdminStatistic = new ValidatedMethod({
       }
     }
 
-    startDate = new Date(moment(today).subtract(STATISTIC_INTERVAL[interval].interval));
 
-    STATISTIC_TYPES[type].map(type => {
-      const data = getMetricStatistic({
-        params: {
-          metric: type,
-          startDate,
-          endDate,
-          offset: STATISTIC_INTERVAL[interval].offset
-        }
+    for(const interval in STATISTIC_INTERVAL) {
+      startDate = new Date(moment(today).subtract(STATISTIC_INTERVAL[interval].period));
+      STATISTIC_TYPES[type].map(type => {
+        const data = getMetricStatistic({
+          params: {
+            metric: type,
+            startDate,
+            endDate,
+            offset: STATISTIC_INTERVAL[interval].offset
+          }
+        });
+        result[interval].labels = data.labels;
+        result[interval].data.push(data.data);
       });
-      result.labels = data.labels;
-      result.data.push(data.data);
-    });
+    }
+
     result.ready = true;
     return result;
   }

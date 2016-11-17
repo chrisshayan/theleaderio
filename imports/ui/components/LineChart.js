@@ -16,7 +16,8 @@ export default class LineChart extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (!_.isEqual(prevProps.data, this.props.data)) {
+    if (!_.isEqual(prevProps.datasets, this.props.datasets)) {
+      console.log(`redraw chart`)
       this.lineChart();
     }
   }
@@ -28,28 +29,28 @@ export default class LineChart extends Component {
       canvas = document.getElementById(lineChartId)
       ;
     if (canvas) {
-      const {labels, datasets} = this.props;
-      const lineData = {
-        labels,
-        datasets
-      };
-      const lineOptions = {
-        scaleShowGridLines: true,
-        scaleGridLineColor: "rgba(0,0,0,.05)",
-        scaleGridLineWidth: 1,
-        bezierCurve: true,
-        bezierCurveTension: 0.4,
-        pointDot: true,
-        pointDotRadius: 4,
-        pointDotStrokeWidth: 1,
-        pointHitDetectionRadius: 20,
-        datasetStroke: true,
-        datasetStrokeWidth: 3,
-        datasetFill: true,
-        responsive: true,
-      };
-      const ctx = canvas.getContext("2d");
-      // console.log(lineData)
+      const {labels, datasets} = this.props,
+        lineData = {
+          labels,
+          datasets
+        },
+        lineOptions = {
+          scaleShowGridLines: true,
+          scaleGridLineColor: "rgba(0,0,0,.05)",
+          scaleGridLineWidth: 1,
+          bezierCurve: true,
+          bezierCurveTension: 0.4,
+          pointDot: true,
+          pointDotRadius: 4,
+          pointDotStrokeWidth: 1,
+          pointHitDetectionRadius: 20,
+          datasetStroke: true,
+          datasetStrokeWidth: 3,
+          datasetFill: true,
+          responsive: true,
+        },
+        ctx = canvas.getContext("2d");
+      console.log(lineData)
       // console.log(lineOptions)
       const metricChart = new Chart(ctx).Line(lineData, lineOptions);
     }

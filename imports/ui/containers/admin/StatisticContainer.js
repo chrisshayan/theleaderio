@@ -23,61 +23,33 @@ class StatisticComponent extends Component {
 
     this.state = {
       errors: null,
-      newCreationStatistic: {},
-      emailSentStatistic: {}
-    };
-  }
-
-  componentDidMount() {
-    // new creation
-    measureAdminStatistic.call({
-      params: {
-        type: "NEW_CREATION",
-        interval: "LAST_WEEK"
-      }
-    }, (error, newCreationStatistic) => {
-      if (!error) {
-        this.setState({
-          ready: true,
-          newCreationStatistic,
-          errors: null
-        });
-      } else {
-        this.setState({
-          errors: error.reason
-        });
-      }
-    });
-    // emails sent
-    measureAdminStatistic.call({
-      params: {
-        type: "EMAIL_SENT",
-        interval: "LAST_WEEK"
-      }
-    }, (error, emailSentStatistic) => {
-      if (!error) {
-        this.setState({
-          emailSentStatistic,
-          errors: null
-        });
-      } else {
-        this.setState({
-          errors: error.reason
-        });
-      }
-    });
-  }
-
-  render() {
-    const
-      {
-        errors,
-        newCreationStatistic,
-        emailSentStatistic,
-      } = this.state,
-      {statisticReady, totalActiveUsers, totalActiveEmployees} = this.props,
-      ready = newCreationStatistic.ready || emailSentStatistic.ready,
-      dataSetsColors = [
+      newCreationInterval: "LAST_WEEK",
+      newCreationReady: false,
+      newCreationStatistic: {
+        ready: false,
+        LAST_WEEK: {},
+        LAST_2_WEEKS: {},
+        LAST_MONTH: {},
+        LAST_3_MONTHS: {}
+      },
+      emailSentInterval: "LAST_WEEK",
+      emailSentReady: false,
+      emailSentStatistic: {
+        ready: false,
+        LAST_WEEK: {},
+        LAST_2_WEEKS: {},
+        LAST_MONTH: {},
+        LAST_3_MONTHS: {}
+      },
+      newCreationLabels: [],
+      newCreationDataSets: [],
+      emailSentLabels: [],
+      emailToEmployeesDataSets: [],
+      emailToLeadersDataSets: [],
+      emailReferralsDataSets: [],
+      emailRegistrationDataSets: [],
+      emailSupportDataSets: [],
+      dataSetsColors: [
         {
           fillColor: "rgba(26, 179, 148, 0.5)",
           strokeColor: "rgba(26, 179, 148, 0.7)",
@@ -111,42 +83,161 @@ class StatisticComponent extends Component {
           pointHighlightStroke: "rgba(181, 184, 207, 1)",
         }
       ]
+    };
+  }
+
+  componentDidMount() {
+    const {newCreationInterval, emailSentInterval, dataSetsColors} = this.state;
+    // new creation
+    measureAdminStatistic.call({
+      params: {
+        type: "NEW_CREATION"
+      }
+    }, (error, newCreationStatistic) => {
+      if (!error) {
+        let newCreationDataSets = [];
+        (!_.isEmpty(newCreationStatistic[newCreationInterval].data)) && (
+          newCreationStatistic[newCreationInterval].data.map((dataset, key) => {
+            newCreationDataSets.push({...dataSetsColors[key], data: dataset});
+          })
+        );
+        this.setState({
+          newCreationReady: true,
+          newCreationStatistic,
+          newCreationLabels: newCreationStatistic[newCreationInterval].labels,
+          newCreationDataSets,
+          errors: null
+        });
+      } else {
+        this.setState({
+          errors: error.reason
+        });
+      }
+    });
+    // emails sent
+    measureAdminStatistic.call({
+      params: {
+        type: "EMAIL_SENT"
+      }
+    }, (error, emailSentStatistic) => {
+      if (!error) {
+        let
+          emailToEmployeesDataSets = [],
+          emailToLeadersDataSets = [],
+          emailReferralsDataSets = [],
+          emailRegistrationDataSets = [],
+          emailSupportDataSets = []
+        ;
+        if (!_.isEmpty(emailSentStatistic[emailSentInterval].data)) {
+          // to employees
+          emailToEmployeesDataSets.push({...dataSetsColors[0], data: emailSentStatistic[emailSentInterval].data[0]});
+          emailToEmployeesDataSets.push({...dataSetsColors[1], data: emailSentStatistic[emailSentInterval].data[1]});
+          emailToEmployeesDataSets.push({...dataSetsColors[2], data: emailSentStatistic[emailSentInterval].data[2]});
+          emailToEmployeesDataSets.push({...dataSetsColors[3], data: emailSentStatistic[emailSentInterval].data[3]});
+          // to leaders
+          emailToLeadersDataSets.push({...dataSetsColors[0], data: emailSentStatistic[emailSentInterval].data[4]});
+          emailToLeadersDataSets.push({...dataSetsColors[1], data: emailSentStatistic[emailSentInterval].data[5]});
+          // referrals
+          emailReferralsDataSets.push({...dataSetsColors[0], data: emailSentStatistic[emailSentInterval].data[6]});
+          // registration
+          emailRegistrationDataSets.push({...dataSetsColors[0], data: emailSentStatistic[emailSentInterval].data[7]});
+          // support
+          emailSupportDataSets.push({...dataSetsColors[0], data: emailSentStatistic[emailSentInterval].data[8]});
+          emailSupportDataSets.push({...dataSetsColors[1], data: emailSentStatistic[emailSentInterval].data[9]});
+        }
+
+        this.setState({
+          emailSentReady: true,
+          emailSentStatistic,
+          emailSentLabels: emailSentStatistic[emailSentInterval].labels,
+          emailToEmployeesDataSets,
+          emailToLeadersDataSets,
+          emailReferralsDataSets,
+          emailRegistrationDataSets,
+          emailSupportDataSets,
+          errors: null
+        });
+      } else {
+        this.setState({
+          errors: error.reason
+        });
+      }
+    });
+  }
+
+  onChooseNewCreationInterval(selected) {
+    const {newCreationStatistic, dataSetsColors} = this.state;
+    let newCreationDataSets = [];
+
+    newCreationStatistic[selected].data.map((dataset, key) => {
+      newCreationDataSets.push({...dataSetsColors[key], data: dataset});
+    });
+    this.setState({
+      newCreationInterval: selected,
+      newCreationLabels: newCreationStatistic[selected].labels,
+      newCreationDataSets,
+    });
+  }
+
+  onChooseEmailSentInterval(selected) {
+    const {emailSentStatistic, dataSetsColors} = this.state;
+    let
+      emailToEmployeesDataSets = [],
+      emailToLeadersDataSets = [],
+      emailReferralsDataSets = [],
+      emailRegistrationDataSets = [],
+      emailSupportDataSets = []
       ;
+    if (!_.isEmpty(emailSentStatistic[selected].data)) {
+      // to employees
+      emailToEmployeesDataSets.push({...dataSetsColors[0], data: emailSentStatistic[selected].data[0]});
+      emailToEmployeesDataSets.push({...dataSetsColors[1], data: emailSentStatistic[selected].data[1]});
+      emailToEmployeesDataSets.push({...dataSetsColors[2], data: emailSentStatistic[selected].data[2]});
+      emailToEmployeesDataSets.push({...dataSetsColors[3], data: emailSentStatistic[selected].data[3]});
+      // to leaders
+      emailToLeadersDataSets.push({...dataSetsColors[0], data: emailSentStatistic[selected].data[4]});
+      emailToLeadersDataSets.push({...dataSetsColors[1], data: emailSentStatistic[selected].data[5]});
+      // referrals
+      emailReferralsDataSets.push({...dataSetsColors[0], data: emailSentStatistic[selected].data[6]});
+      // registration
+      emailRegistrationDataSets.push({...dataSetsColors[0], data: emailSentStatistic[selected].data[7]});
+      // support
+      emailSupportDataSets.push({...dataSetsColors[0], data: emailSentStatistic[selected].data[8]});
+      emailSupportDataSets.push({...dataSetsColors[1], data: emailSentStatistic[selected].data[9]});
+    }
+    this.setState({
+      emailSentInterval: selected,
+      emailSentLabels: emailSentStatistic[selected].labels,
+      emailToEmployeesDataSets,
+      emailToLeadersDataSets,
+      emailReferralsDataSets,
+      emailRegistrationDataSets,
+      emailSupportDataSets,
+    });
+  }
+
+  render() {
+    const
+      {
+        errors,
+        newCreationReady,
+        emailSentReady,
+        newCreationLabels,
+        newCreationDataSets,
+        emailSentLabels,
+        emailToEmployeesDataSets,
+        emailToLeadersDataSets,
+        emailReferralsDataSets,
+        emailRegistrationDataSets,
+        emailSupportDataSets,
+      } = this.state,
+      {statisticReady, totalActiveUsers, totalActiveEmployees} = this.props,
+      ready = newCreationReady || emailSentReady,
+      chosenOptions = ["LAST_WEEK", "LAST_2_WEEKS", "LAST_MONTH", "LAST_3_MONTHS"]
+      ;
+    // console.log(this.state);
 
     if (ready) {
-      let
-        newCreationDataSets = [],
-        emailToEmployeesDataSets = [],
-        emailToLeadersDataSets = [],
-        emailReferralsDataSets = [],
-        emailRegistrationDataSets = [],
-        emailSupportDataSets = []
-        ;
-
-      (!_.isEmpty(newCreationStatistic.data)) && (
-        newCreationStatistic.data.map((dataset, key) => {
-          newCreationDataSets.push({...dataSetsColors[key], data: dataset});
-        })
-      );
-      if (!_.isEmpty(emailSentStatistic.data)) {
-        // to employees
-        emailToEmployeesDataSets.push({...dataSetsColors[0], data: emailSentStatistic.data[0]});
-        emailToEmployeesDataSets.push({...dataSetsColors[1], data: emailSentStatistic.data[1]});
-        emailToEmployeesDataSets.push({...dataSetsColors[2], data: emailSentStatistic.data[2]});
-        emailToEmployeesDataSets.push({...dataSetsColors[3], data: emailSentStatistic.data[3]});
-        // to leaders
-        emailToLeadersDataSets.push({...dataSetsColors[0], data: emailSentStatistic.data[4]});
-        emailToLeadersDataSets.push({...dataSetsColors[1], data: emailSentStatistic.data[5]});
-        // referrals
-        emailReferralsDataSets.push({...dataSetsColors[0], data: emailSentStatistic.data[6]});
-        // registration
-        emailRegistrationDataSets.push({...dataSetsColors[0], data: emailSentStatistic.data[7]});
-        // support
-        emailSupportDataSets.push({...dataSetsColors[0], data: emailSentStatistic.data[8]});
-        emailSupportDataSets.push({...dataSetsColors[1], data: emailSentStatistic.data[9]});
-      }
-      ;
-
       return (
         <div>
           {statisticReady && (
@@ -173,13 +264,23 @@ class StatisticComponent extends Component {
             <div className="col-md-8">
               <div className="ibox float-e-margins">
                 <div className="ibox-title">
+                  <span className="pull-right">
+                    <Chosen
+                      options={chosenOptions}
+                      defaultValue={chosenOptions[0]}
+                      chosenClass="chosen-select pull-right"
+                      isMultiple={false}
+                      placeHolder='Choose one option ...'
+                      onChange={this.onChooseNewCreationInterval.bind(this)}
+                    />
+                  </span>
                   <h3>New Creation</h3>
                 </div>
                 <div className="ibox-content">
-                  {newCreationStatistic.ready ? (
+                  {newCreationReady ? (
                     <LineChart
                       id="newCreation"
-                      labels={newCreationStatistic.labels}
+                      labels={newCreationLabels}
                       datasets={newCreationDataSets}
                     />
                   ) : (
@@ -201,12 +302,22 @@ class StatisticComponent extends Component {
                 <div className="ibox-title">
                   <h3>Emails sent</h3>
                 </div>
+                <div className="pull-right">
+                  <Chosen
+                    options={chosenOptions}
+                    defaultValue={chosenOptions[0]}
+                    chosenClass="chosen-select"
+                    isMultiple={false}
+                    placeHolder='Choose one option ...'
+                    onChange={this.onChooseEmailSentInterval.bind(this)}
+                  />
+                </div>
                 <div className="ibox-content">
                   <h4>To Employees</h4>
-                  {emailSentStatistic.ready ? (
+                  {emailSentReady ? (
                     <LineChart
                       id="toEmployees"
-                      labels={emailSentStatistic.labels}
+                      labels={emailSentLabels}
                       datasets={emailToEmployeesDataSets}
                     />
                   ) : (
@@ -225,10 +336,10 @@ class StatisticComponent extends Component {
                 </div>
                 <div className="ibox-content">
                   <h4>To Leaders</h4>
-                  {emailSentStatistic.ready ? (
+                  {emailSentReady ? (
                     <LineChart
                       id="toLeaders"
-                      labels={emailSentStatistic.labels}
+                      labels={emailSentLabels}
                       datasets={emailToLeadersDataSets}
                     />
                   ) : (
@@ -243,10 +354,10 @@ class StatisticComponent extends Component {
                 </div>
                 <div className="ibox-content">
                   <h4>Referrals</h4>
-                  {emailSentStatistic.ready ? (
+                  {emailSentReady ? (
                     <LineChart
                       id="referrals"
-                      labels={emailSentStatistic.labels}
+                      labels={emailSentLabels}
                       datasets={emailReferralsDataSets}
                     />
                   ) : (
@@ -257,10 +368,10 @@ class StatisticComponent extends Component {
                 </div>
                 <div className="ibox-content">
                   <h4>Registration</h4>
-                  {emailSentStatistic.ready ? (
+                  {emailSentReady ? (
                     <LineChart
                       id="registration"
-                      labels={emailSentStatistic.labels}
+                      labels={emailSentLabels}
                       datasets={emailRegistrationDataSets}
                     />
                   ) : (
@@ -269,24 +380,24 @@ class StatisticComponent extends Component {
                   <a className="btn btn-primary btn-bitbucket">
                   </a> Welcome
                 </div>
-              </div>
-              <div className="ibox-content">
-                <h4>Support</h4>
-                {emailSentStatistic.ready ? (
-                  <LineChart
-                    id="support"
-                    labels={emailSentStatistic.labels}
-                    datasets={emailSupportDataSets}
-                  />
-                ) : (
-                  <Indicator />
-                )}
-                <a className="btn btn-primary btn-bitbucket">
-                </a> Forgot Password
-                <br/>
-                <a className="btn btn-default btn-bitbucket"
-                   style={{backgroundColor: '#DCDCDC', borderColor: '#DCDCDC', color: '#FFFFFF'}}>
-                </a> Forgot Alias
+                <div className="ibox-content">
+                  <h4>Support</h4>
+                  {emailSentReady ? (
+                    <LineChart
+                      id="support"
+                      labels={emailSentLabels}
+                      datasets={emailSupportDataSets}
+                    />
+                  ) : (
+                    <Indicator />
+                  )}
+                  <a className="btn btn-primary btn-bitbucket">
+                  </a> Forgot Password
+                  <br/>
+                  <a className="btn btn-default btn-bitbucket"
+                     style={{backgroundColor: '#DCDCDC', borderColor: '#DCDCDC', color: '#FFFFFF'}}>
+                  </a> Forgot Alias
+                </div>
               </div>
             </div>
           </div>
@@ -309,8 +420,8 @@ export default StatisticComponentContainer = createContainer(() => {
     totalActiveEmployees = Employees.find({status: STATUS_ACTIVE}).count()
     ;
 
-  console.log(Accounts.users.find({username: {$exists: true}}).count());
-  console.log(Accounts.users.find().count());
+  // console.log(Accounts.users.find({username: {$exists: true}}).count());
+  // console.log(Accounts.users.find().count());
 
   return {
     statisticReady,
