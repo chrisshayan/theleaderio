@@ -75,12 +75,12 @@ class StatisticComponent extends Component {
           pointHighlightStroke: "rgba(181, 184, 207, 1)",
         },
         {
-          fillColor: "rgba(181, 184, 207, 0.5)",
-          strokeColor: "rgba(181, 184, 207, 1)",
-          pointColor: "rgba(181, 184, 207, 1)",
+          fillColor: "rgba(228,240,251, 0.5)",
+          strokeColor: "rgba(228,240,251, 1)",
+          pointColor: "rgba(228,240,251, 1)",
           pointStrokeColor: "#fff",
           pointHighlightFill: "#fff",
-          pointHighlightStroke: "rgba(181, 184, 207, 1)",
+          pointHighlightStroke: "rgba(228,240,251, 1)",
         }
       ]
     };
@@ -328,10 +328,14 @@ class StatisticComponent extends Component {
                   <br/>
                   <a className="btn btn-default btn-bitbucket"
                      style={{backgroundColor: '#DCDCDC', borderColor: '#DCDCDC', color: '#FFFFFF'}}>
-                  </a> Scoring Errors
+                  </a> Scoring Successes
                   <br/>
                   <a className="btn btn-default btn-bitbucket"
                      style={{backgroundColor: '#b5b8cf', borderColor: '#b5b8cf', color: '#FFFFFF'}}>
+                  </a> Scoring Errors
+                  <br/>
+                  <a className="btn btn-default btn-bitbucket"
+                     style={{backgroundColor: '#E4F0FB', borderColor: '#E4F0FB', color: '#FFFFFF'}}>
                   </a> Feedback to Leaders
                 </div>
                 <div className="ibox-content">
