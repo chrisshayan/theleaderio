@@ -99,7 +99,7 @@ const sendFeedbackEmailToLeader = function (job, cb) {
 // export const sendStatisticEmailToLeader = function (job, cb) { // this is used for testing
 const sendStatisticEmailToLeader = function (job, cb) {
   const
-    startDate = new Date(moment().subtract(12, 'day')),
+    startDate = new Date(moment().subtract(7, 'day')),
     currentDate = new Date(),
     leaderIdList = getLeaderForDigestEmail({params: {startDate, endDate: currentDate}})
     ;
@@ -301,7 +301,7 @@ const sendStatisticEmailToLeader = function (job, cb) {
         sort: {createdAt: -1},
         limit: 2
       };
-      articles = Articles.find().fetch();
+      articles = Articles.find(query, options).fetch();
       if(!_.isEmpty(articles)) {
         digest.articles.haveArticles = true;
         articles.map(article => {
@@ -333,7 +333,7 @@ const sendStatisticEmailToLeader = function (job, cb) {
           logContentDetails.status = `failed - ${error.reason}`;
         }
       });
-      // console.log(digest)
+      // console.log(digest.articles)
 
       logContent.details.push(logContentDetails);
     });
