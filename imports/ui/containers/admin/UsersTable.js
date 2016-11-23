@@ -6,6 +6,16 @@ import SingleUser from '/imports/ui/containers/admin/SingleUser';
 import NoUser from '/imports/ui/components/NoContent';
 
 export default class UsersTable extends Component {
+
+  _getProfile(userId) {
+    // console.log(userId)
+    const
+      {profiles} = this.props,
+      profile = profiles[_.findIndex(profiles, {userId})] || {}
+      ;
+    return profile;
+  }
+
   render() {
     const
       {users, profiles} = this.props,
@@ -33,7 +43,7 @@ export default class UsersTable extends Component {
               key={key}
               position={key + 1}
               user={user}
-              profile={profiles[_.findIndex(profiles, { userId: user._id})]}
+              profile={this._getProfile.bind(this, user._id)()}
             />
           ))}
           </tbody>
