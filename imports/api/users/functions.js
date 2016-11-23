@@ -1,3 +1,5 @@
+import {Roles} from 'meteor/alanning:roles';
+
 // functions
 import {aliasValidator} from '/imports/utils/index';
 
@@ -15,3 +17,7 @@ export const formatAlias = (rawAlias) => {
   }
   return alias;
 };
+
+export const isInactiveUser = ({userId}) => {
+  return Roles.userIsInRole(userId, "inactive");
+}

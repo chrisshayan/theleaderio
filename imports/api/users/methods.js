@@ -15,7 +15,7 @@ import {Tokens} from '/imports/api/tokens/index';
 import { Preferences } from '/imports/api/users/index';
 
 // functions
-import {formatAlias} from '/imports/api/users/functions';
+import {formatAlias, isInactiveUser} from '/imports/api/users/functions';
 
 /**
  *  @summary set alias for account which will use Account username as alias
@@ -108,6 +108,9 @@ export const verify = new ValidatedMethod({
       // both alias & email
       if (alias && email) {
         const user = Accounts.findUserByUsername(alias);
+        if(isInactiveUser({userId: user._id})) {
+          throw new Meteor.Error(403, 'User account is inactive!');
+        }
         if (_.isEmpty(user)) {
           throw new Meteor.Error('invalid-alias', `alias ${alias} doesn't exists`);
         } else {
@@ -128,12 +131,19 @@ export const verify = new ValidatedMethod({
         if (_.isEmpty(user)) {
           throw new Meteor.Error('invalid-alias', `alias ${alias} doesn't exists`);
         } else {
+          if(isInactiveUser({userId: user._id})) {
+            throw new Meteor.Error(403, 'User account is inactive!');
+          }
           return true;
         }
       } else if (email) { // email only
         const user = Accounts.findUserByEmail(email);
         if (_.isEmpty(user)) {
           throw new Meteor.Error(`email ${email} doesn't exists`);
+        } else {
+          if(isInactiveUser({userId: user._id})) {
+            throw new Meteor.Error(403, 'User account is inactive!');
+          }
         }
       }
     }

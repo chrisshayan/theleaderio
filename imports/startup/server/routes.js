@@ -57,7 +57,7 @@ Api.addRoute('metrics/:action', {authRequired: false}, {
       if (!_.isEmpty(recipientInfo)) {
         if (recipientInfo.message === 'undefined') {
           Logger.error({name: "api", message: {apiName: "metrics", detail: recipientInfo.message}});
-          this.response.writeHead(404, {'Content-Type': 'text/plain'});
+          this.response.writeHead(406, {'Content-Type': 'text/plain'});
           this.response.write(recipientInfo.message);
         } else {
           const {planId, employeeId, leaderId, organizationId, metric} = recipientInfo;
@@ -98,7 +98,7 @@ Api.addRoute('metrics/:action', {authRequired: false}, {
             }
             default: {
               Logger.warn({name: "api", message: {apiName: "metrics", detail: `Unknown action`}});
-              this.response.writeHead(404, {'Content-Type': 'text/plain'});
+              this.response.writeHead(406, {'Content-Type': 'text/plain'});
               this.response.write("Unknown action");
             }
           }
@@ -137,7 +137,7 @@ Api.addRoute('employee/:action', {authRequired: false}, {
       if (!_.isEmpty(recipientInfo)) {
         if (recipientInfo.message === 'undefined') {
           Logger.error({name, message: {apiName, detail: recipientInfo.message}});
-          this.response.writeHead(404, {'Content-Type': 'text/plain'});
+          this.response.writeHead(406, {'Content-Type': 'text/plain'});
           this.response.write(recipientInfo.message);
         } else {
           const
@@ -208,7 +208,7 @@ Api.addRoute('employee/:action', {authRequired: false}, {
                   }
                 } else {
                   Logger.error({name, message: {apiName, detail: verifySender.message}});
-                  this.response.writeHead(404, {'Content-Type': 'text/plain'});
+                  this.response.writeHead(406, {'Content-Type': 'text/plain'});
                   this.response.write(verifySender.message);
                   this.done();
                 }
@@ -217,7 +217,7 @@ Api.addRoute('employee/:action', {authRequired: false}, {
             }
             default: {
               Logger.warn({name: "api", message: {apiName: "feedback", detail: `Unknown action`}});
-              this.response.writeHead(404, {'Content-Type': 'text/plain'});
+              this.response.writeHead(406, {'Content-Type': 'text/plain'});
               this.response.write("Unknown action");
               this.done();
             }
@@ -257,7 +257,7 @@ Api.addRoute('statistic/:type', {authRequired: false}, {
         default: {
           const message = `Unknown request for ${type}.`;
           return {
-            statusCode: 404,
+            statusCode: 406,
             headers: {
               'Content-Type': 'text/plain'
             },

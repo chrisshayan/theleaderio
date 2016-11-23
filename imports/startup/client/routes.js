@@ -333,6 +333,8 @@ const requiredAuthentication = (context, redirect) => {
       ;
     if (alias) {
       params.action = 'account';
+    } else {
+      params.action = 'alias';
     }
 
     // console.log(currentPath)

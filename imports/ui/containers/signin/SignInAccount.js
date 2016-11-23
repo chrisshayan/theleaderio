@@ -25,6 +25,9 @@ export default class SignInPage extends Component {
       loading: true
     });
     const alias = Session.get('alias');
+    if(_.isEmpty(alias)) {
+      FlowRouter.go('SignInPage', {action: 'alias'});
+    }
     UserActions.verify.call({alias}, (error) => {
       if (_.isEmpty(error)) {
         this.setState({
@@ -34,7 +37,8 @@ export default class SignInPage extends Component {
       } else {
         this.setState({
           alias: false,
-          loading: false
+          loading: false,
+          errors: error.reason
         });
       }
     });
@@ -75,7 +79,8 @@ export default class SignInPage extends Component {
   }
 
   render() {
-    if (this.state.loading) {
+    const {loading, errors, alias} = this.state;
+    if (loading) {
       return (
         <div>
           <Spinner
@@ -84,7 +89,7 @@ export default class SignInPage extends Component {
         </div>
       );
     }
-    if (this.state.alias) {
+    if (alias) {
       const signinTitle = `Sign in to ${document.location.hostname}`;
       return (
         <div className="loginColumns animated fadeInDown">
@@ -116,11 +121,11 @@ export default class SignInPage extends Component {
           </div>
         </div>
       );
-    } else if (!this.state.alias) {
+    } else if (!alias) {
       return (
         <NoticeForm
           code='404'
-          message="Alias doesn't exists"
+          message={errors || "Alias doesn't exists"}
           description='Sorry, but the page you are looking for has note been found. Try checking the URL for error, then hit the refresh button on your browser or try found something else in our app.'
           buttonLabel='Come back to HomePage'
         />

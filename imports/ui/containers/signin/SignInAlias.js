@@ -61,7 +61,7 @@ export default class SigninAliasPage extends Component {
           } else {
             this.setState({
               aliasAllowed: false,
-              errors: `${inputValue}.${DOMAIN} doesn't exists. Please enter the correct one ...`
+              errors: error.reason || `${inputValue}.${DOMAIN} doesn't exists. Please enter the correct one ...`
             });
           }
         });
