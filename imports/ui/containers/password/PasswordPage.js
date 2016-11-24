@@ -1,3 +1,4 @@
+import {Meteor} from 'meteor/meteor';
 import React, {Component} from 'react';
 import _ from 'lodash';
 
@@ -8,7 +9,7 @@ import Spinner from '/imports/ui/common/Spinner';
 import Copyright from '/imports/ui/common/Copyright';
 
 import * as EmailActions from '/imports/api/email/methods';
-import * as SubdomainActins from '/imports/utils/subdomain';
+import * as SubdomainActions from '/imports/utils/subdomain';
 import * as TokenActions from '/imports/api/tokens/methods';
 import * as UserActions from '/imports/api/users/methods';
 
@@ -43,9 +44,9 @@ export default class PasswordPage extends Component {
   }
 
   _inputSubmit({inputValue}) {
-    const alias = SubdomainActins.getSubdomain();
-    const domain = window.location.hostname;
-    const email = inputValue;
+    const alias = SubdomainActions.getSubdomain(),
+      domain = Meteor.settings.public.domain,
+      email = inputValue;
     this.setState({
       loading: true,
       action: 'sending',
@@ -59,13 +60,15 @@ export default class PasswordPage extends Component {
           if (_.isEmpty(error)) {
             // call methods to send verify Email with token link to user
             // route to Welcome page with a message to verify user's email
-            const setPassUrl = FlowRouter.path('passwordPage', {action: 'set'}, {token: tokenId});
-            const url = `http://${document.location.hostname}${setPassUrl}`;
-            const template = 'forgot_password';
-            const data = {
-              email: email,
-              url,
-            };
+            const
+              setPassUrl = FlowRouter.path('passwordPage', {action: 'set'}, {token: tokenId}),
+              DOMAIN = Meteor.settings.public.domain,
+              url = `http://${alias}.${DOMAIN}${setPassUrl}`,
+              template = 'forgot_password',
+              data = {
+                email: email,
+                url,
+              };
             EmailActions.send.call({template, data}, (error) => {
               if (!_.isEmpty(error)) {
                 this.setState({
@@ -87,7 +90,7 @@ export default class PasswordPage extends Component {
         this.setState({
           loading: false,
           action: 'forgot',
-          errors: `${email} & ${document.location.hostname} unmatched`
+          errors: `${email} & ${alias}.${domain} unmatched`
         });
       }
     });

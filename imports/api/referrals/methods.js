@@ -238,6 +238,7 @@ export const send = new ValidatedMethod({
               firstName: capitalize(firstName),
               registerUrl,
               cancelUrl,
+              leaderId,
               userId,
               profileId,
               tokenId

@@ -18,6 +18,60 @@ const {domain, mailDomain} = Meteor.settings.public;
 const SITE_NAME = Meteor.settings.public.name;
 
 /**
+ * Function send mail by using mailgun API
+ * @param options
+ */
+export const sendMail = ({options}) => {
+  const
+    {baseUrl: MAILGUN_BASE_URL, key: MAILGUN_API_KEY} = Meteor.settings.MAILGUN_API,
+    sendMailUrl = `${MAILGUN_BASE_URL}/messages`,
+    {
+      from, to, subject, html,
+      tag,
+      userVariables = {}
+    } = options,
+    params = {
+      from,
+      to,
+      subject,
+      html,
+      "o:tag": tag,
+      "h:X-Mailgun-Variables": userVariables
+    }
+    ;
+
+
+  Meteor.http.post(sendMailUrl, {
+    auth: "api:" + MAILGUN_API_KEY,
+    params
+  }, function (error, result) {
+    if(!error) {
+      return result;
+    } else {
+      return error;
+    }
+  });
+}
+
+export const createCampaign = ({params}) => {
+  const
+    {baseUrl: MAILGUN_BASE_URL, key: MAILGUN_API_KEY} = Meteor.settings.MAILGUN_API,
+    createCampaignslUrl = `${MAILGUN_BASE_URL}/campaigns`,
+    {
+      name,
+      id
+    } = params
+    ;
+
+  Meteor.http.post(createCampaignslUrl, {
+    auth: "api:" + MAILGUN_API_KEY,
+    params
+  }, function (error, result) {
+    console.log({error, result})
+  });
+}
+
+/**
  *
  * @param templateName
  * @param firstName
@@ -251,10 +305,14 @@ export const getSurveyEmailOptions = ({template, data}) => {
       from: "",
       to: "",
       subject: "",
-      html: ""
+      html: "",
+      tag: "",
+      userVariables: {}
     },
     senderSuffix = "",
-    subject = ""
+    subject = "",
+    tag = "",
+    userVariables = {}
     ;
 
   // Get data from collection
@@ -294,6 +352,7 @@ export const getSurveyEmailOptions = ({template, data}) => {
       mailData.description = EMAIL_TEMPLATE_CONTENT.employee.metrics[metric];
       senderSuffix = template;
       subject = `${mailData.employeeName}, How "${mailData.leaderName}" can improve ${mailData.metric} Management?`;
+      tag = "survey";
 
       break;
     }
@@ -304,6 +363,7 @@ export const getSurveyEmailOptions = ({template, data}) => {
       mailData.description = EMAIL_TEMPLATE_CONTENT.employee.metrics[metric];
       senderSuffix = "survey";
       subject = `${mailData.employeeName}, seems the score of "${mailData.metric}" has some issues.`;
+      tag = "scoringError"
 
       break;
     }
@@ -314,6 +374,7 @@ export const getSurveyEmailOptions = ({template, data}) => {
       mailData.description = `Your feedback is very important and it will be kept CONFIDENTIAL, it means ${mailData.leaderName} won’t be able to know who submitted the feedback.`;
       senderSuffix = template;
       subject = `${mailData.employeeName}, "${mailData.leaderName}" wants to improve ${mailData.metric}, how?`;
+      tag = "feedbackToLeader";
       break;
     }
     case "thankyou": {
@@ -323,6 +384,7 @@ export const getSurveyEmailOptions = ({template, data}) => {
       mailData.viewLeaderProfileHeader = `View ${mailData.leaderName} public profile?`;
       senderSuffix = template;
       subject = `${mailData.employeeName}, You’ve been heard. Leadership matters.`;
+      tag = "scoringSuccess";
       break;
     }
   }
@@ -331,6 +393,8 @@ export const getSurveyEmailOptions = ({template, data}) => {
   result.from = `"${mailData.leaderName}" <${planId}-${organizationId}-${senderSuffix}@${mailDomain}>`;
   result.to = employee.email;
   result.html = buildHtml({template, data: mailData});
+  result.tag = tag;
+  result.userVariables = {template, emailId: `${planId}-${organizationId}`};
 
   return result;
 }
@@ -363,7 +427,9 @@ export const getEmployeeEmailOptions = ({template, data}) => {
       from: "",
       to: "",
       subject: "",
-      html: ""
+      html: "",
+      tag: "",
+      userVariables: {}
     },
     senderSuffix = "",
     subject = ""
@@ -407,6 +473,7 @@ export const getEmployeeEmailOptions = ({template, data}) => {
       result.subject = subject;
       result.from = `"${mailData.siteName}" <${employeeId}-${organizationId}-${leaderId}-${senderSuffix}@${mailDomain}>`;
       result.to = leaderData.emails[0].address;
+      result.tag = "feedbackToEmployee";
       break;
     }
     case "inform_feedback": {
@@ -421,6 +488,7 @@ export const getEmployeeEmailOptions = ({template, data}) => {
       result.subject = subject;
       result.from = `"${mailData.siteName}" <no-reply@mail.theleader.io>`;
       result.to = employee.email;
+      result.tag = "informFeedbackToEmployee";
       break;
     }
     default: {
@@ -429,6 +497,7 @@ export const getEmployeeEmailOptions = ({template, data}) => {
   }
 
   result.html = buildHtml({template, data: mailData});
+  result.userVariables = {type, template, emailId: `${employeeId}-${organizationId}-${leaderId}`};
 
   return result;
 }
@@ -541,7 +610,9 @@ export const getDigestEmailOptions = ({template, data}) => {
       from: `"${siteInfo.siteName} weekly" <no-reply@${mailDomain}>`,
       to: "jackiekhuu.work@gmail.com",
       subject: "",
-      html: ""
+      html: "",
+      tag: "",
+      userVariables: {}
     }
     ;
 
@@ -559,6 +630,8 @@ export const getDigestEmailOptions = ({template, data}) => {
   result.subject = mailData.subject;
   result.to = leaderInfo.leaderEmail;
   result.html = buildHtml({template, data: mailData});
+  result.tag = "weeklyDigest";
+  result.userVariables = {template, emailId: `${leaderId}`};
 
   return result;
 
@@ -571,7 +644,7 @@ export const getDigestEmailOptions = ({template, data}) => {
  */
 export const getReferralEmailOptions = ({template, data}) => {
   const
-    {email, firstName, leaderName, registerUrl, cancelUrl} = data,
+    {email, firstName, leaderName, registerUrl, cancelUrl, leaderId, userId} = data,
     EMAIL_TEMPLATE_CONTENT = getDefaults.call({name: 'EMAIL_TEMPLATE_CONTENT'}).content,
     siteInfo = getMailData({type: "site"}),
     subject = `${firstName}, You're invited to sign up for a leadership tool by ${leaderName}.`,
@@ -590,13 +663,17 @@ export const getReferralEmailOptions = ({template, data}) => {
       from: `"${siteInfo.siteName}" <no-reply@${mailDomain}>`,
       to: "jackiekhuu.work@gmail.com",
       subject,
-      html: ""
+      html: "",
+      tag: "",
+      userVariables: {}
     };
 
   mailData.message = `"${leaderName}" was using <strong>theLeader.io</strong> as a useful tool to become a great leader.`;
 
   result.to = email;
   result.html = buildHtml({template, data: mailData});
+  result.tag = "referral";
+  result.userVariables = {template, emailId: `${leaderId}-${userId}`};
 
   return result;
 }
