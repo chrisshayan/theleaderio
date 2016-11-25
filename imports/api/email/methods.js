@@ -22,15 +22,15 @@ export const send = new ValidatedMethod({
   run({template, data}) {
     if (!this.isSimulation) {
       let
-        options = {},
-        logName = "sendEmail",
-        logContent = {
-          subject: "",
-          from: "",
-          to: "",
-          template,
-          data
-        }
+        options = {}
+        // logName = "sendEmail",
+        // logContent = {
+        //   subject: "",
+        //   from: "",
+        //   to: "",
+        //   template,
+        //   data
+        // }
         ;
 
       // get options base on template
@@ -173,13 +173,13 @@ export const send = new ValidatedMethod({
         EmailFunctions.sendMail({options});
         // console.log(sendMailResult);
         // add log for a digest into log collection
-        logContent = {
-          ...logContent,
-          subject: options.subject,
-          from: options.from,
-          to: options.to
-        };
-        addLogs({params: {name: logName, content: logContent}});
+        // logContent = {
+        //   ...logContent,
+        //   subject: options.subject,
+        //   from: options.from,
+        //   to: options.to
+        // };
+        // addLogs({params: {name: logName, content: logContent}});
       });
     }
   }

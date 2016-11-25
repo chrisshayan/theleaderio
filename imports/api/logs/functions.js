@@ -2,7 +2,8 @@ import {Meteor} from 'meteor/meteor';
 import {
   LogsSendingPlan,
   LogsDigest,
-  LogsEmail
+  LogsEmail,
+  LogsDisabledAccounts
 } from './index';
 
 /**
@@ -51,6 +52,10 @@ export const add = ({params}) => {
     }
     case "sendEmail": {
       LogsEmail.insert({name, content, date});
+      break;
+    }
+    case "disabledAccounts": {
+      LogsDisabledAccounts.insert({name, content, date});
       break;
     }
     default: {

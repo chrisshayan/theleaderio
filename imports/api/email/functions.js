@@ -12,6 +12,9 @@ import {Employees} from '/imports/api/employees/index';
 // methods
 import {get as getDefaults} from '/imports/api/defaults/methods';
 
+// functions
+import {add as addLogs} from '/imports/api/logs/functions';
+
 // constants
 import * as ERROR_CODE from '/imports/utils/error_code';
 const {domain, mailDomain} = Meteor.settings.public;
@@ -39,16 +42,24 @@ export const sendMail = ({options}) => {
       "h:X-Mailgun-Variables": userVariables
     }
     ;
+  let
+    logName = "sendEmail",
+    logContent = {options}
+    ;
 
+  // remove html property
+  delete logContent.options.html;
 
   Meteor.http.post(sendMailUrl, {
     auth: "api:" + MAILGUN_API_KEY,
     params
   }, function (error, result) {
     if(!error) {
-      return result;
+      logContent.result = result;
+      addLogs({params: {name: logName, content: logContent}});
     } else {
-      return error;
+      logContent.error = error;
+      addLogs({params: {name: logName, content: logContent}});
     }
   });
 }

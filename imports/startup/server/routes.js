@@ -229,6 +229,10 @@ Api.addRoute('employee/:action', {authRequired: false}, {
   }
 });
 
+/**
+ * API get statistic information
+ * @param {String} type: users | employees
+ */
 Api.addRoute('statistic/:type', {authRequired: false}, {
   get: {
     action: function () {
@@ -277,3 +281,26 @@ Api.addRoute('statistic/:type', {authRequired: false}, {
     }
   }
 });
+
+
+/**
+ * API hooks events sending email with mailgun
+ * @param {String} event: hardBounces | deliveredMessages
+ */
+// Api.addRoute('email/:event', {authRequired: false}, {
+//   post: {
+//     action: function () {
+//       const
+//         {event} = this.urlParams
+//       ;
+//       console.log(event);
+//       console.log(this);
+//       return {
+//         statusCode: 200,
+//         headers: {
+//           'Content-Type': 'text/plain'
+//         }
+//       };
+//     }
+//   }
+// });
