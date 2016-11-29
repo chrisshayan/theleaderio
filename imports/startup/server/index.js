@@ -36,6 +36,14 @@ Meteor.startup(function() {
     Migrations.migrateTo(Meteor.settings.migrationVersion);
   }
 
+  // Product Social Media Tag
+  WebApp.addHtmlAttributeHook(function() {
+    return {
+      "itemscope": "",
+      "itemtype": "http://schema.org/Product"
+    }
+  })
+
   // jobs
   if (Meteor.settings.jobs.enable.daily) {
     DailyJobs.startJobServer();

@@ -340,6 +340,7 @@ const sendStatisticEmailToLeader = function (job, cb) {
 
     // add log for a digest into log collection
     addLogs({params: {name: logName, content: logContent}});
+    job.done();
   }
 }
 

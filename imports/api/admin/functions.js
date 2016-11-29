@@ -24,7 +24,3 @@ export const getLeaderForDigestEmail = ({params}) => {
 
   return listOfLeaders;
 }
-
-/**
- * Function
- */

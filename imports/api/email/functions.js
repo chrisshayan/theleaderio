@@ -1,6 +1,7 @@
 import {Meteor} from 'meteor/meteor';
 import emailTemplateBuilder from 'email-template-builder';
 import {words as capitalize} from 'capitalize';
+import {HTTP} from 'meteor/http'
 
 // collections
 import {Accounts} from 'meteor/accounts-base';
@@ -17,8 +18,11 @@ import {add as addLogs} from '/imports/api/logs/functions';
 
 // constants
 import * as ERROR_CODE from '/imports/utils/error_code';
-const {domain, mailDomain} = Meteor.settings.public;
-const SITE_NAME = Meteor.settings.public.name;
+const
+  {domain, mailDomain} = Meteor.settings.public,
+  SITE_NAME = Meteor.settings.public.name,
+  {baseUrl: MAILGUN_BASE_URL, key: MAILGUN_API_KEY} = Meteor.settings.MAILGUN_API
+  ;
 
 /**
  * Function send mail by using mailgun API
@@ -26,7 +30,7 @@ const SITE_NAME = Meteor.settings.public.name;
  */
 export const sendMail = ({options}) => {
   const
-    {baseUrl: MAILGUN_BASE_URL, key: MAILGUN_API_KEY} = Meteor.settings.MAILGUN_API,
+    // {baseUrl: MAILGUN_BASE_URL, key: MAILGUN_API_KEY} = Meteor.settings.MAILGUN_API,
     sendMailUrl = `${MAILGUN_BASE_URL}/messages`,
     {
       from, to, subject, html,
@@ -54,7 +58,7 @@ export const sendMail = ({options}) => {
     auth: "api:" + MAILGUN_API_KEY,
     params
   }, function (error, result) {
-    if(!error) {
+    if (!error) {
       logContent.result = result;
       addLogs({params: {name: logName, content: logContent}});
     } else {
@@ -64,9 +68,14 @@ export const sendMail = ({options}) => {
   });
 }
 
+/**
+ * Function create campaign in mailgun
+ * @param {String} name - campaign name
+ * @param {String} id - campaign id
+ */
 export const createCampaign = ({params}) => {
   const
-    {baseUrl: MAILGUN_BASE_URL, key: MAILGUN_API_KEY} = Meteor.settings.MAILGUN_API,
+    // {baseUrl: MAILGUN_BASE_URL, key: MAILGUN_API_KEY} = Meteor.settings.MAILGUN_API,
     createCampaignslUrl = `${MAILGUN_BASE_URL}/campaigns`,
     {
       name,
@@ -81,6 +90,41 @@ export const createCampaign = ({params}) => {
     console.log({error, result})
   });
 }
+
+
+/**
+ * Function poll events from mailgun
+ * @param {String} type -
+ * @param {}
+ */
+export const pollEvents = ({params}) => {
+  const
+    // {baseUrl: MAILGUN_BASE_URL, key: MAILGUN_API_KEY} = Meteor.settings.MAILGUN_API,
+    pollEventsUrl = `${MAILGUN_BASE_URL}/events`,
+    {
+      begin = new Date(),
+      end = new Date(2016, 10, 1),
+      ascending = 'no',
+      limit = 100,
+      ...fields
+    } = params
+    ;
+  let
+    errors = {},
+    events = {},
+    eventList = [];
+  ;
+
+  events = HTTP.call("GET", pollEventsUrl,
+    {
+      auth: `api:${MAILGUN_API_KEY}`,
+      params: {limit: 2, ...fields}
+    });
+  // console.log(events)
+
+  return events;
+}
+
 
 /**
  *
@@ -285,6 +329,63 @@ const getMailData = ({type, data}) => {
 
   return result;
 }
+
+
+/**
+ * Function verify the sender email
+ * @param {Object} params {type, email, id}
+ * @return {Object} {isLeader, isEmployee, message} if email match with the email of the id (id could be leader or employee)
+ */
+export const verifySenderEmail = ({params}) => {
+  const
+    {type, email, id} = params
+    ;
+
+  switch (type) {
+    case "leader": {
+      const leader = Accounts.users.findOne({_id: id});
+      if (!_.isEmpty(leader)) {
+        if (email === leader.emails[0].address) {
+          return {isLeader: true};
+        } else {
+          return {
+            isLeader: false,
+            message: `sender ${email} doesn't match the leader ${id}`
+          };
+        }
+      } else {
+        return {
+          isLeader: false,
+          message: `leader ${id} doesn't exists.`
+        };
+      }
+      break;
+    }
+    case "employee": {
+      const employee = Employees.findOne({_id: id});
+      if (!_.isEmpty(employee)) {
+        if (email === employee.email) {
+          return {isEmployee: true};
+        } else {
+          return {
+            isEmployee: false,
+            message: `sender ${email} doesn't match the employee ${id}`
+          };
+        }
+      } else {
+        return {
+          isEmployee: false,
+          message: `employee ${id} doesn't exists.`
+        }
+      }
+      break;
+    }
+    default: {
+      return {};
+    }
+  }
+}
+
 
 /**
  * Function to collect content data for survey email
@@ -511,61 +612,6 @@ export const getEmployeeEmailOptions = ({template, data}) => {
   result.userVariables = {type, template, emailId: `${employeeId}-${organizationId}-${leaderId}`};
 
   return result;
-}
-
-/**
- * Function verify the sender email
- * @param {Object} params {type, email, id}
- * @return {Object} {isLeader, isEmployee, message} if email match with the email of the id (id could be leader or employee)
- */
-export const verifySenderEmail = ({params}) => {
-  const
-    {type, email, id} = params
-    ;
-
-  switch (type) {
-    case "leader": {
-      const leader = Accounts.users.findOne({_id: id});
-      if (!_.isEmpty(leader)) {
-        if (email === leader.emails[0].address) {
-          return {isLeader: true};
-        } else {
-          return {
-            isLeader: false,
-            message: `sender ${email} doesn't match the leader ${id}`
-          };
-        }
-      } else {
-        return {
-          isLeader: false,
-          message: `leader ${id} doesn't exists.`
-        };
-      }
-      break;
-    }
-    case "employee": {
-      const employee = Employees.findOne({_id: id});
-      if (!_.isEmpty(employee)) {
-        if (email === employee.email) {
-          return {isEmployee: true};
-        } else {
-          return {
-            isEmployee: false,
-            message: `sender ${email} doesn't match the employee ${id}`
-          };
-        }
-      } else {
-        return {
-          isEmployee: false,
-          message: `employee ${id} doesn't exists.`
-        }
-      }
-      break;
-    }
-    default: {
-      return {};
-    }
-  }
 }
 
 /**
