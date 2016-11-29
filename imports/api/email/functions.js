@@ -20,8 +20,7 @@ import {add as addLogs} from '/imports/api/logs/functions';
 import * as ERROR_CODE from '/imports/utils/error_code';
 const
   {domain, mailDomain} = Meteor.settings.public,
-  SITE_NAME = Meteor.settings.public.name,
-  {baseUrl: MAILGUN_BASE_URL, key: MAILGUN_API_KEY} = Meteor.settings.MAILGUN_API
+  SITE_NAME = Meteor.settings.public.name
   ;
 
 /**
@@ -30,7 +29,7 @@ const
  */
 export const sendMail = ({options}) => {
   const
-    // {baseUrl: MAILGUN_BASE_URL, key: MAILGUN_API_KEY} = Meteor.settings.MAILGUN_API,
+    {baseUrl: MAILGUN_BASE_URL, key: MAILGUN_API_KEY} = Meteor.settings.MAILGUN_API,
     sendMailUrl = `${MAILGUN_BASE_URL}/messages`,
     {
       from, to, subject, html,
@@ -75,7 +74,7 @@ export const sendMail = ({options}) => {
  */
 export const createCampaign = ({params}) => {
   const
-    // {baseUrl: MAILGUN_BASE_URL, key: MAILGUN_API_KEY} = Meteor.settings.MAILGUN_API,
+    {baseUrl: MAILGUN_BASE_URL, key: MAILGUN_API_KEY} = Meteor.settings.MAILGUN_API,
     createCampaignslUrl = `${MAILGUN_BASE_URL}/campaigns`,
     {
       name,
@@ -99,7 +98,7 @@ export const createCampaign = ({params}) => {
  */
 export const pollEvents = ({params}) => {
   const
-    // {baseUrl: MAILGUN_BASE_URL, key: MAILGUN_API_KEY} = Meteor.settings.MAILGUN_API,
+    {baseUrl: MAILGUN_BASE_URL, key: MAILGUN_API_KEY} = Meteor.settings.MAILGUN_API,
     pollEventsUrl = `${MAILGUN_BASE_URL}/events`,
     {
       begin = new Date(),
