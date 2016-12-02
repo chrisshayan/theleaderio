@@ -33,6 +33,7 @@ export default class UsersTable extends Component {
             <th>Alias</th>
             <th>Time zone</th>
             <th>Created at</th>
+            <th>status</th>
           </tr>
           </thead>
           <tbody>

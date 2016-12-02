@@ -25,58 +25,30 @@ export default class SingleUser extends Component {
     return (
       <tr>
         <td style={styles.vAlign}>
-          <XEditable
-            key={_id + '_first_name'}
-            placeholder="First name"
-            valueName="value"
-            value={firstName}
-            disabled={true}
-          />
+          {firstName}
         </td>
         <td style={styles.vAlign}>
-          <XEditable
-            key={_id + '_last_name'}
-            placeholder="Last name"
-            valueName="value"
-            value={lastName}
-            disabled={true}
-          />
+          {lastName}
         </td>
         <td style={styles.vAlign}>
-          <XEditable
-            key={_id + '_email'}
-            placeholder="Email"
-            valueName="value"
-            value={userEmail.address}
-            disabled={true}
-          />
+          {userEmail.address}
         </td>
         <td style={styles.vAlign}>
-          <XEditable
-            key={_id + '_alias'}
-            placeholder="Alias"
-            valueName="value"
-            value={username}
-            disabled={true}
-          />
+          {username}
         </td>
         <td style={styles.vAlign}>
-          <XEditable
-            key={_id + '_timezone'}
-            placeholder="Timezone"
-            valueName="value"
-            value={timezone}
-            disabled={true}
-          />
+          {timezone}
         </td>
         <td style={styles.vAlign}>
-          <XEditable
-            key={_id + '_createdAt'}
-            placeholder="Created at"
-            valueName="value"
-            value={moment(createdAt).format("MMM Do, YYYY")}
-            disabled={true}
-          />
+          {moment(createdAt).format("MMM Do, YYYY")}
+        </td>
+        <td style={styles.vAlign}>
+          <span className="label label-warning">disabled</span>
+        </td>
+        <td className="text-right" style={styles.vAlign}>
+          <button style={{marginBottom: 0}} className="btn btn-primary">
+            {' '}Enable
+          </button>
         </td>
       </tr>
     );
