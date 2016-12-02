@@ -13,7 +13,8 @@ import DatePicker from '/imports/ui/components/DatePicker';
 
 class ManageUsers extends Component {
   render() {
-    const {ready, users, profiles} = this.props;
+    const {ready, users, profiles, minCreatedAt, maxCreatedAt} = this.props;
+    console.log({minCreatedAt, maxCreatedAt});
     if (ready) {
       return (
         <div>
@@ -35,7 +36,7 @@ class ManageUsers extends Component {
                 label="Created From:"
                 option={{ startView: 2, todayBtn: "linked", keyboardNavigation: false, forceParse: false, autoclose: true }}
                 isDateObject={true}
-                value={new Date()}
+                value={minCreatedAt}
                 error={""}
                 disabled={false}
                 onChange={() => null}
@@ -46,7 +47,7 @@ class ManageUsers extends Component {
                 label="To:"
                 option={{ startView: 2, todayBtn: "linked", keyboardNavigation: false, forceParse: false, autoclose: true }}
                 isDateObject={true}
-                value={new Date()}
+                value={maxCreatedAt}
                 error={""}
                 disabled={false}
                 onChange={() => null}
@@ -78,15 +79,22 @@ export default ManageUsersContainer = createContainer((params) => {
     subProfiles = Meteor.subscribe('statistic.profiles'),
     query = {username: {$exists: true}},
     options = {sort: {createdAt: -1}, limit: 50},
-    users = Accounts.users.find(query, options).fetch()
+    users = Accounts.users.find(query, options).fetch(),
+    totalUsers = users.length
     ;
   let
     profiles = [],
-    profilesReady = false
+    profilesReady = false,
+    minCreatedAt = new Date(),
+    maxCreatedAt = new Date()
     ;
 
   if (!_.isEmpty(users) && subProfiles.ready()) {
     let userIdList = [];
+
+    minCreatedAt = users[totalUsers - 1].createdAt;
+    maxCreatedAt = users[0].createdAt;
+
     users.map(user => {
       userIdList.push(user._id);
     });
@@ -99,6 +107,8 @@ export default ManageUsersContainer = createContainer((params) => {
   return {
     ready: subUsers.ready(), //& profilesReady,
     users,
-    profiles
+    profiles,
+    minCreatedAt,
+    maxCreatedAt
   };
 }, ManageUsers);

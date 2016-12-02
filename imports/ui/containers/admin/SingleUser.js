@@ -43,7 +43,7 @@ export default class SingleUser extends Component {
           {moment(createdAt).format("MMM Do, YYYY")}
         </td>
         <td style={styles.vAlign}>
-          <span className="label label-warning">disabled</span>
+          <span className="label label-warning">inactive</span>
         </td>
         <td className="text-right" style={styles.vAlign}>
           <button style={{marginBottom: 0}} className="btn btn-primary">
