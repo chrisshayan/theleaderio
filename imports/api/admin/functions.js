@@ -1,5 +1,7 @@
 import {SendingPlans} from '/imports/api/sending_plans/index';
 import moment from 'moment';
+import {Accounts} from 'meteor/accounts-base';
+import {Employees} from '/imports/api/employees/index';
 
 /**
  * Function get the list of leaders who have sending plan in last week
@@ -23,4 +25,22 @@ export const getLeaderForDigestEmail = ({params}) => {
   }
 
   return listOfLeaders;
-}
+};
+
+/**
+ * Function get the type of user by email
+ * @param email
+ * @return {{isLeader: boolean, isEmployee: boolean}}
+ */
+export const getUserTypeByEmail = (email) => {
+  const
+    leader = Accounts.findUserByEmail(email),
+    employee = Employees.findOne({email}),
+    result = {
+      isLeader: !_.isEmpty(leader) ? true : false,
+      isEmployee: !_.isEmpty(employee) ? true : false,
+    }
+    ;
+
+  return result;
+};
