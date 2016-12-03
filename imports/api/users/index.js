@@ -6,7 +6,8 @@ import PreferencesCollection from './collection';
 export const USER_ROLES = {
   USER: "user",
   ADMIN: "admin",
-  INACTIVE: "inactive"
+  INACTIVE: "inactive",
+  ACTIVE: "active"
 };
 
 export const Preferences = new PreferencesCollection('preferences');

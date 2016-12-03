@@ -17,6 +17,10 @@ import { Preferences } from '/imports/api/users/index';
 // functions
 import {formatAlias, isInactiveUser} from '/imports/api/users/functions';
 
+// const
+import * as ERROR_CODE from '/imports/utils/error_code';
+import {USER_ROLES} from './index';
+
 /**
  *  @summary set alias for account which will use Account username as alias
  *  @param tokenId
@@ -234,6 +238,107 @@ export const verifyAdminRole = new ValidatedMethod({
       return {
         isAdmin
       };
+    }
+  }
+});
+
+/**
+ * Method disable account for admin
+ * @param email
+ * @param mailgunId
+ * @param reason
+ * @param date
+ * @return {{status: boolean, message: string}}
+ */
+export const disableAccount = new ValidatedMethod({
+  name: "users.disableAccount",
+  validate: null,
+  run({email, mailgunId, reason, date}) {
+    if(!this.isSimulation) {
+      // only admin could disable account
+      const adminUserId = this.userId;
+      if(!Roles.userIsInRole(adminUserId, USER_ROLES.ADMIN)) {
+        throw new Meteor.Error(ERROR_CODE.PERMISSION_DENIED, `user ${adminUserId} is not admin`);
+      }
+      const
+        user = Accounts.findUserByEmail(email)
+        ;
+      let
+        result = {
+          status: false,
+          message: ""
+        }
+        ;
+
+      if(!_.isEmpty(user)) {
+        const userId = user._id;
+        if(!Roles.userIsInRole(userId, USER_ROLES.INACTIVE)) {
+          Roles.addUsersToRoles(userId, USER_ROLES.INACTIVE);
+          // log data here {email, mailgunId, reason, date}
+          // ....
+        }
+        result = {
+          status: true,
+          message: `${email} had been disabled.`
+        };
+      } else {
+        result = {
+          status: false,
+          message: `${email} doesn't exists.`
+        };
+      }
+      return result;
+    }
+  }
+});
+
+
+/**
+ * Method enable account for admin
+ * @param email
+ * @param mailgunId
+ * @param reason
+ * @param date
+ * @return {{status: boolean, message: string}}
+ */
+export const enableAccount = new ValidatedMethod({
+  name: "users.enableAccount",
+  validate: null,
+  run({email, mailgunId, reason, date}) {
+    if(!this.isSimulation) {
+      // only admin could disable account
+      const adminUserId = this.userId;
+      if(!Roles.userIsInRole(adminUserId, USER_ROLES.ADMIN)) {
+        throw new Meteor.Error(ERROR_CODE.PERMISSION_DENIED, `user ${adminUserId} is not admin`);
+      }
+      const
+        user = Accounts.findUserByEmail(email)
+        ;
+      let
+        result = {
+          status: false,
+          message: ""
+        }
+        ;
+
+      if(!_.isEmpty(user)) {
+        const userId = user._id;
+        if(Roles.userIsInRole(userId, USER_ROLES.INACTIVE)) {
+          Roles.removeUsersFromRoles(userId, USER_ROLES.INACTIVE);
+          // log data here {email, mailgunId, reason, date}
+          // ....
+        }
+        result = {
+          status: true,
+          message: `${email} had been enabled.`
+        };
+      } else {
+        result = {
+          status: false,
+          message: `${email} doesn't exists.`
+        };
+      }
+      return result;
     }
   }
 });

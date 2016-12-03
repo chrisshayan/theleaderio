@@ -7,18 +7,18 @@ import NoUser from '/imports/ui/components/NoContent';
 
 export default class UsersTable extends Component {
 
-  _getProfile(userId) {
-    // console.log(userId)
-    const
-      {profiles} = this.props,
-      profile = profiles[_.findIndex(profiles, {userId})] || {}
-      ;
-    return profile;
-  }
+  // _getProfile(userId) {
+  //   // console.log(userId)
+  //   const
+  //     {profiles} = this.props,
+  //     profile = profiles[_.findIndex(profiles, {userId})] || {}
+  //     ;
+  //   return profile;
+  // }
 
   render() {
     const
-      {users, profiles} = this.props,
+      {users} = this.props,
       message = `There is no new users.`
       ;
 
@@ -27,12 +27,12 @@ export default class UsersTable extends Component {
         <table className="table">
           <thead>
           <tr>
+            <th>Created at</th>
             <th>First name</th>
             <th>Last name</th>
             <th>Email</th>
             <th>Alias</th>
             <th>Time zone</th>
-            <th>Created at</th>
             <th>status</th>
           </tr>
           </thead>
@@ -44,7 +44,6 @@ export default class UsersTable extends Component {
               key={key}
               position={key + 1}
               user={user}
-              profile={this._getProfile.bind(this, user._id)()}
             />
           ))}
           </tbody>
