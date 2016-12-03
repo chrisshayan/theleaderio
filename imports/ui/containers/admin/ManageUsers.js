@@ -165,6 +165,7 @@ class ManageUsers extends Component {
               />
             </div>
           </div>
+          <h3>There are {users.length} users found.</h3>
           <div className="hr-line-dashed"></div>
           <div className="row">
             <div className="search-result">

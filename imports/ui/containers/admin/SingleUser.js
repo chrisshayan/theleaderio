@@ -10,6 +10,9 @@ import {Profiles} from '/imports/api/profiles/index';
 import XEditable from '/imports/ui/components/XEditable';
 import LoadingIndicator from '/imports/ui/common/LoadingIndicator';
 
+// methods
+import * as Notifications from '/imports/api/notifications/methods';
+
 // functions
 import {disableAccount, enableAccount} from '/imports/api/users/methods';
 
@@ -22,17 +25,26 @@ export default class SingleUser extends Component {
     const
       adminUserId = Meteor.userId(),
       {user: {_id, email, username, createdAt, status, firstName, lastName, timezone}} = this.props,
-      shouldBeEnable = (status === USER_ROLES.INACTIVE) ? true : false,
-      accountAction = shouldBeEnable ? enableAccount : disableAccount,
-      reason = shouldBeEnable ? `enabled by admin ${adminUserId}` : `disabled by admin ${adminUserId}`,
+      actionEnable = (status === USER_ROLES.INACTIVE) ? true : false,
+      accountAction = actionEnable ? enableAccount : disableAccount,
+      reason = actionEnable ? `enabled by admin ${adminUserId}` : `disabled by admin ${adminUserId}`,
       date = new Date()
       ;
 
     accountAction.call({email, null, reason, date}, (error, result) => {
       if(!error) {
+        const closeButton = true,
+          title = "",
+          {message} = result
+          ;
+        Notifications.success.call({closeButton, title, message});
         console.log(result);
       } else {
-        console.log(error);
+        const closeButton = true,
+          title = "",
+          message = error.reason
+          ;
+        Notifications.error.call({closeButton, title, message});
       }
     });
   }
@@ -41,6 +53,7 @@ export default class SingleUser extends Component {
     const
       {position = '', user} = this.props,
       {_id, email, username, createdAt, status, firstName, lastName, timezone} = user,
+      actionEnable = (status === USER_ROLES.INACTIVE) ? true : false
       styles = {
         vAlign: {
           verticalAlign: 'middle'
@@ -68,13 +81,14 @@ export default class SingleUser extends Component {
           {timezone}
         </td>
         <td style={styles.vAlign}>
-          <span className="label label-warning">{status}</span>
+          <span className={actionEnable ? "label label-danger": "label label-primary"}>{status}</span>
         </td>
         <td style={styles.vAlign}>
-          <button style={{marginBottom: 0}} className="btn btn-primary"
+          <button style={{marginBottom: 0}}
+                  className={actionEnable ? "btn btn-primary" : "btn btn-danger"}
                   onClick={this._onClick.bind(this)}
           >
-            {' '}{(status === USER_ROLES.INACTIVE) ? "Enable" : "Disable"}
+            {' '}{(actionEnable) ? "Enable" : "Disable"}
           </button>
         </td>
       </tr>
