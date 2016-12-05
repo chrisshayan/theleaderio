@@ -11,6 +11,8 @@ import {checkExists as checkExistsScore} from '/imports/api/metrics/methods';
 import {checkExists as checkExistsFeedback} from '/imports/api/feedbacks/methods';
 import * as EmailActions from '/imports/api/email/methods';
 import {add as addMessages} from '/imports/api/user_messages/methods';
+import {disableAccount, enableAccount} from '/imports/api/users/methods';
+import {disable as disableEmployee, enable as enableEmployee} from '/imports/api/employees/functions';
 
 // functions
 import {getRecipientInfo, removeWebGmailClientContent} from '/imports/api/email/functions';
@@ -18,6 +20,7 @@ import {scoringLeader} from '/imports/api/metrics/functions';
 import {feedbackLeader} from '/imports/api/feedbacks/functions';
 import {timestampToDate} from '/imports/utils/index';
 import {verifySenderEmail} from '/imports/api/email/functions';
+import {getUserTypeByEmail} from '/imports/api/admin/functions';
 
 // logger
 import {Logger} from '/imports/api/logger/index';
@@ -34,6 +37,11 @@ import {TYPE, STATUS} from '/imports/api/user_messages/index';
 // Global API configuration
 const Api = new Restivus({
   useDefaultAuth: false,
+  prettyJson: true
+});
+const restAPI = new Restivus({
+  apiPath: 'rest/',
+  useDefaultAuth: true,
   prettyJson: true
 });
 
@@ -284,23 +292,73 @@ Api.addRoute('statistic/:type', {authRequired: false}, {
 
 
 /**
- * API hooks events sending email with mailgun
- * @param {String} event: hardBounces | deliveredMessages
+ * API admin
+ * @param
  */
-// Api.addRoute('email/:event', {authRequired: false}, {
-//   post: {
-//     action: function () {
-//       const
-//         {event} = this.urlParams
-//       ;
-//       console.log(event);
-//       console.log(this);
-//       return {
-//         statusCode: 200,
-//         headers: {
-//           'Content-Type': 'text/plain'
-//         }
-//       };
-//     }
-//   }
-// });
+restAPI.addRoute('admin/:action', {authRequired: true}, {
+  get: {
+    action: function() {
+      const
+        {action} = this.urlParams,
+        {email} = this.queryParams
+        ;
+      let message = "";
+
+      switch (action) {
+        case "getUserTypeByEmail": {
+          return getUserTypeByEmail(email);
+          break;
+        }
+        default: {
+          message = `Unknown api ${action}.`;
+          return {
+            statusCode: 404,
+            headers: {
+              'Content-Type': 'text/plain'
+            },
+            body: message
+          };
+        }
+      }
+    }
+  },
+  post: {
+    action: function () {
+      const
+        {action} = this.urlParams,
+        {userId, mailgunId, email, reason, date} = this.bodyParams
+      ;
+      let message = "";
+
+      switch (action) {
+        case "disableAccount": {
+          return disableAccount.call({userId, mailgunId, email, reason, date});
+          break;
+        }
+        case "enableAccount": {
+          return enableAccount.call({userId, mailgunId, email, reason, date});
+          break;
+        }
+        case "disableEmployee": {
+          return disableEmployee({userId, mailgunId, email, reason, date});
+          break;
+        }
+        case "enableEmployee": {
+          return enableEmployee({userId, mailgunId, email, reason, date});
+          break;
+        }
+        default: {
+          message = `Unknown api ${action}.`;
+          return {
+            statusCode: 404,
+            headers: {
+              'Content-Type': 'text/plain'
+            },
+            body: message
+          };
+        }
+      }
+      return "ok";
+    }
+  }
+});

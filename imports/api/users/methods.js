@@ -16,8 +16,9 @@ import { Preferences } from '/imports/api/users/index';
 
 // functions
 import {formatAlias, isInactiveUser} from '/imports/api/users/functions';
+import {add as addLogs} from '/imports/api/logs/functions';
 
-// const
+// constants
 import * as ERROR_CODE from '/imports/utils/error_code';
 import {USER_ROLES} from './index';
 
@@ -253,10 +254,10 @@ export const verifyAdminRole = new ValidatedMethod({
 export const disableAccount = new ValidatedMethod({
   name: "users.disableAccount",
   validate: null,
-  run({email, mailgunId, reason, date}) {
+  run({userId, mailgunId, email, reason, date}) {
     if(!this.isSimulation) {
       // only admin could disable account
-      const adminUserId = this.userId;
+      const adminUserId = this.userId || userId;
       if(!Roles.userIsInRole(adminUserId, USER_ROLES.ADMIN)) {
         throw new Meteor.Error(ERROR_CODE.PERMISSION_DENIED, `user ${adminUserId} is not admin`);
       }
@@ -275,7 +276,11 @@ export const disableAccount = new ValidatedMethod({
         if(!Roles.userIsInRole(userId, USER_ROLES.INACTIVE)) {
           Roles.addUsersToRoles(userId, USER_ROLES.INACTIVE);
           // log data here {email, mailgunId, reason, date}
-          // ....
+          const params = {
+            name: "disabledAccounts",
+            content: {mailgunId, email, typeOfUser: "leader", action: "disable", reason}
+          };
+          addLogs({params});
         }
         result = {
           status: true,
@@ -304,10 +309,10 @@ export const disableAccount = new ValidatedMethod({
 export const enableAccount = new ValidatedMethod({
   name: "users.enableAccount",
   validate: null,
-  run({email, mailgunId, reason, date}) {
+  run({userId, email, mailgunId, reason, date}) {
     if(!this.isSimulation) {
       // only admin could disable account
-      const adminUserId = this.userId;
+      const adminUserId = this.userId || userId;
       if(!Roles.userIsInRole(adminUserId, USER_ROLES.ADMIN)) {
         throw new Meteor.Error(ERROR_CODE.PERMISSION_DENIED, `user ${adminUserId} is not admin`);
       }
@@ -326,7 +331,11 @@ export const enableAccount = new ValidatedMethod({
         if(Roles.userIsInRole(userId, USER_ROLES.INACTIVE)) {
           Roles.removeUsersFromRoles(userId, USER_ROLES.INACTIVE);
           // log data here {email, mailgunId, reason, date}
-          // ....
+          const params = {
+            name: "disabledAccounts",
+            content: {mailgunId, email, typeOfUser: "leader", action: "enable", reason}
+          };
+          addLogs({params});
         }
         result = {
           status: true,

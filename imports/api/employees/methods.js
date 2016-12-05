@@ -3,9 +3,12 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import _ from 'lodash';
 
-import { Employees, STATUS_ACTIVE, STATUS_INACTIVE } from './index';
+import { Employees, STATUS_ACTIVE, STATUS_DEACTIVE } from './index';
 import { IDValidator } from '/imports/utils';
 import validate from '/imports/utils/validate';
+
+// functions
+import {add as addLogs} from '/imports/api/logs/functions';
 
 /**
  * CUD Employees (Create, Update, Deactivate)
@@ -99,7 +102,7 @@ export const setStatus = new ValidatedMethod({
     ...IDValidator,
     status: {
       type: String,
-      allowedValues: [  STATUS_ACTIVE, STATUS_INACTIVE ]
+      allowedValues: [  STATUS_ACTIVE, STATUS_DEACTIVE ]
     }
   }).validator(),
   run({ _id, status }) {
