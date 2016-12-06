@@ -274,7 +274,10 @@ export const disableAccount = new ValidatedMethod({
       if(!_.isEmpty(user)) {
         const userId = user._id;
         if(!Roles.userIsInRole(userId, USER_ROLES.INACTIVE)) {
+          // add user into inactive group
           Roles.addUsersToRoles(userId, USER_ROLES.INACTIVE);
+          // force logout all connection of this user
+          Accounts.users.update({_id: userId}, {$set: {"services.resume.loginTokens": []}});
           // log data here {email, mailgunId, reason, date}
           const params = {
             name: "disabledAccounts",

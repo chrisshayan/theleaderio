@@ -40,7 +40,7 @@ const SITE_NAME = Meteor.settings.public.name;
 const sendFeedbackEmailToLeader = function (job, cb) {
   const
     name = "sendFeedbackEmailToLeader",
-    activeOrgList = Organizations.find({isPresent: true}, {fields: {_id: true}}).fetch()
+    activeOrgList = Organizations.find({isPresent: true}, {fields: {_id: true, leaderId: true}}).fetch()
     ;
   let
     employee = {},
@@ -53,35 +53,39 @@ const sendFeedbackEmailToLeader = function (job, cb) {
     job.done();
   } else {
     activeOrgList.map(org => {
-      const
-        employee = getRandomEmployee({params: {organizationId: org._id}})
-        ;
-      if (!_.isEmpty(employee)) {
-        if (employee.message === 'undefined') {
-          Logger.error({name, message: {detail: employee.message}});
-        } else {
-          employeeData = Employees.findOne({_id: employee.employeeId});
-          if (!_.isEmpty(employeeData)) {
-            const
-              template = 'employee',
-              data = {
-                type: "feedback",
-                employeeId: employeeData._id,
-                leaderId: employeeData.leaderId,
-                organizationId: employeeData.organizationId
-              };
-            EmailActions.send.call({template, data}, (error) => {
-              if (_.isEmpty(error)) {
-                jobMessage = `Send email to leader ${employeeData.leaderId} about employee ${employeeData._id} - success`;
-                job.log(jobMessage, {level: LOG_LEVEL.INFO});
-              } else {
-                jobMessage = `Send email to leader ${employeeData.leaderId} about employee ${employeeData._id} - failed`;
-                job.log(jobMessage, {level: LOG_LEVEL.CRITICAL});
-              }
-            });
+      console.log(org);
+      console.log(Roles.userIsInRole(org.leaderId, "inactive"));
+      if (!Roles.userIsInRole(org.leaderId, "inactive")) {
+        const
+          employee = getRandomEmployee({params: {organizationId: org._id}})
+          ;
+        if (!_.isEmpty(employee)) {
+          if (employee.message === 'undefined') {
+            Logger.error({name, message: {detail: employee.message}});
           } else {
-            jobMessage = `Employee ${employee.employeeId} not exists`;
-            job.log(jobMessage, {level: LOG_LEVEL.WARNING});
+            employeeData = Employees.findOne({_id: employee.employeeId});
+            if (!_.isEmpty(employeeData)) {
+              const
+                template = 'employee',
+                data = {
+                  type: "feedback",
+                  employeeId: employeeData._id,
+                  leaderId: employeeData.leaderId,
+                  organizationId: employeeData.organizationId
+                };
+              EmailActions.send.call({template, data}, (error) => {
+                if (_.isEmpty(error)) {
+                  jobMessage = `Send email to leader ${employeeData.leaderId} about employee ${employeeData._id} - success`;
+                  job.log(jobMessage, {level: LOG_LEVEL.INFO});
+                } else {
+                  jobMessage = `Send email to leader ${employeeData.leaderId} about employee ${employeeData._id} - failed`;
+                  job.log(jobMessage, {level: LOG_LEVEL.CRITICAL});
+                }
+              });
+            } else {
+              jobMessage = `Employee ${employee.employeeId} not exists`;
+              job.log(jobMessage, {level: LOG_LEVEL.WARNING});
+            }
           }
         }
       }
@@ -209,7 +213,7 @@ const sendStatisticEmailToLeader = function (job, cb) {
         }
       };
       leader = Accounts.users.findOne(query, options);
-      if(!_.isEmpty(leader)) {
+      if (!_.isEmpty(leader)) {
         alias = leader.username;
       }
 
@@ -286,9 +290,9 @@ const sendStatisticEmailToLeader = function (job, cb) {
           digest.leadershipProgress.totalFeedback += 1;
         });
       }
-      if((digest.leadershipProgress.totalFeedback +
-          digest.leadershipProgress.totalGoodScores +
-          digest.leadershipProgress.totalBadScores) === 0) {
+      if ((digest.leadershipProgress.totalFeedback +
+        digest.leadershipProgress.totalGoodScores +
+        digest.leadershipProgress.totalBadScores) === 0) {
         digest.leadershipProgress.haveProgress = false;
       }
 
@@ -302,10 +306,10 @@ const sendStatisticEmailToLeader = function (job, cb) {
         limit: 2
       };
       articles = Articles.find(query, options).fetch();
-      if(!_.isEmpty(articles)) {
+      if (!_.isEmpty(articles)) {
         digest.articles.haveArticles = true;
         articles.map(article => {
-          if(!_.isEmpty(article.tags)) {
+          if (!_.isEmpty(article.tags)) {
             article.tags.map(tag => {
               digest.articles.metricToImprove.push(tag);
             });

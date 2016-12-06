@@ -112,9 +112,5 @@ Meteor.startup(function() {
   Workers.start(type);
   type = "send_surveys";
   Workers.start(type);
-  type = "feedback_for_employee";
-  Workers.start(type);
-  type = "statistic_for_leader";
-  Workers.start(type);
 
 });

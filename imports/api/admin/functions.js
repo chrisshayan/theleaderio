@@ -19,7 +19,10 @@ export const getLeaderForDigestEmail = ({params}) => {
   if (!_.isEmpty(plans)) {
     plans.map(plan => {
       if (_.indexOf(listOfLeaders, plan.leaderId) === -1) {
-        listOfLeaders.push(plan.leaderId);
+        const {leaderId} = plan;
+        if(!Roles.userIsInRole(leaderId, "inactive")) {
+          listOfLeaders.push(leaderId);
+        }
       }
     });
   }
