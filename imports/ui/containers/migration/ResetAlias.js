@@ -16,6 +16,9 @@ import { createForMigration as createScheduler } from '/imports/api/scheduler/me
 import {DOMAIN} from '/imports/startup/client/routes';
 import { DEFAULT_SCHEDULER } from '/imports/utils/defaults';
 
+// utils
+import {googleTrackConversion} from '/imports/utils/index';
+
 export default class ResetAlias extends Component {
   constructor() {
     super();
@@ -76,6 +79,9 @@ export default class ResetAlias extends Component {
           // console.log(tokenId)
           TokenActions.remove.call({tokenId, action: 'migration'}, (error, result) => {
             if(!error) {
+              // google conversion tracking
+              googleTrackConversion();
+
               // Redirect to user's login page
               // Need the cookie sharing login information here
               this.setState({

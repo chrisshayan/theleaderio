@@ -9,7 +9,7 @@ import * as UserActions from '/imports/api/users/methods';
 import * as SubdomainActions from '/imports/utils/subdomain';
 
 // utils
-import {aliasValidator} from '/imports/utils/index';
+import {aliasValidator, googleTrackConversion} from '/imports/utils/index';
 
 export default class SignUpAlias extends Component {
   constructor() {
@@ -27,6 +27,9 @@ export default class SignUpAlias extends Component {
     // Call methods createAlias
     UserActions.createAlias.call({email, alias}, (error) => {
       if (_.isEmpty(error)) {
+        // google conversion tracking
+        googleTrackConversion();
+
         // Redirect to user's login page
         // Need the cookie sharing login information here
         this.setState({

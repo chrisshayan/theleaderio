@@ -22,15 +22,15 @@ export const send = new ValidatedMethod({
   run({template, data}) {
     if (!this.isSimulation) {
       let
-        options = {},
-        logName = "sendEmail",
-        logContent = {
-          subject: "",
-          from: "",
-          to: "",
-          template,
-          data
-        }
+        options = {}
+        // logName = "sendEmail",
+        // logContent = {
+        //   subject: "",
+        //   from: "",
+        //   to: "",
+        //   template,
+        //   data
+        // }
         ;
 
       // get options base on template
@@ -51,7 +51,9 @@ export const send = new ValidatedMethod({
             to: email,
             from: `"${mailData.siteName}" <no-reply@mail.theleader.io>`,
             subject: `Welcome to ${mailData.siteName}`,
-            html: html
+            html: html,
+            tag: "registration",
+            userVariables: {template}
           };
           break;
         }
@@ -73,13 +75,14 @@ export const send = new ValidatedMethod({
             mailData.alias = user.username;
             mailData.url = `http://${mailData.alias}.${url}`;
             // Get email html
-            // const html = EmailFunctions.get({template, firstName, url: loginUrl, alias});
             const html = EmailFunctions.buildHtml({template, data: mailData});
             options = {
               to: email,
               from: `"${mailData.siteName}" <no-reply@mail.theleader.io>`,
               subject: `Get your alias`,
-              html: html
+              html: html,
+              tag: "forgotAlias",
+              userVariables: {template, emailId: `${email}-${mailData.alias}`}
             };
           } else {
             throw new Meteor.Error('user not found');
@@ -99,6 +102,7 @@ export const send = new ValidatedMethod({
               actionButtonLabel: `Choose a new password`,
               resetPasswordUrl: url
             };
+          console.log(mailData.resetPasswordUrl)
 
 
           // const html = EmailFunctions.get({template, url});
@@ -107,12 +111,10 @@ export const send = new ValidatedMethod({
             to: email,
             from: `"${mailData.siteName}" <no-reply@mail.theleader.io>`,
             subject: `Forgot password`,
-            html: html
+            html: html,
+            tag: "forgotPassword",
+            userVariables: {template, emailId: `${email}`}
           };
-
-          // Meteor.defer(() => {
-          //   Email.send(options);
-          // });
           break;
         }
         case 'survey': {
@@ -167,15 +169,17 @@ export const send = new ValidatedMethod({
       // send email
       return Meteor.defer(() => {
         // console.log(options);
-        Email.send(options);
+        // Email.send(options);
+        EmailFunctions.sendMail({options});
+        // console.log(sendMailResult);
         // add log for a digest into log collection
-        logContent = {
-          ...logContent,
-          subject: options.subject,
-          from: options.from,
-          to: options.to
-        };
-        addLogs({params: {name: logName, content: logContent}});
+        // logContent = {
+        //   ...logContent,
+        //   subject: options.subject,
+        //   from: options.from,
+        //   to: options.to
+        // };
+        // addLogs({params: {name: logName, content: logContent}});
       });
     }
   }

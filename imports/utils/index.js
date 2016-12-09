@@ -1,3 +1,4 @@
+import {Meteor} from 'meteor/meteor';
 import {JOB_FREQUENCY, MINUTE_OF_AN_HOUR} from '/imports/utils/defaults';
 
 export const IDValidator = {
@@ -119,4 +120,11 @@ export const getCronExpression = ({params}) => {
   }
 
   return result;
-}
+};
+
+export const googleTrackConversion = () => {
+  const {
+    googleTrackConversion
+  } = Meteor.settings.public;
+  window.google_trackConversion(googleTrackConversion);
+};

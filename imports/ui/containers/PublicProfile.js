@@ -46,7 +46,6 @@ export default class PublicProfile extends Component {
               publicInfo: result,
               preferences: result.preferences
             });
-
           } else {
             this.setState({
               loading: false,
@@ -65,7 +64,7 @@ export default class PublicProfile extends Component {
   }
 
   render() {
-    const {loading, alias} = this.state;
+    const {loading, errors, alias} = this.state;
 
     if (loading) {
       return (
@@ -188,7 +187,7 @@ export default class PublicProfile extends Component {
       return (
         <NoticeForm
           code='404'
-          message="Alias doesn't exists"
+          message={errors || "Alias doesn't exists"}
           description='Sorry, but the page you are looking for has note been found. Try checking the URL for error, then hit the refresh button on your browser or try found something else in our app.'
           buttonLabel='Come back to HomePage'
         />

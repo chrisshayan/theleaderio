@@ -12,3 +12,14 @@ Meteor.publish('profiles', function() {
     fields: Profiles.publicFields // for feature: public information which user will define
   });
 });
+
+Meteor.publish('statistic.profiles', function() {
+  if(!this.userId) {
+    return this.ready();
+  }
+  if(!Roles.userIsInRole(this.userId, "admin")) {
+    throw new Meteor.Error(ERROR_CODE.PERMISSION_DENIED);
+  }
+
+  return Profiles.find();
+});

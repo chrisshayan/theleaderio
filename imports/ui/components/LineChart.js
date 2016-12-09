@@ -6,7 +6,8 @@ export default class LineChart extends Component {
 
     this.state = {
       label: null,
-      data: null
+      data: null,
+      lineChart: null,
     };
   }
 
@@ -17,7 +18,8 @@ export default class LineChart extends Component {
 
   componentDidUpdate(prevProps) {
     if (!_.isEqual(prevProps.datasets, this.props.datasets)) {
-      console.log(`redraw chart`)
+      const {lineChart} = this.state;
+      lineChart.destroy();
       this.lineChart();
     }
   }
@@ -49,10 +51,14 @@ export default class LineChart extends Component {
           datasetFill: true,
           responsive: true,
         },
-        ctx = canvas.getContext("2d");
-      console.log(lineData)
+        ctx = canvas.getContext("2d"),
+        lineChart = new Chart(ctx).Line(lineData, lineOptions);
+
+      this.setState({
+        lineChart
+      });
+      // console.log(lineData)
       // console.log(lineOptions)
-      const metricChart = new Chart(ctx).Line(lineData, lineOptions);
     }
   }
 

@@ -8,6 +8,7 @@ import Box from '/imports/ui/components/Box';
 import ManageJobs from './ManageJobs';
 import ManageIndustries from './ManageIndustries';
 import Statistic from './StatisticContainer';
+import ManageUsers from './ManageUsers';
 
 export default class ManagementComponent extends Component {
 
@@ -41,6 +42,11 @@ export default class ManagementComponent extends Component {
         key: "Statistic",
         title: "Statistic",
         component: <Statistic/>
+      },
+      {
+        key: "Users",
+        title: "Users",
+        component: <ManageUsers/>
       },
       {
         key: "Jobs",

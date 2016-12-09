@@ -40,33 +40,6 @@ export default class SingleReferral extends Component {
     });
   }
 
-  // _onRemoveReferral() {
-  //   const {_id} = this.props;
-  //   if(typeof _id === 'undefined') {
-  //     const
-  //       closeButton = true,
-  //       title = 'Referral',
-  //       message = 'Referral not exists';
-  //     Notifications.error.call({closeButton, title, message});
-  //     return;
-  //   }
-  //   removeReferral.call({params: {_id}}, (error, result) => {
-  //     if(!error) {
-  //       const
-  //         closeButton = true,
-  //         title = 'Referral',
-  //         message = 'Removed';
-  //       Notifications.success.call({closeButton, title, message});
-  //     } else {
-  //       const
-  //         closeButton = true,
-  //         title = 'Referral',
-  //         message = getErrors(error);
-  //       Notifications.error.call({closeButton, title, message});
-  //     }
-  //   });
-  // }
-
   render() {
     const
       {position = '', referral, isDisableInviting} = this.props,

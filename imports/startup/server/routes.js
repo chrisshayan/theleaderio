@@ -11,6 +11,8 @@ import {checkExists as checkExistsScore} from '/imports/api/metrics/methods';
 import {checkExists as checkExistsFeedback} from '/imports/api/feedbacks/methods';
 import * as EmailActions from '/imports/api/email/methods';
 import {add as addMessages} from '/imports/api/user_messages/methods';
+import {disableAccount, enableAccount} from '/imports/api/users/methods';
+import {disable as disableEmployee, enable as enableEmployee} from '/imports/api/employees/functions';
 
 // functions
 import {getRecipientInfo, removeWebGmailClientContent} from '/imports/api/email/functions';
@@ -18,6 +20,7 @@ import {scoringLeader} from '/imports/api/metrics/functions';
 import {feedbackLeader} from '/imports/api/feedbacks/functions';
 import {timestampToDate} from '/imports/utils/index';
 import {verifySenderEmail} from '/imports/api/email/functions';
+import {getUserTypeByEmail} from '/imports/api/admin/functions';
 
 // logger
 import {Logger} from '/imports/api/logger/index';
@@ -34,6 +37,11 @@ import {TYPE, STATUS} from '/imports/api/user_messages/index';
 // Global API configuration
 const Api = new Restivus({
   useDefaultAuth: false,
+  prettyJson: true
+});
+const restAPI = new Restivus({
+  apiPath: 'rest/',
+  useDefaultAuth: true,
   prettyJson: true
 });
 
@@ -57,7 +65,7 @@ Api.addRoute('metrics/:action', {authRequired: false}, {
       if (!_.isEmpty(recipientInfo)) {
         if (recipientInfo.message === 'undefined') {
           Logger.error({name: "api", message: {apiName: "metrics", detail: recipientInfo.message}});
-          this.response.writeHead(404, {'Content-Type': 'text/plain'});
+          this.response.writeHead(406, {'Content-Type': 'text/plain'});
           this.response.write(recipientInfo.message);
         } else {
           const {planId, employeeId, leaderId, organizationId, metric} = recipientInfo;
@@ -98,7 +106,7 @@ Api.addRoute('metrics/:action', {authRequired: false}, {
             }
             default: {
               Logger.warn({name: "api", message: {apiName: "metrics", detail: `Unknown action`}});
-              this.response.writeHead(404, {'Content-Type': 'text/plain'});
+              this.response.writeHead(406, {'Content-Type': 'text/plain'});
               this.response.write("Unknown action");
             }
           }
@@ -137,7 +145,7 @@ Api.addRoute('employee/:action', {authRequired: false}, {
       if (!_.isEmpty(recipientInfo)) {
         if (recipientInfo.message === 'undefined') {
           Logger.error({name, message: {apiName, detail: recipientInfo.message}});
-          this.response.writeHead(404, {'Content-Type': 'text/plain'});
+          this.response.writeHead(406, {'Content-Type': 'text/plain'});
           this.response.write(recipientInfo.message);
         } else {
           const
@@ -208,7 +216,7 @@ Api.addRoute('employee/:action', {authRequired: false}, {
                   }
                 } else {
                   Logger.error({name, message: {apiName, detail: verifySender.message}});
-                  this.response.writeHead(404, {'Content-Type': 'text/plain'});
+                  this.response.writeHead(406, {'Content-Type': 'text/plain'});
                   this.response.write(verifySender.message);
                   this.done();
                 }
@@ -217,7 +225,7 @@ Api.addRoute('employee/:action', {authRequired: false}, {
             }
             default: {
               Logger.warn({name: "api", message: {apiName: "feedback", detail: `Unknown action`}});
-              this.response.writeHead(404, {'Content-Type': 'text/plain'});
+              this.response.writeHead(406, {'Content-Type': 'text/plain'});
               this.response.write("Unknown action");
               this.done();
             }
@@ -229,6 +237,10 @@ Api.addRoute('employee/:action', {authRequired: false}, {
   }
 });
 
+/**
+ * API get statistic information
+ * @param {String} type: users | employees
+ */
 Api.addRoute('statistic/:type', {authRequired: false}, {
   get: {
     action: function () {
@@ -257,7 +269,7 @@ Api.addRoute('statistic/:type', {authRequired: false}, {
         default: {
           const message = `Unknown request for ${type}.`;
           return {
-            statusCode: 404,
+            statusCode: 406,
             headers: {
               'Content-Type': 'text/plain'
             },
@@ -274,6 +286,79 @@ Api.addRoute('statistic/:type', {authRequired: false}, {
         },
         data
       };
+    }
+  }
+});
+
+
+/**
+ * API admin
+ * @param
+ */
+restAPI.addRoute('admin/:action', {authRequired: true}, {
+  get: {
+    action: function() {
+      const
+        {action} = this.urlParams,
+        {email} = this.queryParams
+        ;
+      let message = "";
+
+      switch (action) {
+        case "getUserTypeByEmail": {
+          return getUserTypeByEmail(email);
+          break;
+        }
+        default: {
+          message = `Unknown api ${action}.`;
+          return {
+            statusCode: 404,
+            headers: {
+              'Content-Type': 'text/plain'
+            },
+            body: message
+          };
+        }
+      }
+    }
+  },
+  post: {
+    action: function () {
+      const
+        {action} = this.urlParams,
+        {userId, mailgunId, email, reason, date} = this.bodyParams
+      ;
+      let message = "";
+
+      switch (action) {
+        case "disableAccount": {
+          return disableAccount.call({userId, mailgunId, email, reason, date});
+          break;
+        }
+        case "enableAccount": {
+          return enableAccount.call({userId, mailgunId, email, reason, date});
+          break;
+        }
+        case "disableEmployee": {
+          return disableEmployee({userId, mailgunId, email, reason, date});
+          break;
+        }
+        case "enableEmployee": {
+          return enableEmployee({userId, mailgunId, email, reason, date});
+          break;
+        }
+        default: {
+          message = `Unknown api ${action}.`;
+          return {
+            statusCode: 404,
+            headers: {
+              'Content-Type': 'text/plain'
+            },
+            body: message
+          };
+        }
+      }
+      return "ok";
     }
   }
 });

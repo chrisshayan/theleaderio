@@ -11,3 +11,7 @@ export class LogsDigestCollection extends Mongo.Collection {
 export class LogsEmailCollection extends Mongo.Collection {
 
 }
+
+export class LogsDisabledAccountsCollection extends Mongo.Collection {
+
+}
