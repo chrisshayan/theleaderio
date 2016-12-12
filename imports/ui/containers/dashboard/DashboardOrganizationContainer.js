@@ -15,6 +15,9 @@ import {NoticeForm} from '/imports/ui/common/NoticeForm';
 import IboxDashboard from '/imports/ui/components/IboxDashboard';
 import ProfileMetricsBox from '/imports/ui/components/ProfileMetricsBox';
 
+// methods
+import {measureMonthlyMetricScore} from '/imports/api/measures/methods';
+
 // functions
 import {getChartData} from '/imports/api/measures/methods';
 import {getAverageMetrics} from '/imports/api/metrics/functions';
@@ -57,6 +60,7 @@ class DashboardOrganization extends Component {
         });
       }
     });
+    measureMonthlyMetricScore.call({params: {leaderId, organizationId}});
   }
 
   componentWillReceiveProps(nextProps) {

@@ -13,6 +13,9 @@ import * as TokenActions from '/imports/api/tokens/methods';
 import * as EmailActions from '/imports/api/email/methods';
 import { create as createScheduler } from '/imports/api/scheduler/methods';
 
+// functions
+import {validateEmail} from '/imports/api/email/functions';
+
 // constants
 import {DOMAIN} from '/imports/startup/client/routes';
 import { DEFAULT_SCHEDULER } from '/imports/utils/defaults';
@@ -34,56 +37,76 @@ export default class SignUpUser extends Component {
       loading: true,
       errors: null
     });
-    Accounts.createUser({email, password}, (error) => {
-      if (!error) {
-        const
-          userId = Accounts.userId(),
-          timezone = momentTZ.tz.guess()
-          ;
 
-        // add role for user
-        Roles.addUsersToRoles(userId, "user");
+    // validate email address
+    validateEmail({params: {email}}, (error, result) => {
+      if(!error) {
+        const {statusCode, email, isValid} = result;
+        if(Number(statusCode) === 200 && Boolean(isValid)) {
+          Accounts.createUser({email, password}, (error) => {
+            if (!error) {
+              const
+                userId = Accounts.userId(),
+                timezone = momentTZ.tz.guess()
+                ;
 
-        // create user profile
-        ProfileActions.create.call({userId, firstName, lastName, timezone}, (error) => {
-          if (error) {
-            this.setState({
-              loading: false,
-              errors: error.reason
-            });
-          } else {
+              // add role for user
+              Roles.addUsersToRoles(userId, "user");
 
-            // create default user scheduler
-            DEFAULT_SCHEDULER.map(scheduler => {
-              const year = moment().year();
-              const {quarter, metrics} = scheduler;
-              createScheduler.call({year, quarter, metrics});
-            });
+              // create user profile
+              ProfileActions.create.call({userId, firstName, lastName, timezone}, (error) => {
+                if (error) {
+                  this.setState({
+                    loading: false,
+                    errors: error.reason
+                  });
+                } else {
 
-            // Send confirmation email to user
-            const tokenId = TokenActions.generate.call({email, action: 'email'}, (error) => {
-              if (!error) {
-                // call methods to send verify Email with token link to user
-                // route to Welcome page with a message to verify user's email
-                const verifyUrl = FlowRouter.path('signUpPage', {action: 'confirm'}, {token: tokenId});
-                const url = `http://${DOMAIN}${verifyUrl}`;
-                const template = 'welcome';
-                const data = {
-                  email: email,
-                  firstName: firstName,
-                  url: url
-                };
-                EmailActions.send.call({template, data});
-              }
-            });
-            FlowRouter.go('signUpPage', {action: 'alias'});
-          }
-        });
+                  // create default user scheduler
+                  DEFAULT_SCHEDULER.map(scheduler => {
+                    const year = moment().year();
+                    const {quarter, metrics} = scheduler;
+                    createScheduler.call({year, quarter, metrics});
+                  });
+
+                  // Send confirmation email to user
+                  const tokenId = TokenActions.generate.call({email, action: 'email'}, (error) => {
+                    if (!error) {
+                      // call methods to send verify Email with token link to user
+                      // route to Welcome page with a message to verify user's email
+                      const verifyUrl = FlowRouter.path('signUpPage', {action: 'confirm'}, {token: tokenId});
+                      const url = `http://${DOMAIN}${verifyUrl}`;
+                      const template = 'welcome';
+                      const data = {
+                        email: email,
+                        firstName: firstName,
+                        url: url
+                      };
+                      EmailActions.send.call({template, data});
+                    }
+                  });
+                  FlowRouter.go('signUpPage', {action: 'alias'});
+                }
+              });
+            } else {
+              this.setState({
+                loading: false,
+                errors: error.reason
+              });
+            }
+          });
+        } else {
+          this.setState({
+            loading: false,
+            error: `Email address is invalid.`
+          });
+        }
       } else {
-        this.setState({
-          loading: false,
-          errors: error.reason
-        });
+        console.log(error);
+        // this.setState({
+        //   loading: false,
+        //   errors: error.reason
+        // });
       }
     });
   }
@@ -91,7 +114,7 @@ export default class SignUpUser extends Component {
   render() {
 
     return (
-      <div className="middle-box text-center loginscreen   animated fadeInDown">
+      <div className="middle-box text-center loginscreen animated fadeInDown">
         <div>
           <h1 className="logo-name">TL+</h1>
         </div>

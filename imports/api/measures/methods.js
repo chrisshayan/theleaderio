@@ -166,7 +166,7 @@ export const measureMonthlyMetricScore = new ValidatedMethod({
       runDate = (!!params.date ? params.date : new Date()),
       year = runDate.getFullYear(),
       month = runDate.getMonth(),
-      nextMonth = month === 11 ? 1 : month + 1,
+      execDate = new Date(year, month, 1),
       haveLeaderId = !!params.leaderId,
       haveOrgId = !!params.organizationId
       ;
@@ -197,8 +197,8 @@ export const measureMonthlyMetricScore = new ValidatedMethod({
       selector.organizationId = params.organizationId;
     }
     selector.date = {
-      $gte: new Date(year, month, 1),
-      $lt: new Date(year, nextMonth, 1)
+      $gte: execDate,
+      $lt: new Date(moment(execDate).add(1, 'months'))
     }
     ; // only get data in current month
     modifier = {
@@ -210,6 +210,8 @@ export const measureMonthlyMetricScore = new ValidatedMethod({
         score: 1
       }
     }; // only return necessary fields
+
+    console.log({selector, modifier});
 
     // get leaders data in current month
     const docs = Metrics.find(selector, modifier).fetch();
