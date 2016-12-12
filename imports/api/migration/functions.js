@@ -117,7 +117,7 @@ export const migrateUserData = ({params}) => {
     },
     metricsName = {
       goalRating: "purpose",
-      meetingRating: "mettings",
+      meetingRating: "meetings",
       groundRulesRating: "rules",
       communicationRating: "communications",
       leadershipRating: "leadership",

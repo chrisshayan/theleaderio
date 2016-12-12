@@ -1,3 +1,4 @@
+import {Meteor} from 'meteor/meteor';
 import React, {Component} from 'react';
 import {createContainer} from 'meteor/react-meteor-data';
 import {words as capitalize} from 'capitalize';
@@ -244,7 +245,7 @@ class ProfilePreferences extends Component {
                         label=" All"
                         checked={
                           preferences.metrics.purpose |
-                          preferences.metrics.mettings |
+                          preferences.metrics.meetings |
                           preferences.metrics.rules |
                           preferences.metrics.communications |
                           preferences.metrics.leadership |
@@ -260,7 +261,7 @@ class ProfilePreferences extends Component {
                           metrics: {
                             overall: true,
                             purpose: value,
-                            mettings: value,
+                            meetings: value,
                             rules: value,
                             communications: value,
                             leadership: value,
@@ -290,9 +291,9 @@ class ProfilePreferences extends Component {
                         </li>
                         <li>
                           <CheckBox
-                            label=" Mettings"
-                            checked={preferences.metrics.mettings}
-                            onChange={value => this.setState({ preferences: {...preferences, metrics: { ...preferences.metrics, mettings: value }} })}
+                            label=" Meetings"
+                            checked={preferences.metrics.meetings}
+                            onChange={value => this.setState({ preferences: {...preferences, metrics: { ...preferences.metrics, meetings: value }} })}
                           />
                         </li>
                         <li>

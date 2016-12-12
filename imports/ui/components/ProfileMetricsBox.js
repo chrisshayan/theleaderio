@@ -41,9 +41,9 @@ export default class ProfileMetricsBox extends Component {
               group1.purpose = metrics.purpose;
               break;
             }
-            case 'mettings': {
-              // chartContent.mettings = chart.mettings;
-              group1.mettings = metrics.mettings;
+            case 'meetings': {
+              // chartContent.meetings = chart.meetings;
+              group1.meetings = metrics.meetings;
               break;
             }
             case 'rules': {

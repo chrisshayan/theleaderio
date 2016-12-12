@@ -54,7 +54,7 @@ export const getChartData = new ValidatedMethod({
       label: [],
       overall: [],
       purpose: [],
-      mettings: [],
+      meetings: [],
       rules: [],
       communications: [],
       leadership: [],
@@ -83,7 +83,7 @@ export const getChartData = new ValidatedMethod({
           label: "",
           overall: 0,
           purpose: 0,
-          mettings: 0,
+          meetings: 0,
           rules: 0,
           communications: 0,
           leadership: 0,
@@ -210,8 +210,6 @@ export const measureMonthlyMetricScore = new ValidatedMethod({
         score: 1
       }
     }; // only return necessary fields
-
-    console.log({selector, modifier});
 
     // get leaders data in current month
     const docs = Metrics.find(selector, modifier).fetch();
