@@ -17,14 +17,14 @@ import * as ERROR_CODE from '/imports/utils/error_code';
 export const create = new ValidatedMethod({
   name: "articles.create",
   validate: null,
-  run({subject, content, tags, status, seoUrl}) {
+  run({subject, content, tags, description, status, seoUrl}) {
     const
       user = Meteor.user()
       ;
 
     if(!_.isEmpty(user)) {
       if(Roles.userIsInRole(user._id, "admin")) {
-        return Articles.insert({subject, content, tags, status, seoUrl});
+        return Articles.insert({subject, content, tags, description, status, seoUrl});
       } else {
         return new Meteor.Error(ERROR_CODE.PERMISSION_DENIED);
       }
@@ -43,7 +43,7 @@ export const create = new ValidatedMethod({
 export const edit = new ValidatedMethod({
   name: "articles.edit",
   validate: null,
-  run({_id, subject, content, tags, status}) {
+  run({_id, subject, content, tags, description, status}) {
     const
       user = Meteor.user()
       ;
@@ -57,7 +57,7 @@ export const edit = new ValidatedMethod({
         //   tags,
         //   status
         // })
-        return Articles.update({_id}, {$set: {subject, content, tags, status}});
+        return Articles.update({_id}, {$set: {subject, content, tags, description, status}});
       } else {
         return new Meteor.Error(ERROR_CODE.PERMISSION_DENIED);
       }

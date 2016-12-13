@@ -25,6 +25,7 @@ export default class ArticleBox extends Component {
         subject,
         content,
         tags,
+        description,
         createdAt,
       } = article,
       editUrl = FlowRouter.path("app.articles.action", {action: "edit", seoUrl: article.seoUrl}, {_id}),
@@ -54,7 +55,10 @@ export default class ArticleBox extends Component {
               </div>
               <br/>
               <span className="text-muted"><i className="fa fa-clock-o"></i>{" "}{moment(createdAt).format('MMMM Do, YYYY')}</span>
-              <div dangerouslySetInnerHTML={this._createMarkup({content})}/>
+              {/*<div dangerouslySetInnerHTML={this._createMarkup({content})}/>*/}
+              <div>
+                <p>{description}</p>
+              </div>
               <div className="hr-line-dashed"/>
               <div className="user-button">
                 <div className="row">

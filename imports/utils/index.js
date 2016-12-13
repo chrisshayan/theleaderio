@@ -128,3 +128,23 @@ export const googleTrackConversion = () => {
   } = Meteor.settings.public;
   window.google_trackConversion(googleTrackConversion);
 };
+
+/**
+ * Function get a short description with specific length
+ * @param str
+ * @return {string}
+ */
+export const  getShortDescription = (str, length) => {
+  if (!str) return '';
+
+  const len = length || 18;
+  let
+    words = str.split(' ')
+    ;
+
+  if (words.length > len) {
+    words = words.splice(0, len);
+    words.push('...');
+  }
+  return words.join(' ');
+}
