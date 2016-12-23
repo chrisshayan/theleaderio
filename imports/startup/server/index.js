@@ -12,9 +12,21 @@ import * as IntercomAPI from '/imports/api/intercom';
 
 // Sync user to intercom
 Accounts.onCreateUser(function(options, user) {
+  const {_id, emails, services} = user;
+  let email = "";
+  // if user login by external services
+  if(_.isEmpty(emails)) {
+    // login by google
+    if(!_.isEmpty(services.google)) {
+      email = user.services.google.email;
+    }
+    Accounts.users.update({_id}, {$set: {emails: [{address: email, verified: false}]}});
+  } else {
+    email = emails[0].address;
+  }
   IntercomAPI.upsertUser({
-    user_id: user._id,
-    email: user['emails'][0]['address']
+    user_id: _id,
+    email
   });
   return user;
 });

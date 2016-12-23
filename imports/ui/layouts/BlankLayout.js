@@ -1,16 +1,16 @@
-import React from 'react';
+import React, {Component} from 'react';
 
-import TopNav from '/imports/ui/common/TopNav';
-
-export default ({content = () => null}) => (
-  <div className="gray-bg">
-    <div className="container gray-bg">
-      <div className="row">
-        <div className="col-md-10 col-md-offset-1 col-xs-12">
-          <TopNav />
+export default class BlankLayout extends Component {
+  render() {
+    const {content = () => null} = this.props;
+    return (
+      <div className="top-navigation">
+        <div id="wrapper">
+          <div id="page-wrapper" className="gray-bg">
+            {content()}
+          </div>
         </div>
-        { content() }
       </div>
-    </div>
-  </div>
-);
+    );
+  }
+}

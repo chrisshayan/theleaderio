@@ -699,3 +699,24 @@ nav.left-nav ul li a span {
   width: 350px;
   max-width: 350px;
 }
+
+.journey-box {
+  max-width: 800px;
+  z-index: 100;
+  margin: 0 auto;
+  padding-top: 40px;
+}
+
+.create-screen.journey-box {
+  width: 500px;
+}
+
+.journey-box h1 {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.journey-box p {
+  margin-left: 10px;
+  margin-right: 10px;
+}

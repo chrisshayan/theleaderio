@@ -68,7 +68,7 @@ export default class SignUpForm extends Component {
           <button type="submit" className="btn btn-primary block full-width m-b">Sign up</button>
         </div>
         <p>
-          You are a leader already? <a href={signInUrl}>Sign in.</a>
+          You are a leader already? <a onClick={() => {FlowRouter.go(signInUrl);}}>Sign in.</a>
         </p>
       </form>
     );

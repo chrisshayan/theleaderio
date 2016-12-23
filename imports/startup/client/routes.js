@@ -12,10 +12,9 @@ import Notification from '/imports/api/notifications/methods';
 import ConfirmEmail from '/imports/ui/components/ConfirmEmail';
 
 import MainLayout from '/imports/ui/layouts/MainLayout';
+import {MainLayoutFull} from '/imports/ui/layouts/MainLayoutFull';
 import BlankLayout from '/imports/ui/layouts/BlankLayout';
 
-// import ManageIndustries from '/imports/ui/containers/admin/ManageIndustries';
-// import ManageJobs from '/imports/ui/containers/admin/ManageJobs';
 import Management from '/imports/ui/containers/admin/Management';
 
 import ArticlesContainer from '/imports/ui/containers/articles/ArticlesContainer';
@@ -49,6 +48,8 @@ import Feedback from '/imports/ui/containers/feedback/Feedback';
 import Messages from '/imports/ui/containers/messages/Messages';
 
 import ReferralsContainer from '/imports/ui/containers/referrals/ReferralsContainer';
+
+import {GettingStartedJourney} from '/imports/ui/containers/journey/GettingStartedJourney';
 
 // methods
 import * as Notifications from '/imports/api/notifications/methods';
@@ -620,6 +621,22 @@ appRoutes.route('/referrals', {
     mount(MainLayout, {
       content() {
         return <ReferralsContainer />;
+      }
+    });
+  }
+});
+
+
+/**
+ * Route for getting started journey
+ */
+appRoutes.route('/journey/start/:step', {
+  name: "app.journey",
+  action(params) {
+    const {step} = params;
+    mount(MainLayoutFull, {
+      content() {
+        return <GettingStartedJourney step={step} />;
       }
     });
   }

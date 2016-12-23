@@ -1,0 +1,59 @@
+import React, {Component} from 'react';
+
+export class TopNavFull extends Component {
+
+  _minimalizeNavBar() {
+    event.preventDefault();
+
+    // Toggle special class
+    $("body").toggleClass("mini-navbar");
+
+    // Enable smoothly hide/show menu
+    if (!$('body').hasClass('mini-navbar') || $('body').hasClass('body-small')) {
+      // Hide menu in order to smoothly turn on when maximize menu
+      $('#side-menu').hide();
+      // For smoothly turn on menu
+      setTimeout(
+        function () {
+          $('#side-menu').fadeIn(400);
+        }, 200);
+    } else if ($('body').hasClass('fixed-sidebar')) {
+      $('#side-menu').hide();
+      setTimeout(
+        function () {
+          $('#side-menu').fadeIn(400);
+        }, 100);
+    } else {
+      // Remove all inline style from jquery fadeIn function to reset menu state
+      $('#side-menu').removeAttr('style');
+    }
+  }
+
+  render() {
+    return (
+      <nav className="navbar navbar-static-top" role="navigation">
+        <div className="navbar-header">
+          <button aria-controls="navbar" aria-expanded="false" data-target="#navbar" data-toggle="collapse"
+                  className="navbar-toggle collapsed" type="button">
+            <i className="fa fa-reorder"></i>
+          </button>
+          <a href="#" className="navbar-brand">theLeader.io</a>
+        </div>
+        <div className="navbar-collapse collapse" id="navbar">
+          <ul className="nav navbar-nav">
+            <li className="active">
+              <a aria-expanded="false" role="button" href="layouts.html"> Strive for GREAT Leadership</a>
+            </li>
+          </ul>
+          <ul className="nav navbar-top-links navbar-right">
+            <li>
+              <a href="login.html">
+                <i className="fa fa-sign-out"></i> Log out
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    );
+  }
+}
