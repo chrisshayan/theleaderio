@@ -18,7 +18,7 @@ export class CreateOrganizationStep extends Component {
     this.state = {
       orgId: FlowRouter.getQueryParam("orgId") || "",
       org: {
-        name: "unnamed",
+        name: "",
         jobTitle: "",
         imageUrl: DEFAULT_ORGANIZATION_PHOTO || "",
         startTime: new Date(),
@@ -100,7 +100,11 @@ export class CreateOrganizationStep extends Component {
   }
 
   render() {
-    const {orgId, org, errors} = this.state;
+    const
+      {orgId, org, errors} = this.state,
+      disabled = !_.isEmpty(org.name) ? false : true
+      ;
+    console.log({org, disabled});
     return (
       <form className="form-horizontal" onSubmit={this._onSubmit.bind(this)}>
         <FormInputHorizontal
@@ -123,7 +127,11 @@ export class CreateOrganizationStep extends Component {
         <div className="form-group pull-right">
           <a className="btn btn-white" onClick={this._onSkip.bind(this)}>Skip</a>
           {" "}
-          <button className="btn btn-primary" type="submit" style={{marginRight: 19}}>Create</button>
+          <button className="btn btn-primary" type="submit"
+                  style={{marginRight: 19}}
+                  disabled={disabled}
+          >Create{" "}<i className="fa fa-arrow-right"></i>
+          </button>
         </div>
       </form>
     );

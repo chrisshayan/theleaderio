@@ -5,7 +5,7 @@ import {FlowRouter} from 'meteor/kadira:flow-router';
 
 // methods
 import {getPresentOrganizations} from '/imports/api/organizations/methods';
-import * as Notifications from '/imports/api/notifications/methods';
+import * as Notifications from '/imports/api/notifications/functions';
 import {measureMonthlyMetricScore} from '/imports/api/measures/methods';
 
 // components
@@ -77,7 +77,7 @@ export default class Dashboard extends Component {
         title = "You didn't have present organization",
         message = "Please create one"
         ;
-      Notifications.warning.call({closeButton, title, message});
+      Notifications.warning({closeButton, title, message});
       FlowRouter.go('app.organizations');
     }
   }

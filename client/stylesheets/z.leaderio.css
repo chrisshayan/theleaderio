@@ -708,7 +708,13 @@ nav.left-nav ul li a span {
 }
 
 .create-screen.journey-box {
-  width: 500px;
+  width: 400px;
+}
+
+.journey-box form {
+  width: 80%;
+  margin: auto;
+  margin-top: 20px;
 }
 
 .journey-box h1 {

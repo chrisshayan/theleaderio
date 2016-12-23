@@ -4,7 +4,7 @@ import {
   METRICS_UI_INFO,
 } from '/imports/api/scheduler';
 
-import * as Notifications from '/imports/api/notifications/methods';
+import * as Notifications from '/imports/api/notifications/functions';
 
 class MetricItem extends Component {
   static propTypes = {
@@ -39,9 +39,9 @@ class MetricItem extends Component {
     const { name, schedulerId } = this.props;
     Meteor.call('scheduler.removeMetricOfQuarter', { schedulerId, metric: name }, error => {
       if(error) {
-        Notifications.error.call({message: error.reason});
+        Notifications.error({message: error.reason});
       } else {
-        Notifications.success.call({message: 'Removed'});
+        Notifications.success({message: 'Removed'});
       }
     });
   }

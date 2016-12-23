@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 
+import { DOMAIN } from '/imports/startup/client/routes';
+
 export class TopNavFull extends Component {
 
   _minimalizeNavBar() {
@@ -30,6 +32,7 @@ export class TopNavFull extends Component {
   }
 
   render() {
+    const homePageUrl = `http://${DOMAIN}`;
     return (
       <nav className="navbar navbar-static-top" role="navigation">
         <div className="navbar-header">
@@ -37,12 +40,12 @@ export class TopNavFull extends Component {
                   className="navbar-toggle collapsed" type="button">
             <i className="fa fa-reorder"></i>
           </button>
-          <a href="#" className="navbar-brand">theLeader.io</a>
+          <a href={homePageUrl} className="navbar-brand">theLeader.io</a>
         </div>
         <div className="navbar-collapse collapse" id="navbar">
           <ul className="nav navbar-nav">
             <li className="active">
-              <a aria-expanded="false" role="button" href="layouts.html"> Strive for GREAT Leadership</a>
+              <a aria-expanded="false" role="button" href={homePageUrl}> Strive for GREAT Leadership</a>
             </li>
           </ul>
           <ul className="nav navbar-top-links navbar-right">

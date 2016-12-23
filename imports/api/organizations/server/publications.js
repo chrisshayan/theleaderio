@@ -39,7 +39,7 @@ Meteor.publish('organizations', function() {
 		return this.ready();
 	}
 
-	return Organizations.find();
+	return Organizations.find({leaderId: this.userId});
 });
 
 Meteor.publishComposite('organizations.details', function({ _id }) {

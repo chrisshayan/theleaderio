@@ -8,7 +8,7 @@ import {STATUS} from '/imports/api/referrals/index';
 
 // methods
 import {send as sendReferral, remove as removeReferral} from '/imports/api/referrals/methods';
-import * as Notifications from '/imports/api/notifications/methods';
+import * as Notifications from '/imports/api/notifications/functions';
 import {getErrors} from '/imports/utils';
 
 export default class SingleReferral extends Component {
@@ -20,7 +20,7 @@ export default class SingleReferral extends Component {
         closeButton = true,
         title = 'Referral',
         message = 'Referral not exists';
-      Notifications.error.call({closeButton, title, message});
+      Notifications.error({closeButton, title, message});
       return;
     }
     sendReferral.call({params: {referralId: _id}}, (error, result) => {
@@ -29,13 +29,13 @@ export default class SingleReferral extends Component {
           closeButton = true,
           title = 'Referral',
           message = 'Invited';
-        Notifications.success.call({closeButton, title, message});
+        Notifications.success({closeButton, title, message});
       } else {
         const
           closeButton = true,
           title = 'Referral',
           message = `Invite failed: ${error.reason}`;
-        Notifications.error.call({closeButton, title, message});
+        Notifications.error({closeButton, title, message});
       }
     });
   }

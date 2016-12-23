@@ -7,7 +7,6 @@ import {mount} from 'react-mounter';
 import NoticeForm from '/imports/ui/common/NoticeForm';
 import WelcomePage from '/imports/ui/common/WelcomePage';
 import ThankyouPage from '/imports/ui/common/ThankyouPage';
-import Notification from '/imports/api/notifications/methods';
 
 import ConfirmEmail from '/imports/ui/components/ConfirmEmail';
 
@@ -28,6 +27,8 @@ import SignUpAlias from '/imports/ui/containers/signup/SignUpAlias';
 import ResetAlias from '/imports/ui/containers/migration/ResetAlias';
 import ConfirmReferral from '/imports/ui/containers/referrals/ConfirmReferral';
 import CancelReferral from '/imports/ui/containers/referrals/CancelReferral';
+
+import {SignUpUserNew} from '/imports/ui/containers/signup/SignUpUserNew';
 
 import SignInAlias from '/imports/ui/containers/signin/SignInAlias';
 import SignInAccount from '/imports/ui/containers/signin/SignInAccount';
@@ -52,7 +53,7 @@ import ReferralsContainer from '/imports/ui/containers/referrals/ReferralsContai
 import {GettingStartedJourney} from '/imports/ui/containers/journey/GettingStartedJourney';
 
 // methods
-import * as Notifications from '/imports/api/notifications/methods';
+import * as Notifications from '/imports/api/notifications/functions';
 
 // functions
 import {isAdmin} from '/imports/utils/index';
@@ -166,6 +167,13 @@ export const thankyouRoute = FlowRouter.route('/thankyou', {
   }
 });
 
+FlowRouter.route('/newsignup', {
+  name: "newSignUp",
+  action() {
+    mount(SignUpUserNew);
+  }
+});
+
 /**
  * @summary lists of signup routes
  * @route /signup/:action
@@ -194,7 +202,7 @@ signUpRoutes.route('/:action', {
             closeButton = false,
             title = "Signup user",
             message = "Please enter your basic informations first";
-          Notifications.warning.call({closeButton, title, message});
+          Notifications.warning({closeButton, title, message});
           FlowRouter.go('signUpPage', {action: 'user'});
         } else {
           mount(SignUpAlias);
@@ -365,7 +373,7 @@ appRoutes.route('/logout', {
           timeOut = 2000,
           title = 'Signed out',
           message = '';
-        Notifications.success.call({closeButton, timeOut, title, message});
+        Notifications.success({closeButton, timeOut, title, message});
       }
       FlowRouter.go('/');
     });

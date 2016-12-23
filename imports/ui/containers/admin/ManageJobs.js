@@ -14,7 +14,7 @@ import FormManageJob from '/imports/ui/components/FormManageJob';
 import {Administration} from '/imports/api/admin/index';
 
 // methods
-import * as Notifications from '/imports/api/notifications/methods';
+import * as Notifications from '/imports/api/notifications/functions';
 import {verifyAdminRole} from '/imports/api/users/methods';
 import {editAdminJob} from '/imports/api/jobs/methods';
 import {add as addJobSchedule, edit as editJobSchedule} from '/imports/api/admin/methods';
@@ -149,14 +149,14 @@ class ManageJobs extends Component {
               title = 'Send performance feedback emails to leaders',
               message = 'Edited'
               ;
-            Notifications.success.call({closeButton, title, message});
+            Notifications.success({closeButton, title, message});
           } else {
             const
               closeButton = true,
               title = 'Send performance feedback emails to leaders',
               message = `Edit failed - ${error.reason}`
               ;
-            Notifications.error.call({closeButton, title, message});
+            Notifications.error({closeButton, title, message});
           }
         });
       } else {
@@ -165,7 +165,7 @@ class ManageJobs extends Component {
           title = 'Send performance feedback emails to leaders',
           message = `Edit failed - ${error.reason}`
           ;
-        Notifications.error.call({closeButton, title, message});
+        Notifications.error({closeButton, title, message});
       }
     });
 

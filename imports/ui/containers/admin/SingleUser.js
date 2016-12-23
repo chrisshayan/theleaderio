@@ -11,7 +11,7 @@ import XEditable from '/imports/ui/components/XEditable';
 import LoadingIndicator from '/imports/ui/common/LoadingIndicator';
 
 // methods
-import * as Notifications from '/imports/api/notifications/methods';
+import * as Notifications from '/imports/api/notifications/functions';
 
 // functions
 import {disableAccount, enableAccount} from '/imports/api/users/methods';
@@ -37,14 +37,14 @@ export default class SingleUser extends Component {
           title = "",
           {message} = result
           ;
-        Notifications.success.call({closeButton, title, message});
+        Notifications.success({closeButton, title, message});
         console.log(result);
       } else {
         const closeButton = true,
           title = "",
           message = error.reason
           ;
-        Notifications.error.call({closeButton, title, message});
+        Notifications.error({closeButton, title, message});
       }
     });
   }

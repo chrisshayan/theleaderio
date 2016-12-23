@@ -12,7 +12,7 @@ import {DEFAULT_PUBLIC_INFO_PREFERENCES} from '/imports/utils/defaults';
 // methods
 import {getPublicData}  from '/imports/api/profiles/methods';
 import {updatePreferences} from '/imports/api/users/methods';
-import * as Notifications from '/imports/api/notifications/methods';
+import * as Notifications from '/imports/api/notifications/functions';
 
 // components
 import Spinner from '/imports/ui/common/Spinner';
@@ -73,13 +73,13 @@ class ProfilePreferences extends Component {
           closeButton = false,
           title = 'Customize public profile',
           message = 'Saved';
-        Notifications.success.call({closeButton, title, message});
+        Notifications.success({closeButton, title, message});
       } else {
         const
           closeButton = false,
           title = 'Customize public profile',
           message = error.reason;
-        Notifications.error.call({closeButton, title, message});
+        Notifications.error({closeButton, title, message});
       }
     });
   }

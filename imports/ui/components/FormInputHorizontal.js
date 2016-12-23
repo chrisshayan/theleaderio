@@ -9,6 +9,7 @@ export default class FormInputHorizontal extends Component {
         defaultValue,
         placeHolder,
         disabled,
+        required = false,
         grid = [3, 9],
         onChangeText = () => null
       } = this.props,
@@ -24,9 +25,10 @@ export default class FormInputHorizontal extends Component {
             type={type}
             className="form-control"
             placeholder={placeHolder}
-            defaultValue={defaultValue}
+            value={defaultValue}
             onChange={e => onChangeText(e.target.value)}
             disabled={disabled}
+            required={required}
           />
         </div>
       </div>

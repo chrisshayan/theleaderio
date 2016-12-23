@@ -12,7 +12,7 @@ import FormChosen from '/imports/ui/components/FormChosen';
 
 // methods
 import * as ArticleActions from '/imports/api/articles/methods';
-import * as Notifications from '/imports/api/notifications/methods';
+import * as Notifications from '/imports/api/notifications/functions';
 
 // functions
 import {encodeKeyword} from '/imports/utils/urlBuilder';
@@ -57,7 +57,7 @@ class EditArticle extends Component {
         title = "Article",
         message = error
         ;
-      Notifications.error.call({closeButton, title, message});
+      Notifications.error({closeButton, title, message});
     }
 
   }
@@ -106,7 +106,7 @@ class EditArticle extends Component {
             title = "Article",
             message = "Saved"
             ;
-          Notifications.success.call({closeButton, title, message});
+          Notifications.success({closeButton, title, message});
           // route to view article
           FlowRouter.go('app.articles.action', {action: 'view', seoUrl}, {_id});
         } else {
@@ -115,7 +115,7 @@ class EditArticle extends Component {
             title = "Article",
             message = error.reason
             ;
-          Notifications.error.call({closeButton, title, message});
+          Notifications.error({closeButton, title, message});
         }
       });
     } else {
@@ -134,7 +134,7 @@ class EditArticle extends Component {
             title = "Article",
             message = "Saved"
             ;
-          Notifications.success.call({closeButton, title, message});
+          Notifications.success({closeButton, title, message});
           // FlowRouter.go('app.articles.action', {action: 'view', seoUrl}, {_id: articleId});
         } else {
           const
@@ -142,7 +142,7 @@ class EditArticle extends Component {
             title = "Article",
             message = error.reason
             ;
-          Notifications.error.call({closeButton, title, message});
+          Notifications.error({closeButton, title, message});
         }
       });
     }
@@ -199,7 +199,7 @@ class EditArticle extends Component {
             title = "Article",
             message = "Discarded"
             ;
-          Notifications.success.call({closeButton, title, message});
+          Notifications.success({closeButton, title, message});
           FlowRouter.go('app.articles');
         } else {
           const
@@ -207,7 +207,7 @@ class EditArticle extends Component {
             title = "Article",
             message = error.reason
             ;
-          Notifications.error.call({closeButton, title, message});
+          Notifications.error({closeButton, title, message});
         }
       });
     }
