@@ -196,6 +196,7 @@ class AddEmployeesStep extends Component {
 
   _onGoNext() {
     console.log(`Go to next step`);
+    FlowRouter.go('app.dashboard');
   };
 
   render() {

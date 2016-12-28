@@ -75,7 +75,7 @@ export default class LandingPage extends Component {
                 <p>Get insight on how your team rates your leadership and how to improve.</p>
                 <p>
                   <a className="btn btn-lg btn-primary" role="button"
-                     href={FlowRouter.path('signUpPage', {action: 'user'})}>Try for free!</a>
+                     href={FlowRouter.path('newSignUpSteps', {action: 'alias'})}>Try for free!</a>
                   <a className="caption-link" href={FlowRouter.path('SignInPage', {action: 'alias'})} role="button">Have account already?</a>
                 </p>
               </div>

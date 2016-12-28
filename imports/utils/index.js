@@ -1,5 +1,6 @@
 import {Meteor} from 'meteor/meteor';
 import {JOB_FREQUENCY, MINUTE_OF_AN_HOUR} from '/imports/utils/defaults';
+import validate from 'validate';
 
 export const IDValidator = {
   _id: {
@@ -18,6 +19,25 @@ export const aliasValidator = (alias) => {
   const regex = new RegExp("^[a-zA-Z0-9]*$");
 
   return regex.test(alias);
+}
+
+
+/**
+ * Function validate email
+ * Only allow a-z, A-Z and Number 0-9
+ * @param alias
+ * @return true if alias's characters is allowed
+ */
+export const emailValidator = (email) => {
+  const
+    constraints = {
+      email: {
+        email: true
+      }
+    },
+    emailValidation = validate({email}, constraints);
+  ;
+  return _.isEmpty(emailValidation) ? true : false;
 }
 
 export const getErrors = err => {
@@ -134,7 +154,7 @@ export const googleTrackConversion = () => {
  * @param str
  * @return {string}
  */
-export const  getShortDescription = (str, length) => {
+export const getShortDescription = (str, length) => {
   if (!str) return '';
 
   const len = length || 18;

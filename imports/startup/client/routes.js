@@ -29,6 +29,7 @@ import ConfirmReferral from '/imports/ui/containers/referrals/ConfirmReferral';
 import CancelReferral from '/imports/ui/containers/referrals/CancelReferral';
 
 import {SignUpUserNew} from '/imports/ui/containers/signup/SignUpUserNew';
+import {SignUpAliasNew} from '/imports/ui/containers/signup/SignUpAliasNew';
 
 import SignInAlias from '/imports/ui/containers/signin/SignInAlias';
 import SignInAccount from '/imports/ui/containers/signin/SignInAccount';
@@ -52,11 +53,10 @@ import ReferralsContainer from '/imports/ui/containers/referrals/ReferralsContai
 
 import {GettingStartedJourney} from '/imports/ui/containers/journey/GettingStartedJourney';
 
-// methods
-import * as Notifications from '/imports/api/notifications/functions';
-
 // functions
 import {isAdmin} from '/imports/utils/index';
+import * as Notifications from '/imports/api/notifications/functions';
+import {getSubdomain} from '/imports/utils/subdomain';
 
 
 /**
@@ -167,10 +167,54 @@ export const thankyouRoute = FlowRouter.route('/thankyou', {
   }
 });
 
-FlowRouter.route('/newsignup', {
-  name: "newSignUp",
-  action() {
-    mount(SignUpUserNew);
+// FlowRouter.route('/newsignup', {
+//   name: "newSignUp",
+//   action() {
+//     mount(SignUpUserNew);
+//   }
+// });
+
+const newSignUpRoutes = FlowRouter.group({
+  name: "newSignUpRoutes",
+  prefix: "/newsignup"
+});
+
+newSignUpRoutes.route('/:action', {
+  name: "newSignUpSteps",
+  action(params) {
+    const {action} = params;
+    switch (action) {
+      case 'alias': {
+        mount(MainLayoutFull, {
+          content() {
+            return <SignUpAliasNew/>;
+          }
+        });
+        break;
+      }
+      case 'user': {
+        const alias = getSubdomain();
+        if(_.isEmpty(alias)) {
+          const
+            title = 'No alias',
+            message = 'Please choose your alias first!'
+            ;
+
+          Notifications.warning({title, message});
+          FlowRouter.go('newSignUpSteps', {action: 'alias'});
+        } else {
+          mount(MainLayoutFull, {
+            content() {
+              return <SignUpUserNew/>;
+            }
+          });
+        }
+        break;
+      }
+      default: {
+        mount(NoticeForm);
+      }
+    }
   }
 });
 

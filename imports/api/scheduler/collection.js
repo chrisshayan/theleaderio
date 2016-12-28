@@ -29,6 +29,7 @@ export default class SchedulerCollection extends Mongo.Collection {
   }
 
   updateSendingPlan(doc) {
+    console.log(doc)
     if(Meteor.isServer) {
       // remove all sending plan existing that status is READY
       SendingPlans.remove({

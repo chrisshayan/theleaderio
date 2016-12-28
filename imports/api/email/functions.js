@@ -733,31 +733,3 @@ export const getReferralEmailOptions = ({template, data}) => {
 
   return result;
 };
-
-/**
- * Function validate email address with mailgun API
- * @param params
- * @return {*}
- */
-export const validateEmail = ({params}, callback) => {
-  const
-    {email: address} = params,
-    {url, key} = Meteor.settings.public.MAILGUN_API,
-    options = {auth: `api:${key}`, params: {address}}
-    ;
-  console.log(options)
-
-  try {
-    HTTP.get(url, options, (error, result) => {
-      if(!error) {
-        const {statusCode, data: {address: email, is_valid: isValid}} = result;
-        callback(null, {statusCode, email, isValid});
-      } else {
-        callback(error, null);
-      }
-    });
-    return true;
-  } catch (error) {
-    return false;
-  }
-};

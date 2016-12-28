@@ -42,4 +42,6 @@ import '/imports/api/user_messages/register.server';
 import '/imports/api/articles/register.server';
 // referrals
 import '/imports/api/referrals/register.server';
+// alias
+import '/imports/api/alias/register.server';
 

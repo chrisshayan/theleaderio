@@ -10,6 +10,7 @@ export default class FormInputHorizontal extends Component {
         placeHolder,
         disabled,
         required = false,
+        autoFocus = false,
         grid = [3, 9],
         onChangeText = () => null
       } = this.props,
@@ -29,6 +30,7 @@ export default class FormInputHorizontal extends Component {
             onChange={e => onChangeText(e.target.value)}
             disabled={disabled}
             required={required}
+            autoFocus={autoFocus}
           />
         </div>
       </div>
