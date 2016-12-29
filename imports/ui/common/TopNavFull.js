@@ -1,3 +1,4 @@
+import {Meteor} from 'meteor/meteor';
 import React, {Component} from 'react';
 
 import { DOMAIN } from '/imports/startup/client/routes';
@@ -32,7 +33,10 @@ export class TopNavFull extends Component {
   }
 
   render() {
-    const homePageUrl = `http://${DOMAIN}`;
+    const
+      homePageUrl = `http://${DOMAIN}`,
+      userId = Meteor.userId()
+      ;
     return (
       <nav className="navbar navbar-static-top" role="navigation">
         <div className="navbar-header">
@@ -48,13 +52,15 @@ export class TopNavFull extends Component {
               <a aria-expanded="false" role="button" href={homePageUrl}> Strive for GREAT Leadership</a>
             </li>
           </ul>
-          <ul className="nav navbar-top-links navbar-right">
-            <li>
-              <a href="login.html">
-                <i className="fa fa-sign-out"></i> Log out
-              </a>
-            </li>
-          </ul>
+          {!_.isEmpty(userId) && (
+            <ul className="nav navbar-top-links navbar-right">
+              <li>
+                <a href="login.html">
+                  <i className="fa fa-sign-out"></i> Sign out
+                </a>
+              </li>
+            </ul>
+          )}
         </div>
       </nav>
     );

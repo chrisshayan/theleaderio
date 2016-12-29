@@ -118,14 +118,22 @@ FlowRouter.setRootUrl();
  */
 FlowRouter.notFound = {
   action() {
-    mount(NoticeForm);
+    mount(MainLayoutFull, {
+      content() {
+        return <NoticeForm/>;
+      }
+    });
   }
 };
 
 FlowRouter.route('/not-found', {
   name: 'notFound',
   action() {
-    mount(NoticeForm);
+    mount(MainLayoutFull, {
+      content() {
+        return <NoticeForm/>;
+      }
+    });
   }
 });
 
@@ -158,14 +166,22 @@ const homeRoute = FlowRouter.route('/', {
 export const welcomeRoute = FlowRouter.route('/welcome', {
   name: 'welcomePage',
   action() {
-    mount(Notification);
+    mount(MainLayoutFull, {
+      content() {
+        return <Notification/>;
+      }
+    });
   }
 });
 
 export const thankyouRoute = FlowRouter.route('/thankyou', {
   name: 'thankyouPage',
   action() {
-    mount(ThankyouPage);
+    mount(MainLayoutFull, {
+      content() {
+        return <ThankyouPage/>;
+      }
+    });
   }
 });
 
@@ -311,14 +327,22 @@ signInRoutes.route('/:action', {
   action(params, queryParams) {
     // sign in to user's web address with alias
     if (params.action == 'alias') {
-      mount(SignInAlias);
+      mount(MainLayoutFull, {
+        content() {
+          return <SignInAlias/>;
+        }
+      });
     }
     // sign in to user's account
     if (params.action == 'account') {
       if (Meteor.loggingIn() || Meteor.userId()) {
         FlowRouter.go('app.dashboard');
       } else {
-        mount(SignInAccount);
+        mount(MainLayoutFull, {
+          content() {
+            return <SignInAccount/>;
+          }
+        });
       }
     }
   }
@@ -340,15 +364,27 @@ passwordRoutes.route('/:action', {
   action(params) {
     // forgot password
     if (params.action == 'forgot') {
-      mount(PasswordPage);
+      mount(MainLayoutFull, {
+        content() {
+          return <PasswordPage/>;
+        }
+      });
     }
     // reset password
     if (params.action == 'reset') {
-      mount(PasswordPage);
+      mount(MainLayoutFull, {
+        content() {
+          return <PasswordPage/>;
+        }
+      });
     }
     // set password
     if (params.action == 'set') {
-      mount(SetPasswordPage);
+      mount(MainLayoutFull, {
+        content() {
+          return <SetPasswordPage/>;
+        }
+      });
     }
   }
 });
@@ -369,7 +405,11 @@ aliasRoutes.route('/:action', {
   action(params) {
     // forgot alias
     if (params.action == 'forgot') {
-      mount(ForgotAliasPage);
+      mount(MainLayoutFull, {
+        content() {
+          return <ForgotAliasPage/>;
+        }
+      });
     }
   }
 });

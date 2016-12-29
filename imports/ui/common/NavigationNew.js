@@ -112,7 +112,7 @@ export class Navigation extends Component {
                       <strong className="font-bold">{name}</strong>
                     </span>
                     <span className="text-muted text-xs block" style={{textTransform: 'capitalize'}}>
-                      {jobTitle}<b className="caret"></b>
+                      {jobTitle}
                     </span>
                   </span>
                 </a>

@@ -43,7 +43,7 @@ export default class LandingPage extends Component {
     }
     const homeUrl = `http://${DOMAIN}${FlowRouter.path('homePage')}`;
     return (
-      <div id="page-top" className="landing-page">
+      <div id="page-top" className="landing-page white-bg">
         <div className="navbar-wrapper">
           <nav ref="nav" className={navStyle} role="navigation">
             <div className="container">
