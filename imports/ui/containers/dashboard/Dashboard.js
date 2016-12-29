@@ -78,7 +78,8 @@ export default class Dashboard extends Component {
         message = "Please create one"
         ;
       Notifications.warning({closeButton, title, message});
-      FlowRouter.go('app.organizations');
+      // FlowRouter.go('app.organizations');
+      FlowRouter.go('app.journey', {step: 'organization'});
     }
   }
 

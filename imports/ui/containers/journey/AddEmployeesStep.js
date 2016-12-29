@@ -121,13 +121,13 @@ class AddEmployeesStep extends Component {
                   const
                     closeButton = false,
                     title = 'Import Successfully',
-                    message = '';
+                    message = `${employees.length} employees imported.`;
                   Notifications.success({
                     closeButton,
                     title,
                     message
                   });
-                  this._onGoNext();
+                  FlowRouter.go('app.dashboard');
                 }
               })
             } else {
@@ -190,14 +190,9 @@ class AddEmployeesStep extends Component {
     });
   };
 
-  _onImportFromGoogle() {
-    console.log(`import from google friend list.`);
-  };
-
-  _onGoNext() {
-    console.log(`Go to next step`);
-    FlowRouter.go('app.dashboard');
-  };
+  // _onImportFromGoogle() {
+  //   console.log(`import from google friend list.`);
+  // };
 
   render() {
 
@@ -206,7 +201,7 @@ class AddEmployeesStep extends Component {
       {ready, wrongUrl = false, disabled = true} = this.props
       ;
 
-    console.log({employee, errors, ready, disabled})
+    // console.log({employee, errors, ready, disabled})
 
     if (wrongUrl) {
       return (
@@ -221,18 +216,18 @@ class AddEmployeesStep extends Component {
                   this._onSubmit();
                 }}
           >
+            {/*<div className="form-group">*/}
+              {/*<div className="col-md-12">*/}
+                {/*<a className="btn btn-danger btn-block"*/}
+                   {/*onClick={this._onImportFromGoogle.bind(this)}*/}
+                {/*>*/}
+                  {/*<i className="fa fa-cloud-upload"> </i> Import from Google*/}
+                {/*</a>*/}
+              {/*</div>*/}
+            {/*</div>*/}
             <div className="form-group">
               <div className="col-md-12">
-                <a className="btn btn-danger btn-block"
-                   onClick={this._onImportFromGoogle.bind(this)}
-                >
-                  <i className="fa fa-cloud-upload"> </i> Import from Google
-                </a>
-              </div>
-            </div>
-            <div className="form-group">
-              <div className="col-md-12">
-                <a className="btn btn-white btn-block"
+                <a className="btn btn-primary btn-block"
                    onClick={this._onClickShowImportDialog}
                 >
                   <i className="fa fa-cloud-upload"> </i> Import from file (.csv)
@@ -271,7 +266,7 @@ class AddEmployeesStep extends Component {
             </div>
             <div className="form-group">
               <div className="col-md-3 col-md-offset-9">
-                <button className="btn btn-success form-control" type="submit">
+                <button className="btn btn-primary form-control" type="submit">
                   <i className="fa fa-plus"></i>{" "}Add
                 </button>
               </div>
@@ -279,7 +274,7 @@ class AddEmployeesStep extends Component {
             <HrDashed/>
             <div className="form-group pull-right">
               <button className="btn btn-primary"
-                      onClick={this._onGoNext.bind(this)}
+                      onClick={() => FlowRouter.go('app.journey', {step: 'final'})}
                       style={{marginRight: 19}}
                       disabled={disabled}
               >Go to next step{" "}<i className="fa fa-arrow-right"></i>
@@ -298,7 +293,7 @@ class AddEmployeesStep extends Component {
   }
 }
 
-export default AddEmployeesStepContainer = createContainer((params) => {
+export const AddEmployeesStepContainer = createContainer((params) => {
   const
     sub = Meteor.subscribe("employees"),
     subOrg = Meteor.subscribe("organizations"),

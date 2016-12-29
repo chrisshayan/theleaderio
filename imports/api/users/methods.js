@@ -400,6 +400,9 @@ export const initiateUserInformation = new ValidatedMethod({
     email: {
       type: String
     },
+    alias: {
+      type: String
+    },
     firstName: {
       type: String
     },

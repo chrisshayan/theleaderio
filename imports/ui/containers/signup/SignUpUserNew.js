@@ -76,7 +76,7 @@ export class SignUpUserNew extends Component {
           });
           this._onCreateUserSuccess({userId, email, alias: username, firstName, lastName, timezone});
         } else {
-          console.log(`user can't login`);
+          // console.log(`user can't login`);
         }
       } else {
         if(error.reason === 'Username already exists.') {

@@ -3,7 +3,8 @@ import {FlowRouter} from 'meteor/kadira:flow-router';
 
 // component
 import {CreateOrganizationStep} from './CreateOrganizationStep';
-import AddEmployeesStep from './AddEmployeesStep';
+import {AddEmployeesStepContainer} from './AddEmployeesStep';
+import {FinalStep} from './FinalStep';
 
 export class GettingStartedJourney extends Component {
   render() {
@@ -29,7 +30,15 @@ export class GettingStartedJourney extends Component {
         header = "Add employees";
         description = "Upload your list of employees so theLeader.io will be able to get scores of different perspectives of your leadership. Engagement starts from this simple step.";
         content = () => {
-          return <AddEmployeesStep/>
+          return <AddEmployeesStepContainer/>
+        };
+        break;
+      }
+      case 'final': {
+        header = "Congratulation!";
+        description = "You have just finished the first start for striving to be a great leader.";
+        content = () => {
+          return <FinalStep/>
         };
         break;
       }

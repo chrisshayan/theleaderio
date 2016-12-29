@@ -3,16 +3,18 @@ import {FlowRouter} from 'meteor/kadira:flow-router';
 import React from 'react';
 import {mount} from 'react-mounter';
 
+// layouts
+// import MainLayout from '/imports/ui/layouts/MainLayout';
+import {MainLayout} from '/imports/ui/layouts/MainLayoutNew';
+import {MainLayoutFull} from '/imports/ui/layouts/MainLayoutFull';
+import BlankLayout from '/imports/ui/layouts/BlankLayout';
+
 // components
 import NoticeForm from '/imports/ui/common/NoticeForm';
 import WelcomePage from '/imports/ui/common/WelcomePage';
 import ThankyouPage from '/imports/ui/common/ThankyouPage';
 
 import ConfirmEmail from '/imports/ui/components/ConfirmEmail';
-
-import MainLayout from '/imports/ui/layouts/MainLayout';
-import {MainLayoutFull} from '/imports/ui/layouts/MainLayoutFull';
-import BlankLayout from '/imports/ui/layouts/BlankLayout';
 
 import Management from '/imports/ui/containers/admin/Management';
 

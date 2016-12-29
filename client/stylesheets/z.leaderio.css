@@ -30,16 +30,16 @@
 }
 
 #side-menu li a i {
-  margin-right: 6px;
-  display: block;
-  text-align: center;
+  /*margin-right: 6px;*/
+  /*display: block;*/
+  /*text-align: center;*/
   font-size: 24px;
 }
 
 #side-menu li a span {
-  margin-right: 6px;
-  display: block;
-  text-align: center;
+  /*margin-right: 6px;*/
+  /*display: block;*/
+  /*text-align: center;*/
   font-size: 14px;
   font-weight: lighter;
 }
@@ -349,7 +349,7 @@ New layout
 **/
 
 body {
-  background-color: #fff !important;
+  /*background-color: #fff !important;*/
   font-size: 13px;
   color: #676A6C;
   overflow: auto !important;
@@ -399,8 +399,8 @@ nav.left-nav {
 }
 
 nav.left-nav ul {
-  margin: 0;
-  padding: 0;
+  /*margin: 0;*/
+  /*padding: 0;*/
 }
 
 nav.left-nav ul li {
@@ -599,11 +599,11 @@ nav.left-nav ul li a span {
 }
 
 @media (min-width: 992px) {
-  #page-wrapper {
-    position: inherit;
-    margin: 0 0 0 135px;
-    min-height: 1200px;
-  }
+  /*#page-wrapper {*/
+    /*position: inherit;*/
+    /*margin: 0 0 0 135px;*/
+    /*min-height: 1200px;*/
+  /*}*/
   .page-heading-actions {
     text-align: right;
     padding-top: 25px;
@@ -612,11 +612,11 @@ nav.left-nav ul li a span {
 }
 
 @media (min-width: 768px) {
-  #page-wrapper {
-    position: inherit;
-    margin: 0 0 0 135px;
-    min-height: 1200px;
-  }
+  /*#page-wrapper {*/
+    /*position: inherit;*/
+    /*margin: 0 0 0 135px;*/
+    /*min-height: 1200px;*/
+  /*}*/
   .page-heading-actions {
     text-align: right;
     padding-top: 25px;
