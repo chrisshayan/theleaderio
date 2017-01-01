@@ -80,7 +80,7 @@ export default class ForgotAliasPage extends Component {
       return (
         <div id="page-top">
           <NoticeForm
-            code='TL+'
+            code=''
             message='Email sent'
             description='Please check your inbox for getting your alias.'
             buttonLabel='Come back to HomePage'
@@ -91,11 +91,8 @@ export default class ForgotAliasPage extends Component {
     } else {
       return (
         <div id="page-top">
-          <div className="middle-box text-center loginscreen   animated fadeInDown">
-            <div>
-              <h1 className="logo-name">TL+</h1>
-            </div>
-            <h3>{ formTitle }</h3>
+          <div className="middle-box text-center loginscreen animated fadeInDown">
+            <h1>{ formTitle }</h1>
             <p>{formDescription}</p>
             <SingleInputFrom
               inputType='email'

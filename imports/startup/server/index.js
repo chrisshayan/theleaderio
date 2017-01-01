@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { later } from 'meteor/mrt:later';
 
 import './fixtures.js';
-import './migrations';
 import './routes';
 // import './migrate_intercom';
 import { DailyJobs, QueueJobs, AdminJobs } from '/imports/api/jobs/collections';

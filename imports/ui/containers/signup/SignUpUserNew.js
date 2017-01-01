@@ -11,10 +11,15 @@ import CheckBox from '/imports/ui/components/CheckBox1';
 
 // methods
 import {initiateUserInformation} from '/imports/api/users/methods';
+import {send as sendEmail} from '/imports/api/email/methods';
+import {remove as removeAlias} from '/imports/api/alias/methods';
 
 // functions
 import {getSubdomain} from '/imports/utils/subdomain';
 import {emailValidator} from '/imports/utils/index';
+
+// constants
+import {DOMAIN} from '/imports/startup/client/routes';
 
 export class SignUpUserNew extends Component {
 
@@ -33,13 +38,18 @@ export class SignUpUserNew extends Component {
     };
   };
 
+  // componentWillUnmount() {
+  //   // remove alias from blacklist
+  //   removeAlias.call({alias});
+  // }
+
   _onSubmit() {
     const
       {
         user: {firstName, lastName, email, alias: username}
       } = this.state,
       password = this.refs.password.value;
-      ;
+    ;
 
     if (_.isEmpty(firstName)) {
       this.setState({errors: `First name can't be empty.`});
@@ -53,7 +63,7 @@ export class SignUpUserNew extends Component {
       this.setState({errors: `Password can't be empty.`});
       return;
     }
-    if(!emailValidator(email)) {
+    if (!emailValidator(email)) {
       this.setState({errors: `Email ${email} is invalid.`});
       return;
     }
@@ -64,12 +74,12 @@ export class SignUpUserNew extends Component {
       errors: null
     });
     Accounts.createUser({username, email, password}, (error) => {
-      if(!error) {
+      if (!error) {
         const
           userId = Accounts.userId()
-          timezone = momentTZ.tz.guess() || Meteor.settings.public.localTimezone
-          ;
-        if(!_.isEmpty(userId)) {
+        timezone = momentTZ.tz.guess() || Meteor.settings.public.localTimezone
+        ;
+        if (!_.isEmpty(userId)) {
           this.setState({
             loading: false,
             errors: null
@@ -79,7 +89,7 @@ export class SignUpUserNew extends Component {
           // console.log(`user can't login`);
         }
       } else {
-        if(error.reason === 'Username already exists.') {
+        if (error.reason === 'Username already exists.') {
           this.setState({
             loading: false,
             errors: 'Alias already exists.'
@@ -98,8 +108,24 @@ export class SignUpUserNew extends Component {
   _onCreateUserSuccess({userId, email, alias, firstName, lastName, timezone}) {
     // complete the creation user step
     initiateUserInformation.call({userId, email, alias, firstName, lastName, timezone}, (error, result) => {
-      if(!error) {
+      if (!error) {
         // generate new user data success
+
+        if (!_.isEmpty(result)) {
+          // send confirmation email to user
+          const
+            {tokenId} = result,
+            verifyUrl = FlowRouter.path('newSignUpSteps', {action: 'confirm'}, {token: tokenId}),
+            url = `http://${DOMAIN}${verifyUrl}`,
+            template = 'welcome',
+            data = {
+              email: email,
+              firstName: firstName,
+              url: url
+            };
+          sendEmail.call({template, data});
+        }
+
         // move to new user journey
         FlowRouter.go('app.journey', {step: 'organization'});
       } else {

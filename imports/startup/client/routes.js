@@ -194,7 +194,7 @@ export const thankyouRoute = FlowRouter.route('/thankyou', {
 
 const newSignUpRoutes = FlowRouter.group({
   name: "newSignUpRoutes",
-  prefix: "/newsignup"
+  prefix: "/signup"
 });
 
 newSignUpRoutes.route('/:action', {
@@ -229,6 +229,49 @@ newSignUpRoutes.route('/:action', {
         }
         break;
       }
+      // email confirmation
+      case 'confirm': {
+        mount(MainLayoutFull, {
+          content() {
+            return <ConfirmEmail/>;
+          }
+        });
+        break;
+      }
+      // create alias for migrated user
+      case 'migration': {
+        mount(MainLayoutFull, {
+          content() {
+            return <ResetAlias/>;
+          }
+        });
+        break;
+      }
+      // create alias for referral user
+      case 'referral': {
+        const
+          {response} = queryParams;
+        switch (response) {
+          case 'confirm': {
+            mount(MainLayoutFull, {
+              content() {
+                return <ConfirmReferral/>;
+              }
+            });
+            break;
+          }
+          case 'cancel': {
+            const {_id} = queryParams;
+            mount(MainLayoutFull, {
+              content() {
+                return <CancelReferral _id={_id}/>;
+              }
+            });
+            break;
+          }
+        }
+        break;
+      }
       default: {
         mount(NoticeForm);
       }
@@ -242,68 +285,68 @@ newSignUpRoutes.route('/:action', {
  * @action user
  * @action alias
  */
-export const signUpRoutes = FlowRouter.group({
-  name: 'signupRouteGroup',
-  prefix: '/signup'
-});
-// handling /signup root group
-signUpRoutes.route('/:action', {
-  name: 'signUpPage',
-  action(params, queryParams) {
-    const {action} = params;
-    switch (action) {
-      // register user
-      case 'user': {
-        mount(SignUpUser);
-        break;
-      }
-      // register alias
-      case 'alias': {
-        if (!Meteor.loggingIn() && !Meteor.userId()) {
-          const
-            closeButton = false,
-            title = "Signup user",
-            message = "Please enter your basic informations first";
-          Notifications.warning({closeButton, title, message});
-          FlowRouter.go('signUpPage', {action: 'user'});
-        } else {
-          mount(SignUpAlias);
-        }
-        break;
-      }
-      // email confirmation
-      case 'confirm': {
-        mount(ConfirmEmail);
-        break;
-      }
-      // create alias for migrated user
-      case 'migration': {
-        mount(ResetAlias);
-        break;
-      }
-      // create alias for referral user
-      case 'referral': {
-        const
-          {response} = queryParams;
-        switch (response) {
-          case 'confirm': {
-            mount(ConfirmReferral);
-            break;
-          }
-          case 'cancel': {
-            const {_id} = queryParams;
-            mount(CancelReferral, {_id});
-            break;
-          }
-        }
-        break;
-      }
-      default: {
-        throw new Meteor.Error(`Unknow action: ${action}`);
-      }
-    }
-  }
-});
+// export const signUpRoutes = FlowRouter.group({
+//   name: 'signupRouteGroup',
+//   prefix: '/signup'
+// });
+// // handling /signup root group
+// signUpRoutes.route('/:action', {
+//   name: 'signUpPage',
+//   action(params, queryParams) {
+//     const {action} = params;
+//     switch (action) {
+//       // register user
+//       case 'user': {
+//         mount(SignUpUser);
+//         break;
+//       }
+//       // register alias
+//       case 'alias': {
+//         if (!Meteor.loggingIn() && !Meteor.userId()) {
+//           const
+//             closeButton = false,
+//             title = "Signup user",
+//             message = "Please enter your basic informations first";
+//           Notifications.warning({closeButton, title, message});
+//           FlowRouter.go('signUpPage', {action: 'user'});
+//         } else {
+//           mount(SignUpAlias);
+//         }
+//         break;
+//       }
+//       // email confirmation
+//       case 'confirm': {
+//         mount(ConfirmEmail);
+//         break;
+//       }
+//       // create alias for migrated user
+//       case 'migration': {
+//         mount(ResetAlias);
+//         break;
+//       }
+//       // create alias for referral user
+//       case 'referral': {
+//         const
+//           {response} = queryParams;
+//         switch (response) {
+//           case 'confirm': {
+//             mount(ConfirmReferral);
+//             break;
+//           }
+//           case 'cancel': {
+//             const {_id} = queryParams;
+//             mount(CancelReferral, {_id});
+//             break;
+//           }
+//         }
+//         break;
+//       }
+//       default: {
+//         throw new Meteor.Error(`Unknow action: ${action}`);
+//       }
+//     }
+//   }
+// });
 
 /**
  * @summary lists of signin routes

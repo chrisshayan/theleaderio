@@ -41,7 +41,7 @@ export class CreateOrganizationStep extends Component {
         {name, jobTitle} = this.state.org,
         _id = orgId
         ;
-      console.log({_id, name, jobTitle});
+      // console.log({_id, name, jobTitle});
       update.call({_id, name, jobTitle}, (error, result) => {
         console.log({error, result})
         if (!error) {
@@ -104,7 +104,7 @@ export class CreateOrganizationStep extends Component {
       {orgId, org, errors} = this.state,
       disabled = !_.isEmpty(org.name) ? false : true
       ;
-    console.log({org, disabled});
+    // console.log({org, disabled});
     return (
       <form className="form-horizontal" onSubmit={this._onSubmit.bind(this)}>
         <FormInputHorizontal

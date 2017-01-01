@@ -112,10 +112,7 @@ export default class PasswordPage extends Component {
         return (
           <div id="page-top">
             <div className="middle-box text-center loginscreen   animated fadeInDown">
-              <div>
-                <h1 className="logo-name">TL+</h1>
-              </div>
-              <h3>{ formTitle }</h3>
+              <h1>{ formTitle }</h1>
               <p>{formDescription}</p>
               <SingleInputFrom
                 inputType='email'
@@ -132,7 +129,7 @@ export default class PasswordPage extends Component {
         return (
           <div id="page-top">
             <NoticeForm
-              code='TL+'
+              code=''
               message='Email sent'
               description='Please check your inbox for instructions from us on how to reset your password.'
               buttonLabel='Come back to HomePage'

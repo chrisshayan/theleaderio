@@ -18,6 +18,7 @@ import * as Notifications from '/imports/api/notifications/functions';
 import FormInputHorizontal from '/imports/ui/components/FormInputHorizontal';
 import HrDashed from '/imports/ui/components/HrDashed';
 import NoticeForm from '/imports/ui/common/NoticeForm';
+import Spinner from '/imports/ui/common/Spinner';
 
 class AddEmployeesStep extends Component {
 
@@ -127,7 +128,7 @@ class AddEmployeesStep extends Component {
                     title,
                     message
                   });
-                  FlowRouter.go('app.dashboard');
+                  FlowRouter.go('app.journey', {step: 'final'});
                 }
               })
             } else {
@@ -284,9 +285,7 @@ class AddEmployeesStep extends Component {
         );
       } else {
         return (
-          <div>
-            Loading....
-          </div>
+          <Spinner/>
         );
       }
     }

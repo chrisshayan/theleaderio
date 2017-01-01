@@ -44,9 +44,9 @@
     font-weight: lighter;
 }
 
-body.mini-navbar #side-menu li a span {
-    display: none;
-}
+/*body.mini-navbar #side-menu li a span {*/
+    /*display: none;*/
+/*}*/
 
 * {
     -webkit-box-sizing: border-box;
@@ -347,31 +347,31 @@ button.loadmore {
 New layout
 **/
 
-body {
-    /*background-color: #fff !important;*/
-    font-size: 13px;
-    color: #676A6C;
-    overflow: auto !important;
-}
+/*body {*/
+    /*!*background-color: #fff !important;*!*/
+    /*!*font-size: 13px;*!*/
+    /*!*color: #676A6C;*!*/
+    /*!*overflow: auto !important;*!*/
+/*}*/
 
-#wrapper {
-    width: 100%;
-    overflow: auto !important;
-}
+/*#wrapper {*/
+    /*width: 100%;*/
+    /*overflow: auto !important;*/
+/*}*/
 
-.content-wrapper {
-    margin-left: 120px;
-    padding: 20px 42px 42px 42px;
-    height: 100%;
-    max-width: 1400px;
-    top: 0;
-    left: 0;
-    bottom: 0;
-}
+/*.content-wrapper {*/
+    /*margin-left: 120px;*/
+    /*padding: 20px 42px 42px 42px;*/
+    /*height: 100%;*/
+    /*max-width: 1400px;*/
+    /*top: 0;*/
+    /*left: 0;*/
+    /*bottom: 0;*/
+/*}*/
 
-.content-wrapper.no-left-nav {
-    margin: 0 60px;
-}
+/*.content-wrapper.no-left-nav {*/
+    /*margin: 0 60px;*/
+/*}*/
 
 .logo {
     font-size: 35px;
@@ -382,54 +382,54 @@ body {
     display: block;
 }
 
-nav.left-nav {
-    width: 135px;
-    padding: 12px;
-    background-image: -webkit-linear-gradient(top, #243645 0%, #2F4050 100%);
-    background-image: -o-linear-gradient(top, #243645 0%, #2F4050 100%);
-    background-image: linear-gradient(to bottom, #243645 0%, #2F4050 100%);
-    background-repeat: repeat-x;
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    text-align: center;
-    overflow: hidden;
-}
+/*nav.left-nav {*/
+    /*width: 135px;*/
+    /*padding: 12px;*/
+    /*background-image: -webkit-linear-gradient(top, #243645 0%, #2F4050 100%);*/
+    /*background-image: -o-linear-gradient(top, #243645 0%, #2F4050 100%);*/
+    /*background-image: linear-gradient(to bottom, #243645 0%, #2F4050 100%);*/
+    /*background-repeat: repeat-x;*/
+    /*position: fixed;*/
+    /*top: 0;*/
+    /*left: 0;*/
+    /*bottom: 0;*/
+    /*text-align: center;*/
+    /*overflow: hidden;*/
+/*}*/
 
-nav.left-nav ul {
-    /*margin: 0;*/
-    /*padding: 0;*/
-}
+/*nav.left-nav ul {*/
+    /*!*margin: 0;*!*/
+    /*!*padding: 0;*!*/
+/*}*/
 
-nav.left-nav ul li {
-    list-style: none;
-}
+/*nav.left-nav ul li {*/
+    /*list-style: none;*/
+/*}*/
 
-nav.left-nav ul li a {
-    display: block;
-    text-decoration: none;
-    color: #fff;
-    padding: 15px 0;
-    opacity: 0.5;
-}
+/*nav.left-nav ul li a {*/
+    /*display: block;*/
+    /*text-decoration: none;*/
+    /*color: #fff;*/
+    /*padding: 15px 0;*/
+    /*opacity: 0.5;*/
+/*}*/
 
-nav.left-nav ul li:hover a,
-nav.left-nav ul li.active a {
-    opacity: 1;
-}
+/*nav.left-nav ul li:hover a,*/
+/*nav.left-nav ul li.active a {*/
+    /*opacity: 1;*/
+/*}*/
 
-nav.left-nav ul li a .fa {
-    font-size: 28px;
-    line-height: 28px;
-    display: block;
-}
+/*nav.left-nav ul li a .fa {*/
+    /*font-size: 28px;*/
+    /*line-height: 28px;*/
+    /*display: block;*/
+/*}*/
 
-nav.left-nav ul li a span {
-    font-size: 14px;
-    font-weight: 400;
-    letter-spacing: 1px;
-}
+/*nav.left-nav ul li a span {*/
+    /*font-size: 14px;*/
+    /*font-weight: 400;*/
+    /*letter-spacing: 1px;*/
+/*}*/
 
 .main-logo {
 }
@@ -458,22 +458,22 @@ nav.left-nav ul li a span {
     text-align: left;
 }
 
-.page-header {
-    padding-bottom: 9px !important;
-    margin: 20px 0 20px !important;
-    border-bottom: none;
-}
+/*.page-header {*/
+    /*padding-bottom: 9px !important;*/
+    /*margin: 20px 0 20px !important;*/
+    /*border-bottom: none;*/
+/*}*/
 
-.page-header h2 {
-    padding: 5px 0;
-    margin: 0;
-    font-size: 26px;
-    font-weight: 500;
-    color: #888;
-}
+/*.page-header h2 {*/
+    /*padding: 5px 0;*/
+    /*margin: 0;*/
+    /*font-size: 26px;*/
+    /*font-weight: 500;*/
+    /*color: #888;*/
+/*}*/
 
-.page-header .header-actions {
-}
+/*.page-header .header-actions {*/
+/*}*/
 
 .report-points {
     margin: 20px 0;
@@ -549,9 +549,9 @@ nav.left-nav ul li a span {
     border-radius: 50%;
 }
 
-#left-nav {
-    overflow: hidden;
-}
+/*#left-nav {*/
+    /*overflow: hidden;*/
+/*}*/
 
 .no-item {
     width: 100%;

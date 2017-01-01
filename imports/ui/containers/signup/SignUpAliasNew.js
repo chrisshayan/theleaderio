@@ -14,7 +14,6 @@ import {addSubdomain} from '/imports/utils/subdomain';
 import {DOMAIN} from '/imports/startup/client/routes';
 
 
-
 export class SignUpAliasNew extends Component {
 
   constructor() {
@@ -30,7 +29,7 @@ export class SignUpAliasNew extends Component {
     const alias = inputValue;
 
     addAlias.call({alias}, (error, result) => {
-      if(error) {
+      if (error) {
         this.setState({
           errors: error.reason
         });
@@ -46,16 +45,16 @@ export class SignUpAliasNew extends Component {
       errors: null
     });
     if (inputValue.length > 0) {
-      if(aliasValidator(inputValue)) {
+      if (aliasValidator(inputValue)) {
         isAliasExists.call({alias: inputValue}, (error, result) => {
-          if(error) {
+          if (error) {
             this.setState({
               aliasAllowed: false,
               errors: error.reason
             });
           } else {
             const {exists} = result;
-            if(exists) {
+            if (exists) {
               this.setState({
                 aliasAllowed: false,
                 errors: `${inputValue}.${DOMAIN} is already taken. Please choose another one ...`
@@ -84,9 +83,9 @@ export class SignUpAliasNew extends Component {
     return (
       <div className="create-screen journey-box animated fadeInDown">
         <div className="row text-center">
-          <h3>Create your alias</h3>
-          <p>Create your own domain in <strong>theLeader.io</strong>.</p>
-          <p>This alias will be used as your web address.</p>
+          <h1>Create your alias</h1>
+          <p>This alias will be used as your web address. Create your own domain in <strong>theLeader.io</strong> now
+          </p>
           <AliasForm
             inputType='text'
             inputHolder='alias'

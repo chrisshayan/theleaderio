@@ -25,12 +25,12 @@ import {remove as removeAlias} from '/imports/api/alias/methods';
 import {formatAlias, isInactiveUser} from '/imports/api/users/functions';
 import {add as addLogs} from '/imports/api/logs/functions';
 import {isAliasInBlacklist} from '/imports/api/alias/functions';
-import { DEFAULT_SCHEDULER } from '/imports/utils/defaults';
 
 // constants
 import * as ERROR_CODE from '/imports/utils/error_code';
 import {USER_ROLES} from './index';
 import {DEFAULT_PUBLIC_INFO_PREFERENCES} from '/imports/utils/defaults';
+import { DEFAULT_SCHEDULER } from '/imports/utils/defaults';
 
 // logger
 // import {Logger} from '/imports/api/logger/index';
@@ -426,6 +426,8 @@ export const initiateUserInformation = new ValidatedMethod({
           addPreferences.call({name: 'publicInfo', preferences: DEFAULT_PUBLIC_INFO_PREFERENCES, userId});
 
           // create user's scheduler
+          // check if at the last week of year
+          // create scheduler for new year
           DEFAULT_SCHEDULER.map(scheduler => {
             const year = moment().year();
             const {quarter, metrics} = scheduler;

@@ -9,6 +9,7 @@ export class TopNav extends Component {
     // Toggle special class
     $("body").toggleClass("mini-navbar");
 
+    console.log($("body"))
     // Enable smoothly hide/show menu
     if (!$('body').hasClass('mini-navbar') || $('body').hasClass('body-small')) {
       // Hide menu in order to smoothly turn on when maximize menu
@@ -54,7 +55,7 @@ export class TopNav extends Component {
           <ul className="nav navbar-top-links navbar-right">
             <li>
               <a href="#">
-                <i className="fa fa-sign-out"></i> Log out
+                <i className="fa fa-sign-out"></i> Sign out
               </a>
             </li>
           </ul>
