@@ -54,7 +54,7 @@ export class TopNav extends Component {
           </ul>
           <ul className="nav navbar-top-links navbar-right">
             <li>
-              <a href="#">
+              <a href={FlowRouter.url('app.logout')}>
                 <i className="fa fa-sign-out"></i> Sign out
               </a>
             </li>
