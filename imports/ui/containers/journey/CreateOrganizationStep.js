@@ -114,6 +114,7 @@ export class CreateOrganizationStep extends Component {
           grid={[2, 10]}
           defaultValue={""}
           onChangeText={name => this.setState({org: {...org, name}})}
+          autoFocus={true}
         />
         <FormInputHorizontal
           label="Title"

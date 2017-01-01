@@ -55,7 +55,7 @@ export class TopNavFull extends Component {
           {!_.isEmpty(userId) && (
             <ul className="nav navbar-top-links navbar-right">
               <li>
-                <a href="login.html">
+                <a href={FlowRouter.url('app.logout')}>
                   <i className="fa fa-sign-out"></i> Sign out
                 </a>
               </li>
