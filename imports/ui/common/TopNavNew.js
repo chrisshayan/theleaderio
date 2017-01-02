@@ -1,15 +1,18 @@
 import React, {Component} from 'react';
+
 import { DOMAIN } from '/imports/startup/client/routes';
+
+// components
+import MessageBox from '/imports/ui/components/MessageBox';
 
 export class TopNav extends Component {
 
-  _minimalizeNavBar() {
+  _minimalizeNavBar(event) {
     event.preventDefault();
 
     // Toggle special class
     $("body").toggleClass("mini-navbar");
 
-    console.log($("body"))
     // Enable smoothly hide/show menu
     if (!$('body').hasClass('mini-navbar') || $('body').hasClass('body-small')) {
       // Hide menu in order to smoothly turn on when maximize menu
@@ -29,6 +32,10 @@ export class TopNav extends Component {
       // Remove all inline style from jquery fadeIn function to reset menu state
       $('#side-menu').removeAttr('style');
     }
+  }
+
+  _rightSidebarToggle() {
+    $('#right-sidebar').toggleClass('sidebar-open');
   }
 
   render() {
@@ -53,6 +60,7 @@ export class TopNav extends Component {
             </li>
           </ul>
           <ul className="nav navbar-top-links navbar-right">
+            <MessageBox />
             <li>
               <a href={FlowRouter.url('app.logout')}>
                 <i className="fa fa-sign-out"></i> Sign out

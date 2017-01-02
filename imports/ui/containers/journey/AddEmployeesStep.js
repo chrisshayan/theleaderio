@@ -70,6 +70,7 @@ class AddEmployeesStep extends Component {
       var employees = [];
       var reader = new FileReader();
       reader.onload = function () {
+        // console.log(`call onload`);
         Papa.parse(this.result, {
           header: true,
           skipEmptyLines: true,
@@ -109,6 +110,7 @@ class AddEmployeesStep extends Component {
             });
           },
           complete: function (results, file) {
+            // console.log(`call complete`);
             if (employees.length) {
               importEmployees.call({
                 organizationId,
