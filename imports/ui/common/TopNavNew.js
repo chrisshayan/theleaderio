@@ -62,8 +62,8 @@ export class TopNav extends Component {
           <ul className="nav navbar-top-links navbar-right">
             <MessageBox />
             <li>
-              <a href={FlowRouter.url('app.logout')}>
-                <i className="fa fa-sign-out"></i> Sign out
+              <a href={FlowRouter.url('homePage')}>
+                <i className="fa fa-user"></i> View public profile
               </a>
             </li>
           </ul>

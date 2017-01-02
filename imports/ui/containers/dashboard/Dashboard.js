@@ -9,6 +9,7 @@ import * as Notifications from '/imports/api/notifications/functions';
 import {measureMonthlyMetricScore} from '/imports/api/measures/methods';
 
 // components
+import {setPageHeading, resetPageHeading} from '/imports/store/modules/pageHeading';
 import Spinner from '/imports/ui/common/Spinner';
 import NoticeForm from '/imports/ui/common/NoticeForm';
 import Tabs from '/imports/ui/components/Tabs';
@@ -35,6 +36,15 @@ export default class Dashboard extends Component {
       leaderId = Meteor.userId(),
       date = new Date()
     ;
+
+    setPageHeading({
+      title: 'Dashboard',
+      breadcrumb: [{
+        label: 'Dashboard',
+        route: FlowRouter.url('app.dashboard')
+      }]
+    });
+
     // get present organizations first
     getPresentOrganizations.call({leaderId: Meteor.userId(), isPresent: true}, (error, result) => {
       if (!error) {
@@ -99,6 +109,11 @@ export default class Dashboard extends Component {
     });
     return tabs;
   }
+
+  componentWillUnmount() {
+    resetPageHeading();
+  }
+
 
   render() {
     const {ready, error} = this.state;

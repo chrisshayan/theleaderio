@@ -104,7 +104,7 @@ export class CreateOrganizationStep extends Component {
       {orgId, org, errors} = this.state,
       disabled = !_.isEmpty(org.name) ? false : true
       ;
-    // console.log({org, disabled});
+    console.log({org, disabled});
     return (
       <form className="form-horizontal" onSubmit={this._onSubmit.bind(this)}>
         <FormInputHorizontal
@@ -112,7 +112,7 @@ export class CreateOrganizationStep extends Component {
           type="text"
           placeHolder="Organization name"
           grid={[2, 10]}
-          defaultValue={""}
+          defaultValue={org.name}
           onChangeText={name => this.setState({org: {...org, name}})}
           autoFocus={true}
         />
@@ -121,7 +121,7 @@ export class CreateOrganizationStep extends Component {
           type="text"
           placeHolder="Job title"
           grid={[2, 10]}
-          defaultValue={""}
+          defaultValue={org.jobTitle}
           onChangeText={jobTitle => this.setState({org: {...org, jobTitle}})}
         />
         <HrDashed/>

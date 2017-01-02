@@ -107,15 +107,16 @@ export class Navigation extends Component {
                   />
                 </span>
                 <a data-toggle="dropdown" className="dropdown-toggle" href="#">
-                  <span className="clear">
-                    <span className="block m-t-xs" style={{textTransform: 'capitalize'}}>
-                      <strong className="font-bold">{name}</strong>
-                    </span>
-                    <span className="text-muted text-xs block" style={{textTransform: 'capitalize'}}>
-                      {jobTitle}
+                  <span className="clear"> <span className="block m-t-xs" style={{textTransform: 'capitalize'}}>
+                    <strong className="font-bold">{name}</strong>
+                  </span>
+                    <span className="text-muted text-xs block" style={{textTransform: 'capitalize'}}>{jobTitle}<b className="caret"></b>
                     </span>
                   </span>
                 </a>
+                <ul className="dropdown-menu animated fadeInRight m-t-xs">
+                  <li><a href={FlowRouter.url('app.logout')}>Sign out</a></li>
+                </ul>
               </div>
               <div className="logo-element">
                 TL+

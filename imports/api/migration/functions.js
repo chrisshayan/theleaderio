@@ -514,7 +514,7 @@ export const generateSendingPlan = ({year}) => {
   // get user have plan in year already
   if (!_.isEmpty(schedulers)) {
     schedulers.map(schedule => {
-      usersHadPlan.push(userId);
+      usersHadPlan.push(schedule.userId);
     });
   }
 

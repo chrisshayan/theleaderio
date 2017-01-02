@@ -155,7 +155,12 @@ const homeRoute = FlowRouter.route('/', {
       if(alias === "www") {
         mount(LandingPage);
       } else {
-        mount(PublicProfile);
+        mount(MainLayoutFull, {
+          bgClass: 'gray-bg',
+          content() {
+            return <PublicProfile/>;
+          }
+        });
       }
     } else {
       mount(LandingPage);

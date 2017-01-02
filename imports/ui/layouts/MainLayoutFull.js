@@ -6,12 +6,15 @@ import {Footer} from '/imports/ui/common/Footer';
 
 export class MainLayoutFull extends Component {
   render() {
-    const {content = () => null} = this.props;
+    const {
+      content = () => null,
+      bgClass = 'white-bg'
+    } = this.props;
     return (
       <div className="top-navigation">
         <div id="wrapper">
-          <div id="page-wrapper" className="white-bg">
-            <div className="row border-bottom">
+          <div id="page-wrapper" className={bgClass}>
+            <div className="row border-bottom white-bg">
               <TopNavFull />
             </div>
 

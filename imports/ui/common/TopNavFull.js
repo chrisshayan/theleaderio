@@ -1,7 +1,7 @@
 import {Meteor} from 'meteor/meteor';
 import React, {Component} from 'react';
 
-import { DOMAIN } from '/imports/startup/client/routes';
+import {DOMAIN} from '/imports/startup/client/routes';
 
 export class TopNavFull extends Component {
 
@@ -52,15 +52,23 @@ export class TopNavFull extends Component {
               <a aria-expanded="false" role="button" href={homePageUrl}> Strive for GREAT Leadership</a>
             </li>
           </ul>
-          {!_.isEmpty(userId) && (
-            <ul className="nav navbar-top-links navbar-right">
-              <li>
-                <a href={FlowRouter.url('app.logout')}>
-                  <i className="fa fa-sign-out"></i> Sign out
-                </a>
-              </li>
-            </ul>
-          )}
+          {!_.isEmpty(userId) ? (
+              <ul className="nav navbar-top-links navbar-right">
+                <li>
+                  <a href={FlowRouter.url('app.dashboard')}>
+                    <i className="fa fa-dashboard"></i> View dashboard
+                  </a>
+                </li>
+              </ul>
+            ) : (
+              <ul className="nav navbar-top-links navbar-right">
+                <li>
+                  <a href={FlowRouter.url('SignInPage', {action: 'account'})}>
+                    <i className="fa fa-sign-in"></i> Sign in
+                  </a>
+                </li>
+              </ul>
+            )}
         </div>
       </nav>
     );

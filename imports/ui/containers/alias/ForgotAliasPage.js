@@ -92,7 +92,7 @@ export default class ForgotAliasPage extends Component {
       return (
         <div id="page-top">
           <div className="middle-box text-center loginscreen animated fadeInDown">
-            <h1>{ formTitle }</h1>
+            <h2>{ formTitle }</h2>
             <p>{formDescription}</p>
             <SingleInputFrom
               inputType='email'
