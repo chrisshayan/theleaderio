@@ -184,9 +184,7 @@ class ManageUsers extends Component {
   }
 }
 
-export
-default
-ManageUsersContainer = createContainer((params) => {
+export default ManageUsersContainer = createContainer((params) => {
   const
     date = new Date(),
     subUsers = Meteor.subscribe('statistic.users'),

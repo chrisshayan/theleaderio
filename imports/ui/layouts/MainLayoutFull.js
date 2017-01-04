@@ -20,7 +20,7 @@ export class MainLayoutFull extends Component {
 
             {content()}
 
-            <Footer />
+            <Footer fixed={true}/>
           </div>
         </div>
       </div>
