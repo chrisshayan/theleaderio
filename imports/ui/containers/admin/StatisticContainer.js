@@ -15,7 +15,7 @@ import IboxDashboard from '/imports/ui/components/IboxDashboard';
 
 // methods
 import {measureAdminStatistic} from '/imports/api/measures/methods';
-import * as Notifications from '/imports/api/notifications/methods';
+import * as Notifications from '/imports/api/notifications/functions';
 
 class StatisticComponent extends Component {
   constructor() {

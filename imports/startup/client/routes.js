@@ -3,19 +3,19 @@ import {FlowRouter} from 'meteor/kadira:flow-router';
 import React from 'react';
 import {mount} from 'react-mounter';
 
+// layouts
+// import MainLayout from '/imports/ui/layouts/MainLayout';
+import {MainLayout} from '/imports/ui/layouts/MainLayoutNew';
+import {MainLayoutFull} from '/imports/ui/layouts/MainLayoutFull';
+import BlankLayout from '/imports/ui/layouts/BlankLayout';
+
 // components
 import NoticeForm from '/imports/ui/common/NoticeForm';
 import WelcomePage from '/imports/ui/common/WelcomePage';
 import ThankyouPage from '/imports/ui/common/ThankyouPage';
-import Notification from '/imports/api/notifications/methods';
 
 import ConfirmEmail from '/imports/ui/components/ConfirmEmail';
 
-import MainLayout from '/imports/ui/layouts/MainLayout';
-import BlankLayout from '/imports/ui/layouts/BlankLayout';
-
-// import ManageIndustries from '/imports/ui/containers/admin/ManageIndustries';
-// import ManageJobs from '/imports/ui/containers/admin/ManageJobs';
 import Management from '/imports/ui/containers/admin/Management';
 
 import ArticlesContainer from '/imports/ui/containers/articles/ArticlesContainer';
@@ -29,6 +29,9 @@ import SignUpAlias from '/imports/ui/containers/signup/SignUpAlias';
 import ResetAlias from '/imports/ui/containers/migration/ResetAlias';
 import ConfirmReferral from '/imports/ui/containers/referrals/ConfirmReferral';
 import CancelReferral from '/imports/ui/containers/referrals/CancelReferral';
+
+import {SignUpUserNew} from '/imports/ui/containers/signup/SignUpUserNew';
+import {SignUpAliasNew} from '/imports/ui/containers/signup/SignUpAliasNew';
 
 import SignInAlias from '/imports/ui/containers/signin/SignInAlias';
 import SignInAccount from '/imports/ui/containers/signin/SignInAccount';
@@ -50,11 +53,12 @@ import Messages from '/imports/ui/containers/messages/Messages';
 
 import ReferralsContainer from '/imports/ui/containers/referrals/ReferralsContainer';
 
-// methods
-import * as Notifications from '/imports/api/notifications/methods';
+import {GettingStartedJourney} from '/imports/ui/containers/journey/GettingStartedJourney';
 
 // functions
 import {isAdmin} from '/imports/utils/index';
+import * as Notifications from '/imports/api/notifications/functions';
+import {getSubdomain} from '/imports/utils/subdomain';
 
 
 /**
@@ -114,14 +118,22 @@ FlowRouter.setRootUrl();
  */
 FlowRouter.notFound = {
   action() {
-    mount(NoticeForm);
+    mount(MainLayoutFull, {
+      content() {
+        return <NoticeForm/>;
+      }
+    });
   }
 };
 
 FlowRouter.route('/not-found', {
   name: 'notFound',
   action() {
-    mount(NoticeForm);
+    mount(MainLayoutFull, {
+      content() {
+        return <NoticeForm/>;
+      }
+    });
   }
 });
 
@@ -143,7 +155,12 @@ const homeRoute = FlowRouter.route('/', {
       if(alias === "www") {
         mount(LandingPage);
       } else {
-        mount(PublicProfile);
+        mount(MainLayoutFull, {
+          bgClass: 'gray-bg',
+          content() {
+            return <PublicProfile/>;
+          }
+        });
       }
     } else {
       mount(LandingPage);
@@ -154,14 +171,116 @@ const homeRoute = FlowRouter.route('/', {
 export const welcomeRoute = FlowRouter.route('/welcome', {
   name: 'welcomePage',
   action() {
-    mount(Notification);
+    mount(MainLayoutFull, {
+      content() {
+        return <Notification/>;
+      }
+    });
   }
 });
 
 export const thankyouRoute = FlowRouter.route('/thankyou', {
   name: 'thankyouPage',
   action() {
-    mount(ThankyouPage);
+    mount(MainLayoutFull, {
+      content() {
+        return <ThankyouPage/>;
+      }
+    });
+  }
+});
+
+// FlowRouter.route('/newsignup', {
+//   name: "newSignUp",
+//   action() {
+//     mount(SignUpUserNew);
+//   }
+// });
+
+const newSignUpRoutes = FlowRouter.group({
+  name: "newSignUpRoutes",
+  prefix: "/signup"
+});
+
+newSignUpRoutes.route('/:action', {
+  name: "newSignUpSteps",
+  action(params) {
+    const {action} = params;
+    switch (action) {
+      case 'alias': {
+        mount(MainLayoutFull, {
+          content() {
+            return <SignUpAliasNew/>;
+          }
+        });
+        break;
+      }
+      case 'user': {
+        const alias = getSubdomain();
+        if(_.isEmpty(alias)) {
+          const
+            title = 'No alias',
+            message = 'Please choose your alias first!'
+            ;
+
+          Notifications.warning({title, message});
+          FlowRouter.go('newSignUpSteps', {action: 'alias'});
+        } else {
+          mount(MainLayoutFull, {
+            content() {
+              return <SignUpUserNew/>;
+            }
+          });
+        }
+        break;
+      }
+      // email confirmation
+      case 'confirm': {
+        mount(MainLayoutFull, {
+          content() {
+            return <ConfirmEmail/>;
+          }
+        });
+        break;
+      }
+      // create alias for migrated user
+      case 'migration': {
+        mount(MainLayoutFull, {
+          content() {
+            return <ResetAlias/>;
+          }
+        });
+        break;
+      }
+      // create alias for referral user
+      case 'referral': {
+        const
+          {response} = queryParams;
+        switch (response) {
+          case 'confirm': {
+            mount(MainLayoutFull, {
+              content() {
+                return <ConfirmReferral/>;
+              }
+            });
+            break;
+          }
+          case 'cancel': {
+            const {_id} = queryParams;
+            mount(MainLayoutFull, {
+              content() {
+                return <CancelReferral _id={_id}/>;
+              }
+            });
+            break;
+          }
+        }
+        break;
+      }
+      default: {
+        mount(NoticeForm);
+      }
+    }
   }
 });
 
@@ -171,68 +290,68 @@ export const thankyouRoute = FlowRouter.route('/thankyou', {
  * @action user
  * @action alias
  */
-export const signUpRoutes = FlowRouter.group({
-  name: 'signupRouteGroup',
-  prefix: '/signup'
-});
-// handling /signup root group
-signUpRoutes.route('/:action', {
-  name: 'signUpPage',
-  action(params, queryParams) {
-    const {action} = params;
-    switch (action) {
-      // register user
-      case 'user': {
-        mount(SignUpUser);
-        break;
-      }
-      // register alias
-      case 'alias': {
-        if (!Meteor.loggingIn() && !Meteor.userId()) {
-          const
-            closeButton = false,
-            title = "Signup user",
-            message = "Please enter your basic informations first";
-          Notifications.warning.call({closeButton, title, message});
-          FlowRouter.go('signUpPage', {action: 'user'});
-        } else {
-          mount(SignUpAlias);
-        }
-        break;
-      }
-      // email confirmation
-      case 'confirm': {
-        mount(ConfirmEmail);
-        break;
-      }
-      // create alias for migrated user
-      case 'migration': {
-        mount(ResetAlias);
-        break;
-      }
-      // create alias for referral user
-      case 'referral': {
-        const
-          {response} = queryParams;
-        switch (response) {
-          case 'confirm': {
-            mount(ConfirmReferral);
-            break;
-          }
-          case 'cancel': {
-            const {_id} = queryParams;
-            mount(CancelReferral, {_id});
-            break;
-          }
-        }
-        break;
-      }
-      default: {
-        throw new Meteor.Error(`Unknow action: ${action}`);
-      }
-    }
-  }
-});
+// export const signUpRoutes = FlowRouter.group({
+//   name: 'signupRouteGroup',
+//   prefix: '/signup'
+// });
+// // handling /signup root group
+// signUpRoutes.route('/:action', {
+//   name: 'signUpPage',
+//   action(params, queryParams) {
+//     const {action} = params;
+//     switch (action) {
+//       // register user
+//       case 'user': {
+//         mount(SignUpUser);
+//         break;
+//       }
+//       // register alias
+//       case 'alias': {
+//         if (!Meteor.loggingIn() && !Meteor.userId()) {
+//           const
+//             closeButton = false,
+//             title = "Signup user",
+//             message = "Please enter your basic informations first";
+//           Notifications.warning({closeButton, title, message});
+//           FlowRouter.go('signUpPage', {action: 'user'});
+//         } else {
+//           mount(SignUpAlias);
+//         }
+//         break;
+//       }
+//       // email confirmation
+//       case 'confirm': {
+//         mount(ConfirmEmail);
+//         break;
+//       }
+//       // create alias for migrated user
+//       case 'migration': {
+//         mount(ResetAlias);
+//         break;
+//       }
+//       // create alias for referral user
+//       case 'referral': {
+//         const
+//           {response} = queryParams;
+//         switch (response) {
+//           case 'confirm': {
+//             mount(ConfirmReferral);
+//             break;
+//           }
+//           case 'cancel': {
+//             const {_id} = queryParams;
+//             mount(CancelReferral, {_id});
+//             break;
+//           }
+//         }
+//         break;
+//       }
+//       default: {
+//         throw new Meteor.Error(`Unknow action: ${action}`);
+//       }
+//     }
+//   }
+// });
 
 /**
  * @summary lists of signin routes
@@ -256,14 +375,22 @@ signInRoutes.route('/:action', {
   action(params, queryParams) {
     // sign in to user's web address with alias
     if (params.action == 'alias') {
-      mount(SignInAlias);
+      mount(MainLayoutFull, {
+        content() {
+          return <SignInAlias/>;
+        }
+      });
     }
     // sign in to user's account
     if (params.action == 'account') {
       if (Meteor.loggingIn() || Meteor.userId()) {
         FlowRouter.go('app.dashboard');
       } else {
-        mount(SignInAccount);
+        mount(MainLayoutFull, {
+          content() {
+            return <SignInAccount/>;
+          }
+        });
       }
     }
   }
@@ -285,15 +412,27 @@ passwordRoutes.route('/:action', {
   action(params) {
     // forgot password
     if (params.action == 'forgot') {
-      mount(PasswordPage);
+      mount(MainLayoutFull, {
+        content() {
+          return <PasswordPage/>;
+        }
+      });
     }
     // reset password
     if (params.action == 'reset') {
-      mount(PasswordPage);
+      mount(MainLayoutFull, {
+        content() {
+          return <PasswordPage/>;
+        }
+      });
     }
     // set password
     if (params.action == 'set') {
-      mount(SetPasswordPage);
+      mount(MainLayoutFull, {
+        content() {
+          return <SetPasswordPage/>;
+        }
+      });
     }
   }
 });
@@ -314,7 +453,11 @@ aliasRoutes.route('/:action', {
   action(params) {
     // forgot alias
     if (params.action == 'forgot') {
-      mount(ForgotAliasPage);
+      mount(MainLayoutFull, {
+        content() {
+          return <ForgotAliasPage/>;
+        }
+      });
     }
   }
 });
@@ -364,7 +507,7 @@ appRoutes.route('/logout', {
           timeOut = 2000,
           title = 'Signed out',
           message = '';
-        Notifications.success.call({closeButton, timeOut, title, message});
+        Notifications.success({closeButton, timeOut, title, message});
       }
       FlowRouter.go('/');
     });
@@ -620,6 +763,22 @@ appRoutes.route('/referrals', {
     mount(MainLayout, {
       content() {
         return <ReferralsContainer />;
+      }
+    });
+  }
+});
+
+
+/**
+ * Route for getting started journey
+ */
+appRoutes.route('/journey/start/:step', {
+  name: "app.journey",
+  action(params) {
+    const {step} = params;
+    mount(MainLayoutFull, {
+      content() {
+        return <GettingStartedJourney step={step} />;
       }
     });
   }

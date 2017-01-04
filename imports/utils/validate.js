@@ -129,4 +129,6 @@ validate.methodMixin = function(options) {
   return options;
 }
 
+
+
 export default validate;

@@ -109,10 +109,7 @@ export default class ResetPasswordPage extends Component {
       return (
         <div id="page-top">
           <div className="middle-box text-center loginscreen animated fadeInDown">
-            <div>
-              <h1 className="logo-name">TL+</h1>
-            </div>
-            <h3>Enter your new password</h3>
+            <h1>Enter your new password</h1>
             <SingleInputForm
               inputType={showPassword ? "text" : "password"}
               inputHolder='Password'

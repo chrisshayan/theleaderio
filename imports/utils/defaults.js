@@ -4,7 +4,7 @@ import {METRICS, QUARTER} from '/imports/api/scheduler/index';
 // the content of this file should be import into database
 export const DEFAULT_METRICS = [
   "purpose",
-  "mettings",
+  "meetings",
   "rules",
   "communications",
   "leadership",
@@ -54,7 +54,7 @@ export const DEFAULT_PUBLIC_INFO_PREFERENCES = {
   metrics: {
     overall: true,
     purpose: true,
-    mettings: true,
+    meetings: true,
     rules: true,
     communications: true,
     leadership: true,
@@ -98,7 +98,7 @@ export const EMAIL_TEMPLATE_CONTENT = {
       title: "",
       message: {
         purpose: `Purpose is an important metric for blah blah blah, reply this email with the number of score`,
-        mettings: "Mettings is a core metric, which will estimate the ability of a leader. Reply this email with the number of score for scoring your leader.",
+        meetings: "Meetings is a core metric, which will estimate the ability of a leader. Reply this email with the number of score for scoring your leader.",
         rules: "",
         communications: "",
         leadership: "",

@@ -104,9 +104,7 @@ export const update = new ValidatedMethod({
         }]);
       }
     } else {
-      if (!startTime || !endTime) {
-        throw new Meteor.Error('INVALID_PARAMETER', 'Start time or end time invalid');
-      } else {
+      if (!_.isEmpty(startTime) && !_.isEmpty(endTime)) {
         if (startTime.getTime() >= endTime.getTime()) {
           throw new ValidationError([{
             name: 'endTime',

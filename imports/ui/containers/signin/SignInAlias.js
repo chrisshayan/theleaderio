@@ -80,7 +80,7 @@ export default class SigninAliasPage extends Component {
       errors = null
     } = this.props;
 
-    const signUpUrl = FlowRouter.path('signUpPage', {action: 'user'});
+    const signUpUrl = FlowRouter.path('newSignUpSteps', {action: 'alias'});
     const forgotAliasUrl = FlowRouter.path('aliasPage', {action: 'forgot'});
 
     return (
@@ -88,7 +88,7 @@ export default class SigninAliasPage extends Component {
         <div className="row">
 
           <div className="col-md-6">
-            <h2 className="font-bold">{ signinTitle }</h2>
+            <h1 className="font-bold">{ signinTitle }</h1>
             <p>
               Please enter your alias.
             </p>

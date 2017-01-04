@@ -6,17 +6,17 @@
 
 meteor-base@1.0.4             # Packages every Meteor app needs to have
 mobile-experience@1.0.4       # Packages for a great mobile UX
-mongo@1.1.12
-static-html@1.1.12
-reactive-var@1.0.10            # Reactive variable for tracker
+mongo@1.1.14
+static-html@1.1.12_1
+reactive-var@1.0.11            # Reactive variable for tracker
 reactive-dict@1.1.8            # Reactive variable for tracker
-jquery@1.11.9                  # Helpful client-side library
-tracker@1.1.0                 # Meteor's client-side reactive programming library
-check@1.2.3
-es5-shim@4.6.14                # ECMAScript 5 compatibility for older browsers.
-ecmascript@0.5.8              # Enable ECMAScript2015+ syntax in app code
-session@1.1.6
-less@2.7.5
+jquery@1.11.10                  # Helpful client-side library
+tracker@1.1.1                 # Meteor's client-side reactive programming library
+check@1.2.4
+es5-shim@4.6.15                # ECMAScript 5 compatibility for older browsers.
+ecmascript@0.6.1              # Enable ECMAScript2015+ syntax in app code
+session@1.1.7
+less@2.7.8
 twbs:bootstrap
 fortawesome:fontawesome@4.5.0
 
@@ -29,31 +29,36 @@ mdg:validation-error@0.5.1
 # Routing
 
 # production
-standard-minifier-js@1.2.0
-standard-minifier-css@1.2.0
-ddp-rate-limiter@1.0.5
+standard-minifier-js@1.2.1
+standard-minifier-css@1.3.2
+ddp-rate-limiter@1.0.6
 dburles:collection-helpers@1.0.4
 momentjs:moment
 
 react-meteor-data
-accounts-password@1.3.0
+accounts-password@1.3.3
 kadira:login-state
-email@1.1.17
+email@1.1.18
 meteorhacks:ssr
 kadira:flow-router
-ejson@1.0.12
+ejson@1.0.13
 chrismbeckett:toastr
 reywood:publish-composite
 percolate:migrations
-http@1.2.9
-spiderable@1.0.13
+http@1.2.10
+spiderable@1.0.14-release-testing.0
 mrt:headly
 vsivsi:job-collection
 aldeed:moment-timezone
 nimble:restivus
-shell-server
+shell-server@0.2.1
 lepozepo:accounting
 okgrow:analytics
 alanning:roles
 summernote:summernote
 tunifight:loggedin-mixin
+accounts-google
+service-configuration
+accounts-ui
+gadicc:blaze-react-component
+dispatch:login-token

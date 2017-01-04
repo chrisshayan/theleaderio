@@ -10,7 +10,7 @@ import {SendingPlans} from '/imports/api/sending_plans/index';
 
 // methods
 import * as orgActions from '/imports/api/organizations/methods';
-import * as Notifications from '/imports/api/notifications/methods';
+import * as Notifications from '/imports/api/notifications/functions';
 
 // components
 import ScrollBox from 'react-scrollbar';
@@ -53,7 +53,7 @@ class OrganizationEmployees extends Component {
             closeButton = false,
             title = 'Error',
             message = 'CSV file is invalid';
-          Notifications.error.call({
+          Notifications.error({
             closeButton,
             title,
             message
@@ -121,7 +121,7 @@ class OrganizationEmployees extends Component {
                     closeButton = false,
                     title = 'Import Successfully',
                     message = '';
-                  Notifications.success.call({
+                  Notifications.success({
                     closeButton,
                     title,
                     message
@@ -137,7 +137,7 @@ class OrganizationEmployees extends Component {
                 closeButton = false,
                 title = 'Error',
                 message = 'There is no contact in your file';
-              Notifications.error.call({
+              Notifications.error({
                 closeButton,
                 title,
                 message

@@ -1,5 +1,6 @@
 import { Mongo } from 'meteor/mongo';
 import { SendingPlans } from '/imports/api/sending_plans';
+import {Profiles} from '/imports/api/profiles/index';
 import * as schedulerUtils from '/imports/utils/scheduler';
 
 export default class SchedulerCollection extends Mongo.Collection {
@@ -39,10 +40,14 @@ export default class SchedulerCollection extends Mongo.Collection {
       if(_.isEmpty(doc.metrics)) return;
 
       // generate new sending plan
-      const leaderId = doc.userId;
-      const schedulerId = doc._id;
+      const
+        {_id, userId} = doc,
+        leaderId = userId,
+        schedulerId = _id,
+        plans = schedulerUtils.generateSendingPlan(doc.quarter, doc.interval),
+        {timezone} = Profiles.find({userId}, {fields: {timezone: true}}).fetch()[0]
+        ;
       let metricIdx = 0;
-      const plans = schedulerUtils.generateSendingPlan(doc.quarter, doc.interval);
 
       _.each(plans, sendDate => {
         const newPlan = {
@@ -50,6 +55,7 @@ export default class SchedulerCollection extends Mongo.Collection {
           schedulerId,
           metric: doc.metrics[metricIdx],
           sendDate,
+          timezone,
           status: 'READY'
         };
 

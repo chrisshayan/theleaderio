@@ -12,10 +12,11 @@ import FormChosen from '/imports/ui/components/FormChosen';
 
 // methods
 import * as ArticleActions from '/imports/api/articles/methods';
-import * as Notifications from '/imports/api/notifications/methods';
+import * as Notifications from '/imports/api/notifications/functions';
 
 // functions
 import {encodeKeyword} from '/imports/utils/urlBuilder';
+import {getShortDescription} from '/imports/utils/index';
 
 // constants
 import {DEFAULT_METRICS} from '/imports/utils/defaults';
@@ -56,7 +57,7 @@ class EditArticle extends Component {
         title = "Article",
         message = error
         ;
-      Notifications.error.call({closeButton, title, message});
+      Notifications.error({closeButton, title, message});
     }
 
   }
@@ -68,7 +69,7 @@ class EditArticle extends Component {
   _editArticle({status, data}) {
     const
       {articleId} = this.state,
-      {subject, content, tags, seoUrl} = data
+      {subject, content, tags, description, seoUrl} = data
       ;
     let
       articleStatus = ""
@@ -95,6 +96,7 @@ class EditArticle extends Component {
         subject,
         content,
         tags,
+        description,
         status: articleStatus,
         seoUrl
       }, (error, _id) => {
@@ -104,7 +106,7 @@ class EditArticle extends Component {
             title = "Article",
             message = "Saved"
             ;
-          Notifications.success.call({closeButton, title, message});
+          Notifications.success({closeButton, title, message});
           // route to view article
           FlowRouter.go('app.articles.action', {action: 'view', seoUrl}, {_id});
         } else {
@@ -113,7 +115,7 @@ class EditArticle extends Component {
             title = "Article",
             message = error.reason
             ;
-          Notifications.error.call({closeButton, title, message});
+          Notifications.error({closeButton, title, message});
         }
       });
     } else {
@@ -123,6 +125,7 @@ class EditArticle extends Component {
         subject,
         content,
         tags,
+        description,
         status: articleStatus
       }, (error) => {
         if (!error) {
@@ -131,14 +134,15 @@ class EditArticle extends Component {
             title = "Article",
             message = "Saved"
             ;
-          Notifications.success.call({closeButton, title, message});
+          Notifications.success({closeButton, title, message});
+          // FlowRouter.go('app.articles.action', {action: 'view', seoUrl}, {_id: articleId});
         } else {
           const
             closeButton = true,
             title = "Article",
             message = error.reason
             ;
-          Notifications.error.call({closeButton, title, message});
+          Notifications.error({closeButton, title, message});
         }
       });
     }
@@ -148,16 +152,25 @@ class EditArticle extends Component {
   _getArticleData() {
     const
       {articleId} = this.state,
+      {subject, selectedTags, description, summernote} = this.refs,
+      maxDescLength = 50,
       articleData = {
-        subject: this.refs.subject.value,
-        content: this.refs.summernote.getContent() || "",
-        tags: this.refs.selectedTags.getValue() || []
+        subject: subject.value,
+        tags: selectedTags.getValue() || [],
+        description: description.value || "",
+        content: summernote.getContent() || ""
       }
       ;
+    if(articleData.description.length > maxDescLength) {
+      const {description} = articleData;
+      articleData.description = getShortDescription(description, maxDescLength);
+    }
 
     if (typeof articleId === "undefined") {
       articleData.seoUrl = encodeKeyword(articleData.subject.toLowerCase())
     }
+
+    console.log(articleData);
 
     return articleData;
   }
@@ -186,7 +199,7 @@ class EditArticle extends Component {
             title = "Article",
             message = "Discarded"
             ;
-          Notifications.success.call({closeButton, title, message});
+          Notifications.success({closeButton, title, message});
           FlowRouter.go('app.articles');
         } else {
           const
@@ -194,7 +207,7 @@ class EditArticle extends Component {
             title = "Article",
             message = error.reason
             ;
-          Notifications.error.call({closeButton, title, message});
+          Notifications.error({closeButton, title, message});
         }
       });
     }
@@ -239,6 +252,17 @@ class EditArticle extends Component {
                     options={chosenTags}
                     selectedElements={!_.isEmpty(article) ? article.tags : []}
                     isMultiple={true}
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label className="col-sm-1 control-label text-left">Description:</label>
+                <div className="col-sm-11" style={{paddingRight: 0}}>
+                  <textarea
+                    ref="description"
+                    type="text"
+                    className="form-control"
+                    defaultValue={!_.isEmpty(article) ? article.description : "The description about article..."}
                   />
                 </div>
               </div>

@@ -33,67 +33,67 @@ export default class ProfileMetricsBox extends Component {
           switch (key) {
             case 'overall': {
               // chartContent.overall = chart.overall;
-              group1.overall = metrics.overall;
+              group1.overall = metrics.overall || 0;
               break;
             }
             case 'purpose': {
               // chartContent.purpose = chart.purpose;
-              group1.purpose = metrics.purpose;
+              group1.purpose = metrics.purpose || 0;
               break;
             }
-            case 'mettings': {
-              // chartContent.mettings = chart.mettings;
-              group1.mettings = metrics.mettings;
+            case 'meetings': {
+              // chartContent.meetings = chart.meetings;
+              group1.meetings = metrics.meetings || 0;
               break;
             }
             case 'rules': {
               // chartContent.rules = chart.rules;
-              group1.rules = metrics.rules;
+              group1.rules = metrics.rules || 0;
               break;
             }
             case 'communications': {
               // chartContent.communications = chart.communications;
-              group2.communications = metrics.communications;
+              group2.communications = metrics.communications || 0;
               break;
             }
             case 'leadership': {
               // chartContent.leadership = chart.leadership;
-              group2.leadership = metrics.leadership;
+              group2.leadership = metrics.leadership || 0;
               break;
             }
             case 'workload': {
               // chartContent.workload = chart.workload;
-              group2.workload = metrics.workload;
+              group2.workload = metrics.workload || 0;
               break;
             }
             case 'energy': {
               // chartContent.energy = chart.energy;
-              group2.energy = metrics.energy;
+              group2.energy = metrics.energy || 0;
               break;
             }
             case 'stress': {
               // chartContent.stress = chart.stress;
-              group3.stress = metrics.stress;
+              group3.stress = metrics.stress || 0;
               break;
             }
             case 'decision': {
               // chartContent.decision = chart.decision;
-              group3.decision = metrics.decision;
+              group3.decision = metrics.decision || 0;
               break;
             }
             case 'respect': {
               // chartContent.respect = chart.respect;
-              group3.respect = metrics.respect;
+              group3.respect = metrics.respect || 0;
               break;
             }
             case 'conflict': {
               // chartContent.conflict = chart.conflict;
-              group3.conflict = metrics.conflict;
+              group3.conflict = metrics.conflict || 0;
               break;
             }
             default: {
               // chartContent.overall = chart.overall;
-              group1.overall = metrics.overall;
+              group1.overall = metrics.overall || 0;
             }
           }
         }

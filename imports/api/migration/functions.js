@@ -21,14 +21,17 @@ import {Employees} from '/imports/api/employees/index';
 import {Metrics} from '/imports/api/metrics/index';
 import {Feedbacks} from'/imports/api/feedbacks/index';
 import {Tokens} from '/imports/api/tokens/index';
+import {Scheduler, INTERVAL, QUARTER} from '/imports/api/scheduler/index';
+import {SendingPlans} from '/imports/api/sending_plans/index';
 
 // methods
 import * as TokenActions from '/imports/api/tokens/methods';
 import * as EmailActions from '/imports/api/email/methods';
 import {measureMonthlyMetricScore} from '/imports/api/measures/methods';
+import {createForMigration as createScheduler} from '/imports/api/scheduler/methods';
 
 // constants
-import {DEFAULT_PROFILE_PHOTO, DEFAULT_ORGANIZATION_PHOTO} from '/imports/utils/defaults';
+import {DEFAULT_PROFILE_PHOTO, DEFAULT_ORGANIZATION_PHOTO, DEFAULT_SCHEDULER} from '/imports/utils/defaults';
 
 /**
  * Function get list of migrated users and migrate their data one by one
@@ -117,7 +120,7 @@ export const migrateUserData = ({params}) => {
     },
     metricsName = {
       goalRating: "purpose",
-      meetingRating: "mettings",
+      meetingRating: "meetings",
       groundRulesRating: "rules",
       communicationRating: "communications",
       leadershipRating: "leadership",
@@ -230,7 +233,7 @@ export const migrateUserData = ({params}) => {
             url: url
           };
         Logger.info(`create new user success with userId: ${newAccount.userId}`);
-        if(Meteor.settings.public.env === "production") {
+        if (Meteor.settings.public.env === "production") {
           EmailActions.send.call({template, data});
         } else {
           Logger.info(`send email: ${template} to ${data.email}`);
@@ -498,3 +501,77 @@ export const migrateUserData = ({params}) => {
     Logger.info(report);
   }
 }
+
+export const generateSendingPlan = ({year}) => {
+  const
+    schedulers = Scheduler.find({year}, {fields: {userId: true}}).fetch() // get all schedule of year
+    ;
+  let
+    usersHadPlan = [],
+    usersNeedPlan = []
+    ;
+
+  // get user have plan in year already
+  if (!_.isEmpty(schedulers)) {
+    schedulers.map(schedule => {
+      usersHadPlan.push(schedule.userId);
+    });
+  }
+
+  // get user didn't have plan in year
+  usersNeedPlan = Accounts.users.find({_id: {$nin: usersHadPlan}}, {fields: {_id: true}}).fetch();
+
+  if (!_.isEmpty(usersNeedPlan)) {
+    usersNeedPlan.map(user => {
+      const
+        {_id: userId} = user,
+        lastYear = year - 1,
+        query = {userId, year: lastYear},
+        modifier = {sort: {_id: -1}, limit: 1},
+        // get last year scheduler
+        lastYearScheduler = Scheduler.find({...query, quarter: QUARTER.QUARTER_4}, {...modifier, fields: {interval: true}}).fetch()[0],
+        lastYearPlan = SendingPlans.find({...query}, {...modifier, fields: {sendDate: true}}).fetch()[0]
+        ;
+        // console.log(Scheduler.find({...query, quarter: QUARTER.QUARTER_4}, {...modifier, fields: {interval: true}}).fetch()[0])
+      let
+        interval = INTERVAL.EVERY_WEEK
+      ;
+
+      if (!_.isEmpty(lastYearScheduler)) {
+        interval = lastYearScheduler.interval;
+      }
+      DEFAULT_SCHEDULER.map(scheduler => {
+        const {quarter, metrics} = scheduler;
+        createScheduler.call({userId, year, quarter, interval, metrics}, (error) => {
+          if (error) {
+            Logger.warn({
+              name: `method - ${this.name}`,
+              message: JSON.stringify({userId, type: 'CREATE_SCHEDULER_FAILED', detail: error.reason})
+            });
+          }
+        });
+      });
+
+      if(!_.isEmpty(lastYearPlan)) {
+        const
+          // get time from the last plan of last year
+          hour = lastYearPlan.sendDate.getHours(),
+          minute = lastYearPlan.sendDate.getMinutes(),
+          // get plans which had just been generated
+          newPlans = SendingPlans.find({userId, year}, {fields: {sendDate: true}}).fetch();
+        if(!_.isEmpty(newPlans)) {
+          newPlans.map(newPlan => {
+            const
+              {_id, sendDate} = newPlan,
+              year = sendDate.getFullYear(),
+              month = sendDate.getMonth(),
+              day = sendDate.getDate()
+              ;
+
+            SendingPlans.update({_id}, {$set: {sendDate: new Date(year, month, day, hour, minute)}});
+          });
+        }
+      }
+    });
+  }
+};

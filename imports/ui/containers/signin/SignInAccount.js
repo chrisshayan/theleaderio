@@ -95,7 +95,7 @@ export default class SignInPage extends Component {
         <div className="loginColumns animated fadeInDown">
           <div className="row">
             <div className="col-md-6">
-              <h2 className="font-bold">{ signinTitle }</h2>
+              <h1 className="font-bold">{ signinTitle }</h1>
               <p>
                 Leadership is the key to success. A good leadership not only will help businesses to move up and become successful but also helps to empower the employees which will foster innovation and employee engagement.
               </p>

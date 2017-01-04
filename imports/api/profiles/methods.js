@@ -275,7 +275,7 @@ export const getPublicData = new ValidatedMethod({
             metrics: {
               overall: null,
               purpose: null,
-              mettings: null,
+              meetings: null,
               rules: null,
               communications: null,
               leadership: null,

@@ -3,7 +3,7 @@ import { SkyLightStateless } from 'react-skylight';
 import FormInput from '/imports/ui/components/FormInput';
 import * as orgActions from '/imports/api/organizations/methods';
 import { getErrors } from '/imports/utils';
-import * as Notifications from '/imports/api/notifications/methods';
+import * as Notifications from '/imports/api/notifications/functions';
 
 const initialState = {
 	doc: {
@@ -43,7 +43,7 @@ class SingleOrganizationAddEmployee extends Component {
           closeButton = false,
           title = 'Employee',
           message = 'Added';
-        Notifications.success.call({ closeButton, title, message });
+        Notifications.success({ closeButton, title, message });
         window.trackEvent('add_employee', {
           organization_id: organizationId,
           name: [data['firstName'], data['lastName']].join(' '),

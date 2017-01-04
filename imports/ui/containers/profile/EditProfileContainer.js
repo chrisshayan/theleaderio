@@ -8,7 +8,7 @@ import {Industries} from '/imports/api/industries/index';
 
 // methods
 import * as ProfileActions from '/imports/api/profiles/methods';
-import * as Notifications from '/imports/api/notifications/methods';
+import * as Notifications from '/imports/api/notifications/functions';
 
 // components
 import Spinner from '/imports/ui/common/Spinner';
@@ -59,14 +59,14 @@ class EditProfile extends Component {
           title = 'Edit profile',
           message = `Error: ${error.reason}`
           ;
-        Notifications.warning.call({closeButton, timeOut, title, message});
+        Notifications.warning({closeButton, timeOut, title, message});
       } else {
         const closeButton = true,
           timeOut = 2000,
           title = 'Edit profile',
           message = 'Saved'
           ;
-        Notifications.success.call({closeButton, timeOut, title, message});
+        Notifications.success({closeButton, timeOut, title, message});
         window.Intercom('update',{
           user_id: userId,
           name: [firstName, lastName].join(' ')
@@ -86,7 +86,7 @@ class EditProfile extends Component {
           title = 'Preferences photo',
           message = 'Uploaded'
           ;
-        Notifications.success.call({closeButton, timeOut, title, message});
+        Notifications.success({closeButton, timeOut, title, message});
       }
     });
   }

@@ -96,7 +96,7 @@ export const getAverageMetrics = (data) => {
     metrics = {
       overall: null,
       purpose: null,
-      mettings: null,
+      meetings: null,
       rules: null,
       communications: null,
       leadership: null,
@@ -112,7 +112,7 @@ export const getAverageMetrics = (data) => {
   metrics = {
     overall: arrayAverage(data.overall),
     purpose: arrayAverage(data.purpose),
-    mettings: arrayAverage(data.mettings),
+    meetings: arrayAverage(data.meetings),
     rules: arrayAverage(data.rules),
     communications: arrayAverage(data.communications),
     leadership: arrayAverage(data.leadership),

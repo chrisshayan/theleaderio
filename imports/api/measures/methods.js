@@ -54,7 +54,7 @@ export const getChartData = new ValidatedMethod({
       label: [],
       overall: [],
       purpose: [],
-      mettings: [],
+      meetings: [],
       rules: [],
       communications: [],
       leadership: [],
@@ -83,7 +83,7 @@ export const getChartData = new ValidatedMethod({
           label: "",
           overall: 0,
           purpose: 0,
-          mettings: 0,
+          meetings: 0,
           rules: 0,
           communications: 0,
           leadership: 0,
@@ -166,7 +166,7 @@ export const measureMonthlyMetricScore = new ValidatedMethod({
       runDate = (!!params.date ? params.date : new Date()),
       year = runDate.getFullYear(),
       month = runDate.getMonth(),
-      nextMonth = month === 11 ? 1 : month + 1,
+      execDate = new Date(year, month, 1),
       haveLeaderId = !!params.leaderId,
       haveOrgId = !!params.organizationId
       ;
@@ -197,8 +197,8 @@ export const measureMonthlyMetricScore = new ValidatedMethod({
       selector.organizationId = params.organizationId;
     }
     selector.date = {
-      $gte: new Date(year, month, 1),
-      $lt: new Date(year, nextMonth, 1)
+      $gte: execDate,
+      $lt: new Date(moment(execDate).add(1, 'months'))
     }
     ; // only get data in current month
     modifier = {

@@ -20,7 +20,7 @@ import Calendar from '/imports/ui/containers/calendar/Calendar';
 import OrganizationInfoForm from './_OrganizationInformationForm';
 import OrganizationEmployees from './_Employees';
 
-import * as Notifications from '/imports/api/notifications/methods';
+import * as Notifications from '/imports/api/notifications/functions';
 
 class UpdateOrganization extends Component {
 	static propTypes = {
@@ -65,7 +65,7 @@ class UpdateOrganization extends Component {
 					closeButton = false,
 					title = 'Saved',
 					message = '';
-				Notifications.success.call({ closeButton, title, message });
+				Notifications.success({ closeButton, title, message });
 				window.trackEvent('update_organization', {
 					id: this.props._id,
 					name: this.props.doc.name
@@ -78,10 +78,10 @@ class UpdateOrganization extends Component {
 		if(!t) return; 
 		orgMethods.remove.call({ _id: doc._id }, err => {
 			if(err) {
-				Notifications.error.call({ message: err.reason });
+				Notifications.error({ message: err.reason });
 			} else {
 				FlowRouter.go('app.organizations');
-				Notifications.success.call({ message: 'Removed' });
+				Notifications.success({ message: 'Removed' });
 				window.trackEvent('remove_organization', {
 					id: doc._id,
 					name: doc.name

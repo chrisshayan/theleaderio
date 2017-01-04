@@ -732,4 +732,4 @@ export const getReferralEmailOptions = ({template, data}) => {
   result.userVariables = {template, emailId: `${leaderId}-${userId}`};
 
   return result;
-}
+};

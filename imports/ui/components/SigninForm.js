@@ -28,7 +28,7 @@ export default class SignInForm extends Component {
         errors = null
       } = this.props,
       forgotPasswordUrl = FlowRouter.path('passwordPage', {action: 'forgot'}),
-      signUpUrl = `http://${DOMAIN}${FlowRouter.path('signUpPage', {action: 'user'})}`
+      signUpUrl = `http://${DOMAIN}${FlowRouter.path('newSignUpSteps', {action: 'alias'})}`
       ;
     return (
 

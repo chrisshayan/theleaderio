@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import * as schedulerUtils from '/imports/utils/scheduler';
-import Notifications from '/imports/api/notifications/methods';
+import Notifications from '/imports/api/notifications/functions';
 
 class IntervalSelector extends Component {
   static propTypes = {
@@ -29,16 +29,16 @@ class IntervalSelector extends Component {
     const interval = e.target.value;
     const isValid = schedulerUtils.validate(scheduler.quarter, currentLength, interval);
     if(!isValid) {
-      Notifications.error.call({message: 'Sending interval invalid'});
+      Notifications.error({message: 'Sending interval invalid'});
     } else {
       Meteor.call('scheduler.changeInterval', {
         schedulerId: scheduler._id,
         interval,
       }, error => {
         if(error) {
-          Notifications.error.call({message: error.reason});
+          Notifications.error({message: error.reason});
         } else {
-          Notifications.success.call({message: 'Changed'});
+          Notifications.success({message: 'Changed'});
         }
       })
     }
