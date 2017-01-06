@@ -6,6 +6,7 @@ import moment from 'moment';
 // collections
 import {Accounts} from 'meteor/accounts-base';
 import {Profiles} from '/imports/api/profiles/index';
+import {Employees, STATUS_ACTIVE} from '/imports/api/employees/index';
 
 // cache
 import {MiniMongo} from '/imports/api/cache/index';
@@ -24,13 +25,15 @@ class ManageUsers extends Component {
     super();
 
     this.state = {
-      users: []
+      reloadData: false,
+      users: [],
+      noOfSearchResults: 0
     };
   }
 
   componentWillReceiveProps(nextProps) {
-    const {users, profiles} = nextProps;
-    if (!_.isEmpty(users) && !_.isEmpty(profiles)) {
+    const {ready, users, profiles} = nextProps;
+    if (!_.isEmpty(users) && ready) {
       MiniMongo.remove({});
       users.map(user => {
         const
@@ -40,6 +43,7 @@ class ManageUsers extends Component {
           ;
         let
           profile = {},
+          noOfActiveEmployees,
           doc = {}
           ;
 
@@ -47,13 +51,16 @@ class ManageUsers extends Component {
 
         profile = Profiles.findOne({userId: user._id});
 
+        noOfActiveEmployees = Employees.find({leaderId: user._id, status: STATUS_ACTIVE}).count();
+
         if (!_.isEmpty(profile)) {
           const {firstName, lastName, timezone} = profile;
           doc = {
             ...doc,
             firstName,
             lastName,
-            timezone
+            timezone,
+            noOfActiveEmployees
           };
         }
 
@@ -70,7 +77,8 @@ class ManageUsers extends Component {
       });
 
       this.setState({
-        users: MiniMongo.find().fetch()
+        users: MiniMongo.find().fetch(),
+        noOfSearchResults: MiniMongo.find().count()
       });
     }
   }
@@ -84,10 +92,14 @@ class ManageUsers extends Component {
   _onChangeTimeRange = (field, value) => {
     const
       oldTimeRange = Session.get('userCreatedAtRange'),
-      newTimeRange = {...oldTimeRange, [field]: value}
+      newTimeRange = {...oldTimeRange, [field]: value},
+      {reloadData} = this.state
       ;
 
     Session.set('userCreatedAtRange', newTimeRange);
+    // this.setState({
+    //   reloadData: !reloadData
+    // });
   };
 
   _onSearch() {
@@ -106,15 +118,18 @@ class ManageUsers extends Component {
       ;
 
     this.setState({
-      users: MiniMongo.find(query).fetch()
+      users: MiniMongo.find(query).fetch(),
+      noOfSearchResults: MiniMongo.find(query).count()
     });
   }
 
   render() {
     const
       {ready, minCreatedAt, maxCreatedAt} = this.props,
-      {users} = this.state
+      {users, noOfSearchResults} = this.state
       ;
+
+    console.log(users.length);
 
     if (ready) {
       return (
@@ -165,7 +180,7 @@ class ManageUsers extends Component {
               />
             </div>
           </div>
-          <h3>There are {users.length} users found.</h3>
+          <h3>There are {noOfSearchResults} users found.</h3>
           <div className="hr-line-dashed"></div>
           <div className="row">
             <div className="search-result">
@@ -189,6 +204,7 @@ export default ManageUsersContainer = createContainer((params) => {
     date = new Date(),
     subUsers = Meteor.subscribe('statistic.users'),
     subProfiles = Meteor.subscribe('statistic.profiles'),
+    subEmployees = Meteor.subscribe("statistic.employees"),
     userCreatedAtRange = Session.get('userCreatedAtRange')
     ;
   let
@@ -197,8 +213,10 @@ export default ManageUsersContainer = createContainer((params) => {
     fromDate = new Date(moment(date).subtract(30, 'days')),
     toDate = date,
     query = {username: {$exists: true}},
-    options = {sort: {createdAt: -1}, limit: 50},
+    options = {sort: {createdAt: -1}},
     users = [],
+    employees = [],
+    employeesReady = false,
     totalUsers = 0
     ;
 
@@ -220,15 +238,20 @@ export default ManageUsersContainer = createContainer((params) => {
       userIdList.push(user._id);
     });
     if (!_.isEmpty(userIdList)) {
-      profiles = Profiles.find({userId: {$in: userIdList}}).fetch();
-      profilesReady = true;
+      if(subProfiles.ready()) {
+        profiles = Profiles.find({userId: {$in: userIdList}}).fetch();
+      }
+      if(subEmployees.ready()) {
+        employees = Employees.find({leaderId: {$in: userIdList}}).fetch();
+      }
     }
   }
 
   return {
-    ready: subUsers.ready(), //& profilesReady,
+    ready: subUsers.ready() & subEmployees.ready() & subProfiles.ready(),
     users,
     profiles,
+    employees,
     minCreatedAt: fromDate,
     maxCreatedAt: toDate
   };

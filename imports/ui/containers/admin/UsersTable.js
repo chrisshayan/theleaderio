@@ -6,16 +6,6 @@ import SingleUser from '/imports/ui/containers/admin/SingleUser';
 import NoUser from '/imports/ui/components/NoContent';
 
 export default class UsersTable extends Component {
-
-  // _getProfile(userId) {
-  //   // console.log(userId)
-  //   const
-  //     {profiles} = this.props,
-  //     profile = profiles[_.findIndex(profiles, {userId})] || {}
-  //     ;
-  //   return profile;
-  // }
-
   render() {
     const
       {users} = this.props,
@@ -24,30 +14,33 @@ export default class UsersTable extends Component {
 
     if (!_.isEmpty(users)) {
       return (
-        <table className="table">
-          <thead>
-          <tr>
-            <th>Created at</th>
-            <th>First name</th>
-            <th>Last name</th>
-            <th>Email</th>
-            <th>Alias</th>
-            <th>Time zone</th>
-            <th>status</th>
-          </tr>
-          </thead>
-          <tbody>
-          {users.map((user, key) => (
-            <SingleUser
-              _id={user._id}
-              userId={user._id}
-              key={key}
-              position={key + 1}
-              user={user}
-            />
-          ))}
-          </tbody>
-        </table>
+        <div className="table-responsive">
+          <table className="table">
+            <thead>
+            <tr>
+              <th>Created at</th>
+              <th>First name</th>
+              <th>Last name</th>
+              <th>Email</th>
+              <th>Alias</th>
+              <th>Time zone</th>
+              <th>Active Employees</th>
+              <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {users.map((user, key) => (
+              <SingleUser
+                _id={user._id}
+                userId={user._id}
+                key={key}
+                position={key + 1}
+                user={user}
+              />
+            ))}
+            </tbody>
+          </table>
+        </div>
       );
     } else {
       return (
