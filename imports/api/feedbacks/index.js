@@ -7,6 +7,10 @@ import FeedbacksCollections from './collections';
 import {DEFAULT_METRICS} from '/imports/utils/defaults';
 
 export const Feedbacks = new FeedbacksCollections('feedbacks');
+export const FEEDBACK_TYPES = {
+  EMPLOYEE_TO_LEADER: "EMPLOYEE_TO_LEADER",
+  LEADER_TO_EMPLOYEE: "LEADER_TO_EMPLOYEE"
+};
 
 // public fields
 Feedbacks.publicFields = {leaderId: true, feedback: true, date: true, type: true};
@@ -38,8 +42,8 @@ Feedbacks.schema = new SimpleSchema({
   type: {
     type: String,
     optional: true,
-    allowedValues: ["EMPLOYEE_TO_LEADER", "LEADER_TO_EMPLOYEE"],
-    defaultValue: "EMPLOYEE_TO_LEADER"
+    allowedValues: [FEEDBACK_TYPES.EMPLOYEE_TO_LEADER, FEEDBACK_TYPES.LEADER_TO_EMPLOYEE],
+    defaultValue: FEEDBACK_TYPES.EMPLOYEE_TO_LEADER
   },
   date: {
     type: Date

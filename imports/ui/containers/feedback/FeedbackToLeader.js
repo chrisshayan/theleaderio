@@ -1,3 +1,4 @@
+import {Meteor} from 'meteor/meteor';
 import React, { Component } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import {Feedbacks} from '/imports/api/feedbacks';
@@ -41,15 +42,15 @@ class FeedbackToLeader extends Component {
 const withMeteor = () => {
   let page = parseInt(Session.get('FEEDBACK_TO_LEADER_PAGE'));
   if(_.isNaN(page)) page = 1;
-  let sub = Meteor.subscribe('feedbacks', page);
+  let sub = Meteor.subscribe('feedbackToLeader', page);
   const limit = page * 10;
   const option = {
     sort: {date: -1},
     limit: limit
   };
 
-  let cursor = Feedbacks.find({type: {$not: /LEADER_TO_EMPLOYEE/}}, option);
-  let total = Feedbacks.find({type: {$not: /LEADER_TO_EMPLOYEE/}}).count();
+  let cursor = Feedbacks.find({}, option);
+  let total = Feedbacks.find({}).count();
   return {
     ready: sub.ready(),
     items: cursor.fetch(),
