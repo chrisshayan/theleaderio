@@ -35,7 +35,8 @@ export class TopNavFull extends Component {
   render() {
     const
       homePageUrl = `http://${DOMAIN}`,
-      userId = Meteor.userId()
+      userId = Meteor.userId(),
+      {showSignIn = true, showDashboard = true} = this.props
       ;
     return (
       <nav className="navbar navbar-static-top" role="navigation">
@@ -53,6 +54,7 @@ export class TopNavFull extends Component {
             </li>
           </ul>
           {!_.isEmpty(userId) ? (
+            showDashboard && (
               <ul className="nav navbar-top-links navbar-right">
                 <li>
                   <a href={FlowRouter.url('app.dashboard')}>
@@ -60,7 +62,8 @@ export class TopNavFull extends Component {
                   </a>
                 </li>
               </ul>
-            ) : (
+            )) : (
+            showSignIn && (
               <ul className="nav navbar-top-links navbar-right">
                 <li>
                   <a href={FlowRouter.url('SignInPage', {action: 'account'})}>
@@ -68,7 +71,7 @@ export class TopNavFull extends Component {
                   </a>
                 </li>
               </ul>
-            )}
+            ))}
         </div>
       </nav>
     );

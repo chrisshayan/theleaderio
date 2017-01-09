@@ -55,6 +55,8 @@ import ReferralsContainer from '/imports/ui/containers/referrals/ReferralsContai
 
 import {GettingStartedJourney} from '/imports/ui/containers/journey/GettingStartedJourney';
 
+import Questions from '/imports/ui/containers/qna/Questions';
+
 // functions
 import {isAdmin} from '/imports/utils/index';
 import * as Notifications from '/imports/api/notifications/functions';
@@ -746,7 +748,7 @@ const viewArticleRoute = FlowRouter.route('/articles/view/:seoUrl', {
   name: 'articles.view',
   action(params, queryParams) {
     // mount(ViewArticle, {_id: queryParams._id});
-    mount(BlankLayout, {
+    mount(MainLayoutFull, {
       content() {
         return <ViewArticle _id={queryParams._id}/>
       }
@@ -777,8 +779,28 @@ appRoutes.route('/journey/start/:step', {
   action(params) {
     const {step} = params;
     mount(MainLayoutFull, {
+      showSignIn: false,
+      showDashboard: false,
       content() {
         return <GettingStartedJourney step={step} />;
+      }
+    });
+  }
+});
+
+
+/**
+ * Route for anonymous question to leader
+ */
+const qnaRoute = FlowRouter.route('/qna/questions/:organizationId', {
+  name: 'qna.questions',
+  action(params, queryParams) {
+    const {organizationId} = params;
+    mount(MainLayoutFull, {
+      showSignIn: false,
+      showDashboard: false,
+      content() {
+        return <Questions organizationId={organizationId}/>
       }
     });
   }

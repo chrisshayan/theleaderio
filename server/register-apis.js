@@ -44,4 +44,6 @@ import '/imports/api/articles/register.server';
 import '/imports/api/referrals/register.server';
 // alias
 import '/imports/api/alias/register.server';
+// qna
+import '/imports/api/qna/register.server';
 
