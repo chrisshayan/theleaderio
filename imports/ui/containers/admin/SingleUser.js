@@ -32,7 +32,7 @@ export default class SingleUser extends Component {
       ;
 
     accountAction.call({email, null, reason, date}, (error, result) => {
-      if(!error) {
+      if (!error) {
         const closeButton = true,
           title = "",
           {message} = result
@@ -52,14 +52,14 @@ export default class SingleUser extends Component {
   render() {
     const
       {position = '', user} = this.props,
-      {_id, email, username, createdAt, status, firstName, lastName, timezone} = user,
+      {_id, email, username, createdAt, status, firstName, lastName, timezone, noOfActiveEmployees} = user,
       actionEnable = (status === USER_ROLES.INACTIVE) ? true : false
-      styles = {
-        vAlign: {
-          verticalAlign: 'middle'
-        }
+    styles = {
+      vAlign: {
+        verticalAlign: 'middle'
       }
-      ;
+    }
+    ;
     return (
       <tr>
         <td style={styles.vAlign}>
@@ -80,16 +80,25 @@ export default class SingleUser extends Component {
         <td style={styles.vAlign}>
           {timezone}
         </td>
-        <td style={styles.vAlign}>
-          <span className={actionEnable ? "label label-danger": "label label-primary"}>{status}</span>
+        <td className="center" style={styles.vAlign}>
+          {noOfActiveEmployees}
         </td>
         <td style={styles.vAlign}>
-          <button style={{marginBottom: 0}}
-                  className={actionEnable ? "btn btn-primary" : "btn btn-danger"}
-                  onClick={this._onClick.bind(this)}
-          >
-            {' '}{(actionEnable) ? "Enable" : "Disable"}
-          </button>
+          <div className="btn-group">
+            <button
+              style={{marginBottom: 0}}
+              data-toggle="dropdown"
+              className={`btn btn-xs dropdown-toggle ${actionEnable ? 'btn-danger' : 'btn-primary'}`}>
+              {status} <span className="caret"></span>
+            </button>
+            <ul className="dropdown-menu">
+              { actionEnable ? (
+                  <li><a onClick={this._onClick.bind(this)}> <i className="fa fa-unlock"/> Enable</a></li>
+                ) : (
+                  <li><a onClick={this._onClick.bind(this)}> <i className="fa fa-lock"/> Disable</a></li>
+                )}
+            </ul>
+          </div>
         </td>
       </tr>
     );

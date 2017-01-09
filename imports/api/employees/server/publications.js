@@ -1,5 +1,6 @@
 import {Meteor} from 'meteor/meteor';
 import {Employees} from '../index';
+import * as ERROR_CODE from '/imports/utils/error_code';
 
 Meteor.publish('employees', function() {
   if(!this.userId) {

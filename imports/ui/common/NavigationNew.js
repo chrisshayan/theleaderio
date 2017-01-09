@@ -92,7 +92,7 @@ export class Navigation extends Component {
     }
 
     return (
-      <nav className="navbar-default navbar-static-side" role="navigation">
+      <nav className="navbar-default navbar-static-side" role="navigation" style={{position: 'fixed'}}>
         <div className="sidebar-collapse">
           <a className="close-canvas-menu"><i className="fa fa-times"></i></a>
           <ul className="nav" id="side-menu">
