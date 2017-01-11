@@ -5,6 +5,7 @@ import {Mongo} from 'meteor/mongo';
 import {Feedbacks} from '/imports/api/feedbacks/index';
 import {Employees, STATUS_ACTIVE} from '/imports/api/employees/index';
 import {Accounts} from 'meteor/accounts-base';
+import {Questions} from '/imports/api/questions/index';
 
 // methods
 import {checkExists as checkExistsScore} from '/imports/api/metrics/methods';
@@ -297,7 +298,7 @@ Api.addRoute('statistic/:type', {authRequired: false}, {
  */
 restAPI.addRoute('admin/:action', {authRequired: true}, {
   get: {
-    action: function() {
+    action: function () {
       const
         {action} = this.urlParams,
         {email} = this.queryParams
@@ -327,7 +328,7 @@ restAPI.addRoute('admin/:action', {authRequired: true}, {
       const
         {action} = this.urlParams,
         {userId, mailgunId, email, reason, date} = this.bodyParams
-      ;
+        ;
       let message = "";
 
       switch (action) {
@@ -345,6 +346,64 @@ restAPI.addRoute('admin/:action', {authRequired: true}, {
         }
         case "enableEmployee": {
           return enableEmployee({userId, mailgunId, email, reason, date});
+          break;
+        }
+        default: {
+          message = `Unknown api ${action}.`;
+          return {
+            statusCode: 404,
+            headers: {
+              'Content-Type': 'text/plain'
+            },
+            body: message
+          };
+        }
+      }
+      return "ok";
+    }
+  }
+});
+
+
+/**
+ * API collect employees question from email
+ * @param {String} action
+ */
+Api.addRoute('questions/:action', {authRequired: false}, {
+  post: {
+    action: function () {
+      const
+        {action} = this.urlParams,
+        {
+          recipient,
+          sender,
+          Subject,
+          timestamp,
+        } = this.request.body,
+        content = this.request.body["stripped-text"],
+        date = timestampToDate(timestamp)
+        ;
+      let
+        message = ""
+        ;
+
+      switch (action) {
+        case "ask": {
+          // allow employees ask questions by email
+          const
+            recipientElements = recipient.split("-"),
+            question = removeWebGmailClientContent(content)[0],
+            [leaderId, organizationId, employeeId] = recipientElements
+          ;
+
+          // console.log({leaderId, organizationId, employeeId, date, question});
+          if(!_.isEmpty(leaderId) && !_.isEmpty(organizationId) && !_.isEmpty(question)) {
+            Questions.insert({leaderId, organizationId, employeeId, question});
+          }
+          break;
+        }
+        case 'answer': {
+          // allow leader answer question by email
           break;
         }
         default: {

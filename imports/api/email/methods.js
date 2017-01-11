@@ -23,14 +23,6 @@ export const send = new ValidatedMethod({
     if (!this.isSimulation) {
       let
         options = {}
-        // logName = "sendEmail",
-        // logContent = {
-        //   subject: "",
-        //   from: "",
-        //   to: "",
-        //   template,
-        //   data
-        // }
         ;
 
       // get options base on template
@@ -161,6 +153,10 @@ export const send = new ValidatedMethod({
           options = EmailFunctions.getReferralEmailOptions({template, data});
           break;
         }
+        case 'questions': {
+          options = EmailFunctions.getQuestionsEmailOptions({template, data});
+          break;
+        }
         default: {
           throw new Meteor.Error(`Unknown template: ${template}`);
         }
@@ -170,16 +166,8 @@ export const send = new ValidatedMethod({
       return Meteor.defer(() => {
         // console.log(options);
         // Email.send(options);
+
         EmailFunctions.sendMail({options});
-        // console.log(sendMailResult);
-        // add log for a digest into log collection
-        // logContent = {
-        //   ...logContent,
-        //   subject: options.subject,
-        //   from: options.from,
-        //   to: options.to
-        // };
-        // addLogs({params: {name: logName, content: logContent}});
       });
     }
   }
