@@ -8,6 +8,7 @@ import { DailyJobs, QueueJobs, AdminJobs } from '/imports/api/jobs/collections';
 import { Jobs } from '/imports/api/jobs/jobs';
 import { Workers } from '/imports/api/jobs/workers';
 import * as IntercomAPI from '/imports/api/intercom';
+import {sendStatisticEmailToLeader, sendFeedbackEmailToLeader} from '/imports/api/jobs/methods';
 
 // Sync user to intercom
 Accounts.onCreateUser(function(options, user) {
@@ -103,6 +104,22 @@ Meteor.startup(function() {
     const data = { type };
     Jobs.create(type, attributes, data);
   }
+  // sending survey email job
+  if (!AdminJobs.find({ type: "ask_questions" }).count()) {
+    type = "ask_questions";
+    let attributes = {};
+    if (Meteor.settings.public.env === "dev") {
+      console.log(`dev environment`)
+      attributes = { priority: "normal", repeat: { schedule: later.parse.text("every 5 minutes") } };
+    } else {
+      attributes = {
+        priority: "normal",
+        repeat: { schedule: later.parse.cron(Meteor.settings.jobs.runTime.askQuestions) }
+      };
+    }
+    var data = { type };
+    Jobs.create(type, attributes, data);
+  }
   /*
   // migrate data for users
   if (Meteor.settings.migration) {
@@ -123,5 +140,11 @@ Meteor.startup(function() {
   Workers.start(type);
   type = "send_surveys";
   Workers.start(type);
+  type = "ask_questions";
+  Workers.start(type);
+  type = "feedback_for_employee";
+  AdminJobs.processJobs(type, sendFeedbackEmailToLeader);
+  type = "statistic_for_leader";
+  AdminJobs.processJobs(type, sendStatisticEmailToLeader);
 
 });

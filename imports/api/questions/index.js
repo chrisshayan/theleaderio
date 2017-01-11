@@ -1,11 +1,11 @@
 import {SimpleSchema} from 'meteor/aldeed:simple-schema';
-import QNACollection from './collections';
+import QuestionsCollection from './collections';
 
-export const QNA = new QNACollection('questions_and_answers');
+export const Questions = new QuestionsCollection('questions');
 
-QNA.publicFields = {};
+Questions.publicFields = {leaderId: true, organizationId: true, question: true, answer: true, date: true};
 
-QNA.schema = new SimpleSchema({
+Questions.schema = new SimpleSchema({
   leaderId: {
     type: String
   },
@@ -28,4 +28,4 @@ QNA.schema = new SimpleSchema({
   }
 });
 
-QNA.attachSchema(QNA.schema);
+Questions.attachSchema(Questions.schema);

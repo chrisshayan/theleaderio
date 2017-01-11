@@ -37,7 +37,7 @@ const SITE_NAME = Meteor.settings.public.name;
  * @param job
  * @param cb
  */
-const sendFeedbackEmailToLeader = function (job, cb) {
+export const sendFeedbackEmailToLeader = function (job, cb) {
   const
     name = "sendFeedbackEmailToLeader",
     activeOrgList = Organizations.find({isPresent: true}, {fields: {_id: true, leaderId: true}}).fetch()
@@ -101,7 +101,7 @@ const sendFeedbackEmailToLeader = function (job, cb) {
  * @param cb
  */
 // export const sendStatisticEmailToLeader = function (job, cb) { // this is used for testing
-const sendStatisticEmailToLeader = function (job, cb) {
+export const sendStatisticEmailToLeader = function (job, cb) {
   const
     startDate = new Date(moment().subtract(7, 'day')),
     currentDate = new Date(),

@@ -1,6 +1,6 @@
 import {Meteor} from 'meteor/meteor';
 import {ValidatedMethod} from 'meteor/mdg:validated-method';
-import {QNA} from './index';
+import {Questions} from './index';
 
 // collections
 import {Accounts} from 'meteor/accounts-base';
@@ -15,7 +15,7 @@ import {Profiles} from '/imports/api/profiles/index';
  * @param {String} question
  */
 export const ask = new ValidatedMethod({
-  name: 'qna.ask',
+  name: 'questions.ask',
   validate: new SimpleSchema({
     leaderId: {
       type: String
@@ -32,8 +32,8 @@ export const ask = new ValidatedMethod({
     }
   }).validator(),
   run({leaderId, organizationId, employeeId, question}) {
-    console.log({leaderId, organizationId, employeeId, question})
-    return QNA.insert({leaderId, organizationId, employeeId, question});
+    // console.log({leaderId, organizationId, employeeId, question})
+    return Questions.insert({leaderId, organizationId, employeeId, question});
   }
 });
 
@@ -45,7 +45,7 @@ export const ask = new ValidatedMethod({
  * @param {String} answer
  */
 export const answer = new ValidatedMethod({
-  name: 'qna.answer',
+  name: 'questions.answer',
   validate: new SimpleSchema({
     _id: {
       type: String
@@ -61,7 +61,7 @@ export const answer = new ValidatedMethod({
     }
   }).validator(),
   run({_id, leaderId, organizationId, answer}) {
-    return QNA.update({_id, leaderId, organizationId}, {$set: {answer}});
+    return Questions.update({_id, leaderId, organizationId}, {$set: {answer}});
   }
 });
 
@@ -71,16 +71,16 @@ export const answer = new ValidatedMethod({
  * @param {String} organizationId / code
  */
 export const verify = new ValidatedMethod({
-  name: 'qna.verify',
+  name: 'questions.verify',
   validate: new SimpleSchema({
     alias: {
       type: String
     },
-    organizationId: {
+    randomCode: {
       type: String
     }
   }).validator(),
-  run({alias, organizationId}) {
+  run({alias, randomCode}) {
     if(!this.isSimulation) {
       const
         user = Accounts.findUserByUsername(alias)
@@ -89,10 +89,13 @@ export const verify = new ValidatedMethod({
       if(!_.isEmpty(user)) {
         const
           leaderId = user._id,
-          org = Organizations.findOne({_id: organizationId, leaderId});
+          org = Organizations.findOne({leaderId, randomCode}, {fields: {_id: true, randomCode: true, leaderId: true}});
 
         if(!_.isEmpty(org)) {
-          const profile = Profiles.findOne({userId: leaderId});
+          const
+            profile = Profiles.findOne({userId: leaderId}),
+            organizationId = org._id
+            ;
           let result = {
             isValidated: true,
             header: 'Ask your leader any question:',

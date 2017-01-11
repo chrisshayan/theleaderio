@@ -181,6 +181,10 @@ export const buildHtml = function ({template, data}) {
       mailTemplate = Assets.getText(`email_templates/${template}.html`);
       break;
     }
+    case "questions": {
+      mailTemplate = Assets.getText(`email_templates/${template}/${type}.html`);
+      break;
+    }
     default: {
       mailTemplate = Assets.getText(`email_templates/${template}.html`);
     }
@@ -691,7 +695,7 @@ export const getDigestEmailOptions = ({template, data}) => {
 
   return result;
 
-}
+};
 
 /**
  * Function to collect content data for referral email
@@ -730,6 +734,47 @@ export const getReferralEmailOptions = ({template, data}) => {
   result.html = buildHtml({template, data: mailData});
   result.tag = "referral";
   result.userVariables = {template, emailId: `${leaderId}-${userId}`};
+
+  return result;
+};
+
+
+/**
+ * Function to collect content data for referral email
+ * @param template
+ * @param data
+ */
+export const getQuestionsEmailOptions = ({template, data}) => {
+  const
+    {leaderId, leaderName, organizationId, employeeId, employeeName, email} = data,
+    siteInfo = getMailData({type: "site"}),
+    {siteUrl, siteName} = siteInfo,
+    subject = `${capitalize(employeeName)}, do you have any questions/feedback for ${capitalize(leaderName)}?`,
+    mailData = {
+      type: "questions",
+      subject,
+      siteUrl,
+      siteName,
+      employeeName,
+      leaderName
+    };
+  let
+    result = {
+      from: `"${mailData.leaderName}" <${leaderId}-${organizationId}-${employeeId}-${template}@${mailDomain}>`,
+      to: "jackiekhuu.work@gmail.com",
+      subject,
+      html: "",
+      tag: "",
+      userVariables: {}
+    };
+
+  // result.to = email;
+  result.html = buildHtml({template, data: mailData});
+  result.tag = "questions";
+  result.userVariables = {template, emailId: `${leaderId}-${organizationId}-${employeeId}`};
+
+  // const {from, to, tag, userVariables} = result;
+  // console.log({subject: result.subject, from, to, tag, userVariables});
 
   return result;
 };

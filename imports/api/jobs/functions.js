@@ -66,4 +66,4 @@ export const sendFeedbackEmailToLeader = function(job, cb) {
     });
     job.done();
   }
-}
+};

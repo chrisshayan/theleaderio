@@ -55,7 +55,8 @@ import ReferralsContainer from '/imports/ui/containers/referrals/ReferralsContai
 
 import {GettingStartedJourney} from '/imports/ui/containers/journey/GettingStartedJourney';
 
-import Questions from '/imports/ui/containers/qna/Questions';
+import AskQuestions from '/imports/ui/containers/questions/AskQuestions';
+import QuestionsContainer from '/imports/ui/containers/questions/QuestionsContainer';
 
 // functions
 import {isAdmin} from '/imports/utils/index';
@@ -792,15 +793,31 @@ appRoutes.route('/journey/start/:step', {
 /**
  * Route for anonymous question to leader
  */
-const qnaRoute = FlowRouter.route('/qna/questions/:organizationId', {
-  name: 'qna.questions',
+const qnaRoute = FlowRouter.route('/questions/:randomCode', {
+  name: 'questions',
   action(params, queryParams) {
-    const {organizationId} = params;
+    const {randomCode} = params;
     mount(MainLayoutFull, {
       showSignIn: false,
       showDashboard: false,
       content() {
-        return <Questions organizationId={organizationId}/>
+        return <AskQuestions randomCode={randomCode}/>
+      }
+    });
+  }
+});
+
+
+/**
+ * Route for list all questions and answers
+ */
+appRoutes.route('/questions/:action', {
+  name: "app.questions",
+  action(params) {
+    const {action} = params;
+    mount(MainLayout, {
+      content() {
+        return <QuestionsContainer />;
       }
     });
   }

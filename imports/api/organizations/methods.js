@@ -1,15 +1,16 @@
-import { Meteor } from 'meteor/meteor';
-import { ValidatedMethod } from 'meteor/mdg:validated-method';
-import { ValidationError } from 'meteor/mdg:validation-error';
-import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+import {Meteor} from 'meteor/meteor';
+import {ValidatedMethod} from 'meteor/mdg:validated-method';
+import {ValidationError} from 'meteor/mdg:validation-error';
+import {SimpleSchema} from 'meteor/aldeed:simple-schema';
 import _ from 'lodash';
 
-import { Organizations } from './index';
-import { Employees, STATUS_ACTIVE, STATUS_DEACTIVE } from '/imports/api/employees';
-import { IDValidator } from '/imports/utils';
+import {Organizations} from './index';
+import {Employees, STATUS_ACTIVE, STATUS_DEACTIVE} from '/imports/api/employees';
+import {IDValidator} from '/imports/utils';
 import * as ERROR_CODE from '/imports/utils/error_code';
 import validate from '/imports/utils/validate';
-import { UserLoggedInMixin, MethodValidatorMixin } from '/imports/utils/mixins';
+import {UserLoggedInMixin, MethodValidatorMixin} from '/imports/utils/mixins';
+import {generateRandomCode} from '/imports/utils/index';
 
 const constraints = {
   name: {
@@ -33,7 +34,7 @@ const constraints = {
 export const create = new ValidatedMethod({
   name: 'organizations.create',
   validate: validate.methodValidator(constraints),
-  run({ name, jobTitle, description, imageUrl, startTime, endTime, isPresent }) {
+  run({name, jobTitle, description, imageUrl, startTime, endTime, isPresent}) {
     if (!Meteor.userId()) throw new Meteor.Error(ERROR_CODE.UNAUTHORIZED);
     // validate startTime and endTime
     // IF isPresent is true, just check startTime < now
@@ -67,15 +68,18 @@ export const create = new ValidatedMethod({
     }
 
     if (!this.isSimulation) {
-      var result = Organizations.insert({
-        name,
-        jobTitle,
-        description,
-        imageUrl,
-        startTime,
-        endTime,
-        isPresent
-      });
+      const
+        randomCode = generateRandomCode(8),
+        result = Organizations.insert({
+          name,
+          jobTitle,
+          description,
+          imageUrl,
+          startTime,
+          endTime,
+          isPresent,
+          randomCode
+        });
       return result;
     }
   }
@@ -91,7 +95,7 @@ export const update = new ValidatedMethod({
       presence: true
     }
   }),
-  run({ _id, name, jobTitle, description, imageUrl, startTime, endTime, isPresent }) {
+  run({_id, name, jobTitle, description, imageUrl, startTime, endTime, isPresent}) {
     if (!Meteor.userId())
       throw new Meteor.Error(ERROR_CODE.UNAUTHORIZED);
 
@@ -123,7 +127,7 @@ export const update = new ValidatedMethod({
 
     if (!this.isSimulation) {
       const updatedAt = new Date();
-      var selector = { _id: _id };
+      var selector = {_id: _id};
       var modifier = {
         $set: {
           name,
@@ -137,7 +141,7 @@ export const update = new ValidatedMethod({
         }
       };
 
-      var org = Organizations.findOne({ _id: _id });
+      var org = Organizations.findOne({_id: _id});
 
       if (!org) {
         throw new Meteor.Error(404, 'Organization not found');
@@ -152,6 +156,59 @@ export const update = new ValidatedMethod({
   }
 });
 
+export const updateFields = new ValidatedMethod({
+  name: 'organizations.updateFields',
+  validate: new SimpleSchema({
+    ...IDValidator,
+    name: {
+      type: String,
+      optional: true
+    },
+    jobTitle: {
+      type: String,
+      optional: true
+    },
+    description: {
+      type: String,
+      optional: true
+    },
+    imageUrl: {
+      type: String,
+      optional: true
+    },
+    isPresent: {
+      type: Boolean,
+      optional: true
+    },
+    randomCode: {
+      type: String,
+      optional: true
+    }
+  }).validator(),
+  run({_id, name, jobTitle, description, imageUrl, isPresent, randomCode}) {
+    const modifier = {};
+    if (!_.isEmpty(name)) {
+      modifier.name = name;
+    }
+    if (!_.isEmpty(jobTitle)) {
+      modifier.jobTitle = jobTitle;
+    }
+    if (!_.isEmpty(description)) {
+      modifier.description = description;
+    }
+    if (!_.isEmpty(imageUrl)) {
+      modifier.imageUrl = imageUrl;
+    }
+    if (!_.isEmpty(isPresent)) {
+      modifier.name = isPresent;
+    }
+    if (!_.isEmpty(randomCode)) {
+      modifier.randomCode = randomCode;
+    }
+    return Organizations.update({_id}, {$set: modifier});
+  }
+});
+
 
 // Edit Organization's name, description, imageUrl, address
 export const remove = new ValidatedMethod({
@@ -159,13 +216,13 @@ export const remove = new ValidatedMethod({
   validate: new SimpleSchema({
     ...IDValidator,
   }).validator(),
-  run({ _id }) {
+  run({_id}) {
     if (!Meteor.userId()) {
       throw new Meteor.Error(ERROR_CODE.UNAUTHORIZED);
     }
 
     if (!this.isSimulation) {
-      var selector = { _id };
+      var selector = {_id};
       var org = Organizations.findOne(selector);
 
       if (!org) {
@@ -187,7 +244,7 @@ export const details = new ValidatedMethod({
       presence: true,
     }
   }),
-  run({ _id }) {
+  run({_id}) {
     if (!Meteor.userId()) {
       throw new Meteor.Error(ERROR_CODE.UNAUTHORIZED);
     }
@@ -243,14 +300,14 @@ export const addEmployee = new ValidatedMethod({
       email: true,
     }
   },
-  run({ organizationId, firstName, lastName, email }) {
+  run({organizationId, firstName, lastName, email}) {
     if (!this.isSimulation) {
       const updatedAt = new Date();
       let leaderId = Meteor.userId();
       let employeeId;
 
       const org = Organizations.findOne(organizationId);
-      const employee = Employees.findOne({ email, organizationId, leaderId });
+      const employee = Employees.findOne({email, organizationId, leaderId});
       if (employee) {
         throw new ValidationError([{
           name: 'email',
@@ -259,7 +316,7 @@ export const addEmployee = new ValidatedMethod({
         }]);
       } else {
         Organizations.update({_id: org._id}, {$set: {updatedAt}});
-        return Employees.insert({ leaderId, organizationId, firstName, lastName, email });
+        return Employees.insert({leaderId, organizationId, firstName, lastName, email});
       }
     }
   }
@@ -296,16 +353,16 @@ export const importEmployees = new ValidatedMethod({
       type: 'array'
     }
   },
-  run({ organizationId, employees }) {
+  run({organizationId, employees}) {
     if (!this.isSimulation) {
       const updatedAt = new Date();
       let leaderId = Meteor.userId();
       _.each(employees, e => {
-        const { firstName, lastName, email } = e;
-        const employee = Employees.findOne({ email, organizationId, leaderId });
+        const {firstName, lastName, email} = e;
+        const employee = Employees.findOne({email, organizationId, leaderId});
         if (!employee) {
           Organizations.update({_id: organizationId}, {$set: {updatedAt}});
-          return Employees.insert({ leaderId, organizationId, firstName, lastName, email });
+          return Employees.insert({leaderId, organizationId, firstName, lastName, email});
         }
       });
     }
@@ -355,11 +412,9 @@ export const updateEmployeeSingleField = new ValidatedMethod({
       type: 'string',
       inclusion: ['firstName', 'lastName', 'email'],
     },
-    value: {
-
-    }
+    value: {}
   },
-  run({ organizationId, employeeId, field, value }) {
+  run({organizationId, employeeId, field, value}) {
     let rule;
     switch (field) {
       case 'firstName':
@@ -394,7 +449,7 @@ export const updateEmployeeSingleField = new ValidatedMethod({
       const leaderId = Meteor.userId();
 
       if (field == 'email') {
-        let employee = Employees.findOne({ email: value, leaderId, organizationId });
+        let employee = Employees.findOne({email: value, leaderId, organizationId});
         if (employee && employee._id != employeeId) {
           throw new ValidationError([{
             name: 'email',
@@ -403,7 +458,7 @@ export const updateEmployeeSingleField = new ValidatedMethod({
           }]);
         }
       }
-      return Employees.update({ _id: employeeId }, {
+      return Employees.update({_id: employeeId}, {
         $set: {
           [field]: value
         }
@@ -434,9 +489,9 @@ export const toggleStatusEmployee = new ValidatedMethod({
       inclusion: [STATUS_ACTIVE, STATUS_DEACTIVE]
     }
   },
-  run({ employeeId, status }) {
+  run({employeeId, status}) {
     const updatedAt = new Date();
-    return Employees.update({ _id: employeeId }, { $set: { status: status, updatedAt } });
+    return Employees.update({_id: employeeId}, {$set: {status: status, updatedAt}});
   }
 });
 
@@ -457,8 +512,8 @@ export const removeEmployee = new ValidatedMethod({
       }
     }
   },
-  run({ employeeId }) {
-    return Employees.remove({ _id: employeeId });
+  run({employeeId}) {
+    return Employees.remove({_id: employeeId});
   }
 });
 

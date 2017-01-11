@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 import {createContainer} from 'meteor/react-meteor-data';
 
 // methods
-import {ask as askQuestion, verify as verifyQNAUrl} from '/imports/api/qna/methods';
+import {ask as askQuestion, verify as verifyQuestionsUrl} from '/imports/api/questions/methods';
 
 // functions
 import {getSubdomain} from '/imports/utils/subdomain';
@@ -18,7 +18,7 @@ import HrDashed from '/imports/ui/components/HrDashed';
 // constant
 import {DOMAIN} from '/imports/startup/client/routes';
 
-export default class Questions extends Component {
+export default class AskQuestions extends Component {
   constructor() {
     super();
 
@@ -32,18 +32,18 @@ export default class Questions extends Component {
   componentWillMount() {
     const
       alias = getSubdomain(),
-      {organizationId} = this.props
+      {randomCode} = this.props
       ;
 
-    verifyQNAUrl.call({alias, organizationId}, (error, result) => {
+    verifyQuestionsUrl.call({alias, randomCode}, (error, result) => {
       if (error) {
         this.setState({
           isValidated: false,
           error: error.reason
         })
       } else {
-        const {isValidated, imageUrl, header, leaderId, leaderName} = result;
-        this.setState({isValidated, imageUrl, header, leaderId, organizationId, leaderName});
+        const {isValidated, imageUrl, header, leaderId, leaderName, organizationId} = result;
+        this.setState({isValidated, imageUrl, header, leaderId, leaderName, organizationId});
       }
     });
   }
@@ -52,7 +52,6 @@ export default class Questions extends Component {
     const
       {question, leaderId, organizationId, leaderName} = this.state
       ;
-    console.log(question)
 
     if(!_.isEmpty(question)) {
       askQuestion.call({leaderId, organizationId, question}, (error, result) => {
@@ -83,7 +82,7 @@ export default class Questions extends Component {
 
   render() {
     const
-      {qna, error, isValidated, imageUrl, header} = this.state,
+      {question, error, isValidated, imageUrl, leaderName} = this.state,
       height = 100,
       homePageUrl = `http//:${DOMAIN}`
       ;
@@ -92,7 +91,7 @@ export default class Questions extends Component {
       return (
         <div className="create-screen journey-box animated fadeInDown">
           <div className="row text-left">
-            <h1>{header}</h1>
+            <h1>Ask <span style={{textTransform: 'capitalize'}}>{leaderName || 'leader'}</span>, any question:</h1>
             <form className="form-horizontal" onSubmit={(event) => {
               event.preventDefault();
               this._onSubmit();

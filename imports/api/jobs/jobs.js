@@ -46,6 +46,10 @@ function createJob(type, attributes, data) {
         job = new Job(AdminJobs, type, data);
         break;
       }
+      case "ask_questions": {
+        job = new Job(AdminJobs, type, data);
+        break;
+      }
       default: {
         return `Unknown job type: ${type}`
       }

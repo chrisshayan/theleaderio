@@ -28,7 +28,7 @@ class FeedbackToEmployees extends Component {
       <div className="row">
         {!loaded && (<Spinner />)}
         {loaded && !!items.length && (
-          <div className="col-md-8">
+          <div className="">
             <FeedbackList items={items}/>
             {/* Show loading*/}
             {!ready && page > 1 && (
@@ -55,7 +55,7 @@ const withMeteor = () => {
     sub = Meteor.subscribe('feedbackToEmployee', page),
     subEmployees = Meteor.subscribe("employees"),
     subOrg = Meteor.subscribe("organizations"),
-    items = {},
+    items = [],
     employee = {},
     org = {}
     ;
