@@ -94,7 +94,7 @@ class XEditable extends Component {
 	}
 
 	render() {
-		const { placeholder, disabled = false, backgroundColor = 'white-bg' } = this.props;
+		const { placeHolder, disabled = false, backgroundColor = 'white-bg' } = this.props;
 		const { value, error, isLoading } = this.state;
 		let className = ['form-control', 'inline-editor', backgroundColor];
 		if(error) className.push('error');
@@ -105,6 +105,7 @@ class XEditable extends Component {
 					ref="txt"
 		  		type="text"
 		  		className={className.join(' ')}
+					placeholder={placeHolder}
 		  		value={ value || '' }
 		  		disabled={isLoading | disabled}
 		  		onChange={this.onChange}

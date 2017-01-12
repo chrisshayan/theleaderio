@@ -17,7 +17,7 @@ export class FAQItems extends Component {
               answer,
               questionDate = new Date(),
               answerDate = new Date,
-              tags = ["social", "salary"],
+              tags = [],
               voting = 0
             } = item,
             today = new Date(),
@@ -35,14 +35,16 @@ export class FAQItems extends Component {
                     {moment(questionDate).calendar(today, calendarFormat)}
                   </small>
                 </div>
-                <div className="col-md-2">
-                  <span className="small font-bold">Tags</span>
-                  <div className="tag-list">
-                    {tags.map((tag, key) => (
-                      <button key={key} className="btn btn-white btn-xs" type="button">{tag} {' '}</button>
-                    ))}
+                {!_.isEmpty(tags) && (
+                  <div className="col-md-2">
+                    <span className="small font-bold">Tags</span>
+                    <div className="tag-list">
+                      {tags.map((tag, key) => (
+                        <button key={key} className="btn btn-white btn-xs" type="button">{tag} {' '}</button>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
                 <div className="col-md-2 text-right pull-right">
                   <span className={_.isEmpty(answer) ? "label label-warning" : "label label-primary"}
                         style={{textTransform: 'capitalize'}}>
@@ -58,7 +60,8 @@ export class FAQItems extends Component {
                         key={_id}
                         backgroundColor="gray-bg"
                         valueName="answer"
-                        value={answer || "There's no answer yet."}
+                        placeHolder="There's no answer yet."
+                        value={answer}
                         disabled={!isEditable}
                         method='questions.answer'
                         selector={{_id, leaderId, organizationId}}

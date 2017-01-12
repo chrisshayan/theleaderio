@@ -16,7 +16,7 @@ Migrations.add({
       orgs.map(org => {
         const
           {_id} = org,
-          randomCode = generateRandomCode(4)
+          randomCode = generateRandomCode(8)
           ;
 
         updateFields.call({_id, randomCode});

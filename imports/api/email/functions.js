@@ -794,7 +794,7 @@ export const getInformAnswerEmailOptions = ({template, data}) => {
     {leaderName, employeeName, question, answer, viewQuestionsUrl, email} = data,
     siteInfo = getMailData({type: "site"}),
     {siteUrl, siteName} = siteInfo,
-    subject = `${capitalize(employeeName)}, "${capitalize(leaderName)}" has just answer a question.`,
+    subject = `${capitalize(employeeName)}, "${capitalize(leaderName)}" has just answered a question.`,
     mailData = {
       type: "questions",
       subject,
