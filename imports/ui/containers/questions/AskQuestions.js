@@ -53,9 +53,9 @@ export default class AskQuestions extends Component {
       {question, leaderId, organizationId, leaderName} = this.state
       ;
 
-    if(!_.isEmpty(question)) {
+    if (!_.isEmpty(question)) {
       askQuestion.call({leaderId, organizationId, question}, (error, result) => {
-        if(error) {
+        if (error) {
           const
             closeButton = false,
             title = 'Error',
@@ -69,7 +69,7 @@ export default class AskQuestions extends Component {
           const
             closeButton = false,
             title = 'Success',
-            message = `Your question had been sent to ${leaderName}`;
+            message = `Your question had been sent to ${leaderName}. Feel free to ask more questions.`;
           Notifications.success({
             closeButton,
             title,
@@ -77,8 +77,17 @@ export default class AskQuestions extends Component {
           });
         }
       });
+      this.setState({question: ""});
     }
   }
+
+  _onKeyPress = e => {
+    if (e.which === 13 && !e.shiftKey) {
+      e.preventDefault();
+      this._onSubmit(e);
+      return false;
+    }
+  };
 
   render() {
     const
@@ -87,15 +96,18 @@ export default class AskQuestions extends Component {
       homePageUrl = `http//:${DOMAIN}`
       ;
 
+    console.log(question)
     if (isValidated) {
       return (
         <div className="create-screen journey-box animated fadeInDown">
           <div className="row text-left">
-            <h1>Ask <span style={{textTransform: 'capitalize'}}>{leaderName || 'leader'}</span>, any question:</h1>
             <form className="form-horizontal" onSubmit={(event) => {
               event.preventDefault();
               this._onSubmit();
             }}>
+              <div className="form-group pull-left">
+                <h1 className="control-label">Ask <span style={{textTransform: 'capitalize'}}>{leaderName || 'leader'}</span>, any question:</h1>
+              </div>
               <div className="form-group pull-left">
                 <ProfilePhoto
                   imageUrl={imageUrl}
@@ -105,16 +117,21 @@ export default class AskQuestions extends Component {
                 />
               </div>
               <div className="form-group">
-              <textarea
-                type="text"
-                className="form-control"
-                placeholder="Ex: How old are you?"
-                style={{height}}
-                autoFocus={true}
-                onChange={e => this.setState({question: e.target.value})}
-              />
+                <span className="form-control pull-left text-left"
+                      style={{textTransform: 'capitalize', borderWidth: 0}}>
+                To add a paragraph, press SHIFT + ENTER
+                </span>
+                <textarea
+                  type="text"
+                  className="form-control"
+                  placeholder="Ex: How old are you?"
+                  value={question}
+                  style={{height}}
+                  autoFocus={true}
+                  onChange={e => this.setState({question: e.target.value})}
+                  onKeyPress={this._onKeyPress.bind(this)}
+                />
               </div>
-              <HrDashed/>
               <div className="form-group pull-left">
                 <button className="btn btn-primary" type="submit"
                         style={{marginRight: 19}}

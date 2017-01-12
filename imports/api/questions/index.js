@@ -3,7 +3,14 @@ import QuestionsCollection from './collections';
 
 export const Questions = new QuestionsCollection('questions');
 
-Questions.publicFields = {leaderId: true, organizationId: true, question: true, answer: true, date: true};
+Questions.publicFields = {
+  leaderId: true,
+  organizationId: true,
+  question: true,
+  answer: true,
+  tags: true,
+  date: true
+};
 
 Questions.schema = new SimpleSchema({
   leaderId: {
@@ -21,6 +28,10 @@ Questions.schema = new SimpleSchema({
   },
   answer: {
     type: String,
+    optional: true
+  },
+  tags: {
+    type: [String],
     optional: true
   },
   date: {

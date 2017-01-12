@@ -61,7 +61,12 @@ export const answer = new ValidatedMethod({
     }
   }).validator(),
   run({_id, leaderId, organizationId, answer}) {
-    return Questions.update({_id, leaderId, organizationId}, {$set: {answer}});
+    // console.log({_id, leaderId, organizationId, answer});
+    const answerResult = Questions.update({_id, leaderId, organizationId}, {$set: {answer}});
+    if(answerResult) {
+      // send defer emails to all employees {leaderId, organizationId, answer}
+    }
+    return answerResult;
   }
 });
 

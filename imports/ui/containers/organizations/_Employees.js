@@ -164,8 +164,10 @@ class OrganizationEmployees extends Component {
         <div className="row">
           {!_.isEmpty(plan) && (
             <div className="alert alert-info">
-              <strong>{capitalize(plan.metric.toLowerCase())} survey</strong> will be sent on {moment(plan.sendDate).format("MMM Do, YYYY")}
-              {' '}to all of your active employees. <a className="alert-link" href={editPlanUrl}>Edit your plan here.</a>
+              <strong>{capitalize(plan.metric.toLowerCase())} survey</strong>
+              will be sent on {moment(plan.sendDate).format("MMM Do, YYYY")}
+              {' '}to all of your active employees. <a className="alert-link"
+                                                       href={editPlanUrl}>Edit your plan here.</a>
             </div>
           )}
           {!employees.length && (
@@ -200,30 +202,30 @@ class OrganizationEmployees extends Component {
         </div>
 
         { employees.length ? (
-          <table className="table">
-            <thead>
-            <tr>
-              <th>#</th>
-              <th>First name</th>
-              <th>Last name</th>
-              <th width="40%">Email</th>
-              <th>Status</th>
-              <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            { employees.map((employee, key) => (
-              <SingleOrgEmployee
-                key={key}
-                position={key + 1}
-                employee={employee}
-                orgId={this.props.orgId}
-              />
-            ))}
-            </tbody>
-          </table>
-        ) : (
-          <div style={{
+            <table className="table">
+              <thead>
+              <tr>
+                <th>#</th>
+                <th>First name</th>
+                <th>Last name</th>
+                <th width="40%">Email</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+              </thead>
+              <tbody>
+              { employees.map((employee, key) => (
+                <SingleOrgEmployee
+                  key={key}
+                  position={key + 1}
+                  employee={employee}
+                  orgId={this.props.orgId}
+                />
+              ))}
+              </tbody>
+            </table>
+          ) : (
+            <div style={{
 						width: '100%',
 						border: '2px dashed #ddd',
 						borderRadius: '6px',
@@ -231,17 +233,18 @@ class OrganizationEmployees extends Component {
 						margin: '20px 0',
 						padding: '40px'
     			}}>
-            <i className="fa fa-inbox" style={{fontSize: 50}}/>
-            <h2>There is no employees</h2>
-          </div>
-        )
+              <i className="fa fa-inbox" style={{fontSize: 50}}/>
+              <h2>There is no employees</h2>
+            </div>
+          )
         }
 
         <SingleOrganizationAddEmployee
           show={this.state.showAddDialog}
           onDismiss={this._onDismissDialog}
           organizationId={this.props.orgId}
-        /></div>
+        />
+      </div>
     );
   }
 }

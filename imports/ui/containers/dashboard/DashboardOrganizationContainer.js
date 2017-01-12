@@ -115,7 +115,7 @@ class DashboardOrganization extends Component {
         chart,
         preferences
       } = this.state,
-      askQuestionUrl = FlowRouter.url('questions', {randomCode})
+      askQuestionUrl = FlowRouter.url('questions.ask', {randomCode})
       ;
     let
       metrics = {},

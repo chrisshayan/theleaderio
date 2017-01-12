@@ -4,6 +4,9 @@ import {Meteor} from 'meteor/meteor';
 import {Organizations} from '/imports/api/organizations/index';
 import {Employees, STATUS_DEACTIVE, STATUS_ACTIVE} from '/imports/api/employees/index';
 
+// functions
+import {generateRandomCode} from '/imports/utils/index';
+
 // constants
 import * as ERROR_CODE from '/imports/utils/error_code';
 
@@ -87,5 +90,17 @@ export const getRandomEmployee = ({params}) => {
   } else {
     return {message: ERROR_CODE.PERMISSION_DENIED}
   }
-}
+};
 
+export const addRandomCode = function(_id) {
+  let
+    randomCode = "",
+    codeAccepted = false
+    ;
+  do {
+    randomCode = generateRandomCode(8);
+    const noOfCodeExists = Organizations.find({randomCode}).count();
+    codeAccepted = noOfCodeExists <= 0 ? true : false;
+  } while(!codeAccepted)
+  return Organizations.update({_id}, {$set: {randomCode}});
+}

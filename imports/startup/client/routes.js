@@ -56,7 +56,8 @@ import ReferralsContainer from '/imports/ui/containers/referrals/ReferralsContai
 import {GettingStartedJourney} from '/imports/ui/containers/journey/GettingStartedJourney';
 
 import AskQuestions from '/imports/ui/containers/questions/AskQuestions';
-import QuestionsContainer from '/imports/ui/containers/questions/QuestionsContainer';
+import Questions from '/imports/ui/containers/questions/Questions';
+import ViewQuestions from '/imports/ui/containers/questions/ViewQuestions';
 
 // functions
 import {isAdmin} from '/imports/utils/index';
@@ -790,11 +791,16 @@ appRoutes.route('/journey/start/:step', {
 });
 
 
+
+const questionsRoutes = FlowRouter.group({
+  prefix: '/questions'
+});
+
 /**
  * Route for anonymous question to leader
  */
-const qnaRoute = FlowRouter.route('/questions/:randomCode', {
-  name: 'questions',
+questionsRoutes.route('/ask/:randomCode', {
+  name: 'questions.ask',
   action(params, queryParams) {
     const {randomCode} = params;
     mount(MainLayoutFull, {
@@ -807,17 +813,34 @@ const qnaRoute = FlowRouter.route('/questions/:randomCode', {
   }
 });
 
+/**
+ * Route for viewing questions of an organization
+ */
+questionsRoutes.route('/view/:organizationId', {
+  name: 'questions.view',
+  action(params, queryParams) {
+    const {organizationId} = params;
+    mount(MainLayoutFull, {
+      showSignIn: false,
+      showDashboard: false,
+      content() {
+        return <ViewQuestions organizationId={organizationId}/>
+      }
+    });
+  }
+});
+
 
 /**
  * Route for list all questions and answers
  */
-appRoutes.route('/questions/:action', {
+appRoutes.route('/questions', {
   name: "app.questions",
   action(params) {
-    const {action} = params;
+    // const {action} = params;
     mount(MainLayout, {
       content() {
-        return <QuestionsContainer />;
+        return <Questions />;
       }
     });
   }

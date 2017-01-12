@@ -10,7 +10,7 @@ import {IDValidator} from '/imports/utils';
 import * as ERROR_CODE from '/imports/utils/error_code';
 import validate from '/imports/utils/validate';
 import {UserLoggedInMixin, MethodValidatorMixin} from '/imports/utils/mixins';
-import {generateRandomCode} from '/imports/utils/index';
+import {addRandomCode} from './functions';
 
 const constraints = {
   name: {
@@ -69,18 +69,17 @@ export const create = new ValidatedMethod({
 
     if (!this.isSimulation) {
       const
-        randomCode = generateRandomCode(8),
-        result = Organizations.insert({
+        orgId = Organizations.insert({
           name,
           jobTitle,
           description,
           imageUrl,
           startTime,
           endTime,
-          isPresent,
-          randomCode
+          isPresent
         });
-      return result;
+      addRandomCode(orgId);
+      return orgId;
     }
   }
 });
