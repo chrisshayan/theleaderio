@@ -7,6 +7,9 @@ import {Accounts} from 'meteor/accounts-base';
 import {Organizations} from '/imports/api/organizations/index';
 import {Profiles} from '/imports/api/profiles/index';
 
+// functions
+import {sendNotificationEmails} from './functions';
+
 /**
  * Method ask question
  * @param {String} leaderId
@@ -63,8 +66,11 @@ export const answer = new ValidatedMethod({
   run({_id, leaderId, organizationId, answer}) {
     // console.log({_id, leaderId, organizationId, answer});
     const answerResult = Questions.update({_id, leaderId, organizationId}, {$set: {answer}});
-    if(answerResult) {
+    if(!this.isSimulation && answerResult) {
       // send defer emails to all employees {leaderId, organizationId, answer}
+      Meteor.defer(() => {
+        sendNotificationEmails(_id);
+      });
     }
     return answerResult;
   }

@@ -185,6 +185,10 @@ export const buildHtml = function ({template, data}) {
       mailTemplate = Assets.getText(`email_templates/${template}/${type}.html`);
       break;
     }
+    case "inform_answer": {
+      mailTemplate = Assets.getText(`email_templates/${type}/${template}.html`);
+      break;
+    }
     default: {
       mailTemplate = Assets.getText(`email_templates/${template}.html`);
     }
@@ -768,12 +772,57 @@ export const getQuestionsEmailOptions = ({template, data}) => {
       userVariables: {}
     };
 
-  // result.to = email;
+  result.to = email;
   result.html = buildHtml({template, data: mailData});
   result.tag = "questions";
   result.userVariables = {template, emailId: `${leaderId}-${organizationId}-${employeeId}`};
 
   // const {from, to, tag, userVariables} = result;
+  // console.log({subject: result.subject, from, to, tag, userVariables});
+
+  return result;
+};
+
+
+/**
+ * Function to collect content data for inform answer email to employees
+ * @param template
+ * @param data
+ */
+export const getInformAnswerEmailOptions = ({template, data}) => {
+  const
+    {leaderName, employeeName, question, answer, viewQuestionsUrl, email} = data,
+    siteInfo = getMailData({type: "site"}),
+    {siteUrl, siteName} = siteInfo,
+    subject = `${capitalize(employeeName)}, "${capitalize(leaderName)}" has just answer a question.`,
+    mailData = {
+      type: "questions",
+      subject,
+      siteUrl,
+      siteName,
+      employeeName,
+      leaderName,
+      question,
+      answer,
+      viewQuestionsUrl
+    };
+  let
+    result = {
+      from: `"${siteInfo.siteName}" <no-reply@${mailDomain}>`,
+      to: "jackiekhuu.work@gmail.com",
+      subject,
+      html: "",
+      tag: "",
+      userVariables: {}
+    };
+
+  result.to = email;
+  result.html = buildHtml({template, data: mailData});
+  result.tag = "informAnswer";
+  result.userVariables = {template};
+
+  // const {from, to, tag, userVariables} = result;
+  console.log(mailData);
   // console.log({subject: result.subject, from, to, tag, userVariables});
 
   return result;

@@ -323,9 +323,7 @@ export const sendAskingQuestionsToEmployees = (job, cb) => {
                   if (_.isEmpty(error)) {
                     Logger.info({name, message: {detail: data}});
                   } else {
-                    // console.log(error);
                     Logger.info({name, message: {detail: error}});
-                    // job.done();
                   }
                 });
               });
@@ -335,7 +333,7 @@ export const sendAskingQuestionsToEmployees = (job, cb) => {
       }
     });
   }
-  // job.done();
+  job.done();
 };
 
 // Start Job

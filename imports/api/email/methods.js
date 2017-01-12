@@ -157,6 +157,10 @@ export const send = new ValidatedMethod({
           options = EmailFunctions.getQuestionsEmailOptions({template, data});
           break;
         }
+        case 'inform_answer': {
+          options = EmailFunctions.getInformAnswerEmailOptions({template, data});
+          break;
+        }
         default: {
           throw new Meteor.Error(`Unknown template: ${template}`);
         }
@@ -165,8 +169,6 @@ export const send = new ValidatedMethod({
       // send email
       return Meteor.defer(() => {
         // console.log(options);
-        // Email.send(options);
-
         EmailFunctions.sendMail({options});
       });
     }
