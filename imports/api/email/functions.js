@@ -822,7 +822,7 @@ export const getInformAnswerEmailOptions = ({template, data}) => {
   result.userVariables = {template};
 
   // const {from, to, tag, userVariables} = result;
-  console.log(mailData);
+  // console.log(mailData);
   // console.log({subject: result.subject, from, to, tag, userVariables});
 
   return result;

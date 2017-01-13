@@ -10,6 +10,7 @@ import {Questions} from '/imports/api/questions/index';
 import {FAQItems} from '/imports/ui/components/FAQItems';
 import Indicator from '/imports/ui/common/LoadingIndicator';
 import NoFeedback from '/imports/ui/components/NoContent';
+import {Alert} from '/imports/ui/common/Alert';
 
 class AnswerQuestions extends Component {
   constructor(props) {
@@ -51,6 +52,11 @@ class AnswerQuestions extends Component {
         <div className="row gray-bg">
           <div className="col-md-12">
             <div className="wrapper wrapper-content animated fadeInRight">
+              <Alert
+                type="info"
+                isDismissable={true}
+                content={() => {return ("Click on the question to show the answer.");}}
+              />
               {!_.isEmpty(questions) ? (
                 <div>
                   <FAQItems

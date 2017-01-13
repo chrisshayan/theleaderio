@@ -19,6 +19,7 @@
     "meteor-node-stubs": "^0.2.3",
     "moment": "^2.14.1",
     "moment-timezone": "^0.5.5",
+    "monkeylearn": "^0.1.10",
     "papaparse": "^4.1.2",
     "randomcolor": "^0.4.4",
     "react": "^15.3.0",

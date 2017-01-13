@@ -46,4 +46,6 @@ import '/imports/api/referrals/register.server';
 import '/imports/api/alias/register.server';
 // questions
 import '/imports/api/questions/register.server';
+// monkey learn
+import '/imports/api/monkey/register.server';
 

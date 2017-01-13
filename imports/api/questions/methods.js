@@ -9,6 +9,7 @@ import {Profiles} from '/imports/api/profiles/index';
 
 // functions
 import {sendNotificationEmails} from './functions';
+import {monkeyClassifyTopic} from '/imports/api/monkey/functions';
 
 /**
  * Method ask question
@@ -36,7 +37,18 @@ export const ask = new ValidatedMethod({
   }).validator(),
   run({leaderId, organizationId, employeeId, question}) {
     // console.log({leaderId, organizationId, employeeId, question})
-    return Questions.insert({leaderId, organizationId, employeeId, question});
+    const questionId = Questions.insert({leaderId, organizationId, employeeId, question});
+    if (!_.isEmpty(questionId) && !this.isSimulation) {
+      const
+        text_list = [question],
+        tags = monkeyClassifyTopic({text_list})
+        ;
+
+      if(!_.isEmpty(tags)) {
+        Questions.update({_id: questionId}, {$set: {tags}});
+      }
+    }
+    return questionId;
   }
 });
 
@@ -66,7 +78,7 @@ export const answer = new ValidatedMethod({
   run({_id, leaderId, organizationId, answer}) {
     // console.log({_id, leaderId, organizationId, answer});
     const answerResult = Questions.update({_id, leaderId, organizationId}, {$set: {answer}});
-    if(!this.isSimulation && answerResult) {
+    if (!this.isSimulation && answerResult) {
       // send defer emails to all employees {leaderId, organizationId, answer}
       Meteor.defer(() => {
         sendNotificationEmails(_id);
@@ -92,17 +104,17 @@ export const verify = new ValidatedMethod({
     }
   }).validator(),
   run({alias, randomCode}) {
-    if(!this.isSimulation) {
+    if (!this.isSimulation) {
       const
         user = Accounts.findUserByUsername(alias)
         ;
 
-      if(!_.isEmpty(user)) {
+      if (!_.isEmpty(user)) {
         const
           leaderId = user._id,
           org = Organizations.findOne({leaderId, randomCode}, {fields: {_id: true, randomCode: true, leaderId: true}});
 
-        if(!_.isEmpty(org)) {
+        if (!_.isEmpty(org)) {
           const
             profile = Profiles.findOne({userId: leaderId}),
             organizationId = org._id
@@ -115,7 +127,7 @@ export const verify = new ValidatedMethod({
             organizationId,
             leaderName: ""
           };
-          if(!_.isEmpty(profile)) {
+          if (!_.isEmpty(profile)) {
             result.header = `Ask ${profile.firstName}, any question:`;
             result.imageUrl = profile.imageUrl;
             result.leaderName = profile.firstName;
@@ -128,5 +140,13 @@ export const verify = new ValidatedMethod({
         throw new Meteor.Error('INVALID_ALIAS', 'Alias is not exists');
       }
     }
+  }
+});
+
+export const edit = new ValidatedMethod({
+  name: 'questions.edit',
+  validate: null,
+  run({_id, tags}) {
+    return Questions.update({_id}, {$set: {tags}});
   }
 });

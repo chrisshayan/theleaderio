@@ -14,6 +14,7 @@ import {FAQItems} from '/imports/ui/components/FAQItems';
 import Indicator from '/imports/ui/common/LoadingIndicator';
 import NoFeedback from '/imports/ui/components/NoContent';
 import AskSingleQuestion from './AskSingleQuestion';
+import {Alert} from '/imports/ui/common/Alert';
 
 class ViewQuestions extends Component {
   constructor(props) {
@@ -64,7 +65,7 @@ class ViewQuestions extends Component {
       organizationId = ""
       ;
 
-    if(!_.isEmpty(questions)) {
+    if (!_.isEmpty(questions)) {
       const [question] = questions;
       leaderId = question.leaderId;
       organizationId = question.organizationId;
@@ -88,6 +89,11 @@ class ViewQuestions extends Component {
                   </button>
                 </div>
               </div>
+              <Alert
+                type="info"
+                isDismissable={true}
+                content={() => {return ("Click on the question to show the answer.");}}
+              />
               {!_.isEmpty(questions) ? (
                   <div>
                     <FAQItems

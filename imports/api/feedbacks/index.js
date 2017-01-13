@@ -39,6 +39,22 @@ Feedbacks.schema = new SimpleSchema({
     type: String,
     optional: true
   },
+  tags: {
+    type: [Object],
+    optional: true
+  },
+  "tags.$.category_id": {
+    type: Number,
+    optional: true
+  },
+  "tags.$.probability": {
+    type: String,
+    optional: true
+  },
+  "tags.$.label": {
+    type: String,
+    optional: true
+  },
   type: {
     type: String,
     optional: true,

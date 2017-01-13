@@ -11,7 +11,6 @@ Migrations.add({
       orgs = Organizations.find({randomCode: {$exists: false}}, {fields: {_id: true}}).fetch()
       ;
 
-    console.log(orgs);
     if (!_.isEmpty(orgs)) {
       orgs.map(org => {
         const

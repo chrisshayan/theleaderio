@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
-import XEditable from '/imports/ui/components/XEditable';
 import moment from 'moment';
+
+// components
+import XEditable from '/imports/ui/components/XEditable';
+import {Alert} from '/imports/ui/common/Alert';
 
 export class FAQItems extends Component {
   render() {
@@ -40,7 +43,7 @@ export class FAQItems extends Component {
                     <span className="small font-bold">Tags</span>
                     <div className="tag-list">
                       {tags.map((tag, key) => (
-                        <button key={key} className="btn btn-white btn-xs" type="button">{tag} {' '}</button>
+                        <button key={key} className="btn btn-white btn-xs" type="button">{tag.label} {' '}</button>
                       ))}
                     </div>
                   </div>
@@ -56,8 +59,14 @@ export class FAQItems extends Component {
                 <div className="col-lg-12">
                   <div id={_id} className="panel-collapse collapse ">
                     <div className="faq-answer white-bg">
+                      {/*<Alert*/}
+                        {/*type="info"*/}
+                        {/*isDismissable={true}*/}
+                        {/*content={() => {return ("To Add A Paragraph, Press SHIFT + ENTER.");}}*/}
+                      {/*/>*/}
                       <XEditable
                         key={_id}
+                        multiline={true}
                         backgroundColor="gray-bg"
                         valueName="answer"
                         placeHolder="There's no answer yet."

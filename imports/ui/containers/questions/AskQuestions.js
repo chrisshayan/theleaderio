@@ -56,6 +56,7 @@ export default class AskQuestions extends Component {
     if (!_.isEmpty(question)) {
       askQuestion.call({leaderId, organizationId, question}, (error, result) => {
         if (error) {
+          console.log(error);
           const
             closeButton = false,
             title = 'Error',
@@ -96,7 +97,6 @@ export default class AskQuestions extends Component {
       homePageUrl = `http//:${DOMAIN}`
       ;
 
-    console.log(question)
     if (isValidated) {
       return (
         <div className="create-screen journey-box animated fadeInDown">

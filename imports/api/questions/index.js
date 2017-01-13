@@ -31,7 +31,19 @@ Questions.schema = new SimpleSchema({
     optional: true
   },
   tags: {
-    type: [String],
+    type: [Object],
+    optional: true
+  },
+  "tags.$.category_id": {
+    type: Number,
+    optional: true
+  },
+  "tags.$.probability": {
+    type: String,
+    optional: true
+  },
+  "tags.$.label": {
+    type: String,
     optional: true
   },
   date: {
