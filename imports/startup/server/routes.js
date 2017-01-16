@@ -22,6 +22,7 @@ import {feedbackLeader} from '/imports/api/feedbacks/functions';
 import {timestampToDate} from '/imports/utils/index';
 import {verifySenderEmail} from '/imports/api/email/functions';
 import {getUserTypeByEmail} from '/imports/api/admin/functions';
+import {sendThankYouEmailToEmployee} from '/imports/api/questions/functions';
 
 // logger
 import {Logger} from '/imports/api/logger/index';
@@ -398,7 +399,10 @@ Api.addRoute('questions/:action', {authRequired: false}, {
 
           // console.log({leaderId, organizationId, employeeId, date, question});
           if(!_.isEmpty(leaderId) && !_.isEmpty(organizationId) && !_.isEmpty(question)) {
-            Questions.insert({leaderId, organizationId, employeeId, question});
+            const questionId = Questions.insert({leaderId, organizationId, employeeId, question});
+            if(!_.isEmpty(questionId)) {
+              sendThankYouEmailToEmployee({leaderId, organizationId, employeeId, questionId});
+            }
           }
           break;
         }

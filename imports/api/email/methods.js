@@ -53,6 +53,10 @@ export const send = new ValidatedMethod({
           options = EmailFunctions.getSurveyEmailOptions({template, data});
           break;
         }
+        case 'thankYou': {
+          options = EmailFunctions.getThankYouEmailOptions({template, data});
+          break;
+        }
         case 'forgot_alias': {
           const
             {email, url} = data,

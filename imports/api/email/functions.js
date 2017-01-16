@@ -173,6 +173,10 @@ export const buildHtml = function ({template, data}) {
       mailTemplate = Assets.getText(`email_templates/metrics/${template}.html`);
       break;
     }
+    case "thankYou": {
+      mailTemplate = Assets.getText(`email_templates/${template}.html`);
+      break;
+    }
     case "employee": {
       mailTemplate = Assets.getText(`email_templates/${template}/${type}.html`);
       break;
@@ -824,6 +828,27 @@ export const getInformAnswerEmailOptions = ({template, data}) => {
   // const {from, to, tag, userVariables} = result;
   // console.log(mailData);
   // console.log({subject: result.subject, from, to, tag, userVariables});
+
+  return result;
+};
+
+export const getThankYouEmailOptions = ({template, data}) => {
+  const {action, employeeName, email} = data,
+    siteInfo = getMailData({type: "site"}),
+    {siteUrl, siteName} = siteInfo
+    ;
+
+  data.siteUrl = siteUrl;
+  data.siteName = siteName;
+  let
+    result = {
+      from: `"${siteName}" <no-reply@${mailDomain}>`,
+      to: email,
+      subject: `${employeeName}, Thank you for your ${action}`,
+      html: buildHtml({template, data}),
+      tag: "thankYouQuestion",
+      userVariables: {}
+    };
 
   return result;
 };

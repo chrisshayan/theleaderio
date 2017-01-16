@@ -9,6 +9,7 @@ import * as EmailActions from '/imports/api/email/methods';
 
 // functions
 import {replaceEscapeCharacterWithBRTag} from '/imports/utils/index';
+import {words as capitalize} from 'capitalize';
 
 // constant
 const {domain} = Meteor.settings.public;
@@ -60,4 +61,45 @@ export const sendNotificationEmails = (questionId) => {
       });
     }
   }
-}
+};
+
+/**
+ * Funtion send thank you email to employee after asked question
+ * @param leaderId
+ * @param organizationId
+ * @param employeeId
+ * @param questionId
+ */
+export const sendThankYouEmailToEmployee = ({leaderId, organizationId, employeeId}) => {
+  const name = "sendInformAnswerToEmployees";
+  const
+    profile = Profiles.findOne({userId: leaderId}),
+    employee = Employees.findOne({_id: employeeId, leaderId, organizationId})
+    ;
+
+  if (!_.isEmpty(profile) && !_.isEmpty(employee)) {
+    const
+      {firstName, lastName} = profile,
+      leaderName = capitalize(`${firstName} ${lastName}`),
+      {firstName: employeeName, email} = employee
+      ;
+
+    const
+      template = 'thankYou',
+      data = {
+        action: 'question',
+        leaderName,
+        employeeName: capitalize(employeeName),
+        message: `Your question had been sent to ${capitalize(leaderName)} anonymously.`,
+        description: `We will continuously remind the leader to reply your questions. As soon as he replied in a jiffy we will notify everyone in your team with question and answer.`,
+        haveButton: true,
+        buttonHeader: `You can ask and view more questions by visit this page:`,
+        buttonUrl: `http://${domain}/questions/view/${organizationId}`,
+        buttonLabel: `View other questions.`,
+        email
+      };
+
+    // console.log({template, data});
+    EmailActions.send.call({template, data});
+  }
+};

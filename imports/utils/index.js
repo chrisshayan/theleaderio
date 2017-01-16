@@ -179,6 +179,11 @@ export const generateRandomCode = (length) => {
   return crypto.randomBytes(length / 2).toString('hex');
 }
 
+/**
+ * Function replace the new line character \r\n to html tag <br/>
+ * @param {String} string
+ * @return {String}
+ */
 export const replaceEscapeCharacterWithBRTag = (string) => {
   return string.replace(/\r?\n/g, "<br/>");
 };
