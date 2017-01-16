@@ -94,8 +94,8 @@ class XEditable extends Component {
   }
 
   render() {
-    const {placeHolder, disabled = false, backgroundColor = 'white-bg', multiline = false} = this.props;
-    const {value, error, isLoading} = this.state;
+    const {placeHolder, disabled = false, backgroundColor = 'white-bg', multiline = false, height = 50} = this.props;
+    const {value, error, isLoading, style} = this.state;
     let className = ['form-control', 'inline-editor', backgroundColor];
     if (error) className.push('error');
 
@@ -111,7 +111,7 @@ class XEditable extends Component {
               disabled={isLoading | disabled}
               onChange={this.onChange}
               onBlur={this.onBlur}
-              style={this.state.style}
+              style={{...style, height}}
             />
           ) : (
             <input
@@ -123,7 +123,7 @@ class XEditable extends Component {
               disabled={isLoading | disabled}
               onChange={this.onChange}
               onBlur={this.onBlur}
-              style={this.state.style}
+              style={style}
             />
           )}
         { error && ( <div className="error-msg">{ error }</div> )}

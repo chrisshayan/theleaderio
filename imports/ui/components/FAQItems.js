@@ -74,6 +74,7 @@ export class FAQItems extends Component {
                         disabled={!isEditable}
                         method='questions.answer'
                         selector={{_id, leaderId, organizationId}}
+                        height={150}
                       />
                     </div>
                   </div>

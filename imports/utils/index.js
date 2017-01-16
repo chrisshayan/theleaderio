@@ -178,3 +178,7 @@ export const getShortDescription = (str, length) => {
 export const generateRandomCode = (length) => {
   return crypto.randomBytes(length / 2).toString('hex');
 }
+
+export const replaceEscapeCharacterWithBRTag = (string) => {
+  return string.replace(/\r?\n/g, "<br/>");
+};
