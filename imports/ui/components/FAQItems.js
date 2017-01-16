@@ -18,7 +18,7 @@ export class FAQItems extends Component {
               organizationId,
               question = "",
               answer,
-              questionDate = new Date(),
+              date = new Date(),
               answerDate = new Date,
               tags = [],
               voting = 0
@@ -35,7 +35,7 @@ export class FAQItems extends Component {
                 <div className="col-md-8">
                   <a data-toggle="collapse" href={`#${_id}`} className="faq-question">{question}</a>
                   <small>{'asked '}<i className="fa fa-clock-o"></i> {' '}
-                    {moment(questionDate).calendar(today, calendarFormat)}
+                    {moment(date).calendar(today, calendarFormat)}
                   </small>
                 </div>
                 {!_.isEmpty(tags) && (
