@@ -670,6 +670,14 @@ export const getDigestEmailOptions = ({template, data}) => {
           }
         ]
       },
+      questions: {
+        haveQuestions: false,
+        total: 0,
+        unanswered: 0,
+        latestUnansweredQuestions: [],
+        haveUnansweredQuestions: false,
+        questionsUrl: ""
+      },
       leaderProfileUrl: ""
     }
     ;
@@ -692,6 +700,7 @@ export const getDigestEmailOptions = ({template, data}) => {
   mailData.leadershipProgress = digest.leadershipProgress;
   mailData.orgInfo = digest.orgInfo;
   mailData.articles = digest.articles;
+  mailData.questions = digest.questions;
   mailData.leaderProfileUrl = leaderInfo.leaderProfileUrl;
   mailData.orgUrl = `http://${leaderInfo.alias}.${domain}/app/organizations`;
 
