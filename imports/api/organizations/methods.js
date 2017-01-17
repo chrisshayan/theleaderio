@@ -532,3 +532,25 @@ export const getPresentOrganizations = new ValidatedMethod({
     return Organizations.find(query, {projection}).fetch();
   }
 });
+
+/**
+ * Method check existing of organization
+ * @param {String} _id - organizationId
+ * @return {Object}
+ */
+export const checkExists = new ValidatedMethod({
+  name: 'organizations.checkExists',
+  validate: null,
+  run({_id}) {
+    if(!this.isSimulation) {
+      const org = Organizations.findOne({_id});
+      if(!_.isEmpty(org)) {
+        return {
+          isExists: true
+        };
+      } else {
+        throw new Meteor.Error('ORG_NOT_EXISTS');
+      }
+    }
+  }
+});
