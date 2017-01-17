@@ -266,7 +266,7 @@ export const getMetricStatistic = ({params}) => {
     }
     // emails to employees
     case STATISTIC_METRICS.EMAILS.SURVEYS: {
-      query = {"content.template": "survey", date: {$gte: startDate}};
+      query = {"content.options.userVariables.template": "survey", date: {$gte: startDate}};
       options = {fields: {date: true}};
       data = LogsEmail.find(query, options).fetch();
 
@@ -279,7 +279,7 @@ export const getMetricStatistic = ({params}) => {
     }
     case STATISTIC_METRICS.EMAILS.SCORING_SUCCESSES: {
       Collection = LogsEmail;
-      query = {"content.template": "thankyou", "content.data.type": "scoring", date: {$gte: startDate}};
+      query = {"content.options.userVariables.template": "thankyou", "content.data.type": "scoring", date: {$gte: startDate}};
       options = {fields: {date: true}};
       data = LogsEmail.find(query, options).fetch();
 
@@ -292,7 +292,7 @@ export const getMetricStatistic = ({params}) => {
     }
     case STATISTIC_METRICS.EMAILS.SCORING_ERRORS: {
       Collection = LogsEmail;
-      query = {"content.template": "survey_error", date: {$gte: startDate}};
+      query = {"content.options.userVariables.template": "survey_error", date: {$gte: startDate}};
       options = {fields: {date: true}};
       data = LogsEmail.find(query, options).fetch();
 
@@ -305,7 +305,7 @@ export const getMetricStatistic = ({params}) => {
     }
     case STATISTIC_METRICS.EMAILS.FEEDBACK_TO_LEADERS: {
       Collection = LogsEmail;
-      query = {"content.template": "feedback", date: {$gte: startDate}};
+      query = {"content.options.userVariables.template": "feedback", date: {$gte: startDate}};
       options = {fields: {date: true}};
       data = LogsEmail.find(query, options).fetch();
 
@@ -319,7 +319,7 @@ export const getMetricStatistic = ({params}) => {
     // emails to leaders
     case STATISTIC_METRICS.EMAILS.FEEDBACK_TO_EMPLOYEES: {
       Collection = LogsEmail;
-      query = {"content.template": "employee", "content.data.type": "feedback", date: {$gte: startDate}};
+      query = {"content.options.userVariables.template": "employee", "content.data.type": "feedback", date: {$gte: startDate}};
       options = {fields: {date: true}};
       data = LogsEmail.find(query, options).fetch();
 
@@ -332,7 +332,7 @@ export const getMetricStatistic = ({params}) => {
     }
     case STATISTIC_METRICS.EMAILS.WEEKLY_DIGEST: {
       Collection = LogsEmail;
-      query = {"content.template": "digest", date: {$gte: startDate}};
+      query = {"content.options.userVariables.template": "digest", date: {$gte: startDate}};
       options = {fields: {date: true}};
       data = LogsEmail.find(query, options).fetch();
 
@@ -346,7 +346,7 @@ export const getMetricStatistic = ({params}) => {
     // emails referral
     case STATISTIC_METRICS.EMAILS.REFERRALS: {
       Collection = LogsEmail;
-      query = {"content.template": "referral", date: {$gte: startDate}};
+      query = {"content.options.userVariables.template": "referral", date: {$gte: startDate}};
       options = {fields: {date: true}};
       data = LogsEmail.find(query, options).fetch();
 
@@ -360,7 +360,7 @@ export const getMetricStatistic = ({params}) => {
     // email registration
     case STATISTIC_METRICS.EMAILS.REGISTRATION: {
       Collection = LogsEmail;
-      query = {"content.template": "welcome", date: {$gte: startDate}};
+      query = {"content.options.userVariables.template": "welcome", date: {$gte: startDate}};
       options = {fields: {date: true}};
       data = LogsEmail.find(query, options).fetch();
 
@@ -374,7 +374,7 @@ export const getMetricStatistic = ({params}) => {
     // emails support
     case STATISTIC_METRICS.EMAILS.FORGOT_ALIAS: {
       Collection = LogsEmail;
-      query = {"content.template": "forgot_alias", date: {$gte: startDate}};
+      query = {"content.options.userVariables.template": "forgot_alias", date: {$gte: startDate}};
       options = {fields: {date: true}};
       data = LogsEmail.find(query, options).fetch();
 
@@ -387,7 +387,7 @@ export const getMetricStatistic = ({params}) => {
     }
     case STATISTIC_METRICS.EMAILS.FORGOT_PASSWORD: {
       Collection = LogsEmail;
-      query = {"content.template": "forgot_password", date: {$gte: startDate}};
+      query = {"content.options.userVariables.template": "forgot_password", date: {$gte: startDate}};
       options = {fields: {date: true}};
       data = LogsEmail.find(query, options).fetch();
 
