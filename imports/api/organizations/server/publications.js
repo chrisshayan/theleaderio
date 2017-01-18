@@ -75,3 +75,18 @@ Meteor.publish("statistic.organizations", function() {
 
 	return Organizations.find();
 });
+
+Meteor.publish('verify.org', function(_id) {
+	return Organizations.find({_id}, {fields: {_id: true, leaderId: true}});
+});
+
+
+
+Meteor.publish('organizations.public', function (_id) {
+  const
+    selector = {_id},
+    option = {
+      fields: {_id: true}
+    };
+  return Organizations.find(selector, option);
+});

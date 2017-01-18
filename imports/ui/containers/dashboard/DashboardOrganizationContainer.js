@@ -2,6 +2,7 @@ import {Meteor} from 'meteor/meteor';
 import React, {Component} from 'react';
 import {createContainer} from 'meteor/react-meteor-data';
 import {FlowRouter} from 'meteor/kadira:flow-router';
+import Clipboard from 'clipboard';
 
 // collections
 import {Measures} from '/imports/api/measures/index';
@@ -43,7 +44,7 @@ class DashboardOrganization extends Component {
       date = new Date(),
       noOfMonths = 6,
       preferences = {};
-      ;
+    ;
 
     getChartData.call({leaderId, organizationId, date, noOfMonths}, (err, result) => {
       if (!err) {
@@ -71,7 +72,7 @@ class DashboardOrganization extends Component {
       noOfMonths = 6,
       preferences = {};
     ;
-    if(this.props.organizationId !== organizationId) {
+    if (this.props.organizationId !== organizationId) {
       this.setState({
         ready: false,
         chart: {}
@@ -94,6 +95,10 @@ class DashboardOrganization extends Component {
     }
   }
 
+  componentDidMount() {
+    new Clipboard('.copy-to-clipboard');
+  }
+
   render() {
     const
       {
@@ -101,14 +106,16 @@ class DashboardOrganization extends Component {
         measures,
         noOfEmployees,
         noOfFeedbacks,
-        isCurrentOrg
+        isCurrentOrg,
+        randomCode
       } = this.props,
       {
         ready,
         error,
         chart,
         preferences
-      } = this.state
+      } = this.state,
+      askQuestionUrl = FlowRouter.url('questions.ask', {randomCode})
       ;
     let
       metrics = {},
@@ -125,7 +132,7 @@ class DashboardOrganization extends Component {
     }
 
     // Metrics
-    if(!_.isEmpty(chart)) {
+    if (!_.isEmpty(chart)) {
       metrics = getAverageMetrics(chart);
     }
 
@@ -181,6 +188,19 @@ class DashboardOrganization extends Component {
             </div>
           </div>
           <div className="row">
+            <div className="alert alert-info">
+              <h3>Engage your employees now</h3>
+              <p>You can share the following private URL to your employees. They can submit their questions anonymously and your response will be broadcasted to all others.</p>
+              <div>
+                <input id="copy" readOnly value={askQuestionUrl} style={{width: 300}}/> {' '}
+                <button
+                  className="btn btn-xs btn-white copy-to-clipboard" data-clipboard-target="#copy">
+                  <i className="fa fa-copy"/>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="row">
             <ProfileMetricsBox
               isPresent={isCurrentOrg}
               label="Half-year leadership progress"
@@ -204,7 +224,7 @@ class DashboardOrganization extends Component {
 export default DashboardOrganizationContainer = createContainer(function (params) {
   const
     leaderId = Meteor.userId(),
-    organizationId = params.organizationId,
+    {organizationId} = params,
     date = new Date(),
     year = date.getFullYear(),
     month = date.getMonth(),
@@ -223,7 +243,8 @@ export default DashboardOrganizationContainer = createContainer(function (params
     organizations = [],
     noOfEmployees = 0,
     noOfFeedbacks = 0,
-    isCurrentOrg = false
+    isCurrentOrg = false,
+    randomCode = ''
     ;
 
   query = {
@@ -263,11 +284,14 @@ export default DashboardOrganizationContainer = createContainer(function (params
   noOfFeedbacks = feedbacks.length;
 
   projection = {
+    randomCode: 1,
     isPresent: 1
   }
   organizations = Organizations.find({}, {fields: projection}).fetch();
-  if(!_.isEmpty(organizations)) {
+  console.log(organizations)
+  if (!_.isEmpty(organizations)) {
     isCurrentOrg = organizations[0].isPresent;
+    randomCode = organizations[0].randomCode;
   }
 
   containerReady = subMeasures.ready() & subFeedbacks.ready() & subEmployees.ready() & subOrg.ready();
@@ -277,6 +301,7 @@ export default DashboardOrganizationContainer = createContainer(function (params
     measures,
     noOfEmployees,
     noOfFeedbacks,
-    isCurrentOrg
+    isCurrentOrg,
+    randomCode
   };
 }, DashboardOrganization);

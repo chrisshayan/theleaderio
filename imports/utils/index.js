@@ -1,6 +1,7 @@
 import {Meteor} from 'meteor/meteor';
 import {JOB_FREQUENCY, MINUTE_OF_AN_HOUR} from '/imports/utils/defaults';
 import validate from 'validate';
+import crypto from 'crypto';
 
 export const IDValidator = {
   _id: {
@@ -167,4 +168,22 @@ export const getShortDescription = (str, length) => {
     words.push('...');
   }
   return words.join(' ');
+};
+
+/**
+ * Generate a random Code
+ * @param length
+ * @return {string}
+ */
+export const generateRandomCode = (length) => {
+  return crypto.randomBytes(length / 2).toString('hex');
 }
+
+/**
+ * Function replace the new line character \r\n to html tag <br/>
+ * @param {String} string
+ * @return {String}
+ */
+export const replaceEscapeCharacterWithBRTag = (string) => {
+  return string.replace(/\r?\n/g, "<br/>");
+};

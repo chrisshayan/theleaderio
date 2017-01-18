@@ -72,7 +72,7 @@ export function createDefaults() {
       content = {
         minScore: 0,
         maxScore: 5,
-        averageScore: 3
+        averageScore: 5
       };
     DefaultsActions.add.call({name, content});
   }

@@ -68,6 +68,10 @@ Organizations.schema = new SimpleSchema({
     type: String,
     optional: true,
   },
+  randomCode: {
+    type: String,
+    optional: true,
+  },
   employees: {
     type: [String],
     optional: true,
@@ -100,6 +104,7 @@ Organizations.publicFields = {
   employees: 1,
   jobTitle: 1,
   imageUrl: 1,
+  randomCode: 1,
 };
 
 /**

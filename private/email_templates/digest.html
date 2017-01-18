@@ -141,6 +141,60 @@
                                                     </tr>
                                                 {{/each}}
                                             {{/if}}
+                                            {{#if questions.haveQuestions}}
+                                                {{#if questions.haveUnansweredQuestions}}
+                                                    <tr>
+                                                        <td style="padding: 0 0 5px;">
+                                                            <h4 style="margin-bottom: 5px; margin-top: 10px;">
+                                                                You have {{questions.latestUnansweredQuestions.length}}
+                                                                unanswered over {{questions.total}} questions from your
+                                                                employees last week. They were waiting for your answers.
+                                                                Some of them are:
+                                                            </h4>
+                                                        </td>
+                                                    </tr>
+                                                    {{#each questions.latestUnansweredQuestions}}
+                                                        <tr>
+                                                            <td>
+                                                                {{question}}
+                                                            </td>
+                                                        </tr>
+                                                    {{/each}}
+                                                {{else}}
+                                                    <tr>
+                                                        <td style="padding: 0 0 5px;">
+                                                            <h4 style="margin-bottom: 5px; margin-top: 10px;">
+                                                                You have {{questions.total}} questions from your
+                                                                employees last week.
+                                                            </h4>
+                                                        </td>
+                                                    </tr>
+                                                {{/if}}
+                                            {{else}}
+                                                <tr>
+                                                    <td style="padding: 0 0 5px;">
+                                                        <h4 style="margin-bottom: 5px; margin-top: 10px;">
+                                                            You have no questions from your
+                                                            employees last week.
+                                                        </h4>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 0 0 5px;">
+                                                        You can share the following private URL to your employees. They
+                                                        can submit their questions anonymously and your response will be
+                                                        broadcasted to all others.
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    {{#each questions.askQuestionsUrl}}
+                                                        <td style="padding: 0 0 5px;">
+                                                            <strong>{{orgName}}</strong>:
+                                                            <a href="{{url}}">{{url}}</a>
+                                                        </td>
+                                                    {{/each}}
+                                                </tr>
+                                            {{/if}}
                                         </table>
                                     </td>
                                 </tr>

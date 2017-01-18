@@ -3,6 +3,9 @@ import {ValidatedMethod} from 'meteor/mdg:validated-method';
 // collections
 import {Feedbacks} from './index';
 
+// functions
+import {monkeyClassifyTopic} from '/imports/api/monkey/functions';
+
 export const add = new ValidatedMethod({
   name: "feedbacks.add",
   validate: null,
@@ -27,7 +30,18 @@ export const add = new ValidatedMethod({
     if(typeof type !== 'undefined') {
       doc.type = type;
     }
-    Feedbacks.insert(doc);
+    const feedbackId = Feedbacks.insert(doc);
+    if (!_.isEmpty(feedbackId) && !this.isSimulation) {
+      const
+        text_list = [feedback],
+        tags = monkeyClassifyTopic({text_list})
+        ;
+
+      if(!_.isEmpty(tags)) {
+        Feedbacks.update({_id: feedbackId}, {$set: {tags}});
+      }
+    }
+    return feedbackId;
   }
 });
 

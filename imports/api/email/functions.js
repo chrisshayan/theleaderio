@@ -173,12 +173,24 @@ export const buildHtml = function ({template, data}) {
       mailTemplate = Assets.getText(`email_templates/metrics/${template}.html`);
       break;
     }
+    case "thankYou": {
+      mailTemplate = Assets.getText(`email_templates/${template}.html`);
+      break;
+    }
     case "employee": {
       mailTemplate = Assets.getText(`email_templates/${template}/${type}.html`);
       break;
     }
     case "digest": {
       mailTemplate = Assets.getText(`email_templates/${template}.html`);
+      break;
+    }
+    case "questions": {
+      mailTemplate = Assets.getText(`email_templates/${template}/${type}.html`);
+      break;
+    }
+    case "inform_answer": {
+      mailTemplate = Assets.getText(`email_templates/${type}/${template}.html`);
       break;
     }
     default: {
@@ -658,6 +670,14 @@ export const getDigestEmailOptions = ({template, data}) => {
           }
         ]
       },
+      questions: {
+        haveQuestions: false,
+        total: 0,
+        unanswered: 0,
+        latestUnansweredQuestions: [],
+        haveUnansweredQuestions: false,
+        questionsUrl: ""
+      },
       leaderProfileUrl: ""
     }
     ;
@@ -680,6 +700,7 @@ export const getDigestEmailOptions = ({template, data}) => {
   mailData.leadershipProgress = digest.leadershipProgress;
   mailData.orgInfo = digest.orgInfo;
   mailData.articles = digest.articles;
+  mailData.questions = digest.questions;
   mailData.leaderProfileUrl = leaderInfo.leaderProfileUrl;
   mailData.orgUrl = `http://${leaderInfo.alias}.${domain}/app/organizations`;
 
@@ -691,7 +712,7 @@ export const getDigestEmailOptions = ({template, data}) => {
 
   return result;
 
-}
+};
 
 /**
  * Function to collect content data for referral email
@@ -730,6 +751,113 @@ export const getReferralEmailOptions = ({template, data}) => {
   result.html = buildHtml({template, data: mailData});
   result.tag = "referral";
   result.userVariables = {template, emailId: `${leaderId}-${userId}`};
+
+  return result;
+};
+
+
+/**
+ * Function to collect content data for referral email
+ * @param template
+ * @param data
+ */
+export const getQuestionsEmailOptions = ({template, data}) => {
+  const
+    {leaderId, leaderName, organizationId, employeeId, employeeName, email} = data,
+    siteInfo = getMailData({type: "site"}),
+    {siteUrl, siteName} = siteInfo,
+    subject = `${capitalize(employeeName)}, do you have any questions/feedback for ${capitalize(leaderName)}?`,
+    mailData = {
+      type: "questions",
+      subject,
+      siteUrl,
+      siteName,
+      employeeName,
+      leaderName
+    };
+  let
+    result = {
+      from: `"${mailData.leaderName}" <${leaderId}-${organizationId}-${employeeId}-${template}@${mailDomain}>`,
+      to: "jackiekhuu.work@gmail.com",
+      subject,
+      html: "",
+      tag: "",
+      userVariables: {}
+    };
+
+  result.to = email;
+  result.html = buildHtml({template, data: mailData});
+  result.tag = "questions";
+  result.userVariables = {template, emailId: `${leaderId}-${organizationId}-${employeeId}`};
+
+  // const {from, to, tag, userVariables} = result;
+  // console.log({subject: result.subject, from, to, tag, userVariables});
+
+  return result;
+};
+
+
+/**
+ * Function to collect content data for inform answer email to employees
+ * @param template
+ * @param data
+ */
+export const getInformAnswerEmailOptions = ({template, data}) => {
+  const
+    {leaderName, employeeName, question, answer, viewQuestionsUrl, email} = data,
+    siteInfo = getMailData({type: "site"}),
+    {siteUrl, siteName} = siteInfo,
+    subject = `${capitalize(employeeName)}, "${capitalize(leaderName)}" has just answered a question.`,
+    mailData = {
+      type: "questions",
+      subject,
+      siteUrl,
+      siteName,
+      employeeName,
+      leaderName,
+      question,
+      answer,
+      viewQuestionsUrl
+    };
+  let
+    result = {
+      from: `"${siteInfo.siteName}" <no-reply@${mailDomain}>`,
+      to: "jackiekhuu.work@gmail.com",
+      subject,
+      html: "",
+      tag: "",
+      userVariables: {}
+    };
+
+  result.to = email;
+  result.html = buildHtml({template, data: mailData});
+  result.tag = "informAnswer";
+  result.userVariables = {template};
+
+  // const {from, to, tag, userVariables} = result;
+  // console.log(mailData);
+  // console.log({subject: result.subject, from, to, tag, userVariables});
+
+  return result;
+};
+
+export const getThankYouEmailOptions = ({template, data}) => {
+  const {action, employeeName, email} = data,
+    siteInfo = getMailData({type: "site"}),
+    {siteUrl, siteName} = siteInfo
+    ;
+
+  data.siteUrl = siteUrl;
+  data.siteName = siteName;
+  let
+    result = {
+      from: `"${siteName}" <no-reply@${mailDomain}>`,
+      to: email,
+      subject: `${employeeName}, Thank you for your ${action}`,
+      html: buildHtml({template, data}),
+      tag: "thankYouQuestion",
+      userVariables: {}
+    };
 
   return result;
 };

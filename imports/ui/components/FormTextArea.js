@@ -5,8 +5,11 @@ export default class FormTextArea extends Component {
     const {
       label,
       type,
+      placeHolder="Tell us something about you ....",
       defaultValue,
       disabled,
+
+      height = 100,
       onTextChange = () => null
     } = this.props;
 
@@ -17,9 +20,10 @@ export default class FormTextArea extends Component {
           <textarea
             type={type}
             className="form-control"
-            placeholder="Tell us something about you ...."
+            placeholder={placeHolder}
             defaultValue={defaultValue}
             disabled={disabled}
+            style={{height}}
             onChange = {e => onTextChange(e.target.value)}
           />
         </div>

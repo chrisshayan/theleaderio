@@ -1,6 +1,7 @@
 import {Meteor} from 'meteor/meteor';
 import {ValidatedMethod} from 'meteor/mdg:validated-method';
 import {later} from 'meteor/mrt:later';
+import {words as capitalize} from 'capitalize';
 
 // Job Collection
 import {AdminJobs} from '/imports/api/jobs/collections';
@@ -13,6 +14,7 @@ import {SendingPlans} from '/imports/api/sending_plans/index';
 import {Metrics} from '/imports/api/metrics/index';
 import {Feedbacks} from '/imports/api/feedbacks/index';
 import {Articles, STATUS} from '/imports/api/articles/index';
+import {Questions} from '/imports/api/questions/index';
 import {LogsDigest} from '/imports/api/logs/index';
 
 // Job
@@ -37,7 +39,7 @@ const SITE_NAME = Meteor.settings.public.name;
  * @param job
  * @param cb
  */
-const sendFeedbackEmailToLeader = function (job, cb) {
+export const sendFeedbackEmailToLeader = function (job, cb) {
   const
     name = "sendFeedbackEmailToLeader",
     activeOrgList = Organizations.find({isPresent: true}, {fields: {_id: true, leaderId: true}}).fetch()
@@ -53,8 +55,7 @@ const sendFeedbackEmailToLeader = function (job, cb) {
     job.done();
   } else {
     activeOrgList.map(org => {
-      console.log(org);
-      console.log(Roles.userIsInRole(org.leaderId, "inactive"));
+      // console.log(Roles.userIsInRole(org.leaderId, "inactive"));
       if (!Roles.userIsInRole(org.leaderId, "inactive")) {
         const
           employee = getRandomEmployee({params: {organizationId: org._id}})
@@ -100,12 +101,14 @@ const sendFeedbackEmailToLeader = function (job, cb) {
  * @param job
  * @param cb
  */
-// export const sendStatisticEmailToLeader = function (job, cb) { // this is used for testing
-const sendStatisticEmailToLeader = function (job, cb) {
+export const sendStatisticEmailToLeader = function (job, cb) { // this is used for testing
+// const sendStatisticEmailToLeader = function (job, cb) {
   const
-    startDate = new Date(moment().subtract(7, 'day')),
+    {timeRange, timeUnit, dataLimitation} = Meteor.settings.digest,
+    startDate = new Date(moment().subtract(timeRange, timeUnit)),
     currentDate = new Date(),
     leaderIdList = getLeaderForDigestEmail({params: {startDate, endDate: currentDate}})
+    // leaderIdList = ["beWymesWN8dtytFEw"]
     ;
   let
     query = {},
@@ -146,6 +149,15 @@ const sendStatisticEmailToLeader = function (job, cb) {
         metricToImprove: [],
         articles: []
       },
+      questions: {
+        haveQuestions: false,
+        total: 0,
+        unanswered: [],
+        latestUnansweredQuestions: [],
+        haveUnansweredQuestions: false,
+        questionsUrl: "",
+        askQuestionsUrl: []
+      }
     },
     logName = "digest",
     logContent = {
@@ -200,6 +212,15 @@ const sendStatisticEmailToLeader = function (job, cb) {
           metricToImprove: [],
           articles: []
         },
+        questions: {
+          haveQuestions: false,
+          total: 0,
+          unanswered: 0,
+          latestUnansweredQuestions: [],
+          haveUnansweredQuestions: false,
+          questionsUrl: "",
+          askQuestionsUrl: []
+        }
       }
       ;
 
@@ -227,7 +248,12 @@ const sendStatisticEmailToLeader = function (job, cb) {
       if (!_.isEmpty(orgs)) {
         digest.orgInfo.haveActiveOrg = true;
         orgs.map(org => {
+          const {employees, name, randomCode} = org;
           digest.orgInfo.totalEmployees += org.employees.length;
+          digest.questions.askQuestionsUrl.push({
+            orgName: capitalize(name),
+            url: `http://${alias}.${domain}/questions/ask/${randomCode}`
+          });
         });
       }
 
@@ -303,7 +329,7 @@ const sendStatisticEmailToLeader = function (job, cb) {
           content: false
         },
         sort: {createdAt: -1},
-        limit: 2
+        limit: dataLimitation
       };
       articles = Articles.find(query, options).fetch();
       if (!_.isEmpty(articles)) {
@@ -325,11 +351,32 @@ const sendStatisticEmailToLeader = function (job, cb) {
       digest.articles.articles = _.uniq(digest.articles.articles);
       // console.log(digest.articles.articles)
 
+      // get questions information
+      query = {leaderId, date: {$gte: startDate, $lt: currentDate}};
+      digest.questions.total = Questions.find(query).count();
+      digest.questions.haveQuestions = digest.questions.total > 0 ? true : false;
+      query = {...query, answer: {$exists: false}};
+      digest.questions.unanswered = Questions.find(query).count();
+      options = {
+        fields: {
+          question: true
+        },
+        sort: {
+          date: -1
+        },
+        limit: dataLimitation
+      };
+      digest.questions.latestUnansweredQuestions = Questions.find(query, options).fetch();
+      digest.questions.haveUnansweredQuestions = digest.questions.latestUnansweredQuestions.length > 0 ? true : false;
+      digest.questions.questionsUrl = `http://${alias}.${domain}/app/questions`;
+
       // send digest email to leader
       const template = 'digest';
       const data = {
         digest
       };
+      // console.log(leaderId);
+      // console.log(digest.questions);
       EmailActions.send.call({template, data}, (error) => {
         if (_.isEmpty(error)) {
           logContentDetails.status = "sent";
