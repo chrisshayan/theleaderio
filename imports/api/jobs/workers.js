@@ -299,7 +299,7 @@ export const sendAskingQuestionsToEmployees = (job, cb) => {
         leaderName = `${profile.firstName} ${profile.lastName}` || "leader"
         ;
       if(!Roles.userIsInRole(leaderId, USER_ROLES.INACTIVE)) {
-        const orgs = Organizations.find({leaderId}).fetch();
+        const orgs = Organizations.find({leaderId, isPresent: true}).fetch();
         if(!_.isEmpty(orgs)) {
           orgs.map(org => {
             const

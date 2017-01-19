@@ -32,3 +32,20 @@ export const formatAlias = (rawAlias) => {
 export const isInactiveUser = ({userId}) => {
   return Roles.userIsInRole(userId, USER_ROLES.INACTIVE);
 };
+
+/**
+ * Function get all active users
+ * @return {Array} list of userId
+ */
+export const getAllActiveUsers = () => {
+  const Users = Accounts.users.find({username: {$exists: true}}, {fields: {_id: true}}).fetch();
+  let ActiveUsers = [];
+
+  Users.map(User => {
+    const {_id: userId} = User;
+    if(!isInactiveUser({userId})) {
+      ActiveUsers.push(userId);
+    }
+  });
+  return ActiveUsers;
+};

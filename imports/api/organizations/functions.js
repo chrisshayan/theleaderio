@@ -92,6 +92,10 @@ export const getRandomEmployee = ({params}) => {
   }
 };
 
+/**
+ * Function add Random Code for organization
+ * @param _id
+ */
 export const addRandomCode = function(_id) {
   let
     randomCode = "",
@@ -103,4 +107,25 @@ export const addRandomCode = function(_id) {
     codeAccepted = noOfCodeExists <= 0 ? true : false;
   } while(!codeAccepted)
   return Organizations.update({_id}, {$set: {randomCode}});
-}
+};
+
+/**
+ * Function get all present organizations of a leader
+ * @param leaderId
+ * @return {Array}
+ */
+export const getAllPresentOrganizationOfLeader = ({leaderId}) => {
+  const
+    selector = {leaderId, isPresent: true},
+    modifier = {fields: {_id: true}},
+    Orgs = Organizations.find(selector, modifier).fetch()
+    ;
+  let PresentOrgs = [];
+
+  Orgs.map(Org => {
+    const {_id} = org;
+    PresentOrgs.push(_id);
+  });
+
+  return PresentOrgs;
+};
