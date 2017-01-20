@@ -165,6 +165,10 @@ export const send = new ValidatedMethod({
           options = EmailFunctions.getInformAnswerEmailOptions({template, data});
           break;
         }
+        case 'eNPS': {
+          options = EmailFunctions.getENPSEmailOptions({template, data});
+          break;
+        }
         default: {
           throw new Meteor.Error(`Unknown template: ${template}`);
         }
@@ -172,7 +176,9 @@ export const send = new ValidatedMethod({
 
       // send email
       return Meteor.defer(() => {
-        // console.log(options);
+        // const {from, to, subject, tag, userVariables} = options;
+        // console.log({from, to, subject, tag, userVariables});
+
         EmailFunctions.sendMail({options});
       });
     }

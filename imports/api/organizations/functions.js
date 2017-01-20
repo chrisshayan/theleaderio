@@ -123,7 +123,7 @@ export const getAllPresentOrganizationOfLeader = ({leaderId}) => {
   let PresentOrgs = [];
 
   Orgs.map(Org => {
-    const {_id} = org;
+    const {_id} = Org;
     PresentOrgs.push(_id);
   });
 

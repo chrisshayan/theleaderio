@@ -193,6 +193,10 @@ export const buildHtml = function ({template, data}) {
       mailTemplate = Assets.getText(`email_templates/${type}/${template}.html`);
       break;
     }
+    case "eNPS": {
+      mailTemplate = Assets.getText(`email_templates/${template}.html`);
+      break;
+    }
     default: {
       mailTemplate = Assets.getText(`email_templates/${template}.html`);
     }
@@ -841,6 +845,12 @@ export const getInformAnswerEmailOptions = ({template, data}) => {
   return result;
 };
 
+/**
+ * Function get options for thank you email
+ * @param template
+ * @param data
+ * @return {{from: string, to: *, subject: string, html: *, tag: string, userVariables: {}}}
+ */
 export const getThankYouEmailOptions = ({template, data}) => {
   const {action, employeeName, email} = data,
     siteInfo = getMailData({type: "site"}),
@@ -849,15 +859,69 @@ export const getThankYouEmailOptions = ({template, data}) => {
 
   data.siteUrl = siteUrl;
   data.siteName = siteName;
-  let
+
+  const
     result = {
       from: `"${siteName}" <no-reply@${mailDomain}>`,
       to: email,
       subject: `${employeeName}, Thank you for your ${action}`,
       html: buildHtml({template, data}),
-      tag: "thankYouQuestion",
+      tag: `thankYou-${action}`,
       userVariables: {}
     };
+
+  return result;
+};
+
+export const getENPSEmailOptions = ({template, data}) => {
+  const
+    {leaderId, organizationId, employeeId, eNPSId} = data,
+    {siteUrl, siteName} = getMailData({type: "site"}),
+    {alias, leaderFullName: leaderName} = getMailData({type: "leader", data: {leaderId}}),
+    {employeeName, employeeEmail} = getMailData({type: "employee", data: {employeeId}}),
+    mailData = {
+      ...data,
+      leaderName,
+      employeeName,
+      siteUrl,
+      siteName,
+      buttonDisagree: {
+        url: `http://${alias}.${domain}/enps/get/${organizationId}/${employeeId}?id=${eNPSId}&score=0`,
+        label: "Disagree"
+      },
+      buttonSomewhatDisagree: {
+        url: `http://${alias}.${domain}/enps/get/${organizationId}/${employeeId}?id=${eNPSId}&score=1`,
+        label: "Somewhat disagree"
+      },
+      buttonNeutral: {
+        url: `http://${alias}.${domain}/enps/get/${organizationId}/${employeeId}?id=${eNPSId}&score=2`,
+        label: "Neutral"
+      },
+      buttonSomewhatAgree: {
+        url: `http://${alias}.${domain}/enps/get/${organizationId}/${employeeId}?id=${eNPSId}&score=3`,
+        label: "Somewhat agree"
+      },
+      buttonAgree: {
+        url: `http://${alias}.${domain}/enps/get/${organizationId}/${employeeId}?id=${eNPSId}&score=4`,
+        label: "Agree"
+      }
+    }
+    ;
+
+  let
+    result = {
+      from: `"${capitalize(leaderName)}" <${leaderId}-${organizationId}-${employeeId}-${template}@${mailDomain}>`,
+      to: employeeEmail,
+      subject: `${employeeName}, How likely will you recommend your workplace?`,
+      html: buildHtml({template, data: mailData}),
+      tag: `eNPS`,
+      userVariables: {data}
+    };
+
+  // console.log(mailData)
+
+  // for testing
+  // result.to = "jackiekhuu.work@gmail.com";
 
   return result;
 };

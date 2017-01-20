@@ -20,11 +20,15 @@ import {getLocalDate} from '/imports/api/time/functions';
 import {setStatus as setSendingPlanStatus} from '/imports/api/sending_plans/methods';
 import {measureMonthlyMetricScore} from '/imports/api/measures/methods';
 import {add as addMessages} from '/imports/api/user_messages/methods';
+import {create as createENPS} from '/imports/api/enps/functions';
 
 // functions
 import {migrate} from '/imports/api/migration/functions';
 import {getRandomEmployee} from '/imports/api/organizations/functions';
 import {add as addLogs} from '/imports/api/logs/functions';
+import {getAllActiveUsers} from '/imports/api/users/functions';
+import {getAllPresentOrganizationOfLeader} from '/imports/api/organizations/functions';
+import {getAllActiveEmployeesOfOrganization} from '/imports/api/employees/functions';
 
 // logger
 import {Logger} from '/imports/api/logger/index';
@@ -283,7 +287,8 @@ const migrateUsers = (job, cb) => {
  * @param job
  * @param cb
  */
-export const sendAskingQuestionsToEmployees = (job, cb) => {
+// export const sendAskingQuestionsToEmployees = (job, cb) => {
+const sendAskingQuestionsToEmployees = (job, cb) => {
   const
     users = Accounts.users.find().fetch()
     ;
@@ -291,22 +296,22 @@ export const sendAskingQuestionsToEmployees = (job, cb) => {
     name = "sendAskingQuestionsToEmployees"
     ;
 
-  if(!_.isEmpty(users)) {
+  if (!_.isEmpty(users)) {
     users.map(user => {
       const
         {_id: leaderId} = user,
         profile = Profiles.findOne({userId: leaderId}),
         leaderName = `${profile.firstName} ${profile.lastName}` || "leader"
         ;
-      if(!Roles.userIsInRole(leaderId, USER_ROLES.INACTIVE)) {
+      if (!Roles.userIsInRole(leaderId, USER_ROLES.INACTIVE)) {
         const orgs = Organizations.find({leaderId, isPresent: true}).fetch();
-        if(!_.isEmpty(orgs)) {
+        if (!_.isEmpty(orgs)) {
           orgs.map(org => {
             const
               {_id: organizationId} = org,
               employees = Employees.find({leaderId, organizationId, status: STATUS_ACTIVE}).fetch()
-            ;
-            if(!_.isEmpty(employees)) {
+              ;
+            if (!_.isEmpty(employees)) {
               employees.map(employee => {
                 const {_id: employeeId, email, firstName: employeeName} = employee;
                 message = `send request for question to employee`;
@@ -323,7 +328,7 @@ export const sendAskingQuestionsToEmployees = (job, cb) => {
                   if (_.isEmpty(error)) {
                     Logger.info({name, message: {detail: data}});
                   } else {
-                    Logger.info({name, message: {detail: error}});
+                    Logger.error({name, message: {detail: error}});
                   }
                 });
               });
@@ -335,6 +340,65 @@ export const sendAskingQuestionsToEmployees = (job, cb) => {
   }
   job.done();
 };
+
+
+export const sendENPSToEmployees = (job, cb) => {
+// const sendENPSToEmployees = (job, cb) => {
+  // get all active leaders
+  const
+    // ActiveLeaders = getAllActiveUsers()
+    ActiveLeaders = ["zyctCnLzHuBfaoR5q"]
+    ;
+
+  ActiveLeaders.map(leaderId => {
+    const
+      // get all present organization of a leader
+      PresentOrgs = getAllPresentOrganizationOfLeader({leaderId}),
+      name = 'sendENPSToEmployees'
+      ;
+
+    PresentOrgs.map(organizationId => {
+      // get all active employees of a leader in 1 organization
+      const ActiveEmployees = getAllActiveEmployeesOfOrganization({leaderId, organizationId});
+
+      // create eNPS for leader
+      const eNPSId = createENPS({leaderId, organizationId, interval: "EVERY_MONTH"});
+
+      if (!_.isEmpty(eNPSId)) {
+        ActiveEmployees.map(_id => {
+          const
+            employee = Employees.findOne({_id})
+            ;
+
+          if (!_.isEmpty(employee)) {
+            // get data to send email
+            const
+              {_id: employeeId} = employee,
+              template = 'eNPS',
+              data = {
+                leaderId,
+                organizationId,
+                employeeId,
+                eNPSId
+              };
+            EmailActions.send.call({template, data}, (error, result) => {
+              if (_.isEmpty(error)) {
+                Logger.info({name, message: {detail: data}});
+              } else {
+                Logger.error({name, message: {detail: error}});
+              }
+            });
+          }
+        });
+      } else {
+        // log error
+        Logger.error({name, message: {detail: `Can't create eNPS for leader: ${leaderId} in org: ${organizationId}`}});
+      }
+    });
+  });
+  // job.done();
+};
+
 
 // Start Job
 function startJob(type) {
