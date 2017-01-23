@@ -120,6 +120,23 @@ Meteor.startup(function() {
     var data = { type };
     Jobs.create(type, attributes, data);
   }
+  // sending eNPS emails job
+  if (!AdminJobs.find({ type: "eNPS" }).count()) {
+    type = "eNPS";
+    let attributes = {};
+    if (Meteor.settings.public.env === "dev") {
+      console.log(`dev environment`)
+      attributes = { priority: "normal", repeat: { schedule: later.parse.text("every 5 minutes") } }
+      // attributes = { priority: "normal", repeat: { schedule: later.parse.text(Meteor.settings.jobs.runTime.eNPS) } }
+    } else {
+      attributes = {
+        priority: "normal",
+        repeat: { schedule: later.parse.text(Meteor.settings.jobs.runTime.eNPS) }
+      };
+    }
+    var data = { type };
+    Jobs.create(type, attributes, data);
+  }
   /*
   // migrate data for users
   if (Meteor.settings.migration) {
@@ -141,6 +158,8 @@ Meteor.startup(function() {
   type = "send_surveys";
   Workers.start(type);
   type = "ask_questions";
+  Workers.start(type);
+  type = "eNPS";
   Workers.start(type);
   type = "feedback_for_employee";
   AdminJobs.processJobs(type, sendFeedbackEmailToLeader);

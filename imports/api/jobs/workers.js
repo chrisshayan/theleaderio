@@ -342,12 +342,12 @@ const sendAskingQuestionsToEmployees = (job, cb) => {
 };
 
 
-export const sendENPSToEmployees = (job, cb) => {
-// const sendENPSToEmployees = (job, cb) => {
+// export const sendENPSToEmployees = (job, cb) => {
+const sendENPSToEmployees = (job, cb) => {
   // get all active leaders
   const
-    // ActiveLeaders = getAllActiveUsers()
-    ActiveLeaders = ["zyctCnLzHuBfaoR5q"]
+    ActiveLeaders = getAllActiveUsers()
+    // ActiveLeaders = ["zyctCnLzHuBfaoR5q"]
     ;
 
   ActiveLeaders.map(leaderId => {
@@ -396,7 +396,7 @@ export const sendENPSToEmployees = (job, cb) => {
       }
     });
   });
-  // job.done();
+  job.done();
 };
 
 
@@ -425,6 +425,11 @@ function startJob(type) {
     // admin jobs
     case "ask_questions": {
       AdminJobs.processJobs(type, sendAskingQuestionsToEmployees);
+      break;
+    }
+    // admin jobs
+    case "eNPS": {
+      AdminJobs.processJobs(type, sendENPSToEmployees);
       break;
     }
     default: {

@@ -92,6 +92,7 @@ export default class IboxContentChartWithChosen extends Component {
               {label}
             </h3>
             <EmptyBox
+              height="200px"
               icon="fa fa-area-chart"
               message="No Chart Data"
             />

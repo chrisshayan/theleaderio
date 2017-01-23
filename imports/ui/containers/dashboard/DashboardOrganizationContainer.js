@@ -15,6 +15,9 @@ import Spinner from '/imports/ui/common/Spinner';
 import {NoticeForm} from '/imports/ui/common/NoticeForm';
 import IboxDashboard from '/imports/ui/components/IboxDashboard';
 import ProfileMetricsBox from '/imports/ui/components/ProfileMetricsBox';
+import Calendar from '/imports/ui/containers/calendar/Calendar';
+import EmptyBox from '/imports/ui/components/EmptyBox';
+import ScatterLineCharts from '/imports/ui/components/ScatterLineCharts';
 
 // methods
 import {measureMonthlyMetricScore} from '/imports/api/measures/methods';
@@ -107,7 +110,8 @@ class DashboardOrganization extends Component {
         noOfEmployees,
         noOfFeedbacks,
         isCurrentOrg,
-        randomCode
+        randomCode,
+        haveCalendar = false
       } = this.props,
       {
         ready,
@@ -190,7 +194,8 @@ class DashboardOrganization extends Component {
           <div className="row">
             <div className="alert alert-info">
               <h3>Engage your employees now</h3>
-              <p>You can share the following private URL to your employees. They can submit their questions anonymously and your response will be broadcasted to all others.</p>
+              <p>
+                You can share the following private URL to your employees. They can submit their questions anonymously and your response will be broadcasted to all others.</p>
               <div>
                 <input id="copy" readOnly value={askQuestionUrl} style={{width: 300}}/> {' '}
                 <button
@@ -201,14 +206,45 @@ class DashboardOrganization extends Component {
             </div>
           </div>
           <div className="row">
-            <ProfileMetricsBox
-              isPresent={isCurrentOrg}
-              label="Half-year leadership progress"
-              preferences={preferences.metrics}
-              data={{chart, metrics}}
-              haveCalendar={true}
-            />
+            <div className="col-md-6">
+              <ProfileMetricsBox
+                isPresent={isCurrentOrg}
+                label="Half-year leadership progress"
+                preferences={preferences.metrics}
+                data={{chart, metrics}}
+              />
+            </div>
+            <div className="col-md-6">
+              <div className="ibox float-e-margins" style={{marginBottom: 18}}>
+                <div className="ibox-title">
+                  <span className="label label-info pull-right">current organization</span>
+                  <h5>Employee Engagement progress</h5>
+                </div>
+                <div className="ibox-content">
+                  {/*<EmptyBox*/}
+                    {/*height="200px"*/}
+                    {/*icon="fa fa-area-chart"*/}
+                    {/*message="No Chart Data"*/}
+                  {/*/>*/}
+                  <ScatterLineCharts />
+                </div>
+              </div>
+            </div>
           </div>
+          {haveCalendar && (
+            <div className="row">
+              <div className="col-md-12">
+                <div className="ibox float-e-margins" style={{marginBottom: 18}}>
+                  <div className="ibox-title">
+                    <h5>Schedule for sending survey</h5>
+                  </div>
+                  <div className="ibox-content">
+                    <Calendar/>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       );
     } else {

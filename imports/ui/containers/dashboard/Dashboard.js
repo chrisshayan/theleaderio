@@ -100,7 +100,11 @@ export default class Dashboard extends Component {
       const tab = {
         key: org._id,
         title: org.name,
-        component: <DashboardOrganizationContainer organizationId={org._id}/>
+        component:
+          <DashboardOrganizationContainer
+            organizationId={org._id}
+            haveCalendar={true}
+        />
       };
       // allow maximum MAX_TABS tabs only
       if (tabs.length < MAX_TABS) {
