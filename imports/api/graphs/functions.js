@@ -42,10 +42,10 @@ export const normalDistribution = ({data}) => {
   variance = sumOfDifferences / count;
   standardDeviation = Math.sqrt(variance);
 
-  console.log({differences, sumOfDifferences, variance, standardDeviation});
+  // console.log({differences, sumOfDifferences, variance, standardDeviation});
 
   return {
     mean,
-    standardDeviation
+    standardDeviation: standardDeviation === 0 ? 1 : standardDeviation
   };
 };

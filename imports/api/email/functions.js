@@ -885,25 +885,33 @@ export const getENPSEmailOptions = ({template, data}) => {
       employeeName,
       siteUrl,
       siteName,
-      buttonDisagree: {
+      buttonStronglyDisagree: {
         url: `http://${alias}.${domain}/enps/get/${organizationId}/${employeeId}?id=${eNPSId}&score=0`,
+        label: "Strongly disagree"
+      },
+      buttonDisagree: {
+        url: `http://${alias}.${domain}/enps/get/${organizationId}/${employeeId}?id=${eNPSId}&score=1`,
         label: "Disagree"
       },
       buttonSomewhatDisagree: {
-        url: `http://${alias}.${domain}/enps/get/${organizationId}/${employeeId}?id=${eNPSId}&score=1`,
+        url: `http://${alias}.${domain}/enps/get/${organizationId}/${employeeId}?id=${eNPSId}&score=2`,
         label: "Somewhat disagree"
       },
       buttonNeutral: {
-        url: `http://${alias}.${domain}/enps/get/${organizationId}/${employeeId}?id=${eNPSId}&score=2`,
+        url: `http://${alias}.${domain}/enps/get/${organizationId}/${employeeId}?id=${eNPSId}&score=3`,
         label: "Neutral"
       },
       buttonSomewhatAgree: {
-        url: `http://${alias}.${domain}/enps/get/${organizationId}/${employeeId}?id=${eNPSId}&score=3`,
+        url: `http://${alias}.${domain}/enps/get/${organizationId}/${employeeId}?id=${eNPSId}&score=4`,
         label: "Somewhat agree"
       },
       buttonAgree: {
-        url: `http://${alias}.${domain}/enps/get/${organizationId}/${employeeId}?id=${eNPSId}&score=4`,
+        url: `http://${alias}.${domain}/enps/get/${organizationId}/${employeeId}?id=${eNPSId}&score=5`,
         label: "Agree"
+      },
+      buttonStronglyAgree: {
+        url: `http://${alias}.${domain}/enps/get/${organizationId}/${employeeId}?id=${eNPSId}&score=6`,
+        label: "Strongly agree"
       }
     }
     ;

@@ -4,7 +4,7 @@ import eNPSCollection from './collections';
 
 export const eNPS = new eNPSCollection('enps') ;
 
-eNPS.allowedScores = [0, 1, 2, 3, 4, 5];
+eNPS.allowedScores = [0, 1, 2, 3, 4, 5, 6];
 eNPS.allowedIntervals = ["EVERY_MONTH"];
 
 eNPS.schema = new SimpleSchema({

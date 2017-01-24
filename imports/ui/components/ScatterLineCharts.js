@@ -56,8 +56,8 @@ export default class ScatterLineCharts extends Component {
       mydata1.datasets[0].data[i] = (1 / (gauss_var * Math.sqrt(2 * Math.PI))) * Math.exp(-((mydata1.datasets[0].xPos[i] - gauss_mean) * (mydata1.datasets[0].xPos[i] - gauss_mean)) / (2 * gauss_var));
     }
 
-    gauss_var = 1.916961263;
-    gauss_mean = 3.176470588;
+    gauss_var = 1.010362971;
+    gauss_mean = 3.25;
 
     var nbiter = 400;
     for (var i = 0; i < nbiter; i++) {
