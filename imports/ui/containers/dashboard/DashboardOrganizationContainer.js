@@ -304,9 +304,9 @@ export default DashboardOrganizationContainer = createContainer(function (params
     date = new Date(),
     year = date.getFullYear(),
     month = date.getMonth(),
-    nextMonthDate = new Date(moment(date).add(1, 'month')),
-    nextMonthYear = nextMonthDate.getFullYear(),
-    nextMonthMonth = nextMonthDate.getMonth(),
+    startDate = new Date(moment(date).subtract(1, 'month')),
+    startYear = startDate.getFullYear(),
+    startMonth = startDate.getMonth(),
     subMeasures = Meteor.subscribe("measures"),
     subEmployees = Meteor.subscribe("employees"),
     subFeedbacks = Meteor.subscribe("feedbacks"),
@@ -354,8 +354,8 @@ export default DashboardOrganizationContainer = createContainer(function (params
     leaderId,
     organizationId,
     date: {
-      $gte: new Date(year, month, 1),
-      $lt: new Date(nextMonthYear, nextMonthMonth, 1)
+      $gte: new Date(startYear, startMonth, 1),
+      $lt: new Date(year, month, 1),
     }
   };
   projection = {
@@ -381,8 +381,8 @@ export default DashboardOrganizationContainer = createContainer(function (params
   query = {
     leaderId, organizationId,
     sendDate: {
-      $gte: new Date(year, month, 1),
-      $lt: new Date(nextMonthYear, nextMonthMonth, 1)
+      $gte: new Date(startYear, startMonth, 1),
+      $lt: new Date(year, month, 1),
     }
   };
   projection = {

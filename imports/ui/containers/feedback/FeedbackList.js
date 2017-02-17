@@ -22,7 +22,6 @@ export default class FeedbackList extends Component {
       {items, toLeader = false} = this.props
       ;
 
-    console.log(items);
     return (
       <div className="table-responsive">
         <table className="table table-hover issue-tracker">
@@ -52,15 +51,20 @@ export default class FeedbackList extends Component {
                 {toLeader && (
                   <td>{item.score}</td>
                 )}
-                {!_.isEmpty(item.tags) && (
-                  <td>
-                    <div className="tag-list">
-                      {item.tags.map((tag, key) => (
-                        <button key={key} className="btn btn-white btn-xs" type="button">{tag.label} {' '}</button>
-                      ))}
-                    </div>
-                  </td>
-                )}
+                {!_.isEmpty(item.tags)
+                  ? (
+                    <td>
+                      <div className="tag-list">
+                        {item.tags.map((tag, key) => (
+                          <button key={key} className="btn btn-white btn-xs" type="button">{tag.label} {' '}</button>
+                        ))}
+                      </div>
+                    </td>
+                  )
+                  : (
+                    <td></td>
+                  )
+                }
                 <td className="issue-info">
                   {item.feedback}
                 </td>

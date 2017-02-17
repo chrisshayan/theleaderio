@@ -1,9 +1,15 @@
 import React, {Component} from 'react';
 
+// components
+import EmptyBox from '/imports/ui/components/EmptyBox';
+
 export default class GaussChart extends Component {
 
   componentDidMount() {
-    this.gaussChart();
+    const {data} = this.props;
+    if(!_.isEmpty(data)) {
+      this.gaussChart();
+    }
   }
 
   gaussChart() {
@@ -50,8 +56,6 @@ export default class GaussChart extends Component {
       }
     });
 
-    console.log(data);
-
     let gaussChart = new Chart(document.getElementById(gaussChartId).getContext("2d")).Line(gaussData, gaussOptions);
   }
 
@@ -64,7 +68,7 @@ export default class GaussChart extends Component {
     if (_.isEmpty(data)) {
       return (
         <EmptyBox
-          height="200px"
+          height="171px"
           icon="fa fa-area-chart"
           message="No Chart Data"
         />

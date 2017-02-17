@@ -2,6 +2,7 @@ import {Meteor} from 'meteor/meteor';
 import React, {Component} from 'react';
 import {createContainer} from 'meteor/react-meteor-data';
 import {FlowRouter} from 'meteor/kadira:flow-router';
+import _ from 'lodash';
 
 // methods
 import {getPresentOrganizations} from '/imports/api/organizations/methods';
