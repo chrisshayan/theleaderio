@@ -241,9 +241,11 @@ const sendSurveys = function (job, cb) {
         }
       });
     }
+    cb();
   } catch (error) {
     job.log(error, {level: LOG_LEVEL.CRITICAL});
     job.fail();
+    cb();
   }
 };
 
@@ -264,9 +266,11 @@ const measureMetrics = (job, cb) => {
         job.log(jobMessage, {level: LOG_LEVEL.WARNING});
         job.done();
       }
+      cb();
     } else {
       job.log(error.reason, {level: LOG_LEVEL.CRITICAL});
       job.fail();
+      cb();
     }
   });
 };
@@ -280,6 +284,7 @@ const migrateUsers = (job, cb) => {
   const result = migrate();
   job.log(`migrated ${result} users`, {level: LOG_LEVEL.INFO});
   job.done();
+  cb();
 };
 
 /**
@@ -339,6 +344,7 @@ const sendAskingQuestionsToEmployees = (job, cb) => {
     });
   }
   job.done();
+  cb();
 };
 
 
@@ -397,6 +403,7 @@ const sendENPSToEmployees = (job, cb) => {
     });
   });
   job.done();
+  cb();
 };
 
 

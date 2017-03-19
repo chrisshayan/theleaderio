@@ -126,8 +126,7 @@ Meteor.startup(function() {
     let attributes = {};
     if (Meteor.settings.public.env === "dev") {
       console.log(`dev environment`)
-      attributes = { priority: "normal", repeat: { schedule: later.parse.text("every 5 minutes") } }
-      // attributes = { priority: "normal", repeat: { schedule: later.parse.text(Meteor.settings.jobs.runTime.eNPS) } }
+      attributes = { priority: "normal", repeat: { schedule: later.parse.text("every 1 minute") } }
     } else {
       attributes = {
         priority: "normal",
@@ -137,6 +136,7 @@ Meteor.startup(function() {
     var data = { type };
     Jobs.create(type, attributes, data);
   }
+
   /*
   // migrate data for users
   if (Meteor.settings.migration) {
@@ -165,5 +165,7 @@ Meteor.startup(function() {
   AdminJobs.processJobs(type, sendFeedbackEmailToLeader);
   type = "statistic_for_leader";
   AdminJobs.processJobs(type, sendStatisticEmailToLeader);
+  type = "test";
+  AdminJobs.processJobs(type, (job, cb) => {console.log(`test run: ${new Date()}`);job.done();});
 
 });

@@ -92,6 +92,7 @@ export const sendFeedbackEmailToLeader = function (job, cb) {
       }
     });
     job.done();
+    cb();
   }
 }
 
@@ -392,6 +393,7 @@ export const sendStatisticEmailToLeader = function (job, cb) { // this is used f
     // add log for a digest into log collection
     addLogs({params: {name: logName, content: logContent}});
     job.done();
+    cb();
   }
 }
 
