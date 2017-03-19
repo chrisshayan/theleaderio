@@ -47,7 +47,7 @@ class FeedbackToEmployees extends Component {
 
 const withMeteor = () => {
   let
-    ready: false,
+    ready = false,
     page = parseInt(Session.get('FEEDBACK_TO_EMPLOYEES_PAGE'))
     ;
   if (_.isNaN(page)) page = 1;

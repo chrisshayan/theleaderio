@@ -50,6 +50,14 @@ function createJob(type, attributes, data) {
         job = new Job(AdminJobs, type, data);
         break;
       }
+      case "eNPS": {
+        job = new Job(AdminJobs, type, data);
+        break;
+      }
+      case "test": {
+        job = new Job(AdminJobs, type, data);
+        break;
+      }
       default: {
         return `Unknown job type: ${type}`
       }

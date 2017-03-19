@@ -119,3 +119,25 @@ export const enable = ({userId, mailgunId, email, reason, date}) => {
     return result;
   }
 };
+
+/**
+ * Function get all active employees of an organization
+ * @param leaderId
+ * @param organizationId
+ * @return {Array}
+ */
+export const getAllActiveEmployeesOfOrganization = ({leaderId, organizationId}) => {
+  const
+    selector = {leaderId, organizationId, status: STATUS_ACTIVE},
+    modifier = {fields: {_id: true}},
+    employees = Employees.find(selector, modifier).fetch()
+  ;
+  let ActiveEmployees = [];
+
+  employees.map(employee => {
+    const {_id} = employee;
+    ActiveEmployees.push(_id);
+  });
+
+  return ActiveEmployees;
+};

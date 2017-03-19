@@ -48,4 +48,7 @@ import '/imports/api/alias/register.server';
 import '/imports/api/questions/register.server';
 // monkey learn
 import '/imports/api/monkey/register.server';
-
+// eNPS
+import '/imports/api/enps/register.server';
+// graphs
+import '/imports/api/graphs/register.server';

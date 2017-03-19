@@ -186,14 +186,14 @@
                                                         broadcasted to all others.
                                                     </td>
                                                 </tr>
-                                                <tr>
-                                                    {{#each questions.askQuestionsUrl}}
+                                                {{#each questions.askQuestionsUrl}}
+                                                    <tr>
                                                         <td style="padding: 0 0 5px;">
                                                             <strong>{{orgName}}</strong>:
                                                             <a href="{{url}}">{{url}}</a>
                                                         </td>
-                                                    {{/each}}
-                                                </tr>
+                                                    </tr>
+                                                {{/each}}
                                             {{/if}}
                                         </table>
                                     </td>

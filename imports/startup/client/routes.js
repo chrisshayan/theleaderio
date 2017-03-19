@@ -59,6 +59,8 @@ import AskQuestions from '/imports/ui/containers/questions/AskQuestions';
 import Questions from '/imports/ui/containers/questions/Questions';
 import ViewQuestions from '/imports/ui/containers/questions/ViewQuestions';
 
+import GetENPSScore from '/imports/ui/containers/enps/GetENPSScore';
+
 // functions
 import {isAdmin} from '/imports/utils/index';
 import * as Notifications from '/imports/api/notifications/functions';
@@ -773,6 +775,38 @@ appRoutes.route('/questions', {
     mount(MainLayout, {
       content() {
         return <Questions />;
+      }
+    });
+  }
+});
+
+const eNPSRoutes = FlowRouter.group({
+  prefix: '/enps'
+});
+/**
+ * Route for getting score
+ */
+eNPSRoutes.route('/get/:organizationId/:employeeId', {
+  name: 'enps.get',
+  action(params, queryParams) {
+    const
+      alias = getSubdomain(),
+      {organizationId, employeeId} = params,
+      {id: eNPSId, score} = queryParams
+      ;
+    mount(MainLayoutFull, {
+      showSignIn: false,
+      showDashboard: false,
+      content() {
+        return (
+          <GetENPSScore
+            alias={alias}
+            organizationId={organizationId}
+            employeeId={employeeId}
+            eNPSId={eNPSId}
+            score={score}
+          />
+        );
       }
     });
   }
