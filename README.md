@@ -30,6 +30,7 @@ cd deployment
 mpm-client init theleaderio
 cd theleaderio
 cp -p mpm.prod.json mpm.json
+**Change the version in mpm.json to the new version**
 mpm-client build
 mpm-client deploy
 ```
