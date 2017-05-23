@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import moment from 'moment-timezone';
 import {METRICS_UI_INFO} from '/imports/api/scheduler';
+import _ from 'lodash';
 
 const withData = (params) => {
   return {

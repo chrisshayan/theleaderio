@@ -1,6 +1,7 @@
 import {Meteor} from 'meteor/meteor';
 import React, {Component} from 'react';
 import {setPageHeading, resetPageHeading} from '/imports/store/modules/pageHeading';
+import {FlowRouter} from 'meteor/kadira:flow-router';
 
 // components
 import Tabs from '/imports/ui/components/Tabs';

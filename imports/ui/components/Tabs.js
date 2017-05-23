@@ -86,7 +86,7 @@ class Tabs extends Component {
 			  </ul>
 			  <div className="tab-content">
 			    <div className="tab-pane active">
-			      <div className="panel-body">
+			      <div className="panel-body gray-bg">
 			      	{ content }
 			      </div>
 			    </div>

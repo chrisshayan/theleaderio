@@ -2,10 +2,12 @@ import React, {Component} from 'react';
 
 export default class EmptyBox extends Component {
   render() {
-    const styles = {
+    const
+      {icon, message, height = '300px'} = this.props,
+      styles = {
         container: {
           width: '100%',
-          height: '300px',
+          height: height,
           border: '2px dashed #ddd',
           borderRadius: '6px',
           textAlign: 'center',
@@ -19,8 +21,7 @@ export default class EmptyBox extends Component {
           fontSize: 40,
           color: '#ddd'
         }
-      },
-      {icon, message} = this.props
+      }
       ;
     return (
       <div className="form-control" style={styles.container}>

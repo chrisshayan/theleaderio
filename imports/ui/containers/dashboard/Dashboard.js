@@ -2,6 +2,7 @@ import {Meteor} from 'meteor/meteor';
 import React, {Component} from 'react';
 import {createContainer} from 'meteor/react-meteor-data';
 import {FlowRouter} from 'meteor/kadira:flow-router';
+import _ from 'lodash';
 
 // methods
 import {getPresentOrganizations} from '/imports/api/organizations/methods';
@@ -100,7 +101,11 @@ export default class Dashboard extends Component {
       const tab = {
         key: org._id,
         title: org.name,
-        component: <DashboardOrganizationContainer organizationId={org._id}/>
+        component:
+          <DashboardOrganizationContainer
+            organizationId={org._id}
+            haveCalendar={true}
+        />
       };
       // allow maximum MAX_TABS tabs only
       if (tabs.length < MAX_TABS) {

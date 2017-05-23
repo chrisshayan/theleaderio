@@ -23,14 +23,6 @@ export const send = new ValidatedMethod({
     if (!this.isSimulation) {
       let
         options = {}
-        // logName = "sendEmail",
-        // logContent = {
-        //   subject: "",
-        //   from: "",
-        //   to: "",
-        //   template,
-        //   data
-        // }
         ;
 
       // get options base on template
@@ -59,6 +51,10 @@ export const send = new ValidatedMethod({
         }
         case 'thankyou': {
           options = EmailFunctions.getSurveyEmailOptions({template, data});
+          break;
+        }
+        case 'thankYou': {
+          options = EmailFunctions.getThankYouEmailOptions({template, data});
           break;
         }
         case 'forgot_alias': {
@@ -161,6 +157,18 @@ export const send = new ValidatedMethod({
           options = EmailFunctions.getReferralEmailOptions({template, data});
           break;
         }
+        case 'questions': {
+          options = EmailFunctions.getQuestionsEmailOptions({template, data});
+          break;
+        }
+        case 'inform_answer': {
+          options = EmailFunctions.getInformAnswerEmailOptions({template, data});
+          break;
+        }
+        case 'eNPS': {
+          options = EmailFunctions.getENPSEmailOptions({template, data});
+          break;
+        }
         default: {
           throw new Meteor.Error(`Unknown template: ${template}`);
         }
@@ -168,18 +176,10 @@ export const send = new ValidatedMethod({
 
       // send email
       return Meteor.defer(() => {
-        // console.log(options);
-        // Email.send(options);
+        // const {from, to, subject, tag, userVariables} = options;
+        // console.log({from, to, subject, tag, userVariables});
+
         EmailFunctions.sendMail({options});
-        // console.log(sendMailResult);
-        // add log for a digest into log collection
-        // logContent = {
-        //   ...logContent,
-        //   subject: options.subject,
-        //   from: options.from,
-        //   to: options.to
-        // };
-        // addLogs({params: {name: logName, content: logContent}});
       });
     }
   }

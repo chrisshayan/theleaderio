@@ -44,4 +44,11 @@ import '/imports/api/articles/register.server';
 import '/imports/api/referrals/register.server';
 // alias
 import '/imports/api/alias/register.server';
-
+// questions
+import '/imports/api/questions/register.server';
+// monkey learn
+import '/imports/api/monkey/register.server';
+// eNPS
+import '/imports/api/enps/register.server';
+// graphs
+import '/imports/api/graphs/register.server';

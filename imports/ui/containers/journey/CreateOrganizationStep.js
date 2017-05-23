@@ -36,7 +36,6 @@ export class CreateOrganizationStep extends Component {
     // check if queryParams have orgId (user back to this step from other step)
     if (!_.isEmpty(orgId)) {
       // update org
-      console.log(`update organization`);
       const
         {name, jobTitle} = this.state.org,
         _id = orgId
@@ -60,7 +59,6 @@ export class CreateOrganizationStep extends Component {
       });
     } else {
       // create org
-      console.log(`create organization`);
       create.call(org, (error, orgId) => {
         if (!error) {
           FlowRouter.go("app.journey", {step: "employees"}, {orgId});
@@ -75,7 +73,6 @@ export class CreateOrganizationStep extends Component {
 
   _onSkip() {
     // create default org with startDate is today and isPresent: true.
-    console.log('skip');
     const {name, jobTitle, startTime, endTime, imageUrl, isPresent} = this.state.org,
       doc = {
         name: "unnamed",
@@ -104,7 +101,6 @@ export class CreateOrganizationStep extends Component {
       {orgId, org, errors} = this.state,
       disabled = !_.isEmpty(org.name) ? false : true
       ;
-    console.log({org, disabled});
     return (
       <form className="form-horizontal" onSubmit={this._onSubmit.bind(this)}>
         <FormInputHorizontal

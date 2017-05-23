@@ -7,6 +7,8 @@ import {Footer} from '/imports/ui/common/Footer';
 export class MainLayoutFull extends Component {
   render() {
     const {
+      showSignIn = true,
+      showDashboard = true,
       content = () => null,
       bgClass = 'white-bg'
     } = this.props;
@@ -15,7 +17,10 @@ export class MainLayoutFull extends Component {
         <div id="wrapper">
           <div id="page-wrapper" className={bgClass}>
             <div className="row border-bottom white-bg">
-              <TopNavFull />
+              <TopNavFull
+                showSignIn={showSignIn}
+                showDashboard={showDashboard}
+              />
             </div>
 
             {content()}

@@ -28,7 +28,7 @@ class FeedbackToEmployees extends Component {
       <div className="row">
         {!loaded && (<Spinner />)}
         {loaded && !!items.length && (
-          <div className="col-md-8">
+          <div className="">
             <FeedbackList items={items}/>
             {/* Show loading*/}
             {!ready && page > 1 && (
@@ -47,15 +47,15 @@ class FeedbackToEmployees extends Component {
 
 const withMeteor = () => {
   let
-    ready: false,
+    ready = false,
     page = parseInt(Session.get('FEEDBACK_TO_EMPLOYEES_PAGE'))
     ;
   if (_.isNaN(page)) page = 1;
   let
-    sub = Meteor.subscribe('feedbacks', page),
+    sub = Meteor.subscribe('feedbackToEmployee', page),
     subEmployees = Meteor.subscribe("employees"),
     subOrg = Meteor.subscribe("organizations"),
-    items = {},
+    items = [],
     employee = {},
     org = {}
     ;
@@ -66,8 +66,8 @@ const withMeteor = () => {
   };
 
   ready = sub.ready() & subEmployees.ready() & subOrg.ready();
-  let cursor = Feedbacks.find({type: "LEADER_TO_EMPLOYEE"}, option);
-  let total = Feedbacks.find({type: "LEADER_TO_EMPLOYEE"}).count();
+  let cursor = Feedbacks.find({}, option);
+  let total = Feedbacks.find({}).count();
 
   if (total > 0) {
     items = cursor.fetch();

@@ -55,6 +55,12 @@ import ReferralsContainer from '/imports/ui/containers/referrals/ReferralsContai
 
 import {GettingStartedJourney} from '/imports/ui/containers/journey/GettingStartedJourney';
 
+import AskQuestions from '/imports/ui/containers/questions/AskQuestions';
+import Questions from '/imports/ui/containers/questions/Questions';
+import ViewQuestions from '/imports/ui/containers/questions/ViewQuestions';
+
+import GetENPSScore from '/imports/ui/containers/enps/GetENPSScore';
+
 // functions
 import {isAdmin} from '/imports/utils/index';
 import * as Notifications from '/imports/api/notifications/functions';
@@ -284,74 +290,6 @@ newSignUpRoutes.route('/:action', {
   }
 });
 
-/**
- * @summary lists of signup routes
- * @route /signup/:action
- * @action user
- * @action alias
- */
-// export const signUpRoutes = FlowRouter.group({
-//   name: 'signupRouteGroup',
-//   prefix: '/signup'
-// });
-// // handling /signup root group
-// signUpRoutes.route('/:action', {
-//   name: 'signUpPage',
-//   action(params, queryParams) {
-//     const {action} = params;
-//     switch (action) {
-//       // register user
-//       case 'user': {
-//         mount(SignUpUser);
-//         break;
-//       }
-//       // register alias
-//       case 'alias': {
-//         if (!Meteor.loggingIn() && !Meteor.userId()) {
-//           const
-//             closeButton = false,
-//             title = "Signup user",
-//             message = "Please enter your basic informations first";
-//           Notifications.warning({closeButton, title, message});
-//           FlowRouter.go('signUpPage', {action: 'user'});
-//         } else {
-//           mount(SignUpAlias);
-//         }
-//         break;
-//       }
-//       // email confirmation
-//       case 'confirm': {
-//         mount(ConfirmEmail);
-//         break;
-//       }
-//       // create alias for migrated user
-//       case 'migration': {
-//         mount(ResetAlias);
-//         break;
-//       }
-//       // create alias for referral user
-//       case 'referral': {
-//         const
-//           {response} = queryParams;
-//         switch (response) {
-//           case 'confirm': {
-//             mount(ConfirmReferral);
-//             break;
-//           }
-//           case 'cancel': {
-//             const {_id} = queryParams;
-//             mount(CancelReferral, {_id});
-//             break;
-//           }
-//         }
-//         break;
-//       }
-//       default: {
-//         throw new Meteor.Error(`Unknow action: ${action}`);
-//       }
-//     }
-//   }
-// });
 
 /**
  * @summary lists of signin routes
@@ -746,7 +684,7 @@ const viewArticleRoute = FlowRouter.route('/articles/view/:seoUrl', {
   name: 'articles.view',
   action(params, queryParams) {
     // mount(ViewArticle, {_id: queryParams._id});
-    mount(BlankLayout, {
+    mount(MainLayoutFull, {
       content() {
         return <ViewArticle _id={queryParams._id}/>
       }
@@ -777,8 +715,98 @@ appRoutes.route('/journey/start/:step', {
   action(params) {
     const {step} = params;
     mount(MainLayoutFull, {
+      showSignIn: false,
+      showDashboard: false,
       content() {
         return <GettingStartedJourney step={step} />;
+      }
+    });
+  }
+});
+
+
+
+const questionsRoutes = FlowRouter.group({
+  prefix: '/questions'
+});
+
+/**
+ * Route for anonymous question to leader
+ */
+questionsRoutes.route('/ask/:randomCode', {
+  name: 'questions.ask',
+  action(params, queryParams) {
+    const {randomCode} = params;
+    mount(MainLayoutFull, {
+      showSignIn: false,
+      showDashboard: false,
+      content() {
+        return <AskQuestions randomCode={randomCode}/>
+      }
+    });
+  }
+});
+
+/**
+ * Route for viewing questions of an organization
+ */
+questionsRoutes.route('/view/:organizationId', {
+  name: 'questions.view',
+  action(params, queryParams) {
+    const {organizationId} = params;
+    mount(MainLayoutFull, {
+      showSignIn: false,
+      showDashboard: false,
+      content() {
+        return <ViewQuestions organizationId={organizationId}/>
+      }
+    });
+  }
+});
+
+
+/**
+ * Route for list all questions and answers
+ */
+appRoutes.route('/questions', {
+  name: "app.questions",
+  action(params) {
+    // const {action} = params;
+    mount(MainLayout, {
+      content() {
+        return <Questions />;
+      }
+    });
+  }
+});
+
+const eNPSRoutes = FlowRouter.group({
+  prefix: '/enps'
+});
+/**
+ * Route for getting score
+ */
+eNPSRoutes.route('/get/:organizationId/:employeeId', {
+  name: 'enps.get',
+  action(params, queryParams) {
+    const
+      alias = getSubdomain(),
+      {organizationId, employeeId} = params,
+      {id: eNPSId, score} = queryParams
+      ;
+    mount(MainLayoutFull, {
+      showSignIn: false,
+      showDashboard: false,
+      content() {
+        return (
+          <GetENPSScore
+            alias={alias}
+            organizationId={organizationId}
+            employeeId={employeeId}
+            eNPSId={eNPSId}
+            score={score}
+          />
+        );
       }
     });
   }

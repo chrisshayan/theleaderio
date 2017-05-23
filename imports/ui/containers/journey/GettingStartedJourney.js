@@ -4,7 +4,7 @@ import {FlowRouter} from 'meteor/kadira:flow-router';
 // component
 import {CreateOrganizationStep} from './CreateOrganizationStep';
 import {AddEmployeesStepContainer} from './AddEmployeesStep';
-import {FinalStep} from './FinalStep';
+import FinalStep from './FinalStep';
 
 export class GettingStartedJourney extends Component {
   render() {

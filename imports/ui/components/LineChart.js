@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 
+import Chart from '/client/plugins/chartJs/Chart.min';
+
 export default class LineChart extends Component {
   constructor() {
     super();
@@ -70,7 +72,7 @@ export default class LineChart extends Component {
 
     return (
       <div>
-        <canvas id={lineChartId} height="140"></canvas>
+        <canvas id={lineChartId} height="175"></canvas>
       </div>
     );
   }

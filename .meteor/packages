@@ -57,8 +57,9 @@ okgrow:analytics
 alanning:roles
 summernote:summernote
 tunifight:loggedin-mixin
-accounts-google
-service-configuration
-accounts-ui
+accounts-google@1.0.11
+service-configuration@1.0.11
+accounts-ui@1.1.9
 gadicc:blaze-react-component
 dispatch:login-token
+erasaur:meteor-lodash

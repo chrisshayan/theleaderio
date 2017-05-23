@@ -7,8 +7,10 @@ import {Roles} from 'meteor/alanning:roles';
 import {DailyJobs, QueueJobs, AdminJobs} from './collections';
 
 // collections
+import {Accounts} from 'meteor/accounts-base';
 import {Organizations} from '/imports/api/organizations/index';
-import {Employees} from '/imports/api/employees/index';
+import {Employees, STATUS_ACTIVE} from '/imports/api/employees/index';
+import {Profiles} from '/imports/api/profiles/index';
 
 // methods
 import {enqueue} from '/imports/api/message_queue/methods';
@@ -18,11 +20,15 @@ import {getLocalDate} from '/imports/api/time/functions';
 import {setStatus as setSendingPlanStatus} from '/imports/api/sending_plans/methods';
 import {measureMonthlyMetricScore} from '/imports/api/measures/methods';
 import {add as addMessages} from '/imports/api/user_messages/methods';
+import {create as createENPS} from '/imports/api/enps/functions';
 
 // functions
 import {migrate} from '/imports/api/migration/functions';
 import {getRandomEmployee} from '/imports/api/organizations/functions';
 import {add as addLogs} from '/imports/api/logs/functions';
+import {getAllActiveUsers} from '/imports/api/users/functions';
+import {getAllPresentOrganizationOfLeader} from '/imports/api/organizations/functions';
+import {getAllActiveEmployeesOfOrganization} from '/imports/api/employees/functions';
 
 // logger
 import {Logger} from '/imports/api/logger/index';
@@ -34,8 +40,8 @@ export const LOG_LEVEL = {
   WARNING: "warning",
   CRITICAL: "danger"
 };
-import {STATUS_ACTIVE} from '/imports/api/employees/index';
 import {STATUS, TYPE} from '/imports/api/user_messages/index';
+import {USER_ROLES} from '/imports/api/users/index';
 
 /**
  * Enqueue Metrics Email Survey
@@ -235,9 +241,11 @@ const sendSurveys = function (job, cb) {
         }
       });
     }
+    cb();
   } catch (error) {
     job.log(error, {level: LOG_LEVEL.CRITICAL});
     job.fail();
+    cb();
   }
 };
 
@@ -258,12 +266,14 @@ const measureMetrics = (job, cb) => {
         job.log(jobMessage, {level: LOG_LEVEL.WARNING});
         job.done();
       }
+      cb();
     } else {
       job.log(error.reason, {level: LOG_LEVEL.CRITICAL});
       job.fail();
+      cb();
     }
   });
-}
+};
 
 /**
  * Function migrate data for users from old version to the new version of theleader.io
@@ -274,7 +284,128 @@ const migrateUsers = (job, cb) => {
   const result = migrate();
   job.log(`migrated ${result} users`, {level: LOG_LEVEL.INFO});
   job.done();
+  cb();
 };
+
+/**
+ * Function send requests about asking questions to employees
+ * @param job
+ * @param cb
+ */
+// export const sendAskingQuestionsToEmployees = (job, cb) => {
+const sendAskingQuestionsToEmployees = (job, cb) => {
+  const
+    users = Accounts.users.find().fetch()
+    ;
+  let
+    name = "sendAskingQuestionsToEmployees"
+    ;
+
+  if (!_.isEmpty(users)) {
+    users.map(user => {
+      const
+        {_id: leaderId} = user,
+        profile = Profiles.findOne({userId: leaderId}),
+        leaderName = `${profile.firstName} ${profile.lastName}` || "leader"
+        ;
+      if (!Roles.userIsInRole(leaderId, USER_ROLES.INACTIVE)) {
+        const orgs = Organizations.find({leaderId, isPresent: true}).fetch();
+        if (!_.isEmpty(orgs)) {
+          orgs.map(org => {
+            const
+              {_id: organizationId} = org,
+              employees = Employees.find({leaderId, organizationId, status: STATUS_ACTIVE}).fetch()
+              ;
+            if (!_.isEmpty(employees)) {
+              employees.map(employee => {
+                const {_id: employeeId, email, firstName: employeeName} = employee;
+                message = `send request for question to employee`;
+                const template = 'questions';
+                const data = {
+                  leaderId,
+                  leaderName,
+                  organizationId,
+                  employeeId,
+                  employeeName,
+                  email
+                };
+                EmailActions.send.call({template, data}, (error, result) => {
+                  if (_.isEmpty(error)) {
+                    Logger.info({name, message: {detail: data}});
+                  } else {
+                    Logger.error({name, message: {detail: error}});
+                  }
+                });
+              });
+            }
+          });
+        }
+      }
+    });
+  }
+  job.done();
+  cb();
+};
+
+
+// export const sendENPSToEmployees = (job, cb) => {
+const sendENPSToEmployees = (job, cb) => {
+  // get all active leaders
+  const
+    ActiveLeaders = getAllActiveUsers()
+    // ActiveLeaders = ["3zL7iR7rqtvQrmXJm"]
+    ;
+
+  ActiveLeaders.map(leaderId => {
+    const
+      // get all present organization of a leader
+      PresentOrgs = getAllPresentOrganizationOfLeader({leaderId}),
+      name = 'sendENPSToEmployees'
+      ;
+
+    PresentOrgs.map(organizationId => {
+      // get all active employees of a leader in 1 organization
+      const ActiveEmployees = getAllActiveEmployeesOfOrganization({leaderId, organizationId});
+
+      // create eNPS for leader
+      const eNPSId = createENPS({leaderId, organizationId, interval: "EVERY_MONTH"});
+
+      if (!_.isEmpty(eNPSId)) {
+        ActiveEmployees.map(_id => {
+          const
+            employee = Employees.findOne({_id})
+            ;
+
+          if (!_.isEmpty(employee)) {
+            // get data to send email
+            const
+              {_id: employeeId} = employee,
+              template = 'eNPS',
+              data = {
+                leaderId,
+                organizationId,
+                employeeId,
+                eNPSId
+              };
+            EmailActions.send.call({template, data}, (error, result) => {
+              if (_.isEmpty(error)) {
+                Logger.info({name, message: {detail: data}});
+              } else {
+                Logger.error({name, message: {detail: error}});
+              }
+            });
+          }
+        });
+      } else {
+        // log error
+        Logger.error({name, message: {detail: `Can't create eNPS for leader: ${leaderId} in org: ${organizationId}`}});
+      }
+    });
+  });
+  job.done();
+  cb();
+};
+
 
 // Start Job
 function startJob(type) {
@@ -296,6 +427,16 @@ function startJob(type) {
     // queue jobs
     case "migration": {
       QueueJobs.processJobs(type, migrateUsers);
+      break;
+    }
+    // admin jobs
+    case "ask_questions": {
+      AdminJobs.processJobs(type, sendAskingQuestionsToEmployees);
+      break;
+    }
+    // admin jobs
+    case "eNPS": {
+      AdminJobs.processJobs(type, sendENPSToEmployees);
       break;
     }
     default: {

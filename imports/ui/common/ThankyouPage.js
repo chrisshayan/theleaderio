@@ -9,13 +9,16 @@ export default class ThankyouPage extends Component {
   }
 
   render() {
+    const {
+      description = 'We could become a good leader together. If you need go further with us.'
+    } = this.props;
     return (
       <div>
         <NoticeForm
           code='TL+'
           message = 'Thank you'
-          description = 'We could become a good leader together. If you need go further with us.'
-          buttonLabel = 'Let us know'
+          description = {description}
+          buttonLabel = 'More about us.'
         />
       </div>
     );

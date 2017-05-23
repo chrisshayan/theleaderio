@@ -16,7 +16,7 @@ export default class ProfileMetricsBox extends Component {
 
   render() {
     const
-      {isPresent, label, preferences, data, haveCalendar = false} = this.props,
+      {isPresent, label, preferences, data} = this.props,
       status = isPresent ? "current organization" : "latest organization"
       ;
 
@@ -108,69 +108,32 @@ export default class ProfileMetricsBox extends Component {
         metricsContent.push(group3);
       }
 
-      if (haveCalendar) {
-        return (
-          <div className="ibox float-e-margins" style={{marginBottom: 18}}>
-            <div className="ibox-title">
-              <h5>{label}</h5>
-              <h5 className="pull-right">
-                Schedule for sending survey
-              </h5>
-            </div>
-              <div className="col-md-6" style={{paddingRight: 0, borderRight: 1}}>
-                <div className="row">
-                  <IboxContentChartWithChosen
-                    label=""
-                    data={chartContent}
-                    value={chartContent.overall}
-                    status={status}
-                  />
-                </div>
-                {metricsContent.map((content, key) => (
-                  <div
-                    className="row"
-                    key={key}
-                  >
-                    <IboxContentInline
-                      ibcContent={content}
-                      classGrid="col-xs-3"
-                    />
-                  </div>
-                ))}
-              </div>
-              <div className="col-md-6" style={{paddingLeft: 0}}>
-                <div className="ibox-content">
-                  <Calendar/>
-                </div>
-              </div>
-            </div>
-        );
-      } else {
-        return (
-          <div className="ibox float-e-margins" style={{marginBottom: 18}}>
-            <div className="ibox-title">
-              <span className="label label-info pull-right">{status}</span>
-              <h5>{label}</h5>
-            </div>
-            <IboxContentChartWithChosen
-              label=""
-              data={chartContent}
-              value={chartContent.overall}
-            />
-            {metricsContent.map((content, key) => (
-              <IboxContentInline
-                key={key}
-                ibcContent={content}
-                classGrid="col-xs-3"
-              />
-            ))}
+      return (
+        <div className="ibox float-e-margins" style={{marginBottom: 18}}>
+          <div className="ibox-title">
+            <span className="label label-info pull-right">{status}</span>
+            <h5>{label}</h5>
           </div>
-        );
-      }
+          <IboxContentChartWithChosen
+            label=""
+            data={chartContent}
+            value={chartContent.overall}
+          />
+          {/*{metricsContent.map((content, key) => (*/}
+            {/*<IboxContentInline*/}
+              {/*key={key}*/}
+              {/*ibcContent={content}*/}
+              {/*classGrid="col-xs-3"*/}
+            {/*/>*/}
+          {/*))*/}
+        </div>
+      );
     } else {
       return (
         <div>
-          <EmptyBox />
+          <EmptyBox
+
+          />
         </div>
       );
     }
