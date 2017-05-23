@@ -16,6 +16,23 @@ This README would normally document whatever steps are necessary to get your app
 * Database configuration
 * How to run tests
 * Deployment instructions
+```
+cd ~
+git clone https://github.com/chrisshayan/theleaderio.git theleaderio
+cd theleaderio
+npm install
+
+cd ..
+mkdir deployment
+npm install -g mpm-client
+cd deployment
+
+mpm-client init theleaderio
+cd theleaderio
+cp -p mpm.prod.json mpm.json
+mpm-client build
+mpm-client deploy
+```
 
 ### Contribution guidelines ###
 
