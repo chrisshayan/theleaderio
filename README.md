@@ -11,6 +11,25 @@ This README would normally document whatever steps are necessary to get your app
 ### How do I get set up? ###
 
 * Summary of set up
+
+**Deployment:**
+```
+cd ~
+git clone https://github.com/chrisshayan/theleaderio.git theleaderio
+cd theleaderio
+npm install
+
+cd ..
+mkdir deployment
+npm install -g mpm-client
+cd deployment
+
+mpm-client init theleaderio
+cd theleaderio
+cp -p mpm.prod.json mpm.json
+mpm-client build
+mpm-client deploy
+```
 * Configuration
 * Dependencies
 * Database configuration

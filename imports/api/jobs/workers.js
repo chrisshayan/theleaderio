@@ -74,6 +74,7 @@ const enqueueSurveys = function (job, cb) {
       jobMessage = `No request for today: ${date}`;
       job.log(jobMessage, {level: LOG_LEVEL.INFO});
       job.done();
+      cb();
     } else {
       sendingPlansList.map(sendingPlan => {
         const
@@ -200,13 +201,12 @@ const enqueueSurveys = function (job, cb) {
         addLogs({params: {name: logName, content: logContent}});
       });
       job.done();
+      cb();
     }
   } catch (error) {
     job.fail("" + error);
+    cb();
   }
-  // Be sure to invoke the callback
-  // when work on this job has finished
-  cb();
 };
 
 /**
@@ -222,6 +222,7 @@ const sendSurveys = function (job, cb) {
       jobMessage = `No data to send Survey Email for job: ${job}`;
       job.log(jobMessage, {level: LOG_LEVEL.WARNING});
       job.done();
+      cb();
     } else {
       const template = 'survey';
       const data = {
@@ -234,14 +235,15 @@ const sendSurveys = function (job, cb) {
       EmailActions.send.call({template, data}, (error) => {
         if (_.isEmpty(error)) {
           job.done();
+          cb();
         } else {
           jobMessage = error.reason;
           job.log(jobMessage, {level: LOG_LEVEL.WARNING});
           job.done();
+          cb();
         }
       });
     }
-    cb();
   } catch (error) {
     job.log(error, {level: LOG_LEVEL.CRITICAL});
     job.fail();
@@ -261,12 +263,13 @@ const measureMetrics = (job, cb) => {
         jobMessage = `measured metrics for ${measure.noOfLeader} leaders and ${measure.noOfOrg} organizations done`;
         job.log(jobMessage, {level: LOG_LEVEL.INFO});
         job.done();
+        cb();
       } else {
         jobMessage = `No data to measure for job: ${job}`;
         job.log(jobMessage, {level: LOG_LEVEL.WARNING});
         job.done();
+        cb();
       }
-      cb();
     } else {
       job.log(error.reason, {level: LOG_LEVEL.CRITICAL});
       job.fail();
