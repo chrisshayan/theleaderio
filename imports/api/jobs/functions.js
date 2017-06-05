@@ -32,6 +32,7 @@ export const sendFeedbackEmailToLeader = function(job, cb) {
   if(_.isEmpty(activeOrgList)) {
     job.log({name, message: "No active organization"});
     job.done();
+    cb();
   } else {
     activeOrgList.map(org => {
       const
@@ -65,5 +66,6 @@ export const sendFeedbackEmailToLeader = function(job, cb) {
       }
     });
     job.done();
+    cb();
   }
 };
