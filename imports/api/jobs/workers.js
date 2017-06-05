@@ -259,6 +259,7 @@ const sendSurveys = function (job, cb) {
 const measureMetrics = (job, cb) => {
   measureMonthlyMetricScore.call({params: {}}, (error, measure) => {
     if (!error) {
+      let jobMessage = '';
       if (!_.isEmpty(measure)) {
         jobMessage = `measured metrics for ${measure.noOfLeader} leaders and ${measure.noOfOrg} organizations done`;
         job.log(jobMessage, {level: LOG_LEVEL.INFO});
