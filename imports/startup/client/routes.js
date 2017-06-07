@@ -23,6 +23,7 @@ import EditArticle from '/imports/ui/containers/articles/EditArticle';
 import ViewArticle from '/imports/ui/containers/articles/ViewArticleContainer';
 
 import LandingPage from '/imports/ui/containers/LandingPage';
+import HomePage from '/imports/ui/containers/homepage/HomePage';
 
 import SignUpUser from '/imports/ui/containers/signup/SignUpUser';
 import SignUpAlias from '/imports/ui/containers/signup/SignUpAlias';
@@ -159,7 +160,8 @@ const homeRoute = FlowRouter.route('/', {
     const alias = Session.get('alias');
     if (alias) {
       if(alias === "www") {
-        mount(LandingPage);
+        // mount(LandingPage);
+        mount(HomePage);
       } else {
         mount(MainLayoutFull, {
           bgClass: 'gray-bg',
@@ -169,7 +171,8 @@ const homeRoute = FlowRouter.route('/', {
         });
       }
     } else {
-      mount(LandingPage);
+      mount(HomePage);
+      // mount(LandingPage);
     }
   }
 });

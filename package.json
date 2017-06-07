@@ -12,6 +12,7 @@
     "bluebird": "^3.4.1",
     "body-parser": "^1.15.2",
     "capitalize": "^1.0.0",
+    "classnames": "^2.2.5",
     "clipboard": "^1.5.16",
     "email-template-builder": "^1.0.0",
     "intercom-client": "^2.8.3",
