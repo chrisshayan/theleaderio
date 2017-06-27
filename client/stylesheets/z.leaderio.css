@@ -728,3 +728,45 @@ New layout
     margin-left: 10px;
     margin-right: 10px;
 }
+
+.brand {
+    color: #FFF !important;
+}
+
+.brand:hover {
+    color: #1ab394 !important;
+}
+
+
+.clients {
+    text-align: center;
+    background: #F9F9FA;
+}
+.customers .clients {
+    background: transparent;
+}
+.clients p {
+    font-size: 18px;
+    margin-bottom: 2em;
+}
+.clients ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    font-size: 0em;
+}
+.clients ul li {
+    display: inline-block;
+    *display: inline;
+    zoom: 1;
+    margin: 20px 0;
+    width: 25%;
+}
+.clients-5 ul li {
+    width: 20%;
+}
+.clients ul li img {
+    width: auto;
+    height: 50px;
+}

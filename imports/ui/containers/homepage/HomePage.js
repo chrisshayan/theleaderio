@@ -1,14 +1,21 @@
 import React, {Component} from 'react';
+import {Session} from 'meteor/session';
+import {FlowRouter} from 'meteor/kadira:flow-router';
 
 import {DOMAIN} from '/imports/startup/client/routes';
+import * as Notifications from '/imports/api/notifications/functions';
 
 class HomePage extends Component {
   constructor() {
     super();
 
     this.state = {
-      navChange: false
+      navChange: false,
+      email: ""
     };
+
+    this._onEnterEmail = this._onEnterEmail.bind(this);
+    this._onGetStarted = this._onGetStarted.bind(this);
   }
 
   componentDidMount() {
@@ -36,14 +43,39 @@ class HomePage extends Component {
     return window.pageYOffset || document.documentElement.scrollTop;
   }
 
+  _onEnterEmail(e) {
+    this.setState({email: e.target.value});
+  }
+
+  _onGetStarted(e) {
+    e.preventDefault();
+    const {email} = this.state;
+    if (!_.isEmpty(email)) {
+      Session.set('email', email);
+      return FlowRouter.go('newSignUpSteps', {action: 'alias'});
+    }
+
+    Notifications.warning({
+      title: 'Get started',
+      message: "Email is empty!"
+    });
+  }
+
   render() {
+    // let navStyle = "navbar navbar-default navbar-fixed-top navbar-scroll";
     let navStyle = "navbar navbar-default navbar-fixed-top navbar-scroll";
     // if (this.state.navChange) {
     //   navStyle = `${navStyle} navbar-scroll`
     // }
-    const homeUrl = `http://${DOMAIN}${FlowRouter.path('homePage')}`;
+    const
+      homeUrl = `http://${DOMAIN}${FlowRouter.path('homePage')}`,
+      signUpUrl = FlowRouter.path('newSignUpSteps', {action: 'alias'}),
+      signInUrl = FlowRouter.path('SignInPage', {action: 'alias'}),
+      emailPlaceHolder = 'name@company.com';
+
     return (
       <div id="page-top" className="landing-page white-bg">
+        {/* Navbar */}
         <div className="navbar-wrapper">
           <nav ref="nav" className={navStyle} role="navigation">
             <div className="container">
@@ -54,33 +86,36 @@ class HomePage extends Component {
                   <span className="icon-bar"></span>
                   <span className="icon-bar"></span>
                 </button>
-                <a className="btn btn-lg btn-primary" href={homeUrl}
+                <a className="navbar-brand" href={homeUrl}
                    style={{marginTop: 15, paddingLeft: 10, paddingRight: 10}}
                 >
                   theLeader.io</a>
               </div>
               <div id="navbar" className="navbar-collapse collapse">
-                <ul className="nav navbar-nav navbar-left">
-                  <li>
-                    <a className="page-scroll" href="#">
-                      {'Features '}<i className="fa fa-caret-down"/>
-                    </a>
-                  </li>
-                  <li>
-                    <a className="page-scroll" href="#">
-                      {'Pricing'}
-                    </a>
-                  </li>
-                </ul>
+                {/*
+                 <ul className="nav navbar-nav navbar-left">
+                 <li>
+                 <a className="page-scroll" href="#">
+                 {'Features '}<i className="fa fa-caret-down"/>
+                 </a>
+                 </li>
+                 <li>
+                 <a className="page-scroll" href="#">
+                 {'Pricing'}
+                 </a>
+                 </li>
+                 </ul>
+                 */}
                 <ul className="nav navbar-nav navbar-right">
                   <li style={{marginRight: 10, marginLeft: 10}}>
-                    <a className="page-scroll" href={FlowRouter.path('SignInPage', {action: 'alias'})}>
+                    <a className="page-scroll" href={signInUrl}>
                       Sign In
                     </a>
                   </li>
                   <li style={{marginRight: 10, marginLeft: 10}}>
-                    <a className="navbar-brand" style={{borderTopWidth: 0}}
-                       href={FlowRouter.path('newSignUpSteps', {action: 'alias'})}
+                    <a className="btn btn-lg btn-primary brand"
+                       style={{borderTopWidth: 1, paddingTop: 10, paddingBottom: 10, marginTop: 15}}
+                       href={signUpUrl}
                     >Get Started</a>
                   </li>
                 </ul>
@@ -88,21 +123,27 @@ class HomePage extends Component {
             </div>
           </nav>
         </div>
+        {/* Carousel */}
         <div id="inSlider" className="carousel carousel-fade" data-ride="carousel">
           <div className="carousel-inner">
             <div className="container">
               <div className="carousel-caption blank">
-                <h1>Do you strive to be a great leader? <br/> Not sure how to improve?</h1>
-                <p>Get insight on how your team rates your leadership and how to improve.</p>
+                <h1>BRING OUT THE BEST IN YOUR PEOPLE</h1>
+                <p style={{textTransform: 'none', fontSize: 20}}
+                >Lightweight performance management – Anonymous Questions, pulse surveys, 1-on-1s, peer recognition
+                  and feedback in one simple weekly check-in.</p>
                 <div className="search-form">
                   <form>
                     <div className="input-group">
-                      <input type="email" placeholder="name@company" className="form-control input-lg"
-                             style={{width: 295}}
+                      <input type="email" placeholder={emailPlaceHolder} className="form-control input-lg"
+                             value={this.state.email}
+                             onChange={this._onEnterEmail}
+                             style={{width: 295, color: '#000'}}
                       />
                       <div className="input-group-btn pull-left" style={{marginLeft: 15}}>
                         <button className="btn btn-lg btn-primary " style={{height: 46}}
-                           href={FlowRouter.path('newSignUpSteps', {action: 'alias'})}>Get Started</button>
+                                onClick={this._onGetStarted}>Get Started
+                        </button>
                       </div>
                     </div>
                   </form>
@@ -112,94 +153,80 @@ class HomePage extends Component {
             <div className="header-back one"></div>
           </div>
         </div>
-
-        <section id="features" className="container services">
-          <div className="row">
-            <div className="col-sm-6">
-              <h2>SURVEY YOUR EMPLOYEES</h2>
-              <p>
-                Create your own questions or choose from a list of questions which are already in use by others in your
-                industry. Send simple, personalized surveys that get industry high response rates of 60%.</p>
-              <p><a className="navy-link" href="#" role="button">Details &raquo;</a></p>
+        <div className="clients clients-5">
+          <div className="container">
+            <div className="row">
+              <div className="col-md-12">
+                <ul>
+                  <li><img src="/img/landing/HubSpotlogo.png" alt=""/></li>
+                  <li><img src="/img/landing/citrix-logo-black.png" alt=""/></li>
+                  <li><img src="/img/landing/logo-dark-1.png" alt=""/></li>
+                  <li><img src="/img/landing/Justfab_logo-1.png" alt=""/></li>
+                  <li><img src="/img/landing/shoretel-logo-web-1.png" alt=""/></li>
+                </ul>
+              </div>
             </div>
-            <div className="col-sm-6">
-              <h2>MEASURE AND TRACK EMPLOYEE SATISFACTION</h2>
-              <p>
-                Keep track of employee satisfaction by monitoring changes from one survey period to the next. See if
-                what you are doing is improving satisfaction or having a negative impact.</p>
-              <p><a className="navy-link" href="#" role="button">Details &raquo;</a></p>
+          </div>
+        </div>
+
+        {/* Introduce about theLeaderio */}
+        <section id="features" className="container services">
+          <div className="row features-block" style={{height: 315}}>
+            <div className="col-md-6 col-xs-12 text-left wow fadeInLeft">
+              <embed width="420" height="315"
+                     src="https://www.youtube.com/embed/c4dj-MUf0X0"/>
+            </div>
+            <div className="col-md-6 col-xs-12 features-block wow fadeInRight">
+              <h1 style={{textTransform: 'none'}}>Performance Management For Lean Leadership</h1>
+              <ul style={{fontSize: 20, boxSizing: 'border-box', marginBottom: 10}}>
+                <li>Grow without losing your culture</li>
+                <li>Maximize employee performance</li>
+                <li>Stop employee turnover in its tracks</li>
+              </ul>
+              <a href={signUpUrl} className="btn btn-primary">Get Started Now</a>
             </div>
           </div>
         </section>
 
+        {/* Features */}
         <section className="container features">
-          <div className="row">
+          <div className="row" style={{marginBottom: 10}}>
             <div className="col-lg-12 text-center">
               <div className="navy-line"></div>
-              <h1>Analytics 3.0<br/> <span className="navy"> the era of data-enriched offerings</span></h1>
-              <p>New ways of deciding, managing, changing, innovating, improving and Leading.</p>
+              <h1><span className="navy">How theLeader.io engages your employees</span></h1>
+              <p></p>
             </div>
           </div>
           <div className="row">
-            <div className="col-md-3 text-center wow fadeInLeft">
+            <div className="col-md-4 text-center wow fadeInLeft">
               <div>
                 <i className="fa fa-envelope-o features-icon"></i>
-                <h2>Simple survey with Email</h2>
+                <h2>Simple Survey With Email</h2>
                 <p>
                   Employee just reply to a simple email for scoring leader.</p>
               </div>
-              <div className="m-t-lg">
+            </div>
+            <div className="col-md-4 text-center wow fadeInRight">
+              <div>
+                <i className="fa fa-comment features-icon"></i>
+                <h2>Ask Leader</h2>
+                <p>
+                  Communication between Leader and Employee is now faster and simpler</p>
+              </div>
+            </div>
+            <div className="col-md-4 text-center wow fadeInLeft">
+              <div>
                 <i className="fa fa-bar-chart features-icon"></i>
-                <h2>Benchmark Against Your Industry</h2>
+                <h2>Benchmark Your Leadership Progress</h2>
                 <p>
                   See how your leadership stacks up against others in your industry. Benchmark your performance so you
                   can continuously improve.</p>
               </div>
             </div>
-            <div className="col-md-6 text-center  wow zoomIn">
-              <img src="img/landing/perspective.png" alt="dashboard" className="img-responsive"/>
-            </div>
-            <div className="col-md-3 text-center wow fadeInRight">
-              <div>
-                <i className="fa fa-quote-left features-icon"></i>
-                <h2>Get Testimonials, Display and Share Them</h2>
-                <p>
-                  Generate testimonials from your employees, display them using our testimonial widget and have them
-                  instantly shared across LinkedIn, Facebook and Twitter.</p>
-              </div>
-              <div className="m-t-lg">
-                <i className="fa fa-rocket features-icon"></i>
-                <h2>Embedded analytics</h2>
-                <p>
-                  Consistent with the increased speed of data processing and analysis, our models in Analytics 3.0 are
-                  often embedded into operational and decision processes, dramatically increasing speed and impact.</p>
-              </div>
-            </div>
           </div>
         </section>
 
-        <section id="testimonials" className="navy-section testimonials">
-          <div className="container">
-            <div className="row">
-              <div className="col-lg-12 text-center wow zoomIn">
-                <i className="fa fa-comment big-icon"></i>
-                <h1>
-                  What our users say
-                </h1>
-                <div className="testimonials-text">
-                  <i>"theLeader.io is so simple and easy to use, my employees just love filling it out. Now that I have
-                    the majority of our employees leaving me feedback on my leadership, I feel more engaged with them
-                    and can use the data to make more confident business decisions."</i>
-                </div>
-                <small>
-                  <strong>12.02.2015 - Andy Smith</strong>
-                </small>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="team" className="gray-section team">
+        <section id="team" className="white-section team">
           <div className="container">
             <div className="row m-b-lg">
               <div className="col-lg-12 text-center">
@@ -229,6 +256,33 @@ class HomePage extends Component {
                     <li><a href="https://www.facebook.com/Adaptabilitycoach/"><i className="fa fa-facebook"></i></a>
                     </li>
                   </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="navy-section testimonials">
+          <div className="container">
+            <div className="row ">
+              <div className="col-md-6 col-md-offset-3 text-center wow zoomIn">
+                <h1 style={{color: '#FFF'}}>Join theLeader.io today</h1>
+                <div className="search-form" style={{marginLeft: 80}}>
+                  <form>
+                    <div className="input-group">
+                      <input type="email" placeholder={emailPlaceHolder} className="form-control input-lg"
+                             value={this.state.email}
+                             onChange={this._onEnterEmail}
+                             style={{width: 295, color: '#000'}}
+                      />
+                      <div className="input-group-btn pull-left" style={{marginLeft: 15}}>
+                        <button className="btn btn-lg btn-primary "
+                                style={{height: 46, borderColor: "#FFF"}}
+                                onClick={this._onGetStarted}>Get Started
+                        </button>
+                      </div>
+                    </div>
+                  </form>
                 </div>
               </div>
             </div>

@@ -53,8 +53,7 @@ const enqueueSurveys = function (job, cb) {
     const
       {type} = job.data,
       date = new Date(),
-      sendingPlansList = getSendingPlans.call({date})
-      ;
+      sendingPlansList = getSendingPlans.call({date});
     let
       jobMessage = "",
       totalQueuedEmailsToEmployeesOfOrg = 0,
@@ -70,6 +69,7 @@ const enqueueSurveys = function (job, cb) {
       }
       ;
 
+    console.log('sendingPlansList', JSON.stringify(sendingPlansList));
     if (_.isEmpty(sendingPlansList)) {
       jobMessage = `No request for today: ${date}`;
       job.log(jobMessage, {level: LOG_LEVEL.INFO});
@@ -77,6 +77,7 @@ const enqueueSurveys = function (job, cb) {
       cb();
     } else {
       sendingPlansList.map(sendingPlan => {
+        console.log('sendingPlan', JSON.stringify(sendingPlan));
         const
           {metric, leaderId, sendDate, timezone} = sendingPlan,
           planId = sendingPlan._id,
@@ -84,6 +85,7 @@ const enqueueSurveys = function (job, cb) {
           organizationList = Organizations.find(selector).fetch()
           ;
 
+        console.log('organizationList', JSON.stringify(organizationList));
         // don't send survey to inactive leader
         if (!Roles.userIsInRole(leaderId, "inactive")) {
           logContent.planId = planId;
@@ -91,7 +93,9 @@ const enqueueSurveys = function (job, cb) {
             logContent.noOfActiveOrgs = 0;
             jobMessage = `Organizations of leader ${leaderId} not found`;
             job.log(jobMessage, {level: LOG_LEVEL.WARNING});
-            setSendingPlanStatus.call({_id: planId, status: "FAILED", reason: jobMessage});
+            setSendingPlanStatus.call({_id: planId, status: "FAILED", reason: jobMessage}, err => {
+              console.log('error', JSON.stringify({planId, jobMessage, error: err}));
+            });
             addMessages.call({
               userId: leaderId,
               type: TYPE.SURVEY,
@@ -200,10 +204,12 @@ const enqueueSurveys = function (job, cb) {
         // add log for a plan into log collection
         addLogs({params: {name: logName, content: logContent}});
       });
+      console.log('job finished', sendingPlansList.length);
       job.done();
       cb();
     }
   } catch (error) {
+    console.log('error', error);
     job.fail("" + error);
     cb();
   }

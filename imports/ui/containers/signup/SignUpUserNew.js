@@ -4,6 +4,7 @@ import {Meteor} from 'meteor/meteor';
 import {FlowRouter} from 'meteor/kadira:flow-router';
 import {Accounts} from 'meteor/accounts-base';
 import momentTZ from 'moment-timezone';
+import {Session} from 'meteor/session';
 
 // components
 import FormInputHorizontal from '/imports/ui/components/FormInputHorizontal';
@@ -25,12 +26,13 @@ export class SignUpUserNew extends Component {
 
   constructor() {
     super();
+    Session.set('email', 'tan.ktm@icarebenefits.com')
 
     this.state = {
       user: {
         firstName: "",
         lastName: "",
-        email: "",
+        email: Session.get('email') || "",
         alias: getSubdomain()
       },
       showPassword: false,
