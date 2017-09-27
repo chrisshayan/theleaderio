@@ -1,3 +1,7 @@
+<a target='_blank' rel='nofollow' href='https://app.codesponsor.io/link/HLRm8p6JBijoZaBsorsrFyGa/chrisshayan/theleaderio'>
+  <img alt='Sponsor' width='888' height='68' src='https://app.codesponsor.io/embed/HLRm8p6JBijoZaBsorsrFyGa/chrisshayan/theleaderio.svg' />
+</a>
+
 # README #
 
 This README would normally document whatever steps are necessary to get your application up and running.
@@ -65,6 +69,3 @@ mpm-client deploy
 * Repo owner or admin
 * Other community or team contact
 
-<a target='_blank' rel='nofollow' href='https://app.codesponsor.io/link/HLRm8p6JBijoZaBsorsrFyGa/chrisshayan/theleaderio'>
-  <img alt='Sponsor' width='888' height='68' src='https://app.codesponsor.io/embed/HLRm8p6JBijoZaBsorsrFyGa/chrisshayan/theleaderio.svg' />
-</a>
